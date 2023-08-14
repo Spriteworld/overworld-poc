@@ -1,0 +1,179 @@
+[
+    {
+        "color": "#ffa0a0a4",
+        "name": "encounters",
+        "properties": [
+            {
+                "name": "table-id",
+                "type": "string",
+                "value": ""
+            }
+        ]
+    },
+    {
+        "color": "#ff7f14dd",
+        "name": "layerTransition",
+        "properties": [
+            {
+                "name": "from",
+                "type": "string",
+                "value": "ground"
+            },
+            {
+                "name": "to",
+                "type": "string",
+                "value": ""
+            }
+        ]
+    },
+    {
+        "color": "#ff550000",
+        "name": "npc",
+        "properties": [
+            {
+                "name": "facing-direction",
+                "type": "string",
+                "value": "down"
+            },
+            {
+                "name": "move",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "move-radius",
+                "type": "int",
+                "value": 1
+            },
+            {
+                "name": "move-rate",
+                "type": "int",
+                "value": 500
+            },
+            {
+                "name": "spin",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "spin-rate",
+                "type": "int",
+                "value": 500
+            },
+            {
+                "name": "texture",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "seen-radius",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "seen-character",
+                "type": "string",
+                "value": null
+            }
+        ]
+    },
+    {
+        "color": "#ff550000",
+        "name": "pkmn",
+        "properties": [
+            {
+                "name": "facing-direction",
+                "type": "string",
+                "value": "down"
+            },
+            {
+                "name": "move",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "move-radius",
+                "type": "int",
+                "value": 1
+            },
+            {
+                "name": "move-rate",
+                "type": "int",
+                "value": 500
+            },
+            {
+                "name": "shiny",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "spin",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "spin-rate",
+                "type": "int",
+                "value": 500
+            },
+            {
+                "name": "texture",
+                "type": "string",
+                "value": ""
+            }
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "name": "sign",
+        "properties": [
+            {
+                "name": "text",
+                "type": "string",
+                "value": ""
+            }
+        ]
+    },
+    {
+        "color": "#ffff0000",
+        "name": "playerSpawn",
+        "properties": [
+            {
+                "name": "facing-direction",
+                "type": "string",
+                "value": "down"
+            }
+        ]
+    },
+    {
+        "color": "#ff00ffff",
+        "name": "warp",
+        "properties": [
+            {
+                "name": "layer",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "warp",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "warp-dir",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "warp-x",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "warp-y",
+                "type": "int",
+                "value": 0
+            }
+        ]
+    }
+]

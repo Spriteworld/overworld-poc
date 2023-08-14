@@ -1,0 +1,24 @@
+{
+  "name": "spriteworld-character",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@spriteworld/pokemon-data": "file:../data",
+    "grid-engine": "^2.34.0",
+    "phaser": "^3.60.0",
+    "phaser-animated-tiles": "^2.0.2",
+    "phaser-tiled-json-external-loader": "^0.1.1",
+    "phaser3-rex-plugins": "^1.60.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "jest": "^29.6.2",
+    "jest-canvas-mock": "^2.5.2",
+    "vite": "^4.4.9"
+  }
+}
