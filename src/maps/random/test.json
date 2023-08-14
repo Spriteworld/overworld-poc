@@ -1352,15 +1352,15 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"\/src\/tileset\/gen3_outside.json"
+         "source":"..\/..\/tileset\/gen3_outside.json"
         }, 
         {
          "firstgid":7985,
-         "source":"\/src\/tileset\/rse_inside.json"
+         "source":"..\/..\/tileset\/rse_inside.json"
         }, 
         {
          "firstgid":20273,
-         "source":"\/src\/tileset\/gen3_inside.json"
+         "source":"..\/..\/tileset\/gen3_inside.json"
         }],
  "tilewidth":32,
  "type":"map",
