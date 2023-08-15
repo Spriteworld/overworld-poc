@@ -15,8 +15,16 @@ export default class extends Phaser.Scene {
     };
   }
 
-  create () {
+  init() {
 
+    let { width, height } = this.sys.game.canvas;
+    this.overlay = this.add.image(0, 0, 'blank')
+      .setDisplayOrigin(0)
+      .setDisplaySize(width, height)
+    ;
+  }
+
+  create () {
     if (Debug.functions.timeOverlay) {
       this.add.text(16, 16, 'Day', { fontSize: '32px', fill: '#000', stroke: '#000', strokeThickness: 2});
       this.add.text(416, 16, 'Evening', { fontSize: '32px', fill: '#000', stroke: '#000', strokeThickness: 2});
@@ -43,36 +51,6 @@ export default class extends Phaser.Scene {
       return;
     }
 
-    let { width, height } = this.sys.game.canvas;
-    this.overlay = this.add.image(0, 0, 'blank')
-      .setDisplayOrigin(0)
-      .setDisplaySize(width, height)
-    ;
-
-    switch (true) {
-      // morning
-      case this.time.morning:
-        console.log('timeoverlay::morning');
-        this.doMorning(this.overlay);
-      break;
-
-      // evening
-      case this.time.evening:
-        console.log('timeoverlay::evening');
-        this.doEvening(this.overlay);
-      break;
-
-      // night
-      case this.time.night:
-        console.log('timeoverlay::night');
-        this.doNight(this.overlay);
-      break;
-
-      default:
-        console.log('timeoverlay::day');
-        this.overlay.setAlpha(0);
-      break;
-    }
   }
 
   doMorning(overlay) {
@@ -94,5 +72,40 @@ export default class extends Phaser.Scene {
       .setTint(0x0026b2)
       .setAlpha(0.35)
     ;
+  }
+
+  update() {
+    let hour = new Date().getHours();
+    let mins = new Date().getMinutes();
+    this.time = {
+      morning: (hour >= 7 && (hour <= 10 && mins <= 59)),
+      day: (hour >= 11 && (hour <= 18 && mins <= 59)),
+      evening: (hour >= 19 && (hour <= 21 && mins <= 59)),
+      night: (hour >= 22 || (hour <= 6 && mins <= 59)),
+    };
+    // console.log(hour, mins, this.time);
+
+
+    if (!Debug.functions.timeOverlay) {
+      if (this.time.morning) {
+        // console.log('timeoverlay::morning');
+        this.doMorning(this.overlay);
+        return;
+      } else if (this.time.evening) {
+        // console.log('timeoverlay::evening');
+        this.doEvening(this.overlay);
+        return;
+      } else if (this.time.night) {
+        // console.log('timeoverlay::night');
+        this.doNight(this.overlay);
+        return;
+      } else {
+        // console.log('timeoverlay::day');
+        this.overlay.setAlpha(0);
+        return;
+      }
+    } else {
+        this.overlay.setAlpha(0);
+    }
   }
 }

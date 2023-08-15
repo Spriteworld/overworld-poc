@@ -9,6 +9,8 @@ export default class extends GameMap {
       active: false,
       visible: false,
     });
+
+    this.pokemon = [3, 6, 9, 197, '197s'];
   }
 
   preload() {

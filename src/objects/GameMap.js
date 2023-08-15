@@ -56,12 +56,16 @@ export default class extends Phaser.Scene {
     ];
 
     // load all the layers!
-    tilemap.layers.forEach((layer) => {
-      // console.log('[GameMap]', layer);
-      tilemap
-        .createLayer(layer.name, tilesets)
-        .setName(layer.name);
-    });
+    let layers = tilemap.layers
+      .forEach((layer) => {
+        // console.log('[GameMap]', layer);
+
+        tilemap
+          .createLayer(layer.name, tilesets)
+          .setName(layer.name)
+          .setAlpha(layer.visible ? 1 : 0)
+        ;
+      });
 
     // map features
     this.iceTiles = this.getTilesWithProperty('sw_slide');
@@ -245,6 +249,9 @@ export default class extends Phaser.Scene {
           }
         }
 
+        if (![this.player.config.id].includes(charId)) {
+          return;
+        }
         // setup handlers etc
         this.handleWarps(enterTile);
       });
@@ -308,6 +315,30 @@ export default class extends Phaser.Scene {
     this.registry.set('player', this.player);
     this.cameras.main.startFollow(this.player, true);
     this.cameras.main.setFollowOffset(-this.player.width, -this.player.height);
+
+    // debug for time overlay stuffs
+    if (Debug.functions.timeOverlay === true) {
+      this.cameras.main.setSize(400, 300);
+      // this.cameras.main.zoom = 0.7;
+
+      // evening
+      let cam2 = this.cameras.add(400, 0, 400, 300);
+      // cam2.zoom = 0.7;
+      cam2.startFollow(this.player, true);
+      cam2.setFollowOffset(-this.player.width, -this.player.height);
+
+      // night
+      let cam3 = this.cameras.add(0, 300, 400, 300);
+      // cam3.zoom = 0.7;
+      cam3.startFollow(this.player, true);
+      cam3.setFollowOffset(-this.player.width, -this.player.height);
+
+      // morning
+      let cam4 = this.cameras.add(400, 300, 400, 300);
+      // cam4.zoom = 0.7;
+      cam4.startFollow(this.player, true);
+      cam4.setFollowOffset(-this.player.width, -this.player.height);
+    }
 
     if (this.scene.get('Preload').enablePlayerOWPokemon) {
       this.playerMon = this.addMonToScene('025', x +1, y, {
@@ -458,7 +489,9 @@ export default class extends Phaser.Scene {
 
   tintTile(tilemap, col, row, color) {
     for (let i = 0; i < tilemap.layers.length; i++) {
-      tilemap.layers[i].tilemapLayer.layer.data[row][col].tint = color;
+      if (tilemap.layers[i].tilemapLayer?.layer?.visible) {
+        tilemap.layers[i].tilemapLayer.layer.data[row][col].tint = color;
+      }
     }
   }
 

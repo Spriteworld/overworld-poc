@@ -35,6 +35,7 @@ export default class extends Phaser.Scene {
 
     this.load.on('complete', () => progress.destroy());
 
+    this.load.image('blank', Tileset.blank);
     this.load.image('gen3_inside', Tileset.gen3inside);
     this.load.image('gen3_outside', Tileset.gen3outside);
     this.load.image('rse_inside', Tileset.rse_inside);
@@ -62,10 +63,10 @@ export default class extends Phaser.Scene {
 
   create () {
     this.scene.start('Test');
-    // this.scene.start('TimeOverlay');
-    // this.scene.bringToTop('TimeOverlay');
-    // this.scene.start('OverworldUI');
-    // this.scene.bringToTop('OverworldUI');
+    this.scene.start('TimeOverlay');
+    this.scene.bringToTop('TimeOverlay');
+    this.scene.start('OverworldUI');
+    this.scene.bringToTop('OverworldUI');
     this.createTrainerAnimations();
     // this.createPokemonAnimations();
   }
