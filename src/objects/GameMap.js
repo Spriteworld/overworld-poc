@@ -18,6 +18,9 @@ export default class extends Phaser.Scene {
     this.cameraFade = 150;
     this.totalMon = 386;
     this.npcs = [];
+
+    this.ge_init = false;
+    this.ge_events_init = false;
   }
 
   init(data) {
@@ -27,6 +30,8 @@ export default class extends Phaser.Scene {
     this.characters = [];
     this.mon = [];
     this.warps = [];
+    this.ge_init = false;
+    this.ge_events_init = false;
   }
 
   preloadMap() {
@@ -34,6 +39,7 @@ export default class extends Phaser.Scene {
   }
 
   loadMap() {
+    console.log('GameMap::loadMap: '+ this.config.mapName);
     var tilemap = this.make.tilemap({ key: this.config.mapName });
     this.config.tilemap = tilemap;
     this.registry.set('scene', this.config.mapName);
@@ -176,6 +182,89 @@ export default class extends Phaser.Scene {
     this.addPlayerToScene(spawn[0].x / Tile.WIDTH, spawn[0].y / Tile.HEIGHT);
   }
 
+  initGEEvents() {
+    // handle ice & spin tiles
+    this.gridEngine
+      .positionChangeStarted()
+      .subscribe(({ charId, exitTile, enterTile }) => {
+        let char = this.characters.find(char => {
+          return charId === char.config.id;
+        });
+        if (typeof char === 'undefined') { return; }
+
+        // check for ice tiles
+        let hasIceTiles = this.iceTiles.length;
+        if (hasIceTiles > 0) {
+          let isIceTile = this.iceTiles.some(tile => {
+            return tile[0] == enterTile.x && tile[1] == enterTile.y;
+          });
+          if (isIceTile && !char.isSliding()) {
+            char.stateMachine.setState(char.stateDef.SLIDE);
+          }
+          if (!isIceTile && char.isSliding()) {
+            char.stateMachine.setState(char.stateDef.IDLE);
+          }
+        }
+
+        // check for spin tiles
+        let hasSpinTiles = this.spinTiles.length;
+        if (hasSpinTiles > 0) {
+          let isSpinTile = this.spinTiles.some(tile => {
+            return tile[0] == enterTile.x && tile[1] == enterTile.y;
+          });
+          if (isSpinTile) {
+            let props = this.getTileProperties(enterTile.x, enterTile.y);
+            let dir = this.getValue(props, 'sw_spin', false);
+            if (!char.isSpinning() && dir !== false) {
+              char.stateMachine.setState(char.stateDef.SPIN);
+            }
+            if (dir !== char.getSlidingDirection()) {
+              char.setSpinDirection(dir);
+            }
+          }
+
+          let isStopTile = this.stopTiles.some(tile => {
+            return tile[0] == enterTile.x && tile[1] == enterTile.y;
+          });
+          if (isStopTile && char.isSpinning()) {
+            char.stateMachine.setState(char.stateDef.IDLE);
+          }
+        }
+
+        // setup handlers etc
+        this.handleWarps(enterTile);
+      });
+
+    this.gridEngine
+      .movementStopped()
+      .subscribe(({ charId, direction }) => {
+        let char = this.characters.find(char => {
+          return charId === char.config.id;
+        });
+        if (typeof char === 'undefined') { return; }
+
+        if (char.slidingDir !== null) {
+          char.stateMachine.setState(char.stateDef.IDLE);
+        }
+      });
+
+    this.gridEngine
+      .positionChangeFinished()
+      .subscribe(({ charId, exitTile, enterTile, exitLayer }) => {
+        if (![this.player.config.id].includes(charId)) {
+          return;
+        }
+
+
+        // make the playerMon follow the player
+        if (this.scene.get('Preload').enablePlayerOWPokemon) {
+          this.playerMon.moveTo(exitTile.x, exitTile.y, {
+            targetLayer: exitLayer
+          });
+        }
+      });
+  }
+
   addPlayerToScene(x, y) {
     this.tintTile(this.config.tilemap,
       this.config.playerLocation.length > 0 ? this.config.playerLocation.x : x,
@@ -270,6 +359,7 @@ export default class extends Phaser.Scene {
         return char.characterDef();
       })
     });
+    this.ge_init = true;
   }
 
   updateCharacters(time, delta) {
@@ -286,88 +376,10 @@ export default class extends Phaser.Scene {
       });
     }
 
-
-
-    // handle ice & spin tiles
-    this.gridEngine
-      .positionChangeStarted()
-      .subscribe(({ charId, exitTile, enterTile }) => {
-        let char = this.characters.find(char => {
-          return charId === char.config.id;
-        });
-        if (typeof char === 'undefined') { return; }
-
-        // check for ice tiles
-        let hasIceTiles = this.iceTiles.length;
-        if (hasIceTiles > 0) {
-          let isIceTile = this.iceTiles.some(tile => {
-            return tile[0] == enterTile.x && tile[1] == enterTile.y;
-          });
-          if (isIceTile && !char.isSliding()) {
-            char.stateMachine.setState(char.stateDef.SLIDE);
-          }
-          if (!isIceTile && char.isSliding()) {
-            char.stateMachine.setState(char.stateDef.IDLE);
-          }
-        }
-
-        // check for spin tiles
-        let hasSpinTiles = this.spinTiles.length;
-        if (hasSpinTiles > 0) {
-          let isSpinTile = this.spinTiles.some(tile => {
-            return tile[0] == enterTile.x && tile[1] == enterTile.y;
-          });
-          if (isSpinTile) {
-            let props = this.getTileProperties(enterTile.x, enterTile.y);
-            let dir = this.getValue(props, 'sw_spin', false);
-            if (!char.isSpinning() && dir !== false) {
-              char.stateMachine.setState(char.stateDef.SPIN);
-            }
-            if (dir !== char.getSlidingDirection()) {
-              char.setSpinDirection(dir);
-            }
-          }
-
-          let isStopTile = this.stopTiles.some(tile => {
-            return tile[0] == enterTile.x && tile[1] == enterTile.y;
-          });
-          if (isStopTile && char.isSpinning()) {
-            char.stateMachine.setState(char.stateDef.IDLE);
-          }
-        }
-
-        // setup handlers etc
-        this.handleWarps(enterTile);
-      });
-
-    this.gridEngine
-      .movementStopped()
-      .subscribe(({ charId, direction }) => {
-        let char = this.characters.find(char => {
-          return charId === char.config.id;
-        });
-        if (typeof char === 'undefined') { return; }
-
-        if (char.slidingDir !== null) {
-          char.stateMachine.setState(char.stateDef.IDLE);
-        }
-      });
-
-    this.gridEngine
-      .positionChangeFinished()
-      .subscribe(({ charId, exitTile, enterTile, exitLayer }) => {
-        if (![this.player.config.id].includes(charId)) {
-          return;
-        }
-
-
-        // make the playerMon follow the player
-        if (this.scene.get('Preload').enablePlayerOWPokemon) {
-          this.playerMon.moveTo(exitTile.x, exitTile.y, {
-            targetLayer: exitLayer
-          });
-        }
-      });
+    if (this.ge_init && !this.ge_events_init) {
+      this.initGEEvents();
+      this.ge_events_init = true;
+    }
   }
 
   handleWarps(enterTile) {
@@ -381,7 +393,7 @@ export default class extends Phaser.Scene {
     let warpLocation = this.getPropertyValue(warpProps, 'warp', null);
     if (warpLocation === null || warpLocation === ''){ return; }
 
-    this.player.disableMovement();
+    // this.player.disableMovement();
     this.cameras.main.fadeOut(this.cameraFade, 0, 0, 0);
     this.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
@@ -397,7 +409,7 @@ export default class extends Phaser.Scene {
         if (this.registry.get('map') === warpLocation) {
           this.warpPlayerInMap(playerLocation);
           this.cameras.main.fadeIn(this.cameraFade, 0, 0, 0);
-          this.player.enableMovement();
+          // this.player.enableMovement();
           return;
         }
 
@@ -405,7 +417,7 @@ export default class extends Phaser.Scene {
         this.scene.start(warpLocation, {
           playerLocation: playerLocation
         });
-        this.player.enableMovement();
+        // this.player.enableMovement();
       }
     );
   }
@@ -503,14 +515,17 @@ export default class extends Phaser.Scene {
 
 
   debugObjects() {
-    if(Debug.objects !== true) return;
+    if(Debug.grid === true) {
+      this.add.grid(0, 0, this.config.tilemap.widthInPixels, this.config.tilemap.heightInPixels, Tile.WIDTH, Tile.HEIGHT)
+        .setOrigin(0, 0)
+        .setOutlineStyle(0x000000)
+        .setDepth(9999999)
+      ;
+    }
 
-    // this.add.grid(0, 0, this.config.tilemap.widthInPixels, this.config.tilemap.heightInPixels, Tile.WIDTH, Tile.HEIGHT)
-    //   .setOrigin(0, 0)
-    //   .setOutlineStyle(0x000000)
-    //   .setDepth(9999999)
-    // ;
-
+    if(Debug.objects !== true) {
+      return;
+    }
     let colors = {};
     Object.values(ObjectTypes).forEach((obj) => {
       colors[obj.name] = obj.color;

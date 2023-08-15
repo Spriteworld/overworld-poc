@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { Tile } from '@Objects';
 import Tileset from '@Tileset';
+import * as Scenes from '@Scenes';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -46,6 +47,15 @@ export default class extends Phaser.Scene {
 
     this.preloadTrainers();
     this.preloadPokemon();
+
+    // console.log(Scenes);
+    Object.keys(Scenes)
+      .filter(scene => scene !== 'Preload')
+      .forEach((scene) => {
+        this.scene.add(Scenes[scene].name, Scenes[scene], false);
+      })
+    ;
+
     // console.log(spriteworld.textures.list);
     console.groupEnd();
     console.log('Preload::complete');
@@ -55,8 +65,8 @@ export default class extends Phaser.Scene {
     this.scene.start('Test');
     // this.scene.start('TimeOverlay');
     // this.scene.bringToTop('TimeOverlay');
-    this.scene.start('OverworldUI');
-    this.scene.bringToTop('OverworldUI');
+    // this.scene.start('OverworldUI');
+    // this.scene.bringToTop('OverworldUI');
     this.createTrainerAnimations();
     this.createPokemonAnimations();
   }

@@ -6,7 +6,7 @@
  "name":"gen3_inside",
  "spacing":0,
  "tilecount":3680,
- "tiledversion":"1.7.2",
+ "tiledversion":"1.10.2",
  "tileheight":32,
  "tiles":[
         {
@@ -1933,6 +1933,26 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":false
+                }, 
+                {
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -1949,6 +1969,26 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
                  "type":"bool",
                  "value":true
                 }]
@@ -2058,7 +2098,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2274,7 +2314,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2283,7 +2323,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2463,7 +2503,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2472,7 +2512,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2481,7 +2521,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2490,7 +2530,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2499,7 +2539,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2508,7 +2548,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2517,7 +2557,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -6207,7 +6247,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -6216,7 +6256,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -33156,5 +33196,5 @@
         }],
  "tilewidth":32,
  "type":"tileset",
- "version":"1.6"
+ "version":"1.10"
 }

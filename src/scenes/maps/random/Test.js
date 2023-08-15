@@ -5,7 +5,9 @@ export default class extends GameMap {
   constructor() {
     super({
       mapName: 'Test',
-      map: TestMap
+      map: TestMap,
+      active: false,
+      visible: false,
     });
   }
 

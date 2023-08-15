@@ -1,5 +1,6 @@
 let debug = {
   objects: !true,
+  grid: true,
   stateMachine: {
     console: false,
   },
