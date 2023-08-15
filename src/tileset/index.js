@@ -22,14 +22,14 @@ import trainers from '@Tileset/characters';
 let pokemonGlob = import.meta.glob('@Tileset/overworld/pokemon/*.png');
 let pokemon = {};
 Object.keys(pokemonGlob).map(img => {
-  let id = img.split('/').pop().split('.')[0];
+  let id = img.split('/').pop().split('.')[0].padStart(3, '0');
   pokemon[id] = new URL(img, import.meta.url).pathname;
 });
 
 let pokemon_shinyGlob = import.meta.glob('@Tileset/overworld/pokemon_shiny/*.png');
 let pokemon_shiny = {};
 Object.keys(pokemon_shinyGlob).map(img => {
-  let id = img.split('/').pop().split('.')[0];
+  let id = img.split('/').pop().split('.')[0].padStart(3, '0');
   pokemon_shiny[id] = new URL(img, import.meta.url).pathname;
 });
 

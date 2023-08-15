@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { Player, NPC, PkmnOverworld, ObjectTypes, Tile } from '@Objects';
+import { random_rgba, getPropertyValue, getValue, remapProps } from '@Utilities';
 import Debug from '@Data/debug.js';
 
 export default class extends Phaser.Scene {
@@ -39,7 +40,9 @@ export default class extends Phaser.Scene {
   }
 
   loadMap() {
-    console.log('GameMap::loadMap: '+ this.config.mapName);
+    if (Debug.functions.gameMap) {
+      console.log('GameMap::loadMap: '+ this.config.mapName);
+    }
     var tilemap = this.make.tilemap({ key: this.config.mapName });
     this.config.tilemap = tilemap;
     this.registry.set('scene', this.config.mapName);
@@ -68,6 +71,9 @@ export default class extends Phaser.Scene {
     // load ALL THE THINGSSSSS
     this.objects = tilemap.getObjectLayer('interactions');
     if (this.objects !== null) {
+      if (Debug.functions.gameMap) {
+        console.log('GameMap::loadMap->objects');
+      }
       this.registry.set('interactions', []);
       this.registry.set('warps', []);
 
@@ -84,10 +90,10 @@ export default class extends Phaser.Scene {
   }
 
   initSigns() {
-    let signs = this.config.tilemap.filterObjects(
-      'interactions',
-      (obj) => obj.type === 'sign' && obj.visible
-    );
+    if (Debug.functions.gameMap) {
+      console.log('GameMap::initSigns');
+    }
+    let signs = this.findInteractions('sign');;
     if (signs.length === 0) { return; }
 
     signs.forEach((sign) => {
@@ -98,58 +104,66 @@ export default class extends Phaser.Scene {
   }
 
   initNpcs() {
-    let npcs = this.config.tilemap.filterObjects(
-      'interactions',
-      (obj) => obj.type === 'npc' && obj.visible
-    );
+    if (Debug.functions.gameMap) {
+      console.log('GameMap::initNpcs');
+    }
+    let npcs = this.findInteractions('npc');;
     if (npcs.length === 0) { return; }
 
     this.npcs = this.add.group();
     this.npcs.runChildUpdate = true;
-    let color = this.random_rgba();
+    let color = random_rgba();
     npcs.forEach((npc) => {
       this.addNPCToScene(
         npc.name,
-        this.getPropertyValue(npc.properties, 'texture'),
+        getPropertyValue(npc.properties, 'texture'),
         npc.x / Tile.WIDTH,
         npc.y / Tile.HEIGHT,
         {
           id: npc.name,
           scene: this,
-          ...this.remapProps(npc.properties)
+          ...remapProps(npc.properties)
         }
       );
     });
   }
 
   initPkmn() {
-    let pkmn = this.config.tilemap.filterObjects(
-      'interactions',
-      (obj) => obj.type === 'pkmn' && obj.visible
-    );
+    if (Debug.functions.gameMap) {
+      console.log('GameMap::initPkmn');
+    }
+    let pkmn = this.findInteractions('pkmn');
     if (pkmn.length === 0) { return; }
 
     this.pkmn = this.add.group();
     this.pkmn.runChildUpdate = true;
     pkmn.forEach((npc) => {
+      if (Debug.functions.gameMap) {
+        console.log(
+          'GameMap::initPkmn->each',
+          npc.name,
+          getPropertyValue(npc.properties, 'texture'),
+          npc.x, npc.y
+        );
+      }
       this.addMonToScene(
-        this.getPropertyValue(npc.properties, 'texture'),
+        getPropertyValue(npc.properties, 'texture'),
         npc.x / Tile.WIDTH,
         npc.y / Tile.HEIGHT,
         {
           id: npc.name,
           scene: this,
-          ...this.remapProps(npc.properties)
+          ...remapProps(npc.properties)
         }
       );
     });
   }
 
   initWarps() {
-    let warps = this.config.tilemap.filterObjects(
-      'interactions',
-      (obj) => obj.type === 'warp' && obj.visible
-    );
+    if (Debug.functions.gameMap) {
+      console.log('GameMap::initWarps');
+    }
+    let warps = this.findInteractions('warp');;
     if (warps.length === 0) { return; }
 
     warps.forEach((obj) => {
@@ -163,15 +177,15 @@ export default class extends Phaser.Scene {
   }
 
   initPlayer() {
+    if (Debug.functions.gameMap) {
+      console.log('GameMap::initPlayer');
+    }
     if (Object.keys(this.config.playerLocation).length != 0) {
       this.addPlayerToScene(this.config.playerLocation.x, this.config.playerLocation.y);
       return;
     }
 
-    let spawn = this.config.tilemap.filterObjects(
-      'interactions',
-      (obj) => obj.type === 'playerSpawn' && obj.visible
-    );
+    let spawn = this.findInteractions('playerSpawn');
     if (typeof spawn === null || spawn.length === 0) {
       throw 'No player spawn found';
     }
@@ -214,7 +228,7 @@ export default class extends Phaser.Scene {
           });
           if (isSpinTile) {
             let props = this.getTileProperties(enterTile.x, enterTile.y);
-            let dir = this.getValue(props, 'sw_spin', false);
+            let dir = getValue(props, 'sw_spin', false);
             if (!char.isSpinning() && dir !== false) {
               char.stateMachine.setState(char.stateDef.SPIN);
             }
@@ -265,13 +279,23 @@ export default class extends Phaser.Scene {
       });
   }
 
+  findInteractions(type) {
+    return this.config.tilemap.filterObjects(
+      'interactions',
+      (obj) => obj.type === type && obj.visible
+    );
+  }
+
   addPlayerToScene(x, y) {
     this.tintTile(this.config.tilemap,
       this.config.playerLocation.length > 0 ? this.config.playerLocation.x : x,
       this.config.playerLocation.length > 0 ? this.config.playerLocation.y : y,
-      this.random_rgba()
+      random_rgba()
     );
 
+    if (Debug.functions.gameMap) {
+      console.log('GameMap::addPlayerToScene', x, y);
+    }
     this.loadedPlayer = true;
     this.player = new Player({
       id: 'player',
@@ -305,6 +329,9 @@ export default class extends Phaser.Scene {
       scene: this
     }, ...config };
 
+    if (Debug.functions.gameMap) {
+      console.log('GameMap::addNPCToScene', name, texture, x, y);
+    }
     let npcObj = new NPC(npcDef);
     this.npcs.add(npcObj);
     this.interactTile(this.config.tilemap, npcDef, 0x000000);
@@ -319,9 +346,7 @@ export default class extends Phaser.Scene {
       monId = Math.floor(Math.random() * this.totalMon);
       rng = true;
     }
-    if (monId.length < 3) {
-      monId = monId.toString().padStart(3, '0');
-    }
+    monId = monId.padStart(3, '0');
 
     if (rng) {
       console.info('mon got RNGd', monId, config.id, config);
@@ -329,10 +354,13 @@ export default class extends Phaser.Scene {
 
     // check for shiny
     let texture = monId.toString();
-    if (this.getValue(config, 'shiny', false)) {
+    if (getValue(config, 'shiny', false)) {
       texture += 's';
     }
 
+    if (Debug.functions.gameMap) {
+      console.log('GameMap::addMonToScene', monId, texture, x, y);
+    }
     let pkmnDef = {...{
       id: 'mon'+this.mon.length,
       texture: texture,
@@ -371,9 +399,7 @@ export default class extends Phaser.Scene {
     }
 
     if (this.mon.length > 0) {
-      this.mon.forEach(function (mon) {
-        mon.update(time, delta);
-      });
+      this.mon.forEach((mon) => mon.update(time, delta));
     }
 
     if (this.ge_init && !this.ge_events_init) {
@@ -390,7 +416,7 @@ export default class extends Phaser.Scene {
     if (typeof warp === 'undefined') { return; }
 
     let warpProps = warp.obj.properties;
-    let warpLocation = this.getPropertyValue(warpProps, 'warp', null);
+    let warpLocation = getPropertyValue(warpProps, 'warp', null);
     if (warpLocation === null || warpLocation === ''){ return; }
 
     // this.player.disableMovement();
@@ -399,10 +425,10 @@ export default class extends Phaser.Scene {
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       (cam, effect) => {
         let playerLocation = {
-          x: this.getPropertyValue(warpProps, 'warp-x', 0),
-          y: this.getPropertyValue(warpProps, 'warp-y', 0),
-          dir: this.getPropertyValue(warpProps, 'warp-dir', 'down'),
-          charLayer: this.getPropertyValue(warpProps, 'layer', 'ground')
+          x: getPropertyValue(warpProps, 'warp-x', 0),
+          y: getPropertyValue(warpProps, 'warp-y', 0),
+          dir: getPropertyValue(warpProps, 'warp-dir', 'down'),
+          charLayer: getPropertyValue(warpProps, 'layer', 'ground')
         };
 
         // same map, we dont need to move scene
@@ -449,7 +475,7 @@ export default class extends Phaser.Scene {
       );
 
       layerTiles.forEach(layerTile => {
-        if (layerTile && this.getValue(layerTile.properties, property, false)) {
+        if (layerTile && getValue(layerTile.properties, property, false)) {
           tiles.push([layerTile.x, layerTile.y]);
           return;
         }
@@ -489,36 +515,21 @@ export default class extends Phaser.Scene {
     return props;
   }
 
-  getPropertyValue(props, id, defValue) {
-    if (typeof props === 'undefined' || Object.values(props).length === 0) {
-      return defValue;
-    }
-    let property = props.find(p => p.name === id);
-    return typeof property === 'undefined' ? defValue : property.value;
-  }
-
-  getValue(obj, value, defValue) {
-    return Phaser.Utils.Objects.GetValue(obj, value, defValue);
-  }
-
-  remapProps(props) {
-    let values = {};
-    Object.values(props).forEach(prop => {
-      values = {...values, ...{ [prop.name]: prop.value }};
-    });
-    return values;
-  }
-
-  random_rgba() {
-    return '0x' + Math.floor(Math.random() * 16777215).toString(16);
-  }
-
-
   debugObjects() {
+    if (Debug.functions.gameMap) {
+      console.log('GameMap::debugObjects');
+    }
     if(Debug.grid === true) {
-      this.add.grid(0, 0, this.config.tilemap.widthInPixels, this.config.tilemap.heightInPixels, Tile.WIDTH, Tile.HEIGHT)
+      this.add.grid(
+        0, 0,
+        this.config.tilemap.widthInPixels,
+        this.config.tilemap.heightInPixels,
+        Tile.WIDTH,
+        Tile.HEIGHT
+      )
         .setOrigin(0, 0)
         .setOutlineStyle(0x000000)
+        .setAlpha(0.4)
         .setDepth(9999999)
       ;
     }
@@ -532,31 +543,32 @@ export default class extends Phaser.Scene {
     });
 
     let graphics = this.add.graphics()
-    Object.values(this.config.tilemap.getObjectLayer('interactions').objects).forEach((obj) => {
+    Object.values(this.config.tilemap.getObjectLayer('interactions').objects)
+      .forEach((obj) => {
+        let text = this.add.text(0, 0, obj.name, {
+            font: '12px',
+            align: 'justify',
+            padding: 3,
+            color: '#fff',
+            backgroundColor: (getValue(colors, obj.type, '#000')).substr(0, 7),
+            shadow: {
+              stroke: '#000',
+              offsetX: 1,
+              offsetY: 1,
+            }
+          })
+        ;
 
-      let text = this.add.text(0, 0, obj.name, {
-          font: '12px',
-          align: 'justify',
-          padding: 3,
-          color: '#fff',
-          backgroundColor: (this.getValue(colors, obj.type, '#000')).substr(0, 7),
-          shadow: {
-            stroke: '#000',
-            offsetX: 1,
-            offsetY: 1,
-          }
-        })
-      ;
-
-      let tile = this.add.rectangle(obj.x, obj.y, obj.width, obj.height);
-      tile.setOrigin(0,0);
-      tile.setStrokeStyle(1, 0x1a65ac);
-      var debugObj = this.add.container(0,0, [
-        tile,
-        Phaser.Display.Align.In.TopCenter(text, this.add.zone(obj.x-5, obj.y-15, obj.width+10, obj.height+10).setOrigin(0,0)),
-      ]);
-      debugObj.setDepth(9999999);
-    });
+        let tile = this.add.rectangle(obj.x, obj.y, obj.width, obj.height);
+        tile.setOrigin(0,0);
+        tile.setStrokeStyle(1, 0x1a65ac);
+        var debugObj = this.add.container(0,0, [
+          tile,
+          Phaser.Display.Align.In.TopCenter(text, this.add.zone(obj.x-5, obj.y-15, obj.width+10, obj.height+10).setOrigin(0,0)),
+        ]);
+        debugObj.setDepth(9999999);
+      })
+    ;
   }
 
 }

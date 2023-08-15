@@ -13,7 +13,7 @@ import HeroHouseF2 from '@Scenes/maps/kanto/HeroHouseF2.js';
 import Route1 from '@Scenes/maps/kanto/Route1.js';
 import ProfessorLab from '@Scenes/maps/kanto/ProfessorLab.js';
 
-export {
+export default {
   OverworldUI, TimeOverlay, Preload,
 
   Test,

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import StateMachine from '@Objects/StateMachine';
 import { Tile, Direction } from '@Objects';
 import Debug from '@Data/debug.js';
+import { getValue } from '@Utilities';
 
 export default class extends Phaser.GameObjects.Sprite {
   constructor(config) {
@@ -263,15 +264,15 @@ export default class extends Phaser.GameObjects.Sprite {
       }
       var props = this.scene.getTileProperties(tile.x, tile.y);
       var check = [
-        this.scene.getValue(props, 'ge_collide', false),
-        this.scene.getValue(props, 'ge_collide_left', false),
-        this.scene.getValue(props, 'ge_collide_right', false),
-        this.scene.getValue(props, 'ge_collide_up', false),
-        this.scene.getValue(props, 'ge_collide_down', false),
-        this.scene.getValue(props, 'sw_stop', false),
-        this.scene.getValue(props, 'sw_slide', false),
-        this.scene.getValue(props, 'sw_spin', false),
-        this.scene.getValue(props, 'sw_jump', false),
+        getValue(props, 'ge_collide', false),
+        getValue(props, 'ge_collide_left', false),
+        getValue(props, 'ge_collide_right', false),
+        getValue(props, 'ge_collide_up', false),
+        getValue(props, 'ge_collide_down', false),
+        getValue(props, 'sw_stop', false),
+        getValue(props, 'sw_slide', false),
+        getValue(props, 'sw_spin', false),
+        getValue(props, 'sw_jump', false),
         // todo: add character checks...shouldnt be able to see thru other characters XD
       ].includes(true);
 

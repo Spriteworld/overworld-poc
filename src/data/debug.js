@@ -5,7 +5,7 @@ let debug = {
     console: false,
   },
   functions: {
-    gameMap: false,
+    gameMap: true,
     timeOverlay: false,
     characterSeen: !true,
     characterRect: !true,
