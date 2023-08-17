@@ -6,7 +6,7 @@ let debug = {
   },
   functions: {
     gameMap: !true,
-    timeOverlay: !false,
+    timeOverlay: false,
     characterSeen: !true,
     characterRect: !true,
   },

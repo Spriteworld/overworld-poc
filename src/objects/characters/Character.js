@@ -111,7 +111,7 @@ export default class extends Phaser.GameObjects.Sprite {
   moveOnUpdate() {}
 
   handleMove(dir) {
-    const duration = 120;
+    const duration = 150;
     const keys = this.config.scene.input.keyboard.createCursorKeys();
 
     dir = dir.toLowerCase();
