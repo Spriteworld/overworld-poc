@@ -10,6 +10,8 @@ import PkmnOverworld from './characters/PkmnOverworld.js';
 
 import * as ObjectTypes from '../tileset/objecttypes.json';
 
+import Flock from './misc/Flock.js';
+
 export {
   Tile, Direction,
   Game, GameMap,
@@ -19,5 +21,7 @@ export {
   NPC,
   PkmnOverworld,
 
-  ObjectTypes
+  ObjectTypes,
+
+  Flock,
 };

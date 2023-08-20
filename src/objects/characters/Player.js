@@ -46,7 +46,6 @@ export default class extends Character {
   }
 
   update(time, delta) {
-    // if (this.initalCreation === true) { return; }
     this.stateMachine.update(time);
   }
 

@@ -19,6 +19,7 @@ Character/Pokemon Tilesets are variable in size.
 
 ## Building a map
 Building up a map needs a few layers:
+ - sky: for sky things
  - top: things that should render in front of the character, tops of buildings/trees for eg
  - ground: things that sit on the floor, furnature/buildings/signs/people etc
  - floor: the bottom most layer, the thing the character walks on

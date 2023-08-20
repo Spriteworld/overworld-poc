@@ -17,8 +17,10 @@ export default class extends Phaser.Scene {
 
     this.loadedPlayer = false;
     this.cameraFade = 150;
-    this.totalMon = 386;
+    this.totalMon = 151;
+    this.tilemaps = {};
     this.npcs = [];
+    this.pkmn = [];
 
     this.ge_init = false;
     this.ge_events_init = false;
@@ -30,6 +32,7 @@ export default class extends Phaser.Scene {
     this.playerMon = {};
     this.characters = [];
     this.mon = [];
+    this.pkmn = [];
     this.warps = [];
     this.ge_init = false;
     this.ge_events_init = false;
@@ -60,7 +63,7 @@ export default class extends Phaser.Scene {
       .forEach((layer) => {
         // console.log('[GameMap]', layer);
 
-        tilemap
+        this.tilemaps[layer.name] = tilemap
           .createLayer(layer.name, tilesets)
           .setName(layer.name)
           .setAlpha(layer.visible ? 1 : 0)
@@ -71,6 +74,8 @@ export default class extends Phaser.Scene {
     this.iceTiles = this.getTilesWithProperty('sw_slide');
     this.spinTiles = this.getTilesWithProperty('sw_spin');
     this.stopTiles = this.getTilesWithProperty('sw_stop');
+    this.npcs = this.add.group();
+    this.pkmn = this.add.group();
 
     // load ALL THE THINGSSSSS
     this.objects = tilemap.getObjectLayer('interactions');
@@ -114,11 +119,10 @@ export default class extends Phaser.Scene {
     let npcs = this.findInteractions('npc');;
     if (npcs.length === 0) { return; }
 
-    this.npcs = this.add.group();
     this.npcs.runChildUpdate = true;
     let color = random_rgba();
     npcs.forEach((npc) => {
-      this.addNPCToScene(
+      let npcObj = this.addNPCToScene(
         npc.name,
         getPropertyValue(npc.properties, 'texture'),
         npc.x / Tile.WIDTH,
@@ -129,6 +133,7 @@ export default class extends Phaser.Scene {
           ...remapProps(npc.properties)
         }
       );
+      this.npcs.add(npcObj);
     });
   }
 
@@ -139,7 +144,6 @@ export default class extends Phaser.Scene {
     let pkmn = this.findInteractions('pkmn');
     if (pkmn.length === 0) { return; }
 
-    this.pkmn = this.add.group();
     this.pkmn.runChildUpdate = true;
     pkmn.forEach((npc) => {
       if (Debug.functions.gameMap) {
@@ -150,7 +154,7 @@ export default class extends Phaser.Scene {
           npc.x, npc.y
         );
       }
-      this.addMonToScene(
+      let mon = this.addMonToScene(
         getPropertyValue(npc.properties, 'texture'),
         npc.x / Tile.WIDTH,
         npc.y / Tile.HEIGHT,
@@ -160,6 +164,7 @@ export default class extends Phaser.Scene {
           ...remapProps(npc.properties)
         }
       );
+      this.pkmn.add(mon);
     });
   }
 
@@ -276,7 +281,6 @@ export default class extends Phaser.Scene {
           return;
         }
 
-
         // make the playerMon follow the player
         if (this.scene.get('Preload').enablePlayerOWPokemon) {
           this.playerMon.moveTo(exitTile.x, exitTile.y, {
@@ -310,7 +314,7 @@ export default class extends Phaser.Scene {
       x: x,
       y: y,
       scene: this,
-      'seen-radius': 3
+      'seen-radius': 3,
     });
     this.registry.set('player', this.player);
     this.cameras.main.startFollow(this.player, true);
@@ -319,23 +323,19 @@ export default class extends Phaser.Scene {
     // debug for time overlay stuffs
     if (Debug.functions.timeOverlay === true) {
       this.cameras.main.setSize(400, 300);
-      // this.cameras.main.zoom = 0.7;
 
       // evening
       let cam2 = this.cameras.add(400, 0, 400, 300);
-      // cam2.zoom = 0.7;
       cam2.startFollow(this.player, true);
       cam2.setFollowOffset(-this.player.width, -this.player.height);
 
       // night
       let cam3 = this.cameras.add(0, 300, 400, 300);
-      // cam3.zoom = 0.7;
       cam3.startFollow(this.player, true);
       cam3.setFollowOffset(-this.player.width, -this.player.height);
 
       // morning
       let cam4 = this.cameras.add(400, 300, 400, 300);
-      // cam4.zoom = 0.7;
       cam4.startFollow(this.player, true);
       cam4.setFollowOffset(-this.player.width, -this.player.height);
     }
@@ -364,7 +364,6 @@ export default class extends Phaser.Scene {
       console.log('GameMap::addNPCToScene', name, texture, x, y);
     }
     let npcObj = new NPC(npcDef);
-    this.npcs.add(npcObj);
     this.interactTile(this.config.tilemap, npcDef, 0x000000);
     return npcObj;
   }
@@ -376,6 +375,9 @@ export default class extends Phaser.Scene {
     if (monId == 'RNG') {
       monId = Math.floor(Math.random() * this.totalMon);
       rng = true;
+    }
+    if (typeof monId === 'number') {
+      monId = monId.toString();
     }
     monId = monId.padStart(3, '0');
 
@@ -398,13 +400,11 @@ export default class extends Phaser.Scene {
       x: x,
       y: y,
       scene: this,
-      spin: true,
-      'spin-rate': Phaser.Math.Between(0, 1000)
+      'char-layer': 'ground'
     }, ...config };
 
     let pkmn = new PkmnOverworld(pkmnDef);
-    this.mon.push(pkmn);
-    this.interactTile(this.config.tilemap, pkmnDef, 0x000000);
+    this.interactTile(this.config.tilemap, pkmnDef, 0xff0000);
     return pkmn;
   }
 

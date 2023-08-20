@@ -88,10 +88,14 @@ export default class extends Phaser.GameObjects.Sprite {
       sprite: this,
       walkingAnimationMapping: this.characterFramesDef(),
       startPosition: { x: def.x, y: def.y },
-      facingDirection: def.facingDirection,
+      facingDirection: def['facing-direction'] ?? 'down',
       collides: def.collides,
-      charLayer: def.charLayer,
+      charLayer: def['char-layer'] ?? 'ground',
     };
+  }
+
+  setState(state) {
+    this.stateMachine.setState(state);
   }
 
   idleOnEnter() {
@@ -177,11 +181,11 @@ export default class extends Phaser.GameObjects.Sprite {
 
   addAutoSpin(delta) {
     if (this.initalCreation) {
-      let lookDir = this.config['facing-direction'];
+      let lookDir = this.config['facing-direction'] ?? 'down';
       let faceDir = this.getFacingDirection();
 
       if (faceDir !== lookDir) {
-        this.look(lookDir);
+        this.look(lookDir.toLowerCase());
         return;
       }
       this.initalCreation = !this.initalCreation;

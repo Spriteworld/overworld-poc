@@ -46,7 +46,7 @@ export default class extends Character {
   }
 
   update(time, delta) {
-    // if (this.initalCreation === true) { return; }
+    if (!this.config.scene.ge_init) { return; }
     this.stateMachine.update(time);
     this.addAutoSpin(delta);
     this.addAutoMove();
