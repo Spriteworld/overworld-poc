@@ -2,7 +2,7 @@ let debug = {
   objects: !true,
   grid: !true,
   stateMachine: {
-    console: false,
+    console: !false,
   },
   functions: {
     gameMap: !true,

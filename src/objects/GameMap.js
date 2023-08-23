@@ -74,6 +74,7 @@ export default class extends Phaser.Scene {
     this.iceTiles = this.getTilesWithProperty('sw_slide');
     this.spinTiles = this.getTilesWithProperty('sw_spin');
     this.stopTiles = this.getTilesWithProperty('sw_stop');
+    this.jumpTiles = this.getTilesWithProperty('sw_jump');
     this.npcs = this.add.group();
     this.pkmn = this.add.group();
 
@@ -90,6 +91,7 @@ export default class extends Phaser.Scene {
       this.initNpcs();
       this.initPkmn();
       this.initWarps();
+      this.initJumps();
       this.initPlayer();
 
       this.debugObjects();
@@ -172,7 +174,7 @@ export default class extends Phaser.Scene {
     if (Debug.functions.gameMap) {
       console.log('GameMap::initWarps');
     }
-    let warps = this.findInteractions('warp');;
+    let warps = this.findInteractions('warp');
     if (warps.length === 0) { return; }
 
     warps.forEach((obj) => {
@@ -205,6 +207,16 @@ export default class extends Phaser.Scene {
     this.addPlayerToScene(spawn[0].x / Tile.WIDTH, spawn[0].y / Tile.HEIGHT);
   }
 
+  initJumps() {
+    if (Debug.functions.gameMap) {
+      console.log('GameMap::initJumps');
+    }
+    if (this.jumpTiles.length === 0) { return; }
+
+    this.jumpTiles.forEach(tile => this.tintTile(this.config.tilemap, tile[0], tile[1], 0x00afe4));
+
+  }
+
   initGEEvents() {
     // handle ice & spin tiles
     this.gridEngine
@@ -216,49 +228,14 @@ export default class extends Phaser.Scene {
         if (typeof char === 'undefined') { return; }
 
         // check for ice tiles
-        let hasIceTiles = this.iceTiles.length;
-        if (hasIceTiles > 0) {
-          let isIceTile = this.iceTiles.some(tile => {
-            return tile[0] == enterTile.x && tile[1] == enterTile.y;
-          });
-          if (isIceTile && !char.isSliding()) {
-            char.stateMachine.setState(char.stateDef.SLIDE);
-          }
-          if (!isIceTile && char.isSliding()) {
-            char.stateMachine.setState(char.stateDef.IDLE);
-          }
-        }
+        this.handleIceTiles(char, exitTile, enterTile);
 
         // check for spin tiles
-        let hasSpinTiles = this.spinTiles.length;
-        if (hasSpinTiles > 0) {
-          let isSpinTile = this.spinTiles.some(tile => {
-            return tile[0] == enterTile.x && tile[1] == enterTile.y;
-          });
-          if (isSpinTile) {
-            let props = this.getTileProperties(enterTile.x, enterTile.y);
-            let dir = getValue(props, 'sw_spin', false);
-            if (!char.isSpinning() && dir !== false) {
-              char.stateMachine.setState(char.stateDef.SPIN);
-            }
-            if (dir !== char.getSlidingDirection()) {
-              char.setSpinDirection(dir);
-            }
-          }
+        this.handleSpinTiles(char, exitTile, enterTile);
 
-          let isStopTile = this.stopTiles.some(tile => {
-            return tile[0] == enterTile.x && tile[1] == enterTile.y;
-          });
-          if (isStopTile && char.isSpinning()) {
-            char.stateMachine.setState(char.stateDef.IDLE);
-          }
-        }
-
-        if (![this.player.config.id].includes(charId)) {
-          return;
-        }
-        // setup handlers etc
-        this.handleWarps(enterTile);
+        // check for warp tiles
+        if (![this.player.config.id].includes(charId)) { return; }
+        this.handleWarps(char, exitTile, enterTile);
       });
 
     this.gridEngine
@@ -439,46 +416,6 @@ export default class extends Phaser.Scene {
     }
   }
 
-  handleWarps(enterTile) {
-    let warps = this.registry.get('warps');
-    if (warps.length === 0) { return; }
-
-    let warp = warps.find(p => p.x === enterTile.x && p.y === enterTile.y);
-    if (typeof warp === 'undefined') { return; }
-
-    let warpProps = warp.obj.properties;
-    let warpLocation = getPropertyValue(warpProps, 'warp', null);
-    if (warpLocation === null || warpLocation === ''){ return; }
-
-    // this.player.disableMovement();
-    this.cameras.main.fadeOut(this.cameraFade, 0, 0, 0);
-    this.cameras.main.once(
-      Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
-      (cam, effect) => {
-        let playerLocation = {
-          x: getPropertyValue(warpProps, 'warp-x', 0),
-          y: getPropertyValue(warpProps, 'warp-y', 0),
-          dir: getPropertyValue(warpProps, 'warp-dir', 'down'),
-          charLayer: getPropertyValue(warpProps, 'layer', 'ground')
-        };
-
-        // same map, we dont need to move scene
-        if (this.registry.get('map') === warpLocation) {
-          this.warpPlayerInMap(playerLocation);
-          this.cameras.main.fadeIn(this.cameraFade, 0, 0, 0);
-          // this.player.enableMovement();
-          return;
-        }
-
-        // new map!
-        this.scene.start(warpLocation, {
-          playerLocation: playerLocation
-        });
-        // this.player.enableMovement();
-      }
-    );
-  }
-
   interactTile(map, obj, color) {
     this.registry.get('interactions').push({
       x: obj.x,
@@ -602,6 +539,103 @@ export default class extends Phaser.Scene {
         debugObj.setDepth(9999999);
       })
     ;
+  }
+
+  handleIceTiles(char, exitTile, enterTile) {
+    let hasIceTiles = this.iceTiles.length;
+    if (hasIceTiles > 0) {
+      let isIceTile = this.iceTiles.some(tile => {
+        return tile[0] == enterTile.x && tile[1] == enterTile.y;
+      });
+      if (isIceTile && !char.isSliding()) {
+        char.stateMachine.setState(char.stateDef.SLIDE);
+      }
+      if (!isIceTile && char.isSliding()) {
+        char.stateMachine.setState(char.stateDef.IDLE);
+      }
+    }
+  }
+
+  handleSpinTiles(char, exitTile, enterTile) {
+    let hasSpinTiles = this.spinTiles.length;
+    if (hasSpinTiles <= 0) {
+      return;
+    }
+
+    let isSpinTile = this.spinTiles.some(tile => {
+      return tile[0] == enterTile.x && tile[1] == enterTile.y;
+    });
+    if (isSpinTile) {
+      let props = this.getTileProperties(enterTile.x, enterTile.y);
+      let dir = getValue(props, 'sw_spin', false);
+      if (!char.isSpinning() && dir !== false) {
+        char.stateMachine.setState(char.stateDef.SPIN);
+      }
+      if (dir !== char.getSlidingDirection()) {
+        char.setSpinDirection(dir);
+      }
+    }
+
+    let isStopTile = this.stopTiles.some(tile => {
+      return tile[0] == enterTile.x && tile[1] == enterTile.y;
+    });
+    if (isStopTile && char.isSpinning()) {
+      char.stateMachine.setState(char.stateDef.IDLE);
+    }
+  }
+
+  handleJumps(char, exitTile, enterTile) {
+    if (this.jumpTiles.length === 0) { return; }
+
+    let isJumpTile = this.jumpTiles.some(tile => {
+      return tile[0] == facingTile.x && tile[1] == facingTile.y;
+    });
+    if (isJumpTile) {
+      this.move(this.getFacingDirection());
+      this.move(this.getFacingDirection());
+    } else {
+
+    }
+  }
+
+  handleWarps(char, exitTile, enterTile) {
+    let warps = this.registry.get('warps');
+    if (warps.length === 0) { return; }
+
+    let warp = warps.find(p => p.x === enterTile.x && p.y === enterTile.y);
+    if (typeof warp === 'undefined') { return; }
+
+    let warpProps = warp.obj.properties;
+    let warpLocation = getPropertyValue(warpProps, 'warp', null);
+    if (warpLocation === null || warpLocation === ''){ return; }
+
+    // this.player.disableMovement();
+    this.cameras.main.fadeOut(this.cameraFade, 0, 0, 0);
+    this.cameras.main.once(
+      Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
+      (cam, effect) => {
+        let playerLocation = {
+          x: getPropertyValue(warpProps, 'warp-x', 0),
+          y: getPropertyValue(warpProps, 'warp-y', 0),
+          dir: getPropertyValue(warpProps, 'warp-dir', 'down'),
+          charLayer: getPropertyValue(warpProps, 'layer', 'ground')
+        };
+
+        // same map, we dont need to move scene
+        if (this.registry.get('map') === warpLocation) {
+          this.warpPlayerInMap(playerLocation);
+          this.cameras.main.fadeIn(this.cameraFade, 0, 0, 0);
+          // this.player.enableMovement();
+          return;
+        }
+
+        // new map!
+        this.scene.start(warpLocation, {
+          playerLocation: playerLocation
+        });
+        // this.player.enableMovement();
+      }
+    );
   }
 
 }

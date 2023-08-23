@@ -30,7 +30,9 @@ export default class extends Phaser.GameObjects.Sprite {
       BIKE: 'bike',
       LOOK: 'look',
       SPIN: 'spin',
-      SLIDE: 'slide'
+      SLIDE: 'slide',
+      JUMP: 'jump',
+      JUMP_LEDGE: 'jump_ledge',
     };
 
     this.ge = this.config.scene.gridEngine;
@@ -42,6 +44,7 @@ export default class extends Phaser.GameObjects.Sprite {
     this.config.scene.addCharacter(this);
 
     // seen-radius config
+    // initSeenRadius(this);
     this.rectColor = {
       normal: 0x1d7196,
       selected: 0xff0000
@@ -99,8 +102,12 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   idleOnEnter() {
+    const { space } = this.config.scene.input.keyboard.createCursorKeys();
     this.spinningDir = null;
     this.slidingDir = null;
+    if (this.config.type === 'player') {
+      space.on('down', () => { this.stateMachine.setState(this.stateDef.JUMP); });
+    }
   }
   idleOnExit() {}
 
@@ -171,6 +178,28 @@ export default class extends Phaser.GameObjects.Sprite {
   }
   getSlidingDirection() {
     return this.slidingDir;
+  }
+
+  jumpOnEnter() {
+    console.log('JUMP');
+  }
+  jumpOnUpdate() {
+
+    this.stateMachine.setState(this.stateDef.IDLE);
+  }
+  jumpOnExit() { }
+
+  jumpLedgeOnEnter() {
+    console.log('JUMP_LEDGE');
+  }
+  jumpLedgeOnUpdate() {
+    this.move(this.getFacingDirection());
+    this.move(this.getFacingDirection());
+    this.stateMachine.setState(this.stateDef.IDLE);
+  }
+  jumpLedgeOnExit() { }
+  isJumping() {
+    return this.jumpingDir !== null;
   }
 
   addAutoMove() {
@@ -366,6 +395,11 @@ export default class extends Phaser.GameObjects.Sprite {
 
   getFacingDirection() {
     return this.ge.getFacingDirection(this.config.id);
+  }
+
+  getFacingTile() {
+    let faceDir = this.getPosInFacingDirection();
+    return this.scene.getTileProperties(faceDir.x, faceDir.y);
   }
 
   getPosition() {

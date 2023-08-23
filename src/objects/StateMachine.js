@@ -41,12 +41,12 @@ export default class StateMachine {
 
   setState(name) {
     if (!this.states.has(name)) {
-      console.log(`Tried to change to unknown state: ${name}`);
+      console.log(`[StateMachine (${this.id})] Tried to change to unknown state: ${name}`);
       return;
     }
 
     if (this.isCurrentState(name)) {
-      console.log('Tried to set state to the current state');
+      console.log(`[StateMachine (${this.id})] Tried to set state to the current state`);
       return;
     }
 

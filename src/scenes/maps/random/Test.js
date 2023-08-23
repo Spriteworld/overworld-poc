@@ -20,7 +20,7 @@ export default class extends GameMap {
   create () {
     this.loadMap();
 
-    this.npc1 = this.addNPCToScene('bob', 'poke_kid', 7, 21);
+    this.npc1 = this.addNPCToScene('bob', 'police_man', 7, 21);
 
     this.flock = new Flock(
       this,

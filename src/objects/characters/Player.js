@@ -31,9 +31,18 @@ export default class extends Character {
         onUpdate: this.slideOnUpdate,
         onExit: this.slideOnExit,
       })
+      .addState(this.stateDef.JUMP, {
+        onEnter: this.jumpOnEnter,
+        onUpdate: this.jumpOnUpdate,
+        onExit: this.jumpOnExit,
+      })
+      .addState(this.stateDef.JUMP_LEDGE, {
+        onEnter: this.jumpLedgeOnEnter,
+        onUpdate: this.jumpLedgeOnUpdate,
+        onExit: this.jumpLedgeOnExit,
+      })
       // warp-doors
       // warp-tiles
-      // jump-ledges
       // interact-npcs
       // interact-signs
       // item-pickup
