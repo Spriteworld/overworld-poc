@@ -1,4 +1,4 @@
-import {GameMap, Flock, Direction} from '@Objects';
+import {GameMap, Flock, Direction, Tile} from '@Objects';
 import {TestMap} from '@Maps';
 
 export default class extends GameMap {
@@ -19,7 +19,6 @@ export default class extends GameMap {
 
   create () {
     this.loadMap();
-
     this.npc1 = this.addNPCToScene('bob', 'police_man', 7, 21);
 
     this.flock = new Flock(

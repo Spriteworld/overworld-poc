@@ -1,19 +1,27 @@
 [
     {
-        "color": "#ffa0a0a4",
-        "name": "encounters",
-        "properties": [
+        "color": "#ffffa0a0",
+        "drawFill": true,
+        "id": 1,
+        "members": [
             {
                 "name": "table-id",
                 "type": "string",
                 "value": ""
             }
+        ],
+        "name": "encounters",
+        "type": "class",
+        "useAs": [
+            "object",
+            "tile"
         ]
     },
     {
-        "color": "#ff7f14dd",
-        "name": "layerTransition",
-        "properties": [
+        "color": "#ffff7f14",
+        "drawFill": true,
+        "id": 2,
+        "members": [
             {
                 "name": "from",
                 "type": "string",
@@ -24,12 +32,52 @@
                 "type": "string",
                 "value": ""
             }
+        ],
+        "name": "layerTransition",
+        "type": "class",
+        "useAs": [
+            "object",
+            "tile"
         ]
     },
     {
-        "color": "#ff550000",
-        "name": "npc",
-        "properties": [
+        "color": "#fffff834",
+        "drawFill": true,
+        "id": 8,
+        "members": [
+            {
+                "name": "attenuation",
+                "type": "float",
+                "value": 0.6
+            },
+            {
+                "name": "color",
+                "type": "string",
+                "value": "#ffffff"
+            },
+            {
+                "name": "intensity",
+                "type": "float",
+                "value": 0.2
+            },
+            {
+                "name": "radius",
+                "type": "int",
+                "value": 100
+            }
+        ],
+        "name": "light",
+        "type": "class",
+        "useAs": [
+            "object",
+            "tile"
+        ]
+    },
+    {
+        "color": "#ffff5500",
+        "drawFill": true,
+        "id": 3,
+        "members": [
             {
                 "name": "facing-direction",
                 "type": "string",
@@ -51,6 +99,16 @@
                 "value": 500
             },
             {
+                "name": "seen-character",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "seen-radius",
+                "type": "int",
+                "value": 0
+            },
+            {
                 "name": "spin",
                 "type": "bool",
                 "value": false
@@ -64,23 +122,20 @@
                 "name": "texture",
                 "type": "string",
                 "value": ""
-            },
-            {
-                "name": "seen-radius",
-                "type": "int",
-                "value": 0
-            },
-            {
-                "name": "seen-character",
-                "type": "string",
-                "value": null
             }
+        ],
+        "name": "npc",
+        "type": "class",
+        "useAs": [
+            "object",
+            "tile"
         ]
     },
     {
-        "color": "#ff550000",
-        "name": "pkmn",
-        "properties": [
+        "color": "#ffff5500",
+        "drawFill": true,
+        "id": 4,
+        "members": [
             {
                 "name": "facing-direction",
                 "type": "string",
@@ -121,34 +176,55 @@
                 "type": "string",
                 "value": ""
             }
+        ],
+        "name": "pkmn",
+        "type": "class",
+        "useAs": [
+            "object",
+            "tile"
         ]
     },
     {
-        "color": "#ffa0a0a4",
-        "name": "sign",
-        "properties": [
-            {
-                "name": "text",
-                "type": "string",
-                "value": ""
-            }
-        ]
-    },
-    {
-        "color": "#ffff0000",
-        "name": "playerSpawn",
-        "properties": [
+        "color": "#ffffff00",
+        "drawFill": true,
+        "id": 6,
+        "members": [
             {
                 "name": "facing-direction",
                 "type": "string",
                 "value": "down"
             }
+        ],
+        "name": "playerSpawn",
+        "type": "class",
+        "useAs": [
+            "object",
+            "tile"
         ]
     },
     {
-        "color": "#ff00ffff",
-        "name": "warp",
-        "properties": [
+        "color": "#ffffa0a0",
+        "drawFill": true,
+        "id": 5,
+        "members": [
+            {
+                "name": "text",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "sign",
+        "type": "class",
+        "useAs": [
+            "object",
+            "tile"
+        ]
+    },
+    {
+        "color": "#ffff00ff",
+        "drawFill": true,
+        "id": 7,
+        "members": [
             {
                 "name": "layer",
                 "type": "string",
@@ -174,6 +250,12 @@
                 "type": "int",
                 "value": 0
             }
+        ],
+        "name": "warp",
+        "type": "class",
+        "useAs": [
+            "object",
+            "tile"
         ]
     }
 ]

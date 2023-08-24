@@ -92,6 +92,7 @@ export default class extends Phaser.Scene {
       this.initPkmn();
       this.initWarps();
       this.initJumps();
+      this.initLights();
       this.initPlayer();
 
       this.debugObjects();
@@ -217,6 +218,30 @@ export default class extends Phaser.Scene {
 
   }
 
+  initLights() {
+    if (Debug.functions.gameMap) {
+      console.log('GameMap::initLights');
+    }
+    let lights = this.findInteractions('light');
+    if (lights.length === 0) { return; }
+
+    lights.forEach(obj => {
+      let props = remapProps(obj.properties)
+      console.log('light', obj.x, obj.y, props, '0x'+getPropertyValue(obj.properties, 'color', '#ffffff').substr(1));
+      this.add
+        .pointlight(
+          obj.x + (Tile.WIDTH / 2),
+          obj.y + (Tile.HEIGHT / 4),
+          '0x'+getPropertyValue(obj.properties, 'color', '#ffffff').substr(1),
+          getPropertyValue(obj.properties, 'radius', 100),
+          getPropertyValue(obj.properties, 'intensity', 0.2),
+          getPropertyValue(obj.properties, 'attenuation', 0.06)
+        )
+        .setDepth(999999999)
+      ;
+    });
+  }
+
   initGEEvents() {
     // handle ice & spin tiles
     this.gridEngine
@@ -295,7 +320,8 @@ export default class extends Phaser.Scene {
     });
     this.registry.set('player', this.player);
     this.cameras.main.startFollow(this.player, true);
-    this.cameras.main.setFollowOffset(-this.player.width, -this.player.height);
+    this.cameras.main.setFollowOffset(-(this.player.width/2), -(this.player.height/2));
+    this.cameras.main.setSize(25 * Tile.WIDTH, 19 * Tile.HEIGHT);
 
     // debug for time overlay stuffs
     if (Debug.functions.timeOverlay === true) {

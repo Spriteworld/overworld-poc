@@ -1,8 +1,9 @@
 let debug = {
   objects: !true,
   grid: !true,
+  time: false,
   stateMachine: {
-    console: !false,
+    console: false,
   },
   functions: {
     gameMap: !true,

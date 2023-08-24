@@ -6,7 +6,267 @@
     "folders": [
         "src"
     ],
-    "objectTypesFile": "src/tileset/objecttypes.json",
+    "properties": [
+    ],
     "propertyTypes": [
+        {
+            "color": "#ffffa0a0",
+            "drawFill": true,
+            "id": 1,
+            "members": [
+                {
+                    "name": "table-id",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "encounters",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#ffff7f14",
+            "drawFill": true,
+            "id": 2,
+            "members": [
+                {
+                    "name": "from",
+                    "type": "string",
+                    "value": "ground"
+                },
+                {
+                    "name": "to",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "layerTransition",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#fffff834",
+            "drawFill": true,
+            "id": 8,
+            "members": [
+                {
+                    "name": "attenuation",
+                    "type": "float",
+                    "value": 0.6
+                },
+                {
+                    "name": "color",
+                    "type": "color",
+                    "value": "#ffffffff"
+                },
+                {
+                    "name": "intensity",
+                    "type": "float",
+                    "value": 0.2
+                },
+                {
+                    "name": "radius",
+                    "type": "int",
+                    "value": 100
+                }
+            ],
+            "name": "light",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#ffff5500",
+            "drawFill": true,
+            "id": 3,
+            "members": [
+                {
+                    "name": "facing-direction",
+                    "type": "string",
+                    "value": "down"
+                },
+                {
+                    "name": "move",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "move-radius",
+                    "type": "int",
+                    "value": 1
+                },
+                {
+                    "name": "move-rate",
+                    "type": "int",
+                    "value": 500
+                },
+                {
+                    "name": "seen-character",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "seen-radius",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "spin",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "spin-rate",
+                    "type": "int",
+                    "value": 500
+                },
+                {
+                    "name": "texture",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "npc",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#ffff5500",
+            "drawFill": true,
+            "id": 4,
+            "members": [
+                {
+                    "name": "facing-direction",
+                    "type": "string",
+                    "value": "down"
+                },
+                {
+                    "name": "move",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "move-radius",
+                    "type": "int",
+                    "value": 1
+                },
+                {
+                    "name": "move-rate",
+                    "type": "int",
+                    "value": 500
+                },
+                {
+                    "name": "shiny",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "spin",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "spin-rate",
+                    "type": "int",
+                    "value": 500
+                },
+                {
+                    "name": "texture",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "pkmn",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#ffffff00",
+            "drawFill": true,
+            "id": 6,
+            "members": [
+                {
+                    "name": "facing-direction",
+                    "type": "string",
+                    "value": "down"
+                }
+            ],
+            "name": "playerSpawn",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#ffffa0a0",
+            "drawFill": true,
+            "id": 5,
+            "members": [
+                {
+                    "name": "text",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "sign",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        },
+        {
+            "color": "#ffff00ff",
+            "drawFill": true,
+            "id": 7,
+            "members": [
+                {
+                    "name": "layer",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "warp",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "warp-dir",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "warp-x",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "warp-y",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "warp",
+            "type": "class",
+            "useAs": [
+                "object",
+                "tile"
+            ]
+        }
     ]
 }

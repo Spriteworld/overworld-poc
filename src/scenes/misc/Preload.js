@@ -3,6 +3,7 @@ import { Tile, GameMap } from '@Objects';
 import Tileset from '@Tileset';
 import Scenes from '@Scenes';
 import { getPropertyValue } from '@Utilities';
+import Debug from '@Data/debug.js';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -63,8 +64,12 @@ export default class extends Phaser.Scene {
 
   create () {
     this.scene.start('Test');
-    this.scene.start('TimeOverlay');
-    this.scene.bringToTop('TimeOverlay');
+
+    if (Debug.time) {
+      this.scene.start('TimeOverlay');
+      this.scene.bringToTop('TimeOverlay');
+    }
+
     this.scene.start('OverworldUI');
     this.scene.bringToTop('OverworldUI');
     this.createTrainerAnimations();
