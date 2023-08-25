@@ -23,6 +23,8 @@ export default class extends Phaser.GameObjects.Sprite {
       'char-layer': 'ground',
       'can-run': true
     }, ...config};
+    let identification = (this.config.id ?? this.config.texture);
+    this.setName(identification);
 
     this.stateDef = {
       IDLE: 'idle',
@@ -63,7 +65,9 @@ export default class extends Phaser.GameObjects.Sprite {
     );
 
     this.seenRect.setOrigin(0, 0);
+    this.seenRect.setName(identification+'-seen');
     this.characterRect.setOrigin(0, 0);
+    this.characterRect.setName(identification+'-character');
   }
 
   characterFramesDef() {

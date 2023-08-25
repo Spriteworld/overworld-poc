@@ -227,7 +227,6 @@ export default class extends Phaser.Scene {
 
     lights.forEach(obj => {
       let props = remapProps(obj.properties)
-      console.log('light', obj.x, obj.y, props, '0x'+getPropertyValue(obj.properties, 'color', '#ffffff').substr(1));
       this.add
         .pointlight(
           obj.x + (Tile.WIDTH / 2),
@@ -237,7 +236,8 @@ export default class extends Phaser.Scene {
           getPropertyValue(obj.properties, 'intensity', 0.2),
           getPropertyValue(obj.properties, 'attenuation', 0.06)
         )
-        .setDepth(999999999)
+        .setDepth(9999)
+        .setName(obj.name)
       ;
     });
   }

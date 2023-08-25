@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@spriteworld/pokemon-data": "file:../data",
-    "grid-engine": "^2.34.0",
+    "grid-engine": "^2.36.0",
     "phaser": "^3.60.0",
     "phaser-animated-tiles": "^2.0.2",
     "phaser-tiled-json-external-loader": "^0.1.1",

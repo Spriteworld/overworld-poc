@@ -56,10 +56,10 @@
                 7
             ],
             "scale": 1.5,
-            "selectedLayer": 3,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 350.66666666666663,
-                "y": 388.66666666666663
+                "x": 349.33333333333337,
+                "y": 387.3333333333333
             }
         },
         "src/maps/kanto/prof_lab.json": {
@@ -107,11 +107,11 @@
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 1,
-            "selectedLayer": 0,
+            "scale": 3,
+            "selectedLayer": 12,
             "viewCenter": {
-                "x": 602,
-                "y": 759
+                "x": 675,
+                "y": 518
             }
         },
         "src/maps/tileset/gen3_inside.json": {
