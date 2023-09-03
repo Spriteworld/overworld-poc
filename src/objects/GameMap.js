@@ -76,7 +76,9 @@ export default class extends Phaser.Scene {
     this.stopTiles = this.getTilesWithProperty('sw_stop');
     this.jumpTiles = this.getTilesWithProperty('sw_jump');
     this.npcs = this.add.group();
+    this.npcs.setName('npcs');
     this.pkmn = this.add.group();
+    this.pkmn.setName('pkmn');
 
     // load ALL THE THINGSSSSS
     this.objects = tilemap.getObjectLayer('interactions');
@@ -258,6 +260,9 @@ export default class extends Phaser.Scene {
         // check for spin tiles
         this.handleSpinTiles(char, exitTile, enterTile);
 
+        // check for spin tiles
+        this.handleJumps(char, exitTile, enterTile);
+
         // check for warp tiles
         if (![this.player.config.id].includes(charId)) { return; }
         this.handleWarps(char, exitTile, enterTile);
@@ -319,7 +324,7 @@ export default class extends Phaser.Scene {
       'seen-radius': 3,
     });
     this.registry.set('player', this.player);
-    this.cameras.main.startFollow(this.player, true);
+    this.cameras.main.startFollow(this.player, true, 1);
     this.cameras.main.setFollowOffset(-(this.player.width/2), -(this.player.height/2));
     this.cameras.main.setSize(25 * Tile.WIDTH, 19 * Tile.HEIGHT);
 
@@ -614,13 +619,10 @@ export default class extends Phaser.Scene {
     if (this.jumpTiles.length === 0) { return; }
 
     let isJumpTile = this.jumpTiles.some(tile => {
-      return tile[0] == facingTile.x && tile[1] == facingTile.y;
+      return tile[0] == enterTile.x && tile[1] == enterTile.y;
     });
     if (isJumpTile) {
-      this.move(this.getFacingDirection());
-      this.move(this.getFacingDirection());
-    } else {
-
+      char.stateMachine.setState(char.stateDef.JUMP_LEDGE);
     }
   }
 

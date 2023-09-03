@@ -109,6 +109,7 @@ export default class extends Phaser.GameObjects.Sprite {
     const { space } = this.config.scene.input.keyboard.createCursorKeys();
     this.spinningDir = null;
     this.slidingDir = null;
+    this.jumpingDir = null;
     if (this.config.type === 'player') {
       space.on('down', () => { this.stateMachine.setState(this.stateDef.JUMP); });
     }
@@ -185,21 +186,64 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   jumpOnEnter() {
-    console.log('JUMP');
+    console.log('JUMP START');
   }
   jumpOnUpdate() {
-
-    this.stateMachine.setState(this.stateDef.IDLE);
+    let jumpHeight = Tile.HEIGHT;
+    this.config.scene.tweens.add({
+      targets: this,
+      y: this.getBounds().y - jumpHeight,
+      yoyo: true,
+      ease: 'linear',
+      duration: 320,
+      complete: () => {
+        this.stateMachine.setState(this.stateDef.IDLE);
+      },
+    });
   }
-  jumpOnExit() { }
-
-  jumpLedgeOnEnter() {
-    console.log('JUMP_LEDGE');
+  jumpOnExit() {
+    console.log('JUMP END');
   }
+
+  jumpLedgeOnEnter() { }
   jumpLedgeOnUpdate() {
-    this.move(this.getFacingDirection());
-    this.move(this.getFacingDirection());
-    this.stateMachine.setState(this.stateDef.IDLE);
+    let dir = this.getPosInFacingDirection();
+    let faceDir = this.getFacingDirection();
+    let bounds = this.getBounds();
+
+    if (faceDir === 'up') {
+      dir.y -= 1;
+      bounds.y -= (Tile.HEIGHT + (Tile.HEIGHT/4));
+    } else
+    if (faceDir === 'down') {
+      dir.y += 1;
+      bounds.y += (Tile.HEIGHT + (Tile.HEIGHT/4));
+    } else
+    if (faceDir === 'left') {
+      dir.x -= 1;
+      bounds.x -= (Tile.WIDTH + (Tile.WIDTH/4));
+      bounds.y -= (Tile.HEIGHT/4);
+    } else
+    if (faceDir === 'right') {
+      dir.x += 1;
+      bounds.x += (Tile.WIDTH + (Tile.WIDTH/4));
+      bounds.y -= (Tile.HEIGHT/4);
+    }
+
+    this.config.scene.tweens.add({
+      targets: this,
+      x: bounds.x,
+      y: bounds.y,
+      repeat: 0,
+      ease: 'linear',
+      duration: 320,
+      active: () => {
+        this.moveTo(dir.x, dir.y);
+      },
+      complete: () => {
+        this.stateMachine.setState(this.stateDef.IDLE);
+      },
+    });
   }
   jumpLedgeOnExit() { }
   isJumping() {

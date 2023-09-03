@@ -58,8 +58,8 @@
             "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 349.33333333333337,
-                "y": 387.3333333333333
+                "x": 348.33333333333337,
+                "y": -8.333333333333258
             }
         },
         "src/maps/kanto/prof_lab.json": {
@@ -108,10 +108,10 @@
                 5
             ],
             "scale": 3,
-            "selectedLayer": 12,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 675,
-                "y": 518
+                "x": 400.16666666666663,
+                "y": 933.5
             }
         },
         "src/maps/tileset/gen3_inside.json": {
@@ -161,13 +161,13 @@
     ],
     "project": "spriteworld.tiled-project",
     "recentFiles": [
+        "src/tileset/gen3_inside.json",
         "src/tileset/gen3_outside.json",
         "src/maps/random/test.json",
         "src/maps/kanto/pallet.json",
         "src/maps/kanto/route1.json",
         "src/maps/random/base.json",
         "src/maps/random/skyland.json",
-        "src/tileset/gen3_inside.json",
         "src/maps/kanto/hero_house_floor1.json",
         "src/maps/kanto/hero_house_floor2.json",
         "src/maps/kanto/prof_lab.json",

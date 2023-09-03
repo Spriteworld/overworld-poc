@@ -17,6 +17,16 @@ export default class extends Character {
         onUpdate: this.moveOnUpdate,
         onExit: this.moveOnExit,
       })
+      .addState(this.stateDef.SPIN, {
+        onEnter: this.spinOnEnter,
+        onUpdate: this.spinOnUpdate,
+        onExit: this.spinOnExit,
+      })
+      .addState(this.stateDef.JUMP_LEDGE, {
+        onEnter: this.jumpLedgeOnEnter,
+        onUpdate: this.jumpLedgeOnUpdate,
+        onExit: this.jumpLedgeOnExit,
+      })
       .setState(this.stateDef.IDLE)
     ;
 
