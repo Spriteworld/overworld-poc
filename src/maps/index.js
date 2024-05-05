@@ -1,5 +1,6 @@
 import TestMap from './random/test.json';
 import SkylandMap from './random/skyland.json';
+import BaseMap from './random/base.json';
 import PalletTownMap from './kanto/pallet.json';
 import HeroHouseF1Map from './kanto/hero_house_floor1.json';
 import HeroHouseF2Map from './kanto/hero_house_floor2.json';
@@ -8,7 +9,7 @@ import ProfessorLabMap from './kanto/prof_lab.json';
 // import StarterTownMap from './region/StarterTown.json';
 
 export {
-    TestMap,SkylandMap,
+    TestMap,SkylandMap,BaseMap,
 
     // kanto
     PalletTownMap,

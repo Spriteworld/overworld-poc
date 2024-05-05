@@ -22,7 +22,17 @@ export default defineConfig({
     'process.env': {}
   },
   build: {
-    assetsInlineLimit: 0
+    assetsInlineLimit: 0,
+    minify: true,
+    rollupOptions: {
+      output: {
+        manualChunks: () => 'app',
+        entryFileNames: `assets/[name]-[hash].js`,
+        // chunkFileNames: `assets/[name].js`,
+        assetFileNames: `assets/[name]-[hash].[ext]`
+      }
+    }
   },
+
   clearScreen: false,
 });

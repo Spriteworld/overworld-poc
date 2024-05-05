@@ -1,13 +1,12 @@
 {
-    "activeFile": "src/maps/kanto/pallet.json",
+    "activeFile": "src/maps/random/skyland.json",
     "expandedProjectPaths": [
-        "src/maps/kanto",
         "src",
-        "src/maps/random",
-        "src/tileset",
         "src/maps",
         "src/data",
+        "src/maps/random",
         "src/scenes/maps/region",
+        "src/tileset",
         "src/maps/region",
         "src/scenes"
     ],
@@ -36,8 +35,8 @@
             "scale": 2.455580357142857,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 223.36878465594037,
-                "y": 175.51858921916192
+                "x": 222.757931097173,
+                "y": 174.70411780747207
             }
         },
         "src/maps/kanto/hero_house_floor2.json": {
@@ -47,8 +46,8 @@
             "scale": 2.455580357142857,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 222.14707753840563,
-                "y": 174.29688210162712
+                "x": 221.53622397963824,
+                "y": 173.48241068993735
             }
         },
         "src/maps/kanto/pallet.json": {
@@ -58,40 +57,40 @@
             "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 348.33333333333337,
-                "y": -8.333333333333258
+                "x": 380.66666666666663,
+                "y": -55.33333333333326
             }
         },
         "src/maps/kanto/prof_lab.json": {
             "scale": 2.1486328125,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 224.0959912735206,
-                "y": 238.2910644486865
+                "x": 223.39787292064364,
+                "y": 237.82565221343515
             }
         },
         "src/maps/kanto/route1.json": {
             "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 383.99999999999994,
-                "y": 672
+                "x": 381.33333333333326,
+                "y": 669.3333333333334
             }
         },
         "src/maps/random/base.json": {
             "scale": 0.42972656249999996,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1270.5754022361605,
-                "y": 1014.5986728479229
+                "x": 1282.210708117444,
+                "y": 1026.2339787292065
             }
         },
         "src/maps/random/skyland.json": {
-            "scale": 0.5456845238095237,
+            "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 597.4147804745024,
-                "y": 872.2988819198257
+                "x": 733,
+                "y": 707
             }
         },
         "src/maps/random/src/tileset/gen3_inside.json": {
@@ -107,11 +106,22 @@
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 3,
-            "selectedLayer": 1,
+            "scale": 1.5,
+            "selectedLayer": 12,
             "viewCenter": {
-                "x": 400.16666666666663,
-                "y": 933.5
+                "x": 688,
+                "y": 688.6666666666667
+            }
+        },
+        "src/maps/random/test2.json": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 2,
+            "selectedLayer": 12,
+            "viewCenter": {
+                "x": 558.5,
+                "y": 477
             }
         },
         "src/maps/tileset/gen3_inside.json": {
@@ -149,29 +159,29 @@
     "last.externalTilesetPath": "C:/www/spriteworld/character/src/tileset",
     "last.objectTypesPath": "C:/www/spriteworld/character/src/tileset/objecttypes.json",
     "loadedWorlds": [
-        "C:/www/spriteworld/character/src/maps/kanto/kanto.world"
+        "Y:/linky/spriteworld.dev.xlink.cybershade.org/character/src/maps/kanto/kanto.world"
     ],
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
+    "map.lastUsedFormat": "json",
     "openFiles": [
+        "src/maps/random/test.json",
         "src/maps/kanto/pallet.json",
-        "src/maps/kanto/route1.json",
-        "src/maps/random/base.json",
         "src/maps/random/skyland.json",
-        "src/maps/random/test.json"
+        "src/maps/random/base.json"
     ],
     "project": "spriteworld.tiled-project",
     "recentFiles": [
-        "src/tileset/gen3_inside.json",
-        "src/tileset/gen3_outside.json",
         "src/maps/random/test.json",
         "src/maps/kanto/pallet.json",
-        "src/maps/kanto/route1.json",
         "src/maps/random/base.json",
         "src/maps/random/skyland.json",
-        "src/maps/kanto/hero_house_floor1.json",
         "src/maps/kanto/hero_house_floor2.json",
+        "src/maps/kanto/hero_house_floor1.json",
+        "src/maps/kanto/route1.json",
         "src/maps/kanto/prof_lab.json",
-        "C:/www/spriteworld/vite-poc/src/maps/kanto/pallet.json",
-        "src/tileset/rse_inside.json"
+        "src/tileset/gen3_outside.json",
+        "src/maps/random/test2.json",
+        "src/tileset/gen3_inside.json",
+        "C:/www/spriteworld/vite-poc/src/maps/kanto/pallet.json"
     ]
 }

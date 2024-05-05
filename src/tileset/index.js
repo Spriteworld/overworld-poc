@@ -22,20 +22,20 @@ let loadPokemonSprites = [
   '003', '006', '009', '022', '025', '197', '197s'
 ];
 
-let pokemonGlob = import.meta.glob('@Tileset/overworld/pokemon/*.png');
+let pokemonGlob = import.meta.glob('@Tileset/overworld/pokemon/*.png', { eager: true, query: '?url', import: 'default' });
 let pokemon = {};
-Object.keys(pokemonGlob).map(img => {
-  let id = img.split('/').pop().split('.')[0];
+Object.entries(pokemonGlob).map(([key, img]) => {
+  let id = key.split('/').pop().split('.')[0].padStart(3, '0');
   if(!loadPokemonSprites.includes(id)) { return; }
-  pokemon[id] = new URL(img, import.meta.url).pathname;
+  pokemon[id] = new URL(img, import.meta.url).href;
 });
 
-let pokemon_shinyGlob = import.meta.glob('@Tileset/overworld/pokemon_shiny/*.png');
+let pokemon_shinyGlob = import.meta.glob('@Tileset/overworld/pokemon_shiny/*.png', { eager: true, query: '?url', import: 'default' });
 let pokemon_shiny = {};
-Object.keys(pokemon_shinyGlob).map(img => {
-  let id = img.split('/').pop().split('.')[0];
+Object.entries(pokemon_shinyGlob).map(([key, img]) => {
+  let id = key.split('/').pop().split('.')[0].padStart(3, '0');
   if(!loadPokemonSprites.includes(id)) { return; }
-  pokemon_shiny[id] = new URL(img, import.meta.url).pathname;
+  pokemon_shiny[id] = new URL(img, import.meta.url).href;
 });
 
 export default {

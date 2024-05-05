@@ -6,6 +6,8 @@ import Preload from './misc/Preload.js';
 // import BattleScene from './misc/BattleScene.js';
 
 import Test from '@Scenes/maps/random/Test.js';
+import Skyland from '@Scenes/maps/random/Skyland.js';
+import Base from '@Scenes/maps/random/Base.js';
 
 import PalletTown from '@Scenes/maps/kanto/PalletTown.js';
 import HeroHouseF1 from '@Scenes/maps/kanto/HeroHouseF1.js';
@@ -17,6 +19,8 @@ export default {
   OverworldUI, TimeOverlay, Preload,
 
   Test,
+  Skyland,
+  Base,
 
   PalletTown,
   HeroHouseF1,

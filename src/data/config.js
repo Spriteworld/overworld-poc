@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import GridEngine from 'grid-engine';
 import UIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin.js';
 import AnchorPlugin from 'phaser3-rex-plugins/plugins/anchor-plugin.js';
-import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles';
+import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles';
 import Scenes from '@Scenes';
 
 const config = {

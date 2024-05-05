@@ -11,12 +11,14 @@ export default class extends Phaser.Scene {
     this.loadOverworld = true;
     this.enableOWTrainers = true;
     this.enableOWPokemon = true;
-    this.enablePlayerOWPokemon = true;
+    this.enablePlayerOWPokemon = !true;
     this.enableAnimations = true;
   }
 
   preload () {
-    console.group('Preload::start');
+    if (Debug.functions.preload) {
+      console.group('Preload::start');
+    }
 
     this.load.scripts('inspector', [
       'https://cdn.jsdelivr.net/npm/tweakpane@3.1.0/dist/tweakpane.js',
@@ -57,9 +59,10 @@ export default class extends Phaser.Scene {
       })
     ;
 
-    // console.tablogle(spriteworld.textures.list);
-    console.groupEnd();
-    console.log('Preload::complete');
+    if (Debug.functions.preload) {
+      console.log('Preload::complete');
+      console.groupEnd();
+    }
   }
 
   create () {
@@ -73,17 +76,18 @@ export default class extends Phaser.Scene {
     this.scene.start('OverworldUI');
     this.scene.bringToTop('OverworldUI');
     this.createTrainerAnimations();
-    // this.createPokemonAnimations();
   }
 
   preloadTrainers() {
     if (!this.enableOWTrainers) {
       return;
     }
-
+    if (Debug.functions.preload) {
+      console.log('Preload::preloadTrainers');
+    }
     Object.keys(Tileset.trainers)
       .forEach((name) => {
-        console.log(name.toLowerCase(), Tileset.trainers[name]);
+        // console.log(name.toLowerCase(), Tileset.trainers[name]);
         this.load.spritesheet(name.toLowerCase(), Tileset.trainers[name], {
           frameWidth: Tile.WIDTH,
           frameHeight: 42
@@ -110,11 +114,17 @@ export default class extends Phaser.Scene {
     if (!this.enableOWPokemon) {
       return;
     }
-    console.log('Preload::preloadPokemon');
+    if (Debug.functions.preload) {
+      console.log('Preload::preloadPokemon');
+    }
 
     Object.keys(Tileset.pokemon)
       .forEach(name => {
         let pkmn_dimensions = Tileset.ow_pokemon_dimensions.default[name];
+        if (pkmn_dimensions === undefined) {
+          console.error('Missing dimensions for', name, Tileset.pokemon[name]);
+          return;
+        }
         this.load.spritesheet(name, Tileset.pokemon[name], {
           frameWidth: pkmn_dimensions.width / 4,
           frameHeight: pkmn_dimensions.height / 4
@@ -125,6 +135,10 @@ export default class extends Phaser.Scene {
     Object.keys(Tileset.pokemon_shiny)
       .forEach(name => {
         let pkmn_dimensions = Tileset.ow_pokemon_shiny_dimensions.default[name];
+        if (pkmn_dimensions === undefined) {
+          console.error('Missing dimensions for', name, Tileset.pokemon_shiny[name]);
+          return;
+        }
         this.load.spritesheet(name, Tileset.pokemon_shiny[name], {
           frameWidth: pkmn_dimensions.width / 4,
           frameHeight: pkmn_dimensions.height / 4
@@ -137,7 +151,9 @@ export default class extends Phaser.Scene {
     if (!this.enableOWPokemon) {
       return;
     }
-    console.log('Preload::loadPokemonAnimations');
+    if (Debug.functions.preload) {
+      console.log('Preload::loadPokemonAnimations');
+    }
     Object.keys(Tileset.pokemon)
       .forEach(name => {
         this.anims.create({
