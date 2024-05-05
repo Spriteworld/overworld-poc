@@ -70,7 +70,7 @@ export default class extends Character {
     if (X.isDown) { moveSpeed = 8; }
     if (C.isDown) { moveSpeed = 20; }
 
-    this.ge.setSpeed(this.config.id, moveSpeed);
+    this.gridengine.setSpeed(this.config.id, moveSpeed);
     console.log({
       left: keys.left.isDown,
       right: keys.right.isDown,

@@ -13,7 +13,6 @@ export default class {
   }
   
   init() {
-    this.scene.eventPlugins.set('player', this.event.bind(this));
     if (Debug.functions.gameMap) {
       console.log('GameMap::initPlayer');
     }
@@ -90,6 +89,7 @@ export default class {
   }
 
   event() {
+    console.log(['GameMap::event::player', this.scene])
     this.scene.gridEngine
       .positionChangeStarted()
       .subscribe(({ charId, exitTile, enterTile }) => {

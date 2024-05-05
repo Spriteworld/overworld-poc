@@ -8,13 +8,13 @@ export default class {
   }
   
   init() {
-    this.scene.eventPlugins.set('spinTile', this.event.bind(this));
     if (Debug.functions.gameMap) {
       console.log('GameMap::initSpinTile');
     }
   }
 
   event() {
+    console.log(['GameMap::event::spinTile', this.scene])
     // handle ice & spin tiles
     this.scene.gridEngine
       .positionChangeStarted()

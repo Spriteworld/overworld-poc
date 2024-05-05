@@ -37,7 +37,7 @@ export default class extends Phaser.GameObjects.Sprite {
       JUMP_LEDGE: 'jump_ledge',
     };
 
-    this.ge = this.config.scene.gridEngine;
+    this.gridengine = this.config.scene.gridEngine;
     this.stateMachine = new StateMachine(this, this.config.id);
     this.initalCreation = true;
     this.spinRate = this.config['spin-rate'];
@@ -90,6 +90,7 @@ export default class extends Phaser.GameObjects.Sprite {
 
   characterDef() {
     let def = this.config;
+    console.log(['character', def]);
     return {
       id: def.id,
       sprite: this,
@@ -98,6 +99,7 @@ export default class extends Phaser.GameObjects.Sprite {
       facingDirection: def['facing-direction'] ?? 'down',
       collides: def.collides,
       charLayer: def['char-layer'] ?? 'ground',
+      move: def.move,
     };
   }
 
@@ -141,7 +143,7 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   spinOnEnter() {
-    this.ge.setWalkingAnimationMapping(this.config.id, undefined);
+    this.gridengine.setWalkingAnimationMapping(this.config.id, undefined);
     this.anims.play(this.config.texture + '-spin');
     this.spinningDir = this.getFacingDirection();
   }
@@ -150,7 +152,7 @@ export default class extends Phaser.GameObjects.Sprite {
     this.move(this.spinningDir);
   }
   spinOnExit() {
-    this.ge.setWalkingAnimationMapping(this.config.id, this.characterFramesDef());
+    this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesDef());
     this.anims.stop();
     this.spinningDir = null;
   }
@@ -166,7 +168,7 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   slideOnEnter() {
-    this.ge.setWalkingAnimationMapping(this.config.id, this.characterFramesStaticDef());
+    this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesStaticDef());
     this.slidingDir = this.getFacingDirection();
   }
   slideOnUpdate() {
@@ -174,7 +176,7 @@ export default class extends Phaser.GameObjects.Sprite {
     this.move(this.slidingDir);
   }
   slideOnExit() {
-    this.ge.setWalkingAnimationMapping(this.config.id, this.characterFramesDef());
+    this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesDef());
     this.anims.stop();
     this.slidingDir = null;
   }
@@ -252,7 +254,7 @@ export default class extends Phaser.GameObjects.Sprite {
 
   addAutoMove() {
     if (this.config.move !== true) { return; }
-    this.ge.moveRandomly(this.config.id, this.config['move-rate'], 1);
+    this.gridengine.moveRandomly(this.config.id, this.config['move-rate'], 1);
     this.config.move = false;
   }
 
@@ -304,7 +306,7 @@ export default class extends Phaser.GameObjects.Sprite {
     if (this.config['seen-character'] === null) { return; }
     if (this.config['seen-character'].length === 0) { return; }
 
-    if (!this.ge.hasCharacter(this.config['seen-character'])) {
+    if (!this.gridengine.hasCharacter(this.config['seen-character'])) {
       if (Debug.functions.characterSeen) {
         console.log(this.config['seen-character'], 'ge doesnt has character');
       }
@@ -414,7 +416,7 @@ export default class extends Phaser.GameObjects.Sprite {
 
     let isInside = Phaser.Geom.Rectangle.ContainsPoint(this.seenRect, this.characterRect);
     if (isInside) {
-      console.log(this.config.id +' can see '+character.config.id+'!');
+      console.log(['Character::canSeeCharacter', this.config.id +' can see '+character.config.id+'!']);
     }
     this.seenRect.fillColor = isInside
       ? this.rectColor.selected
@@ -422,28 +424,29 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   look(dir) {
-    return this.ge.turnTowards(this.config.id, dir.toLowerCase());
+    console.log('look', this.config.id, dir.toLowerCase());
+    return this.gridengine.turnTowards(this.config.id, dir.toLowerCase());
   }
 
   lookAt(charId) {
-    return this.ge.turnTowards(this.config.id, this.ge.getFacingPosition(charId));
+    return this.gridengine.turnTowards(this.config.id, this.gridengine.getFacingPosition(charId));
   }
 
   move(dir) {
     console.log('move', this.config.id, dir.toLowerCase());
-    return this.ge.move(this.config.id, dir.toLowerCase());
+    return this.gridengine.move(this.config.id, dir.toLowerCase());
   }
 
   moveTo(x, y, config) {
-    return this.ge.moveTo(this.config.id, { x: x, y: y }, config);
+    return this.gridengine.moveTo(this.config.id, { x: x, y: y }, config);
   }
 
   stopMovement() {
-    return this.ge.stopMovement(this.config.id);
+    return this.gridengine.stopMovement(this.config.id);
   }
 
   getFacingDirection() {
-    return this.ge.getFacingDirection(this.config.id);
+    return this.gridengine.getFacingDirection(this.config.id);
   }
 
   getFacingTile() {
@@ -452,7 +455,7 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   getPosition() {
-    return this.ge.getPosition(this.config.id);
+    return this.gridengine.getPosition(this.config.id);
   }
 
   getPosInFacingDirection() {

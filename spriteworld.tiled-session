@@ -57,8 +57,8 @@
             "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 380.66666666666663,
-                "y": -55.33333333333326
+                "x": 379.9999999999999,
+                "y": -56
             }
         },
         "src/maps/kanto/prof_lab.json": {
@@ -81,16 +81,16 @@
             "scale": 0.42972656249999996,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1282.210708117444,
-                "y": 1026.2339787292065
+                "x": 1261.2671575311335,
+                "y": 1005.290428142896
             }
         },
         "src/maps/random/skyland.json": {
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 733,
-                "y": 707
+                "x": 732,
+                "y": 706
             }
         },
         "src/maps/random/src/tileset/gen3_inside.json": {
@@ -107,11 +107,14 @@
                 5
             ],
             "scale": 1.5,
-            "selectedLayer": 12,
+            "selectedLayer": 11,
             "viewCenter": {
-                "x": 688,
-                "y": 688.6666666666667
+                "x": 601.9999999999999,
+                "y": 554
             }
+        },
+        "src/maps/random/test.json#rse_outside": {
+            "scaleInDock": 1
         },
         "src/maps/random/test2.json": {
             "expandedObjectLayers": [
@@ -152,6 +155,10 @@
         },
         "src/tileset/rse_inside.json": {
             "scaleInDock": 1
+        },
+        "src/tileset/rse_outside.json": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         }
     },
     "frame.defaultDuration": 360,
@@ -171,17 +178,17 @@
     ],
     "project": "spriteworld.tiled-project",
     "recentFiles": [
-        "src/maps/random/test.json",
         "src/maps/kanto/pallet.json",
         "src/maps/random/base.json",
         "src/maps/random/skyland.json",
+        "src/tileset/rse_outside.json",
+        "src/maps/random/test.json",
         "src/maps/kanto/hero_house_floor2.json",
         "src/maps/kanto/hero_house_floor1.json",
         "src/maps/kanto/route1.json",
         "src/maps/kanto/prof_lab.json",
         "src/tileset/gen3_outside.json",
         "src/maps/random/test2.json",
-        "src/tileset/gen3_inside.json",
-        "C:/www/spriteworld/vite-poc/src/maps/kanto/pallet.json"
+        "src/tileset/gen3_inside.json"
     ]
 }

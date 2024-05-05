@@ -11,9 +11,9 @@ export default class extends Phaser.Scene {
     this.config.playerLocation = {};
 
     this.tilemaps = {};
-    this.characters = [];
-    this.npcs = [];
-    this.pkmn = [];
+    this.characters = new Map();
+    this.npcs = new Map();
+    this.pkmn = new Map();
     this.totalMon = 151;
 
     this.ge_init = false;
@@ -21,23 +21,21 @@ export default class extends Phaser.Scene {
     
     this.mapPlugins = new Map();
     this.mapPlugins['player'] = new Interactables.Player(this);
-    this.mapPlugins['npc'] = new Interactables.NPC(this);
-    this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
+    // this.mapPlugins['npc'] = new Interactables.NPC(this);
+    // this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
     this.mapPlugins['sign'] = new Interactables.Sign(this);
     this.mapPlugins['warp'] = new Interactables.Warp(this);
     this.mapPlugins['slidetile'] = new Interactables.SlideTile(this);
     this.mapPlugins['spintile'] = new Interactables.SpinTile(this);
     this.mapPlugins['debug'] = new Interactables.Debug(this);
-    this.updatePlugins = new Map();
-    this.eventPlugins = new Map();
   }
 
   init(data) {
     this.config = { ...this.config, ...data };
     this.tilemaps = {};
-    this.characters = [];
-    this.npcs = [];
-    this.pkmn = [];
+    this.characters = new Map();
+    this.npcs = new Map();
+    this.pkmn = new Map();
 
     this.ge_init = false;
     this.ge_events_init = false;
@@ -53,12 +51,10 @@ export default class extends Phaser.Scene {
     this.config.tilemap = tilemap;
 
     // all the tilesets!
-    let tilesets = [
-      tilemap.addTilesetImage('gen3_inside'),
-      tilemap.addTilesetImage('gen3_outside'),
-      tilemap.addTilesetImage('rse_inside'),
-      tilemap.addTilesetImage('rse_outside'),
-    ];
+    let tilesets = [];
+    tilemap.tilesets.forEach((tileset) => {
+      tilesets.push(tilemap.addTilesetImage(tileset.name));
+    });
 
     // load all the layers!
     tilemap.layers
@@ -140,14 +136,17 @@ export default class extends Phaser.Scene {
   }
 
   addCharacter(character) {
-    this.characters.push(character);
+    this.characters.set(character);
   }
 
   createCharacters() {
+    let chars = [];
+    this.characters.forEach((_, char) => {
+      chars.push(char.characterDef());
+    });
+
     this.gridEngine.create(this.config.tilemap, {
-      characters: this.characters.map(char => {
-        return char.characterDef();
-      })
+      characters: chars
     });
     this.ge_init = true;
   }
@@ -172,13 +171,12 @@ export default class extends Phaser.Scene {
 
   
   initGEEvents() {
-    Object.entries(this.eventPlugins).forEach(([key, plugin]) => {
-      if (Debug.functions.gameMap) {
-        console.log(['GameMap::initGEEvents', key]);
-      }
-      plugin.event();
-    });
-
+    if (Debug.functions.gameMap) {
+      console.log(['GameMap::initGEEvents']);
+    }
+    Object.entries(this.mapPlugins)
+        .filter(([_, plugin]) => typeof plugin.event === 'function')
+        .map(([_, plugin]) => plugin.event());
   }
 
 }

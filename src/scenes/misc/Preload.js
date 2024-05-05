@@ -19,14 +19,16 @@ export default class extends Phaser.Scene {
     if (Debug.functions.preload) {
       console.group('Preload::start');
     }
-
-    this.load.scripts('inspector', [
-      'https://cdn.jsdelivr.net/npm/tweakpane@3.1.0/dist/tweakpane.js',
-      'https://cdn.jsdelivr.net/npm/phaser-plugin-inspector@2.0.0-1/dist/phaser-plugin-inspector.umd.js'
-    ]);
-    this.load.once('complete', () => {
-      PhaserPluginInspector.Install(this.plugins);
-    });
+    
+    if (Debug.inspector) {
+      this.load.scripts('inspector', [
+        'https://cdn.jsdelivr.net/npm/tweakpane@3.1.0/dist/tweakpane.js',
+        'https://cdn.jsdelivr.net/npm/phaser-plugin-inspector@2.0.0-1/dist/phaser-plugin-inspector.umd.js'
+      ]);
+      this.load.once('complete', () => {
+        PhaserPluginInspector.Install(this.plugins);
+      });
+    }
 
     var progress = this.add.graphics();
 
