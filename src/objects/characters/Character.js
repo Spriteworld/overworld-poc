@@ -25,6 +25,7 @@ export default class extends Phaser.GameObjects.Sprite {
     }, ...config};
     let identification = (this.config.id ?? this.config.texture);
     this.setName(identification);
+    console.log(['Character::constructor', this.config.id, this.config['char-layer']])
 
     this.stateDef = {
       IDLE: 'idle',
@@ -90,7 +91,6 @@ export default class extends Phaser.GameObjects.Sprite {
 
   characterDef() {
     let def = this.config;
-    console.log(['character', def]);
     return {
       id: def.id,
       sprite: this,
@@ -134,8 +134,10 @@ export default class extends Phaser.GameObjects.Sprite {
 
     dir = dir.toLowerCase();
     if (this.getFacingDirection() === dir) {
+      console.log('Character::handleMove..', dir);
       this.move(dir);
     } else {
+      console.log('Character::handleMove', dir);
       keys[dir].getDuration() >= duration
         ? this.move(dir)
         : this.look(dir);
@@ -424,7 +426,7 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   look(dir) {
-    console.log('look', this.config.id, dir.toLowerCase());
+    // console.log('look', this.config.id, dir.toLowerCase());
     return this.gridengine.turnTowards(this.config.id, dir.toLowerCase());
   }
 
@@ -433,7 +435,7 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   move(dir) {
-    console.log('move', this.config.id, dir.toLowerCase());
+    // console.log('move', this.config.id, dir.toLowerCase());
     return this.gridengine.move(this.config.id, dir.toLowerCase());
   }
 

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Player, NPC, PkmnOverworld, ObjectTypes, Tile, Interactables } from '@Objects';
+import { Interactables } from '@Objects';
 import Debug from '@Data/debug.js';
 
 export default class extends Phaser.Scene {
@@ -23,11 +23,11 @@ export default class extends Phaser.Scene {
     this.mapPlugins['player'] = new Interactables.Player(this);
     // this.mapPlugins['npc'] = new Interactables.NPC(this);
     // this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
-    this.mapPlugins['sign'] = new Interactables.Sign(this);
-    this.mapPlugins['warp'] = new Interactables.Warp(this);
-    this.mapPlugins['slidetile'] = new Interactables.SlideTile(this);
-    this.mapPlugins['spintile'] = new Interactables.SpinTile(this);
-    this.mapPlugins['debug'] = new Interactables.Debug(this);
+    // this.mapPlugins['sign'] = new Interactables.Sign(this);
+    // this.mapPlugins['warp'] = new Interactables.Warp(this);
+    // this.mapPlugins['slidetile'] = new Interactables.SlideTile(this);
+    // this.mapPlugins['spintile'] = new Interactables.SpinTile(this);
+    // this.mapPlugins['debug'] = new Interactables.Debug(this);
   }
 
   init(data) {
@@ -49,6 +49,7 @@ export default class extends Phaser.Scene {
   loadMap() {
     var tilemap = this.make.tilemap({ key: this.config.mapName });
     this.config.tilemap = tilemap;
+    // console.log(['GameMap::loadMap', tilemap]);
 
     // all the tilesets!
     let tilesets = [];
@@ -60,11 +61,18 @@ export default class extends Phaser.Scene {
     tilemap.layers
       .forEach((layer) => {
         // console.log('[GameMap]', layer);
+        let alpha = 1;
+        if (layer.alpha !== 1) {
+          alpha = layer.alpha;
+        }
+        if (layer.visible === false) {
+          alpha = 0;
+        }
 
         this.tilemaps[layer.name] = tilemap
           .createLayer(layer.name, tilesets)
           .setName(layer.name)
-          .setAlpha(layer.visible ? 1 : 0)
+          .setAlpha(alpha)
         ;
       });
 
@@ -152,21 +160,26 @@ export default class extends Phaser.Scene {
   }
 
   updateCharacters(time, delta) {
-    if (this.mapPlugins.player?.loadedPlayer) {
-      this.mapPlugins.player.player.update(time, delta);
-      if (this.scene.get('Preload').enablePlayerOWPokemon) {
-        this.mapPlugins.player.playerMon.update(time, delta);
-      }
-    }
-
-    if (this.pkmn.length > 0) {
-      // this.pkmn.forEach((mon) => mon.update(time, delta));
-    }
-
     if (this.ge_init && !this.ge_events_init) {
       this.initGEEvents();
       this.ge_events_init = true;
     }
+
+    Object.entries(this.mapPlugins)
+        .filter(([_, plugin]) => typeof plugin.update === 'function')
+        .map(([_, plugin]) => plugin.update(time, delta));
+
+    // if (this.mapPlugins.player?.loadedPlayer) {
+    //   this.mapPlugins.player.player.update(time, delta);
+    //   // if (this.scene.get('Preload').enablePlayerOWPokemon) {
+    //   //   this.mapPlugins.player.playerMon.update(time, delta);
+    //   // }
+    // }
+
+    // if (this.pkmn.length > 0) {
+    //   // this.pkmn.forEach((mon) => mon.update(time, delta));
+    // }
+
   }
 
   

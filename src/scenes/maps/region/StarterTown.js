@@ -1,11 +1,11 @@
 import {GameMap, Flock, Direction, Tile} from '@Objects';
-import {SkylandMap} from '@Maps';
+import {StarterTownMap} from '@Maps';
 
 export default class extends GameMap {
   constructor() {
     super({
-      mapName: 'Skyland',
-      map: SkylandMap,
+      mapName: 'StarterTown',
+      map: StarterTownMap,
       active: false,
       visible: false,
     });
@@ -17,7 +17,9 @@ export default class extends GameMap {
 
   create () {
     this.loadMap();
+
     this.createCharacters();
+
   }
 
   update(time, delta) {

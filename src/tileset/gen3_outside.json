@@ -9421,7 +9421,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {

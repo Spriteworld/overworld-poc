@@ -1,0 +1,4 @@
+{
+  "php.format.rules.endWithNewLine": false,
+  "files.eol": "\n"
+}

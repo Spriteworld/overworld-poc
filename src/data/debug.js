@@ -8,7 +8,7 @@ export default {
   },
   functions: {
     preload: !true,
-    gameMap: true,
+    gameMap: !true,
     timeOverlay: false,
     characterSeen: !true,
     characterRect: !true,

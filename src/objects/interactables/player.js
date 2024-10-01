@@ -1,5 +1,6 @@
 import Debug from '@Data/debug.js';
 import { Tile, Player } from '@Objects';
+import { random_rgba } from '@Utilities';
 
 export default class {
   constructor(scene) {
@@ -34,9 +35,9 @@ export default class {
   }
 
   addPlayerToScene(x, y) {
-    // this.tintTile(this.config.tilemap,
-    //   this.config.playerLocation.length > 0 ? this.config.playerLocation.x : x,
-    //   this.config.playerLocation.length > 0 ? this.config.playerLocation.y : y,
+    // this.tintTile(this.scene.config.tilemap,
+    //   this.scene.config.playerLocation.length > 0 ? this.scene.config.playerLocation.x : x,
+    //   this.scene.config.playerLocation.length > 0 ? this.scene.config.playerLocation.y : y,
     //   random_rgba()
     // );
 
@@ -88,14 +89,22 @@ export default class {
     // }
   }
 
+  update(time, delta) {
+    if (this.loadedPlayer) {
+      // console.log(['GameMap::update::player', this.scene])
+      this.player.update();
+    }
+    // if (this.scene.get('Preload').enablePlayerOWPokemon) {
+    //   this.playerMon.update();
+    // }    
+  }
+
   event() {
     console.log(['GameMap::event::player', this.scene])
     this.scene.gridEngine
       .positionChangeStarted()
       .subscribe(({ charId, exitTile, enterTile }) => {
-        let char = this.scene.characters.find(char => {
-          return charId === char.config.id;
-        });
+        let char = this.scene.characters.has(charId);
         if (typeof char === 'undefined') { return; }
 
         // check for jump ledges

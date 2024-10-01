@@ -1,11 +1,11 @@
 import {GameMap, Flock, Direction, Tile} from '@Objects';
-import {SkylandMap} from '@Maps';
+import {BasicMap} from '@Maps';
 
 export default class extends GameMap {
   constructor() {
     super({
-      mapName: 'Skyland',
-      map: SkylandMap,
+      mapName: 'Basic',
+      map: BasicMap,
       active: false,
       visible: false,
     });

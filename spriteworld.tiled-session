@@ -1,15 +1,21 @@
 {
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
     "activeFile": "src/maps/random/skyland.json",
     "expandedProjectPaths": [
-        "src",
         "src/maps",
-        "src/data",
-        "src/maps/random",
+        "src",
         "src/scenes/maps/region",
         "src/tileset",
+        "src/maps/random",
         "src/maps/region",
+        "src/data",
+        "src/maps/kanto",
         "src/scenes"
     ],
+    "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "C:/src/tileset/gen3_inside.json": {
             "scaleInDock": 1
@@ -57,8 +63,8 @@
             "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 379.9999999999999,
-                "y": -56
+                "x": 383.9999999999999,
+                "y": 336
             }
         },
         "src/maps/kanto/prof_lab.json": {
@@ -77,20 +83,42 @@
                 "y": 669.3333333333334
             }
         },
+        "src/maps/random/Basic.json": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 2,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 474.5,
+                "y": 297.5
+            }
+        },
         "src/maps/random/base.json": {
             "scale": 0.42972656249999996,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1261.2671575311335,
-                "y": 1005.290428142896
+                "x": 1255.4495045904919,
+                "y": 998.3092446141259
+            }
+        },
+        "src/maps/random/basic.json": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 2.6184374999999998,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 477.1929824561404,
+                "y": 318.5105621195847
             }
         },
         "src/maps/random/skyland.json": {
-            "scale": 1,
-            "selectedLayer": 0,
+            "scale": 1.5,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 732,
-                "y": 706
+                "x": 857,
+                "y": 354
             }
         },
         "src/maps/random/src/tileset/gen3_inside.json": {
@@ -107,10 +135,10 @@
                 5
             ],
             "scale": 1.5,
-            "selectedLayer": 11,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 601.9999999999999,
-                "y": 554
+                "x": 684.3333333333333,
+                "y": 683.3333333333334
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -125,6 +153,17 @@
             "viewCenter": {
                 "x": 558.5,
                 "y": 477
+            }
+        },
+        "src/maps/region/StarterTown.json": {
+            "expandedObjectLayers": [
+                4
+            ],
+            "scale": 1.7740530303030302,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 509.5676310451586,
+                "y": 525.3506992633713
             }
         },
         "src/maps/tileset/gen3_inside.json": {
@@ -171,24 +210,23 @@
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "json",
     "openFiles": [
-        "src/maps/random/test.json",
-        "src/maps/kanto/pallet.json",
-        "src/maps/random/skyland.json",
-        "src/maps/random/base.json"
+        "src/maps/random/basic.json",
+        "src/maps/random/skyland.json"
     ],
     "project": "spriteworld.tiled-project",
     "recentFiles": [
-        "src/maps/kanto/pallet.json",
-        "src/maps/random/base.json",
+        "src/maps/random/basic.json",
         "src/maps/random/skyland.json",
-        "src/tileset/rse_outside.json",
+        "src/maps/region/StarterTown.json",
+        "src/tileset/gen3_outside.json",
         "src/maps/random/test.json",
+        "src/maps/random/base.json",
+        "src/maps/random/Basic.json",
+        "src/maps/kanto/pallet.json",
+        "src/tileset/rse_outside.json",
         "src/maps/kanto/hero_house_floor2.json",
         "src/maps/kanto/hero_house_floor1.json",
-        "src/maps/kanto/route1.json",
-        "src/maps/kanto/prof_lab.json",
-        "src/tileset/gen3_outside.json",
-        "src/maps/random/test2.json",
-        "src/tileset/gen3_inside.json"
-    ]
+        "src/maps/kanto/route1.json"
+    ],
+    "tileset.lastUsedFormat": "json"
 }
