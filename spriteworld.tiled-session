@@ -3,16 +3,16 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "src/maps/random/skyland.json",
+    "activeFile": "src/maps/random/base.json",
     "expandedProjectPaths": [
-        "src/maps",
-        "src",
-        "src/scenes/maps/region",
         "src/tileset",
-        "src/maps/random",
+        "src",
         "src/maps/region",
+        "src/scenes/maps/region",
         "src/data",
+        "src/maps",
         "src/maps/kanto",
+        "src/maps/random",
         "src/scenes"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
@@ -95,11 +95,11 @@
             }
         },
         "src/maps/random/base.json": {
-            "scale": 0.42972656249999996,
-            "selectedLayer": 0,
+            "scale": 1,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 1255.4495045904919,
-                "y": 998.3092446141259
+                "x": 1184.5,
+                "y": 927
             }
         },
         "src/maps/random/basic.json": {
@@ -107,10 +107,10 @@
                 3
             ],
             "scale": 2.6184374999999998,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 477.1929824561404,
-                "y": 318.5105621195847
+                "x": 463.82623224728496,
+                "y": 271.5359828141784
             }
         },
         "src/maps/random/skyland.json": {
@@ -118,7 +118,7 @@
             "selectedLayer": 4,
             "viewCenter": {
                 "x": 857,
-                "y": 354
+                "y": 353.33333333333337
             }
         },
         "src/maps/random/src/tileset/gen3_inside.json": {
@@ -138,7 +138,7 @@
             "selectedLayer": 1,
             "viewCenter": {
                 "x": 684.3333333333333,
-                "y": 683.3333333333334
+                "y": 682.6666666666665
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -210,17 +210,19 @@
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "json",
     "openFiles": [
+        "src/maps/random/base.json",
         "src/maps/random/basic.json",
-        "src/maps/random/skyland.json"
+        "src/maps/random/skyland.json",
+        "src/maps/random/test.json"
     ],
     "project": "spriteworld.tiled-project",
     "recentFiles": [
-        "src/maps/random/basic.json",
+        "src/maps/random/test.json",
         "src/maps/random/skyland.json",
+        "src/maps/random/basic.json",
+        "src/maps/random/base.json",
         "src/maps/region/StarterTown.json",
         "src/tileset/gen3_outside.json",
-        "src/maps/random/test.json",
-        "src/maps/random/base.json",
         "src/maps/random/Basic.json",
         "src/maps/kanto/pallet.json",
         "src/tileset/rse_outside.json",

@@ -111,7 +111,7 @@
                  "value":"ground"
                 }],
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":43,
          "x":0,
          "y":0
@@ -165,7 +165,7 @@
          "name":"ground1",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":43,
          "x":0,
          "y":0

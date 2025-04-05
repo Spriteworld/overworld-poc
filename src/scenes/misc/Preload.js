@@ -68,7 +68,7 @@ export default class extends Phaser.Scene {
   }
 
   create () {
-    this.scene.start('Skyland');
+    this.scene.start('PalletTown');
 
     if (Debug.time) {
       this.scene.start('TimeOverlay');

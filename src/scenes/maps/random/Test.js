@@ -61,6 +61,7 @@ export default class extends GameMap {
     this.updateCharacters(time, delta);
     // this.flock.update(time, delta);
     // this.npc1.update(time);
+    // this.mapPlugins['player'].player.handleMove('down');
 
     // let npcPos = this.npc1.getPosition();
     // if (npcPos.x == 7 && npcPos.y == 21) {

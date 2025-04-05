@@ -435,7 +435,7 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   move(dir) {
-    // console.log('move', this.config.id, dir.toLowerCase());
+    console.log('move', this.config.id, dir.toLowerCase());
     return this.gridengine.move(this.config.id, dir.toLowerCase());
   }
 

@@ -152,7 +152,7 @@ export default class extends Phaser.Scene {
     this.characters.forEach((_, char) => {
       chars.push(char.characterDef());
     });
-
+    console.log(['GameMap::createCharacters', chars]);
     this.gridEngine.create(this.config.tilemap, {
       characters: chars
     });
