@@ -9,7 +9,7 @@ export default class {
 
   init() {
     if (Debug.functions.gameMap) {
-      console.log('GameMap::initLedge');
+      console.log('GameMap::interactables->initLedge');
     }
   }
 };

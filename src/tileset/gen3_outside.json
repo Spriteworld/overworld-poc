@@ -6,7 +6,7 @@
  "name":"gen3_outside",
  "spacing":0,
  "tilecount":7984,
- "tiledversion":"1.10.2",
+ "tiledversion":"1.11.2",
  "tileheight":32,
  "tiles":[
         {
@@ -3476,26 +3476,6 @@
          "properties":[
                 {
                  "name":"ge_collide",
-                 "type":"bool",
-                 "value":false
-                }, 
-                {
-                 "name":"ge_collide_down",
-                 "type":"bool",
-                 "value":false
-                }, 
-                {
-                 "name":"ge_collide_left",
-                 "type":"bool",
-                 "value":true
-                }, 
-                {
-                 "name":"ge_collide_right",
-                 "type":"bool",
-                 "value":true
-                }, 
-                {
-                 "name":"ge_collide_up",
                  "type":"bool",
                  "value":true
                 }, 
@@ -58269,7 +58249,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -72152,5 +72132,5 @@
         }],
  "tilewidth":32,
  "type":"tileset",
- "version":"1.10"
+ "version":"1.11"
 }

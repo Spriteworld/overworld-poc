@@ -9,7 +9,8 @@ import Player from './characters/Player.js';
 import NPC from './characters/NPC.js';
 import PkmnOverworld from './characters/PkmnOverworld.js';
 
-import * as ObjectTypes from '../tileset/objecttypes.json';
+import * as ObjectTypesImport from '../tileset/objecttypes.json';
+let ObjectTypes = ObjectTypesImport.default;
 
 import Flock from './misc/Flock.js';
 

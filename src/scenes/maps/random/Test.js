@@ -1,4 +1,4 @@
-import {GameMap, Flock, Direction, Tile} from '@Objects';
+import {GameMap, Flock, Direction, Tile, Interactables} from '@Objects';
 import {TestMap} from '@Maps';
 
 export default class extends GameMap {
@@ -9,9 +9,21 @@ export default class extends GameMap {
       active: false,
       visible: false,
     });
+    this.config['char-layer'] = 'ground';
 
     this.npc1 = {};
     this.pokemon = [3, 6, 9, 22, 25, 197, '197s'];
+  }
+  
+  initPlugins() {
+    this.mapPlugins['debug'] = new Interactables.Debug(this);
+    // this.mapPlugins['sign'] = new Interactables.Sign(this);
+    // this.mapPlugins['npc'] = new Interactables.NPC(this);
+    // this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
+    // this.mapPlugins['warp'] = new Interactables.Warp(this);
+    // this.mapPlugins['slidetile'] = new Interactables.SlideTile(this);
+    // this.mapPlugins['spintile'] = new Interactables.SpinTile(this);
+    this.mapPlugins['player'] = new Interactables.Player(this);
   }
 
   preload() {

@@ -9,7 +9,7 @@ export default class {
   
   init() {
     if (Debug.functions.gameMap) {
-      console.log('GameMap::initSlideTile');
+      console.log('GameMap::interactables->initSlideTile');
     }
   }
 

@@ -71,12 +71,12 @@ export default class extends Character {
     if (C.isDown) { moveSpeed = 20; }
 
     this.gridengine.setSpeed(this.config.id, moveSpeed);
-    console.log({
-      left: keys.left.isDown,
-      right: keys.right.isDown,
-      up: keys.up.isDown,
-      down: keys.down.isDown,
-    })
+    // console.log({
+    //   left: keys.left.isDown,
+    //   right: keys.right.isDown,
+    //   up: keys.up.isDown,
+    //   down: keys.down.isDown,
+    // })
     if (keys.left.isDown) {
       this.handleMove('left');
     } else if (keys.right.isDown) {

@@ -20,14 +20,17 @@ export default class extends Phaser.Scene {
     this.ge_events_init = false;
     
     this.mapPlugins = new Map();
-    this.mapPlugins['player'] = new Interactables.Player(this);
+  }
+  
+  initPlugins() {
+    this.mapPlugins['debug'] = new Interactables.Debug(this);
     // this.mapPlugins['npc'] = new Interactables.NPC(this);
     // this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
-    this.mapPlugins['sign'] = new Interactables.Sign(this);
-    this.mapPlugins['warp'] = new Interactables.Warp(this);
-    this.mapPlugins['slidetile'] = new Interactables.SlideTile(this);
-    this.mapPlugins['spintile'] = new Interactables.SpinTile(this);
-    this.mapPlugins['debug'] = new Interactables.Debug(this);
+    // this.mapPlugins['sign'] = new Interactables.Sign(this);
+    // this.mapPlugins['warp'] = new Interactables.Warp(this);
+    // this.mapPlugins['slidetile'] = new Interactables.SlideTile(this);
+    // this.mapPlugins['spintile'] = new Interactables.SpinTile(this);
+    this.mapPlugins['player'] = new Interactables.Player(this);
   }
 
   init(data) {
@@ -39,7 +42,6 @@ export default class extends Phaser.Scene {
 
     this.ge_init = false;
     this.ge_events_init = false;
-
   }
 
   preloadMap() {
@@ -66,9 +68,14 @@ export default class extends Phaser.Scene {
           .setName(layer.name)
           .setAlpha(layer.visible ? 1 : 0)
         ;
+        
       });
 
     this.registry.set('interactions', []);
+
+    // init the animated tiles
+    this.animatedTiles.init(tilemap);
+    this.initPlugins();
 
     // loop and init the plugins
     Object.entries(this.mapPlugins).forEach(([key, plugin]) => {
@@ -77,9 +84,6 @@ export default class extends Phaser.Scene {
       }
       plugin.init(this);
     });
-
-    // init the animated tiles
-    this.animatedTiles.init(tilemap);
   }
 
   findInteractions(type) {
@@ -152,21 +156,22 @@ export default class extends Phaser.Scene {
   }
 
   updateCharacters(time, delta) {
+    // console.log(['GameMap::updateCharacters', this.characters]);
+    Object.entries(this.mapPlugins)
+        .filter(([_, plugin]) => typeof plugin.update === 'function')
+        .map(([_, plugin]) => plugin.update(time, delta));
+
     if (this.mapPlugins.player?.loadedPlayer) {
-      this.mapPlugins.player.player.update(time, delta);
-      if (this.scene.get('Preload').enablePlayerOWPokemon) {
-        this.mapPlugins.player.playerMon.update(time, delta);
-      }
+
+      this.mapPlugins['player'].player.update(time, delta);
+      // if (this.scene.get('Preload').enablePlayerOWPokemon) {
+      //   this.mapPlugins.player.playerMon.update(time, delta);
+      // }
     }
 
-    if (this.pkmn.length > 0) {
-      // this.pkmn.forEach((mon) => mon.update(time, delta));
-    }
-
-    if (this.ge_init && !this.ge_events_init) {
-      this.initGEEvents();
-      this.ge_events_init = true;
-    }
+    // if (this.pkmn.length > 0) {
+    //   // this.pkmn.forEach((mon) => mon.update(time, delta));
+    // }
   }
 
   

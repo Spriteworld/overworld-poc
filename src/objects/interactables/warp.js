@@ -10,7 +10,7 @@ export default class {
 
   init() {
     if (Debug.functions.gameMap) {
-      console.log('GameMap::initWarp');
+      console.log('GameMap::interactables->initWarp');
     }
     let warps = this.scene.findInteractions('warp');
     if (warps.length === 0) { return; }

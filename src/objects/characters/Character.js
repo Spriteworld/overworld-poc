@@ -20,7 +20,7 @@ export default class extends Phaser.GameObjects.Sprite {
       'facing-direction': 'down',
       'seen-radius': 0,
       'seen-character': null,
-      'char-layer': 'ground',
+      // 'char-layer': 'ground',
       'can-run': true
     }, ...config};
     let identification = (this.config.id ?? this.config.texture);
@@ -98,7 +98,7 @@ export default class extends Phaser.GameObjects.Sprite {
       startPosition: { x: def.x, y: def.y },
       facingDirection: def['facing-direction'] ?? 'down',
       collides: def.collides,
-      charLayer: def['char-layer'] ?? 'ground',
+      // charLayer: def['char-layer'] ?? 'ground',
       move: def.move,
     };
   }
@@ -134,8 +134,10 @@ export default class extends Phaser.GameObjects.Sprite {
 
     dir = dir.toLowerCase();
     if (this.getFacingDirection() === dir) {
+      // console.log('Character::handleMove..', dir);
       this.move(dir);
     } else {
+      // console.log('Character::handleMove', dir);
       keys[dir].getDuration() >= duration
         ? this.move(dir)
         : this.look(dir);
@@ -433,7 +435,7 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   move(dir) {
-    console.log('move', this.config.id, dir.toLowerCase());
+    // console.log('move', this.config.id, dir.toLowerCase());
     return this.gridengine.move(this.config.id, dir.toLowerCase());
   }
 

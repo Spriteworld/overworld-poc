@@ -9,18 +9,19 @@ export default class {
 
   init() {
     if (Debug.functions.gameMap) {
-      console.log('GameMap::initDebug');
+      console.log('GameMap::interactables->initDebug');
     }
 
-    this.showGrid();
-    this.identifyObjects();
+    if (Debug.grid === true) {
+      this.showGrid();
+    }
+
+    if (Debug.objects === true) {
+      this.identifyObjects();
+    }
   }
 
   showGrid() {
-    if (Debug.grid !== true) {
-      return;
-    }
-
     this.scene.add.grid(
       0, 0,
       this.scene.config.tilemap.widthInPixels,
@@ -37,10 +38,6 @@ export default class {
   }
 
   identifyObjects() {
-    if (Debug.objects !== true) {
-      return;
-    }
-
     let colors = {};
     Object.values(ObjectTypes).forEach((obj) => {
       colors[obj.name] = obj.color;
@@ -48,12 +45,15 @@ export default class {
 
     Object.values(this.scene.config.tilemap.getObjectLayer('interactions').objects)
       .forEach((obj) => {
+        let bgc = (getValue(colors, obj.type, '000'))
+          .replace('#', '')
+          .substr(-6);
         let text = this.scene.add.text(0, 0, obj.name, {
-            font: '12px',
+            font: '9px',
             align: 'justify',
             padding: 3,
-            color: '#fff',
-            backgroundColor: (getValue(colors, obj.type, '#000')).substr(0, 7),
+            color: bgc === '000' ? '#fff' : '#000',
+            backgroundColor: '#'+bgc,
             shadow: {
               stroke: '#000',
               offsetX: 1,

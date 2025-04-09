@@ -9,7 +9,7 @@ export default class {
 
   init() {
     if (Debug.functions.gameMap) {
-      console.log('GameMap::initNpc');
+      console.log('GameMap::interactables->initNpc');
     }
     this.scene.npcs = this.scene.add.group();
     this.scene.npcs.setName('npcs');

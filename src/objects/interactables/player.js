@@ -14,7 +14,7 @@ export default class {
   
   init() {
     if (Debug.functions.gameMap) {
-      console.log('GameMap::initPlayer');
+      console.log('GameMap::interactables->initPlayer');
     }
 
     if (Object.keys(this.scene.config?.playerLocation).length != 0) {
@@ -86,6 +86,16 @@ export default class {
     //     spin: false,
     //   });
     // }
+  }
+
+  update(time, delta) {
+    if (this.loadedPlayer) {
+      // console.log(['GameMap::update::player', this.scene])
+      this.player.update(time, delta);
+    }
+    // if (this.scene.get('Preload').enablePlayerOWPokemon) {
+    //   this.playerMon.update();
+    // }    
   }
 
   event() {

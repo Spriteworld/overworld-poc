@@ -9,7 +9,7 @@ export default class {
 
   init() {
     if (Debug.functions.gameMap) {
-      console.log('GameMap::initPokemon');
+      console.log('GameMap::interactables->initPokemon');
     }
     this.scene.pkmn = this.scene.add.group();
     this.scene.pkmn.setName('pkmn');
