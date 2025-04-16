@@ -8,8 +8,8 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.gameMap) {
-      console.log('GameMap::interactables->initCutTree');
+    if (Debug.functions.interactables.cutTree) {
+      console.log('Interactables::cutTree');
     }
   }
 };

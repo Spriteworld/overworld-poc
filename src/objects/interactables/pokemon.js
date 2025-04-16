@@ -8,8 +8,8 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.gameMap) {
-      console.log('GameMap::interactables->initPokemon');
+    if (Debug.functions.interactables.pokemon) {
+      console.log('Interactables::pokemon');
     }
     this.scene.pkmn = this.scene.add.group();
     this.scene.pkmn.setName('pkmn');
@@ -19,9 +19,9 @@ export default class {
 
     this.scene.pkmn.runChildUpdate = true;
     pkmn.forEach((pokemon) => {
-      if (Debug.functions.gameMap) {
+      if (Debug.functions.interactables.pokemon) {
         console.log(
-          'GameMap::initPkmn->each',
+          'Interactables::pokemon::each',
           pokemon.name,
           getPropertyValue(pokemon.properties, 'texture'),
           pokemon.x, pokemon.y
@@ -63,8 +63,8 @@ export default class {
       texture += 's';
     }
 
-    if (Debug.functions.gameMap) {
-      console.log('GameMap::addMonToScene', {
+    if (Debug.functions.interactables.pokemon) {
+      console.log('Interactables::pokemon::addMonToScene', {
         monId: monId, 
         texture: texture, 
         x: x, 

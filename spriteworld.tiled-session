@@ -1,4 +1,14 @@
 {
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+    },
+    "map.lastUsedFormat": "json",
+    "openFiles": [
+    ],
+    "project": "spriteworld.tiled-project",
     "recentFiles": [
         "src/tileset/gen3_outside.json",
         "src/maps/random/test.json",

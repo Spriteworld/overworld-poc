@@ -7,8 +7,8 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.gameMap) {
-      console.log('GameMap::interactables->initSigns');
+    if (Debug.functions.interactables.sign) {
+      console.log('Interactables::Signs');
     }
     let signs = this.scene.findInteractions('sign');
     if (signs.length === 0) { return; }

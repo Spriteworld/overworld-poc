@@ -8,9 +8,19 @@ export default {
   },
   functions: {
     preload: !true,
-    gameMap: true,
+    gameMap: !true,
     timeOverlay: false,
     characterSeen: !true,
     characterRect: !true,
+    interactables: {
+      player: false,
+      npc: false,
+      pokemon: false,
+      sign: false,
+      slideTile: !false,
+      spinTile: !false,
+      warp: false,
+      cutTree: false,
+    },
   },
 };

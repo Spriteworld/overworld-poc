@@ -9,8 +9,8 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.gameMap) {
-      console.log('GameMap::interactables->initWarp');
+    if (Debug.functions.interactables.warp) {
+      console.log('Interactables::initWarp');
     }
     let warps = this.scene.findInteractions('warp');
     if (warps.length === 0) { return; }
@@ -26,7 +26,7 @@ export default class {
   }
 
   update(char, exitTile, enterTile) {
-    let warps = this.registry.get('warps');
+    let warps = this.scene.registry.get('warps');
     if (warps.length === 0) { return; }
 
     let warp = warps.find(p => p.x === enterTile.x && p.y === enterTile.y);
@@ -49,7 +49,7 @@ export default class {
         };
 
         // same map, we dont need to move scene
-        if (this.registry.get('map') === warpLocation) {
+        if (this.scene.registry.get('map') === warpLocation) {
           this.warpPlayerInMap(playerLocation);
           this.cameras.main.fadeIn(this.cameraFade, 0, 0, 0);
           // this.player.enableMovement();

@@ -51,7 +51,7 @@ export default class extends Phaser.Scene {
     });
 
     this.preloadTrainers();
-    this.preloadPokemon();
+    this.preloadPokemon([1,2,3,4,5,6,7,8,9,25,197,'197s']);
 
     // console.log(Scenes);
     Object.keys(Scenes)
@@ -112,7 +112,7 @@ export default class extends Phaser.Scene {
     });
   }
 
-  preloadPokemon() {
+  preloadPokemon(pokemonToLoad=[]) {
     if (!this.enableOWPokemon) {
       return;
     }
@@ -122,6 +122,10 @@ export default class extends Phaser.Scene {
 
     Object.keys(Tileset.pokemon)
       .forEach(name => {
+        if (pokemonToLoad.length > 0 && !pokemonToLoad.includes(parseInt(name))) {
+          return;
+        }
+
         let pkmn_dimensions = Tileset.ow_pokemon_dimensions.default[name];
         if (pkmn_dimensions === undefined) {
           console.error('Missing dimensions for', name, Tileset.pokemon[name]);
@@ -136,6 +140,10 @@ export default class extends Phaser.Scene {
 
     Object.keys(Tileset.pokemon_shiny)
       .forEach(name => {
+        if (pokemonToLoad.length > 0 && !pokemonToLoad.includes(parseInt(name))) {
+          return;
+        }
+        
         let pkmn_dimensions = Tileset.ow_pokemon_shiny_dimensions.default[name];
         if (pkmn_dimensions === undefined) {
           console.error('Missing dimensions for', name, Tileset.pokemon_shiny[name]);

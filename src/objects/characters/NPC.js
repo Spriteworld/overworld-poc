@@ -50,6 +50,6 @@ export default class extends Character {
     this.stateMachine.update(time);
     this.addAutoSpin(delta);
     this.addAutoMove();
-    this.canSeeCharacter();
+    // this.canSeeCharacter();
   }
 }

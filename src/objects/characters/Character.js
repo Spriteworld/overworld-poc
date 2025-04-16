@@ -90,7 +90,7 @@ export default class extends Phaser.GameObjects.Sprite {
 
   characterDef() {
     let def = this.config;
-    console.log(['character', def]);
+
     return {
       id: def.id,
       sprite: this,
@@ -426,7 +426,6 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   look(dir) {
-    console.log('look', this.config.id, dir.toLowerCase());
     return this.gridengine.turnTowards(this.config.id, dir.toLowerCase());
   }
 
@@ -435,7 +434,6 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   move(dir) {
-    // console.log('move', this.config.id, dir.toLowerCase());
     return this.gridengine.move(this.config.id, dir.toLowerCase());
   }
 

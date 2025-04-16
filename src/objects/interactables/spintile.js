@@ -8,24 +8,38 @@ export default class {
   }
   
   init() {
-    if (Debug.functions.gameMap) {
-      console.log('GameMap::interactables->initSpinTile');
+    if (Debug.functions.interactables.spinTile) {
+      console.log('Interactables::spinTile');
     }
+    this.spinTiles = this.scene.getTilesWithProperty('sw_spin');
+    this.stopTiles = this.scene.getTilesWithProperty('sw_stop');
   }
 
   event() {
-    console.log(['GameMap::event::spinTile', this.scene])
+    if (Debug.functions.interactables.spinTile) {
+      console.log(['Interactables::spinTile::event', this.scene]);
+    }
+
     // handle ice & spin tiles
     this.scene.gridEngine
       .positionChangeStarted()
       .subscribe(({ charId, exitTile, enterTile }) => {
-        let char = this.scene.characters.find(char => {
-          return charId === char.config.id;
-        });
+        let char = this.scene.characters.get(charId);
         if (typeof char === 'undefined') { return; }
 
         // check for spin tiles
         this.handleSpinTiles(char, exitTile, enterTile);
+      });
+
+    this.scene.gridEngine
+      .movementStopped()
+      .subscribe(({ charId, direction }) => {
+        let char = this.scene.characters.get(charId);
+        if (typeof char === 'undefined') { return; }
+
+        if (char.slidingDir !== null) {
+          char.stateMachine.setState(char.stateDef.IDLE);
+        }
       });
   }
 
@@ -38,9 +52,14 @@ export default class {
     let isSpinTile = this.spinTiles.some(tile => {
       return tile[0] == enterTile.x && tile[1] == enterTile.y;
     });
+
     if (isSpinTile) {
-      let props = this.getTileProperties(enterTile.x, enterTile.y);
-      let dir = getValue(props, 'sw_spin', false);
+      let props = this.scene.getTileProperties(enterTile.x, enterTile.y);
+      let dir = props.get('sw_spin') || false;
+      if (dir === false) {
+        dir = char.getSlidingDirection();
+      }
+
       if (!char.isSpinning() && dir !== false) {
         char.stateMachine.setState(char.stateDef.SPIN);
       }

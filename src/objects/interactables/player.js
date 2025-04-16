@@ -13,8 +13,8 @@ export default class {
   }
   
   init() {
-    if (Debug.functions.gameMap) {
-      console.log('GameMap::interactables->initPlayer');
+    if (Debug.functions.interactables.player) {
+      console.log('Interactables::player');
     }
 
     if (Object.keys(this.scene.config?.playerLocation).length != 0) {
@@ -40,8 +40,8 @@ export default class {
     //   random_rgba()
     // );
 
-    if (Debug.functions.gameMap) {
-      console.log('GameMap::addPlayerToScene', x, y);
+    if (Debug.functions.interactables.player) {
+      console.log('Interactables::player::addPlayerToScene', x, y);
     }
     this.loadedPlayer = true;
     this.player = new Player({
@@ -99,13 +99,13 @@ export default class {
   }
 
   event() {
-    console.log(['GameMap::event::player', this.scene])
+    if (Debug.functions.interactables.player) {
+      console.log(['Interactables::player::event', this.scene])
+    }
     this.scene.gridEngine
       .positionChangeStarted()
       .subscribe(({ charId, exitTile, enterTile }) => {
-        let char = this.scene.characters.find(char => {
-          return charId === char.config.id;
-        });
+        let char = this.scene.characters.get(charId);
         if (typeof char === 'undefined') { return; }
 
         // check for jump ledges

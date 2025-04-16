@@ -8,8 +8,8 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.gameMap) {
-      console.log('GameMap::interactables->initLedge');
+    if (Debug.functions.interactables.ledge) {
+      console.log('Interactables::ledge');
     }
   }
 };

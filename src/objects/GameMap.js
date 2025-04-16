@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { Player, NPC, PkmnOverworld, ObjectTypes, Tile, Interactables } from '@Objects';
+import { Interactables } from '@Objects';
+import { getValue } from '@Utilities';
 import Debug from '@Data/debug.js';
 
 export default class extends Phaser.Scene {
@@ -102,6 +103,9 @@ export default class extends Phaser.Scene {
   }
 
   getTileProperties(x, y) {
+    if (Debug.functions.gameMap) {
+      console.log(['GameMap::getTileProperties', x, y]);
+    }
     var props = new Map();
     this.config.tilemap.getTileLayerNames().forEach(layer => {
       layer = this.config.tilemap.getLayer(layer);
@@ -109,7 +113,7 @@ export default class extends Phaser.Scene {
         return; // skip invisible layers
       }
 
-      let layerTiles = this.config.tilemap.getTilesWithin(x, y, 1, 1, {}, layer);
+      let layerTiles = this.config.tilemap.getTilesWithin(x, y, 1, 1, {}, layer.name);
       if (layerTiles === null || layerTiles.length === 0) {
         return;
       }
@@ -121,14 +125,14 @@ export default class extends Phaser.Scene {
 
         Object.entries(layerTile.properties).forEach(([prop, value]) => {
           // if we dont have it, add it
-          if (typeof props[prop] === 'undefined') {
-            props[prop] = value;
+          if (typeof props.get(prop) === 'undefined') {
+            props.set(prop, value);
           }
           // if we already have it and its a bool
-          if (typeof props[prop] === 'boolean') {
+          if (typeof props.get(prop) === 'boolean') {
             // make it true
             if (value === true) {
-              props[prop] = value;
+              props.set(prop, value);
             }
             // dont care about falses
           }
@@ -139,13 +143,36 @@ export default class extends Phaser.Scene {
     return props;
   }
 
+  getTilesWithProperty(property) {
+    var tiles = []
+    this.config.tilemap.getTileLayerNames().forEach(layer => {
+      let layerTiles = this.config.tilemap.getTilesWithin(
+        0,
+        0,
+        this.config.tilemap.width,
+        this.config.tilemap.height,
+        {},
+        layer
+      );
+
+      layerTiles.forEach(layerTile => {
+        if (layerTile && getValue(layerTile.properties, property, false)) {
+          tiles.push([layerTile.x, layerTile.y]);
+          return;
+        }
+      });
+    });
+
+    return tiles;
+  }
+
   addCharacter(character) {
-    this.characters.set(character);
+    this.characters.set(character.name, character);
   }
 
   createCharacters() {
     let chars = [];
-    this.characters.forEach((_, char) => {
+    this.characters.forEach((char, key) => {
       chars.push(char.characterDef());
     });
 
@@ -170,8 +197,13 @@ export default class extends Phaser.Scene {
     }
 
     // if (this.pkmn.length > 0) {
-    //   // this.pkmn.forEach((mon) => mon.update(time, delta));
+    //   this.pkmn.forEach((mon) => mon.update(time, delta));
     // }
+
+    if (this.ge_init && !this.ge_events_init) {
+      this.initGEEvents();
+      this.ge_events_init = true;
+    }
   }
 
   

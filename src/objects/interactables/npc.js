@@ -8,13 +8,19 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.gameMap) {
-      console.log('GameMap::interactables->initNpc');
+    if (Debug.functions.interactables.npc) {
+      console.log('Interactables::npc');
     }
     this.scene.npcs = this.scene.add.group();
     this.scene.npcs.setName('npcs');
     let npcs = this.scene.findInteractions('npc');
-    if (npcs.length === 0) { return; }
+    if (npcs.length === 0) { 
+      console.log(['Interactables::npc', 'No NPCs found']);
+      return; 
+    }
+    if (Debug.functions.interactables.npc) {
+      console.log(['Interactables::npc', npcs]);
+    }
 
     this.scene.npcs.runChildUpdate = true;
     npcs.forEach((npc) => {
@@ -33,8 +39,8 @@ export default class {
   }
 
   update() {
-    if (Debug.functions.gameMap) {
-      console.log('GameMap::updateNpcs');
+    if (Debug.functions.interactables.npc) {
+      console.log('Interactables::npc::update');
     }
     this.scene.npcs.children.entries.forEach((npc) => {
       if (npc.update) {
@@ -52,8 +58,8 @@ export default class {
       scene: this.scene
     }, ...config };
 
-    if (Debug.functions.gameMap) {
-      console.log('GameMap::addNPCToScene', name, texture, x, y);
+    if (Debug.functions.interactables.npc) {
+      console.log('Interactables::npc::addNPCToScene', name, texture, x, y);
     }
     let npcObj = new NPC(npcDef);
     this.scene.npcs.add(npcObj);
