@@ -24,7 +24,7 @@ export default class {
 
     this.scene.npcs.runChildUpdate = true;
     npcs.forEach((npc) => {
-      this.addNPCToScene(
+      this.addToScene(
         npc.name,
         getPropertyValue(npc.properties, 'texture'),
         npc.x / Tile.WIDTH,
@@ -38,18 +38,7 @@ export default class {
     });
   }
 
-  update() {
-    if (Debug.functions.interactables.npc) {
-      console.log('Interactables::npc::update');
-    }
-    this.scene.npcs.children.entries.forEach((npc) => {
-      if (npc.update) {
-        npc.update();
-      }
-    });
-  }
-
-  addNPCToScene(name, texture, x, y, config) {
+  addToScene(name, texture, x, y, config) {
     let npcDef = {...{
       id: 'npc_'+name,
       texture: texture,
@@ -59,7 +48,7 @@ export default class {
     }, ...config };
 
     if (Debug.functions.interactables.npc) {
-      console.log('Interactables::npc::addNPCToScene', name, texture, x, y);
+      console.log('Interactables::npc::addToScene', name, texture, x, y);
     }
     let npcObj = new NPC(npcDef);
     this.scene.npcs.add(npcObj);

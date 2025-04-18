@@ -27,21 +27,20 @@ export default class {
           pokemon.x, pokemon.y
         );
       }
-      this.addMonToScene(
+      this.addToScene(
+        pokemon.name,
         getPropertyValue(pokemon.properties, 'texture'),
         pokemon.x / Tile.WIDTH,
         pokemon.y / Tile.HEIGHT,
         {
-          id: pokemon.name,
-          scene: this.scene,
           ...remapProps(pokemon.properties)
         }
       );
     });
   }
-  
-  addMonToScene(monId, x, y, config) {
-    if (config.texture) { delete config.texture; }
+
+  addToScene(name, monId, x, y, config) {
+    if (config && config.texture) { delete config.texture; }
 
     let rng = false;
     if (monId == 'RNG') {
@@ -64,18 +63,21 @@ export default class {
     }
 
     if (Debug.functions.interactables.pokemon) {
-      console.log('Interactables::pokemon::addMonToScene', {
+      console.log('Interactables::pokemon::addToScene', {
+        id: name || 'pkmn_' + (this.scene.pkmn.length || monId),
         monId: monId, 
         texture: texture, 
         x: x, 
         y: y
       });
     }
+    
     let pkmnDef = {...{
-      id: 'mon'+this.scene.pkmn.length,
+      id: name || 'pkmn_' + (this.scene.pkmn.length || monId),
       texture: texture,
       x: x,
       y: y,
+      scene: this.scene,
       'char-layer': 'ground'
     }, ...config };
 

@@ -19,8 +19,14 @@ import red from '@Tileset/characters/red.png';
 import trainers from '@Tileset/characters';
 
 let loadPokemonSprites = [
-  '003', '006', '009', '022', '025', '197', '197s'
+  1,2,3,4,5,6,7,8,9,25,197,'197s'
 ];
+loadPokemonSprites = loadPokemonSprites.map(id => {
+  if (typeof id === 'number') {
+    id = id.toString();
+  }
+  return id.padStart(3, '0');
+});
 
 let pokemonGlob = import.meta.glob('@Tileset/overworld/pokemon/*.png', { eager: true, query: '?url', import: 'default' });
 let pokemon = {};

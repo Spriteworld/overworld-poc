@@ -4,6 +4,7 @@ export default class extends Character {
   constructor(config) {
     config.type = 'npc';
     super(config);
+    this.config = config;
 
     this.stateMachine
       .addState(this.stateDef.IDLE, {
@@ -48,8 +49,8 @@ export default class extends Character {
   update(time, delta) {
     if (!this.config.scene.ge_init) { return; }
     this.stateMachine.update(time);
+    this.canSeeCharacter();
     this.addAutoSpin(delta);
     this.addAutoMove();
-    // this.canSeeCharacter();
   }
 }

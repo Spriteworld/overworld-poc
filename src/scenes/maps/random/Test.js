@@ -33,8 +33,8 @@ export default class extends GameMap {
 
   create () {
     this.loadMap();
-    this.npc1 = this.mapPlugins?.npc.addNPCToScene('bob', 'police_man', 7, 21);
-    this.npc2 = this.mapPlugins?.npc.addNPCToScene('bobjr', 'poke_kid', 31, 20);
+    this.npc1 = this.mapPlugins?.npc.addToScene('bob', 'police_man', 7, 21);
+    this.npc2 = this.mapPlugins?.pokemon.addToScene('pika', 25, 31, 20);
 
     // this.flock = new Flock(
     //   this,
@@ -74,12 +74,16 @@ export default class extends GameMap {
               noPathFoundStrategy: 'RETRY'
             });
           }
-          if (npc2Pos.x == 31 && npc2Pos.y == 20) {
+          if (npc2Pos.x == 33 && npc2Pos.y == 20) { this.npc2.move('down');}
+          if (npc2Pos.x == 31 && npc2Pos.y == 24) { 
             this.npc2.moveTo(32, 22, {
               noPathFoundStrategy: 'RETRY'
             });
           }
           if (npc2Pos.x == 36 && npc2Pos.y == 22) { this.npc2.move('down'); }
+
+
+
           if (npc2Pos.x == 36 && npc2Pos.y == 24) { this.npc2.move('right'); }
           if (npc2Pos.x == 39 && npc2Pos.y == 24) { this.npc2.move('up'); }
           if (npc2Pos.x == 39 && npc2Pos.y == 22) { this.npc2.move('right'); }

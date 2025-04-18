@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Interactables } from '@Objects';
+import { Interactables, Tile } from '@Objects';
 import { getValue } from '@Utilities';
 import Debug from '@Data/debug.js';
 
@@ -103,6 +103,9 @@ export default class extends Phaser.Scene {
   }
 
   getTileProperties(x, y) {
+    x = parseInt(x);
+    y = parseInt(y);
+    
     if (Debug.functions.gameMap) {
       console.log(['GameMap::getTileProperties', x, y]);
     }
@@ -164,6 +167,26 @@ export default class extends Phaser.Scene {
     });
 
     return tiles;
+  }
+  
+  isCharacterOnTile(x, y) {
+    let isOnTile = false;
+    this.characters.forEach((character) => {
+      if (character.config.type === 'player') {
+        return;
+      }
+
+      let bounds = character.getPosition();
+      let xCheck = parseInt(bounds.x);
+      let yCheck = parseInt(bounds.y);
+
+      if (xCheck === x && yCheck === y) {
+        isOnTile = true;
+        return;
+      }
+    });
+
+    return isOnTile;
   }
 
   addCharacter(character) {

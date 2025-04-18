@@ -1,8 +1,7 @@
 import Phaser from 'phaser';
-import { Tile, GameMap } from '@Objects';
+import { Tile } from '@Objects';
 import Tileset from '@Tileset';
 import Scenes from '@Scenes';
-import { getPropertyValue } from '@Utilities';
 import Debug from '@Data/debug.js';
 
 export default class extends Phaser.Scene {
@@ -51,9 +50,8 @@ export default class extends Phaser.Scene {
     });
 
     this.preloadTrainers();
-    this.preloadPokemon([1,2,3,4,5,6,7,8,9,25,197,'197s']);
+    this.preloadPokemon();
 
-    // console.log(Scenes);
     Object.keys(Scenes)
       .filter(scene => scene !== 'Preload')
       .forEach((scene) => {
@@ -78,6 +76,7 @@ export default class extends Phaser.Scene {
     this.scene.start('OverworldUI');
     this.scene.bringToTop('OverworldUI');
     this.createTrainerAnimations();
+    this.preloadPokemonAnimations();
   }
 
   preloadTrainers() {
@@ -112,7 +111,7 @@ export default class extends Phaser.Scene {
     });
   }
 
-  preloadPokemon(pokemonToLoad=[]) {
+  preloadPokemon() {
     if (!this.enableOWPokemon) {
       return;
     }
@@ -122,10 +121,6 @@ export default class extends Phaser.Scene {
 
     Object.keys(Tileset.pokemon)
       .forEach(name => {
-        if (pokemonToLoad.length > 0 && !pokemonToLoad.includes(parseInt(name))) {
-          return;
-        }
-
         let pkmn_dimensions = Tileset.ow_pokemon_dimensions.default[name];
         if (pkmn_dimensions === undefined) {
           console.error('Missing dimensions for', name, Tileset.pokemon[name]);
@@ -139,11 +134,7 @@ export default class extends Phaser.Scene {
     ;
 
     Object.keys(Tileset.pokemon_shiny)
-      .forEach(name => {
-        if (pokemonToLoad.length > 0 && !pokemonToLoad.includes(parseInt(name))) {
-          return;
-        }
-        
+      .forEach(name => {       
         let pkmn_dimensions = Tileset.ow_pokemon_shiny_dimensions.default[name];
         if (pkmn_dimensions === undefined) {
           console.error('Missing dimensions for', name, Tileset.pokemon_shiny[name]);
@@ -164,6 +155,7 @@ export default class extends Phaser.Scene {
     if (Debug.functions.preload) {
       console.log('Preload::loadPokemonAnimations');
     }
+
     Object.keys(Tileset.pokemon)
       .forEach(name => {
         this.anims.create({
@@ -172,9 +164,13 @@ export default class extends Phaser.Scene {
           frameRate: 7,
           repeat: -1
         });
+      })
+    ;
+    Object.keys(Tileset.pokemon_shiny)
+      .forEach(name => {
         this.anims.create({
-          key: name+'s-spin',
-          frames: this.anims.generateFrameNumbers(name + 's', { frames: [0, 4, 12, 8] }),
+          key: name+'-spin',
+          frames: this.anims.generateFrameNumbers(name, { frames: [0, 4, 12, 8] }),
           frameRate: 7,
           repeat: -1
         });

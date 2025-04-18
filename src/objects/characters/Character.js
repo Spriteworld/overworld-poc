@@ -23,6 +23,12 @@ export default class extends Phaser.GameObjects.Sprite {
       // 'char-layer': 'ground',
       'can-run': true
     }, ...config};
+    if (this.config.scene.characters.get(this.config.id)) {
+      console.warn('Character::constructor', this.config.id, 'already exists!');
+      this.config.id = (Math.random() + 1).toString(36).substring(7);
+      console.warn('Character::constructor', this.config.id, 'new id generated!');
+    }
+
     let identification = (this.config.id ?? this.config.texture);
     this.setName(identification);
 
@@ -46,28 +52,7 @@ export default class extends Phaser.GameObjects.Sprite {
     this.config.scene.addCharacter(this);
 
     // seen-radius config
-    // initSeenRadius(this);
-    this.rectColor = {
-      normal: 0x1d7196,
-      selected: 0xff0000
-    };
-    this.seenRect = this.config.scene.add.rectangle(
-      this.config.x * Tile.WIDTH, this.config.y * Tile.HEIGHT,
-      0, 0,
-      this.rectColor.normal,
-      Debug.functions.characterSeen ? 0.4 : 0
-    );
-    this.characterRect = this.config.scene.add.rectangle(
-      this.config.x * Tile.WIDTH, this.config.y * Tile.HEIGHT,
-      30, 30,
-      this.rectColor.normal,
-      Debug.functions.characterRect ? 0.5 : 0
-    );
-
-    this.seenRect.setOrigin(0, 0);
-    this.seenRect.setName(identification+'-seen');
-    this.characterRect.setOrigin(0, 0);
-    this.characterRect.setName(identification+'-character');
+    this.initSeenRadius(identification);
   }
 
   characterFramesDef() {
@@ -105,6 +90,30 @@ export default class extends Phaser.GameObjects.Sprite {
 
   setState(state) {
     this.stateMachine.setState(state);
+  }
+
+  initSeenRadius(identification) {
+    this.rectColor = {
+      normal: 0x1d7196,
+      selected: 0xff0000
+    };
+    this.seenRect = this.config.scene.add.rectangle(
+      this.config.x * Tile.WIDTH, this.config.y * Tile.HEIGHT,
+      0, 0,
+      this.rectColor.normal,
+      Debug.functions.characterSeen ? 0.4 : 0
+    );
+    this.characterRect = this.config.scene.add.rectangle(
+      this.config.x * Tile.WIDTH, this.config.y * Tile.HEIGHT,
+      30, 30,
+      this.rectColor.normal,
+      Debug.functions.characterRect ? 0.5 : 0
+    );
+
+    this.seenRect.setOrigin(0, 0);
+    this.seenRect.setName(identification+'-seen');
+    this.characterRect.setOrigin(0, 0);
+    this.characterRect.setName(identification+'-character');
   }
 
   idleOnEnter() {
@@ -261,6 +270,10 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   addAutoSpin(delta) {
+    if (this.config.type === 'npc') {
+      // console.log('Character::addAutoSpin', this.config.id, this.config.spin);
+    }
+
     if (this.initalCreation) {
       let lookDir = this.config['facing-direction'] ?? 'down';
       let faceDir = this.getFacingDirection();
@@ -277,7 +290,7 @@ export default class extends Phaser.GameObjects.Sprite {
     if (this.spinRate <= 0) {
       this.spinRate = this.config['spin-rate'];
 
-      let dir = 'down';
+      let dir = Direction.DOWN;
       switch (Math.floor(Math.random() * 8) +1) {
         case 1: dir = Direction.UP; break;
         case 2: dir = Direction.DOWN; break;
@@ -305,19 +318,22 @@ export default class extends Phaser.GameObjects.Sprite {
 
   canSeeCharacter() {
     if (this.config['seen-radius'] === 0) { return; }
-    if (this.config['seen-character'] === null) { return; }
-    if (this.config['seen-character'].length === 0) { return; }
+    if (
+      this.config['seen-character'] === null 
+        || this.config['seen-character'] === undefined 
+        || this.config['seen-character'].length === 0
+    ) { 
+      return; 
+    }
 
     if (!this.gridengine.hasCharacter(this.config['seen-character'])) {
       if (Debug.functions.characterSeen) {
-        console.log(this.config['seen-character'], 'ge doesnt has character');
+        console.log('GridEngine doesnt know about character: ', this.config['seen-character'], this.config.id);
       }
       return;
     }
 
-    let character = this.config.scene.characters.find(
-      char => char.config.id == this.config['seen-character']
-    );
+    let character = this.config.scene.characters.get(this.config['seen-character']);
     if (typeof character === 'undefined') {
       if (Debug.functions.characterSeen) {
         console.log(character, this.config['seen-character'], 'gamemap doesnt has character');
@@ -347,18 +363,19 @@ export default class extends Phaser.GameObjects.Sprite {
           tile = {x: faceDir.x, y: faceDir.y+i};
         break;
       }
+
       var props = this.scene.getTileProperties(tile.x, tile.y);
       var check = [
-        getValue(props, 'ge_collide', false),
-        getValue(props, 'ge_collide_left', false),
-        getValue(props, 'ge_collide_right', false),
-        getValue(props, 'ge_collide_up', false),
-        getValue(props, 'ge_collide_down', false),
-        getValue(props, 'sw_stop', false),
-        getValue(props, 'sw_slide', false),
-        getValue(props, 'sw_spin', false),
-        getValue(props, 'sw_jump', false),
-        // todo: add character checks...shouldnt be able to see thru other characters XD
+        props.get('ge_collide') || false,
+        props.get('ge_collide_left') || false,
+        props.get('ge_collide_right') || false,
+        props.get('ge_collide_up') || false,
+        props.get('ge_collide_down') || false,
+        props.get('sw_stop') || false,
+        props.get('sw_slide') || false,
+        props.get('sw_spin') || false,
+        props.get('sw_jump') || false,
+        this.config.scene.isCharacterOnTile(tile.x, tile.y),
       ].includes(true);
 
       if (check) {

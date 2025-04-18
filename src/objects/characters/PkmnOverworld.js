@@ -22,6 +22,11 @@ export default class extends Character {
         onUpdate: this.spinOnUpdate,
         onExit: this.spinOnExit,
       })
+      .addState(this.stateDef.SLIDE, {
+        onEnter: this.slideOnEnter,
+        onUpdate: this.slideOnUpdate,
+        onExit: this.slideOnExit,
+      })
       .addState(this.stateDef.JUMP_LEDGE, {
         onEnter: this.jumpLedgeOnEnter,
         onUpdate: this.jumpLedgeOnUpdate,
