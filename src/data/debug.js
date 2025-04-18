@@ -11,7 +11,7 @@ export default {
     gameMap: !true,
     timeOverlay: false,
     characterSeen: true,
-    characterRect: !true,
+    characterRect: true,
     interactables: {
       player: false,
       npc: false,

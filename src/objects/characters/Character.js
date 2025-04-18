@@ -393,33 +393,33 @@ export default class extends Phaser.GameObjects.Sprite {
     ;
 
     // 32 here is the tile size
-    let seenRadiusInTiles = seenRadiusOverride * 32;
+    let seenRadiusInTiles = seenRadiusOverride * Tile.WIDTH;
 
     // calc the actual seen box
     switch(this.getFacingDirection()) {
       case 'left':
         this.seenRect.x = ((faceDir.x+1) * Tile.WIDTH) - seenRadiusInTiles;
-        this.seenRect.y = npcBounds.y+8;
+        this.seenRect.y = npcBounds.y + (this.config.type === 'pkmn' ? 30 : 8);
         this.seenRect.width = seenRadiusInTiles;
         this.seenRect.height = Tile.HEIGHT;
       break;
 
       case 'right':
         this.seenRect.x = faceDir.x * Tile.WIDTH;
-        this.seenRect.y = npcBounds.y+8;
+        this.seenRect.y = npcBounds.y + (this.config.type === 'pkmn' ? 30 : 8);
         this.seenRect.width = seenRadiusInTiles;
         this.seenRect.height = Tile.HEIGHT;
       break;
 
       case 'up':
-        this.seenRect.x = npcBounds.x;
+        this.seenRect.x = npcBounds.x + (this.config.type === 'pkmn' ? 15 : 0);
         this.seenRect.y = ((faceDir.y+1) * Tile.HEIGHT) - seenRadiusInTiles;
         this.seenRect.width = Tile.WIDTH;
         this.seenRect.height = seenRadiusInTiles;
       break;
 
       case 'down':
-        this.seenRect.x = npcBounds.x;
+        this.seenRect.x = npcBounds.x + (this.config.type === 'pkmn' ? 15 : 0);
         this.seenRect.y = faceDir.y * Tile.HEIGHT;
         this.seenRect.width = Tile.WIDTH;
         this.seenRect.height = seenRadiusInTiles;

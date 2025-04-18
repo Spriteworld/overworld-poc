@@ -1145,6 +1145,26 @@
                          "value":"down"
                         }, 
                         {
+                         "name":"seen-character",
+                         "type":"string",
+                         "value":"player"
+                        }, 
+                        {
+                         "name":"seen-radius",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"spin",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"spin-rate",
+                         "type":"int",
+                         "value":200
+                        }, 
+                        {
                          "name":"texture",
                          "type":"string",
                          "value":"197"
@@ -1164,7 +1184,17 @@
                         {
                          "name":"facing-direction",
                          "type":"string",
-                         "value":"down"
+                         "value":"up"
+                        }, 
+                        {
+                         "name":"seen-character",
+                         "type":"string",
+                         "value":"player"
+                        }, 
+                        {
+                         "name":"seen-radius",
+                         "type":"int",
+                         "value":6
                         }, 
                         {
                          "name":"shiny",
@@ -1468,7 +1498,7 @@
                  "visible":true,
                  "width":32,
                  "x":704,
-                 "y":222.666666666667
+                 "y":224
                 }, 
                 {
                  "height":32,
@@ -1510,7 +1540,7 @@
                  "visible":true,
                  "width":32,
                  "x":736,
-                 "y":254.666666666667
+                 "y":256
                 }, 
                 {
                  "height":32,
@@ -1552,7 +1582,7 @@
                  "visible":true,
                  "width":32,
                  "x":704,
-                 "y":286.666666666667
+                 "y":288
                 }, 
                 {
                  "height":32,
@@ -1594,7 +1624,7 @@
                  "visible":true,
                  "width":32,
                  "x":672,
-                 "y":254.666666666667
+                 "y":256
                 }, 
                 {
                  "height":32,
@@ -1772,8 +1802,8 @@
                  "type":"playerSpawn",
                  "visible":true,
                  "width":32,
-                 "x":1120,
-                 "y":128
+                 "x":544,
+                 "y":480
                 }, 
                 {
                  "height":32,
@@ -2026,6 +2056,184 @@
                  "width":32,
                  "x":1088,
                  "y":32
+                }, 
+                {
+                 "height":32,
+                 "id":144,
+                 "name":"pikaleft",
+                 "properties":[
+                        {
+                         "name":"facing-direction",
+                         "type":"string",
+                         "value":"left"
+                        }, 
+                        {
+                         "name":"seen-character",
+                         "type":"string",
+                         "value":"player"
+                        }, 
+                        {
+                         "name":"seen-radius",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"spin",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"spin-rate",
+                         "type":"int",
+                         "value":200
+                        }, 
+                        {
+                         "name":"texture",
+                         "type":"string",
+                         "value":"25"
+                        }],
+                 "rotation":0,
+                 "type":"pkmn",
+                 "visible":true,
+                 "width":32,
+                 "x":736,
+                 "y":192
+                }, 
+                {
+                 "height":32,
+                 "id":145,
+                 "name":"pikaup",
+                 "properties":[
+                        {
+                         "name":"facing-direction",
+                         "type":"string",
+                         "value":"up"
+                        }, 
+                        {
+                         "name":"seen-character",
+                         "type":"string",
+                         "value":"player"
+                        }, 
+                        {
+                         "name":"seen-radius",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"shiny",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"spin",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"spin-rate",
+                         "type":"int",
+                         "value":200
+                        }, 
+                        {
+                         "name":"texture",
+                         "type":"string",
+                         "value":"25"
+                        }],
+                 "rotation":0,
+                 "type":"pkmn",
+                 "visible":true,
+                 "width":32,
+                 "x":768,
+                 "y":160
+                }, 
+                {
+                 "height":32,
+                 "id":146,
+                 "name":"pikaright",
+                 "properties":[
+                        {
+                         "name":"facing-direction",
+                         "type":"string",
+                         "value":"right"
+                        }, 
+                        {
+                         "name":"seen-character",
+                         "type":"string",
+                         "value":"player"
+                        }, 
+                        {
+                         "name":"seen-radius",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"spin",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"spin-rate",
+                         "type":"int",
+                         "value":200
+                        }, 
+                        {
+                         "name":"texture",
+                         "type":"string",
+                         "value":"25"
+                        }],
+                 "rotation":0,
+                 "type":"pkmn",
+                 "visible":true,
+                 "width":32,
+                 "x":800,
+                 "y":192
+                }, 
+                {
+                 "height":32,
+                 "id":147,
+                 "name":"pikadown",
+                 "properties":[
+                        {
+                         "name":"facing-direction",
+                         "type":"string",
+                         "value":"down"
+                        }, 
+                        {
+                         "name":"seen-character",
+                         "type":"string",
+                         "value":"player"
+                        }, 
+                        {
+                         "name":"seen-radius",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"shiny",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"spin",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"spin-rate",
+                         "type":"int",
+                         "value":200
+                        }, 
+                        {
+                         "name":"texture",
+                         "type":"string",
+                         "value":"25"
+                        }],
+                 "rotation":0,
+                 "type":"pkmn",
+                 "visible":true,
+                 "width":32,
+                 "x":768,
+                 "y":224
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -2034,7 +2242,7 @@
          "y":0
         }],
  "nextlayerid":20,
- "nextobjectid":144,
+ "nextobjectid":148,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
