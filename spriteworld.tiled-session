@@ -42,6 +42,9 @@
             }
         },
         "src/maps/kanto/prof_lab.json": {
+            "expandedObjectLayers": [
+                7
+            ],
             "scale": 2.5946875,
             "selectedLayer": 5,
             "viewCenter": {

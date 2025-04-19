@@ -6,6 +6,7 @@ import Sign from '@Objects/interactables/sign.js';
 import Warp from '@Objects/interactables/warp.js';
 import SlideTile from '@Objects/interactables/slidetile.js';
 import SpinTile from '@Objects/interactables/spintile.js';
+import Light from '@Objects/interactables/light.js';
 
 export default {
   Debug,
@@ -16,4 +17,5 @@ export default {
   Warp,
   SlideTile,
   SpinTile,
+  Light,
 }

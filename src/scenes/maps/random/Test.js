@@ -1,4 +1,4 @@
-import {GameMap, Flock, Direction, Tile, Interactables} from '@Objects';
+import {GameMap, Flock, Direction} from '@Objects';
 import {TestMap} from '@Maps';
 
 export default class extends GameMap {
@@ -14,6 +14,7 @@ export default class extends GameMap {
     this.npc1 = {};
     this.npc2 = {};
     this.pokemon = [3, 6, 9, 22, 25, 197, '197s'];
+    this.hasFlock = Math.random() < 0.5;
   }
 
   preload() {
@@ -25,21 +26,24 @@ export default class extends GameMap {
     this.npc1 = this.mapPlugins?.npc.addToScene('bob', 'police_man', 7, 21);
     this.npc2 = this.mapPlugins?.pokemon.addToScene('pika', 25, 31, 20);
 
-    // this.flock = new Flock(
-    //   this,
-    //   'fearow',
-    //   '022',
-    //   1,
-    //   14,
-    //   Direction.RIGHT,
-    //   [
-    //     [1,0,0],
-    //     [0,1,0],
-    //     [0,0,1],
-    //     [0,1,0],
-    //     [1,0,0],
-    //   ]
-    // );
+    // make 10% chance to run this function
+    if (this.hasFlock) {
+      this.flock = new Flock(
+        this,
+        'fearow',
+        '022',
+        1,
+        14,
+        Direction.RIGHT,
+        [
+          [1,0,0],
+          [0,1,0],
+          [0,0,1],
+          [0,1,0],
+          [1,0,0],
+        ]
+      );
+    }
 
     this.createCharacters();
 
@@ -47,7 +51,6 @@ export default class extends GameMap {
       .positionChangeFinished()
       .subscribe(({ charId, exitTile, enterTile }) => {
         if ([this.npc1.config.id].includes(charId)) {
-          // console.log('npc1', charId, exitTile, enterTile);
           let npc1Pos = this.npc1.getPosition();
           if (npc1Pos.x == 10 && npc1Pos.y == 21) {
             this.npc1.moveTo(4, 20, {
@@ -55,8 +58,8 @@ export default class extends GameMap {
             });
           }
         }
+
         if ([this.npc2.config.id].includes(charId)) {
-          // console.log('npc2', charId, exitTile, enterTile);
           let npc2Pos = this.npc2.getPosition();
           if (npc2Pos.x == 41 && npc2Pos.y == 22) {
             this.npc2.moveTo(41, 20, {
@@ -70,9 +73,6 @@ export default class extends GameMap {
             });
           }
           if (npc2Pos.x == 36 && npc2Pos.y == 22) { this.npc2.move('down'); }
-
-
-
           if (npc2Pos.x == 36 && npc2Pos.y == 24) { this.npc2.move('right'); }
           if (npc2Pos.x == 39 && npc2Pos.y == 24) { this.npc2.move('up'); }
           if (npc2Pos.x == 39 && npc2Pos.y == 22) { this.npc2.move('right'); }
@@ -84,7 +84,7 @@ export default class extends GameMap {
 
   update(time, delta) {
     this.updateCharacters(time, delta);
-    // this.flock.update(time, delta);
+    if (this.hasFlock) this.flock.update(time, delta);
     this.npc1.update(time);
     this.npc2.update(time);
 

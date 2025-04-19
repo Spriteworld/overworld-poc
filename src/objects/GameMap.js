@@ -29,6 +29,7 @@ export default class extends Phaser.Scene {
     this.mapPlugins['warp'] = new Interactables.Warp(this);
     this.mapPlugins['slidetile'] = new Interactables.SlideTile(this);
     this.mapPlugins['spintile'] = new Interactables.SpinTile(this);
+    this.mapPlugins['light'] = new Interactables.Light(this);
     this.mapPlugins['npc'] = new Interactables.NPC(this);
     this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
     this.mapPlugins['player'] = new Interactables.Player(this);

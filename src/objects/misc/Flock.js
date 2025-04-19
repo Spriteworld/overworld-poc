@@ -79,14 +79,14 @@ export default class extends Phaser.GameObjects.Container {
       var x_counter = this.x;
       row.forEach(enabled => {
         if (enabled) {
-          let mon = this.scene.addMonToScene(
+          let mon = this.scene.mapPlugins?.pokemon.addToScene(
+            'flock_'+this.name+'_'+counter,
             this.pokeId,
             x_counter,
             y_counter,
             {
               ...pkmnObj,
-              ...{id: 'flock_'+this.name+'_'+counter}
-            },
+            }
           );
           mon.setState(mon.stateDef.MOVE);
           this.add(mon);
