@@ -14,7 +14,7 @@ export default class extends GameMap {
     this.npc1 = {};
     this.npc2 = {};
     this.pokemon = [3, 6, 9, 22, 25, 197, '197s'];
-    this.hasFlock = Math.random() < 0.5;
+    this.hasFlock = true;//Math.random() < 0.5;
   }
 
   preload() {

@@ -32,7 +32,7 @@ export default class {
   }
 
   event() {
-    if (Debug.functions.interactables.spinTile) {
+    if (Debug.functions.interactables.warp) {
       console.log(['Interactables::warp::event', this.scene])
     }
 
@@ -56,6 +56,18 @@ export default class {
     let warpProps = warp.obj.properties;
     let warpLocation = getPropertyValue(warpProps, 'warp', null);
     if (warpLocation === null || warpLocation === ''){ return; }
+
+    if (Debug.functions.interactables.warp) {
+      console.log(['Interactables::warp::handleWarps', 'char is trying to warp', char.name, 'to', warpLocation]);
+    }
+    if (char.type !== 'player') {
+      if (this.scene.registry.get('map') === warpLocation) {
+        this.warpPlayerInMap(char, playerLocation);
+      }
+      char.visible = false;
+      return;
+    }
+
 
     char.disableMovement();
     this.scene.cameras.main.fadeOut(this.cameraFade, 0, 0, 0);
