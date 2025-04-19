@@ -24,18 +24,20 @@ export default class extends Phaser.Scene {
   }
   
   initPlugins() {
-    this.mapPlugins['debug'] = new Interactables.Debug(this);
-    // this.mapPlugins['npc'] = new Interactables.NPC(this);
-    // this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
-    // this.mapPlugins['sign'] = new Interactables.Sign(this);
-    // this.mapPlugins['warp'] = new Interactables.Warp(this);
-    // this.mapPlugins['slidetile'] = new Interactables.SlideTile(this);
-    // this.mapPlugins['spintile'] = new Interactables.SpinTile(this);
+    // this.mapPlugins['debug'] = new Interactables.Debug(this);
+    this.mapPlugins['sign'] = new Interactables.Sign(this);
+    this.mapPlugins['warp'] = new Interactables.Warp(this);
+    this.mapPlugins['slidetile'] = new Interactables.SlideTile(this);
+    this.mapPlugins['spintile'] = new Interactables.SpinTile(this);
+    this.mapPlugins['npc'] = new Interactables.NPC(this);
+    this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
     this.mapPlugins['player'] = new Interactables.Player(this);
   }
 
   init(data) {
     this.config = { ...this.config, ...data };
+    this.registry.set('map', this.config.mapName);
+
     this.tilemaps = {};
     this.characters = new Map();
     this.npcs = new Map();

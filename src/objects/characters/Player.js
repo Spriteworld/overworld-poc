@@ -4,6 +4,7 @@ export default class extends Character {
   constructor(config) {
     config.type = 'player';
     super(config);
+    this.config = config;
 
     this.stateMachine
       .addState(this.stateDef.IDLE, {
@@ -59,7 +60,7 @@ export default class extends Character {
   }
 
   moveOnUpdate() {
-    if (this.config.scene.registry.get('player_input')) {
+    if (this.config.scene.registry.get('player_input') === false) {
       return;
     }
     const keys = this.config.scene.input.keyboard.createCursorKeys();
@@ -91,12 +92,10 @@ export default class extends Character {
   }
 
   disableMovement() {
-    console.log('player::disableMovement');
     this.config.scene.registry.set('player_input', false);
   }
 
   enableMovement() {
-    console.log('player::enableMovement');
     this.config.scene.registry.set('player_input', true);
   }
 

@@ -1,7 +1,7 @@
 export default {
   objects: true,
   grid: !true,
-  time: false,
+  time: true,
   inspector: !true,
   stateMachine: {
     console: false,
@@ -11,7 +11,7 @@ export default {
     gameMap: !true,
     timeOverlay: false,
     characterSeen: true,
-    characterRect: true,
+    characterRect: !true,
     interactables: {
       player: false,
       npc: false,
@@ -19,7 +19,7 @@ export default {
       sign: false,
       slideTile: false,
       spinTile: false,
-      warp: false,
+      warp: !false,
       cutTree: false,
     },
   },

@@ -6,15 +6,20 @@ import { getPropertyValue } from '@Utilities';
 export default class {
   constructor(scene) {
     this.scene = scene;
+    this.warps = [];
+    this.player = {};
   }
 
   init() {
     if (Debug.functions.interactables.warp) {
-      console.log('Interactables::initWarp');
+      console.log('Interactables::warp', this.scene.config.mapName);
     }
+
     let warps = this.scene.findInteractions('warp');
     if (warps.length === 0) { return; }
 
+    // empty the warps, and reset them to the current maps warps
+    this.scene.registry.set('warps', []);
     warps.forEach((obj) => {
       this.scene.registry.get('warps').push({
         name: obj.id,
@@ -23,22 +28,38 @@ export default class {
         obj: obj
       });
     });
+    this.warps = this.scene.registry.get('warps');
   }
 
-  update(char, exitTile, enterTile) {
-    let warps = this.scene.registry.get('warps');
-    if (warps.length === 0) { return; }
+  event() {
+    if (Debug.functions.interactables.spinTile) {
+      console.log(['Interactables::warp::event', this.scene])
+    }
 
-    let warp = warps.find(p => p.x === enterTile.x && p.y === enterTile.y);
+    // handle warp tiles
+    this.scene.gridEngine
+      .positionChangeStarted()
+      .subscribe(({ charId, exitTile, enterTile }) => {
+        let char = this.scene.characters.get(charId);
+        if (typeof char === 'undefined') { return; }
+
+        this.handleWarps(char, exitTile, enterTile);
+      });
+  }
+
+  handleWarps(char, exitTile, enterTile) {
+    if (this.warps.length === 0) { return; }
+
+    let warp = this.warps.find(p => p.x === enterTile.x && p.y === enterTile.y);
     if (typeof warp === 'undefined') { return; }
 
     let warpProps = warp.obj.properties;
     let warpLocation = getPropertyValue(warpProps, 'warp', null);
     if (warpLocation === null || warpLocation === ''){ return; }
 
-    // this.player.disableMovement();
-    this.cameras.main.fadeOut(this.cameraFade, 0, 0, 0);
-    this.cameras.main.once(
+    char.disableMovement();
+    this.scene.cameras.main.fadeOut(this.cameraFade, 0, 0, 0);
+    this.scene.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       (cam, effect) => {
         let playerLocation = {
@@ -50,37 +71,40 @@ export default class {
 
         // same map, we dont need to move scene
         if (this.scene.registry.get('map') === warpLocation) {
-          this.warpPlayerInMap(playerLocation);
-          this.cameras.main.fadeIn(this.cameraFade, 0, 0, 0);
-          // this.player.enableMovement();
+          this.warpPlayerInMap(char, playerLocation);
+          this.scene.cameras.main.fadeIn(this.cameraFade, 0, 0, 0);
+          char.enableMovement();
           return;
         }
 
         // new map!
-        this.scene.start(warpLocation, {
+        this.scene.registry.set('map', warpLocation);
+        this.scene.scene.start(warpLocation, {
           playerLocation: playerLocation
         });
-        // this.player.enableMovement();
+        char.enableMovement();
       }
     );
   }
 
-  warpPlayerInMap(playerLocation) {
+  warpPlayerInMap(char, playerLocation) {
     let pos = {
       x: playerLocation.x,
       y: playerLocation.y
     };
 
     // move the player
-    this.gridEngine.setPosition(this.player.config.id, pos, playerLocation.layer);
-    this.player.look(playerLocation.dir);
+    this.scene.gridengine.setPosition(char.id, pos, playerLocation.layer);
+    char.look(playerLocation.dir);
 
-    // get the pokemon to be in the right spot
-    this.gridEngine.setPosition(
-      this.playerMon.config.id,
-      this.player.getPosInBehindDirection(),
-      playerLocation.layer
-    );
+    if (this.scene.mapPlugins['player'].hasPlayerMon) {
+      // get the pokemon to be in the right spot
+      this.scene.gridengine.setPosition(
+        this.playerMon.config.id,
+        char.getPosInBehindDirection(),
+        playerLocation.layer
+      );
+    }
   }
 
 }

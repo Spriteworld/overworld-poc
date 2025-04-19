@@ -1147,7 +1147,7 @@
                         {
                          "name":"seen-character",
                          "type":"string",
-                         "value":"player"
+                         "value":""
                         }, 
                         {
                          "name":"seen-radius",
@@ -1189,7 +1189,7 @@
                         {
                          "name":"seen-character",
                          "type":"string",
-                         "value":"player"
+                         "value":""
                         }, 
                         {
                          "name":"seen-radius",
@@ -1476,7 +1476,7 @@
                         {
                          "name":"seen-radius",
                          "type":"int",
-                         "value":2
+                         "value":5
                         }, 
                         {
                          "name":"spin",
@@ -1518,7 +1518,7 @@
                         {
                          "name":"seen-radius",
                          "type":"int",
-                         "value":2
+                         "value":5
                         }, 
                         {
                          "name":"spin",
@@ -1560,7 +1560,7 @@
                         {
                          "name":"seen-radius",
                          "type":"int",
-                         "value":2
+                         "value":5
                         }, 
                         {
                          "name":"spin",
@@ -1602,7 +1602,7 @@
                         {
                          "name":"seen-radius",
                          "type":"int",
-                         "value":2
+                         "value":5
                         }, 
                         {
                          "name":"spin",
@@ -1802,8 +1802,8 @@
                  "type":"playerSpawn",
                  "visible":true,
                  "width":32,
-                 "x":544,
-                 "y":480
+                 "x":288,
+                 "y":160
                 }, 
                 {
                  "height":32,
@@ -2075,12 +2075,17 @@
                         {
                          "name":"seen-radius",
                          "type":"int",
-                         "value":6
+                         "value":5
+                        }, 
+                        {
+                         "name":"shiny",
+                         "type":"bool",
+                         "value":true
                         }, 
                         {
                          "name":"spin",
                          "type":"bool",
-                         "value":false
+                         "value":true
                         }, 
                         {
                          "name":"spin-rate",
@@ -2096,8 +2101,8 @@
                  "type":"pkmn",
                  "visible":true,
                  "width":32,
-                 "x":736,
-                 "y":192
+                 "x":640,
+                 "y":224
                 }, 
                 {
                  "height":32,
@@ -2117,17 +2122,17 @@
                         {
                          "name":"seen-radius",
                          "type":"int",
-                         "value":6
+                         "value":5
                         }, 
                         {
                          "name":"shiny",
                          "type":"bool",
-                         "value":true
+                         "value":false
                         }, 
                         {
                          "name":"spin",
                          "type":"bool",
-                         "value":false
+                         "value":true
                         }, 
                         {
                          "name":"spin-rate",
@@ -2144,7 +2149,7 @@
                  "visible":true,
                  "width":32,
                  "x":768,
-                 "y":160
+                 "y":224
                 }, 
                 {
                  "height":32,
@@ -2164,12 +2169,12 @@
                         {
                          "name":"seen-radius",
                          "type":"int",
-                         "value":6
+                         "value":5
                         }, 
                         {
                          "name":"spin",
                          "type":"bool",
-                         "value":false
+                         "value":true
                         }, 
                         {
                          "name":"spin-rate",
@@ -2185,8 +2190,8 @@
                  "type":"pkmn",
                  "visible":true,
                  "width":32,
-                 "x":800,
-                 "y":192
+                 "x":640,
+                 "y":288
                 }, 
                 {
                  "height":32,
@@ -2206,7 +2211,7 @@
                         {
                          "name":"seen-radius",
                          "type":"int",
-                         "value":6
+                         "value":5
                         }, 
                         {
                          "name":"shiny",
@@ -2216,7 +2221,7 @@
                         {
                          "name":"spin",
                          "type":"bool",
-                         "value":false
+                         "value":true
                         }, 
                         {
                          "name":"spin-rate",
@@ -2233,7 +2238,7 @@
                  "visible":true,
                  "width":32,
                  "x":768,
-                 "y":224
+                 "y":288
                 }],
          "opacity":1,
          "type":"objectgroup",

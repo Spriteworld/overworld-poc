@@ -9,11 +9,14 @@
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "src/maps/kanto/hero_house_floor1.json": {
+            "expandedObjectLayers": [
+                7
+            ],
             "scale": 2.780022321428571,
-            "selectedLayer": 0,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 223.91906539804893,
-                "y": 176.07772291139753
+                "x": 144.0635914729616,
+                "y": 303.95439399413874
             }
         },
         "src/maps/kanto/hero_house_floor2.json": {
@@ -25,27 +28,41 @@
             }
         },
         "src/maps/kanto/pallet.json": {
-            "scale": 0.5,
-            "selectedLayer": 0,
+            "expandedObjectLayers": [
+                7
+            ],
+            "scale": 2,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 379,
-                "y": -203
+                "x": 415.75,
+                "y": 307
             }
         },
         "src/maps/kanto/prof_lab.json": {
             "scale": 2.5946875,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 239.91328435505238,
-                "y": 239.91328435505238
+                "x": 239.72058292183544,
+                "y": 239.72058292183547
             }
         },
         "src/maps/kanto/route1.json": {
-            "scale": 0.9535342261904762,
+            "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 384.35956458975454,
-                "y": 1502.3058015684132
+                "x": 510.75,
+                "y": 1164
+            }
+        },
+        "src/maps/kanto/viridian_city.json": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 1.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 764.3333333333333,
+                "y": 648
             }
         },
         "src/maps/random/base.json": {
@@ -65,11 +82,14 @@
             }
         },
         "src/maps/random/test.json": {
+            "expandedObjectLayers": [
+                5
+            ],
             "scale": 1.5,
-            "selectedLayer": 11,
+            "selectedLayer": 9,
             "viewCenter": {
-                "x": 791,
-                "y": 212.99999999999994
+                "x": 944.3333333333333,
+                "y": 400
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -90,22 +110,23 @@
     "loadedWorlds": [
         "//dev/www/linky/spriteworld.dev.xlink.cybershade.org/character/src/maps/kanto/kanto.world"
     ],
+    "map.fixedSize": true,
     "map.lastUsedFormat": "json",
     "openFiles": [
     ],
     "project": "spriteworld.tiled-project",
     "recentFiles": [
-        "src/maps/random/base.json",
+        "src/maps/kanto/route1.json",
+        "src/maps/kanto/viridian_city.json",
+        "src/maps/kanto/pallet.json",
+        "src/maps/kanto/prof_lab.json",
         "src/maps/random/test.json",
+        "src/maps/random/base.json",
         "src/tileset/gen3_outside.json",
         "src/tileset/gen3_inside.json",
-        "src/maps/kanto/route1.json",
         "src/maps/kanto/hero_house_floor1.json",
         "src/maps/kanto/hero_house_floor2.json",
-        "src/maps/kanto/prof_lab.json",
         "src/maps/random/skyland.json",
-        "src/maps/kanto/pallet.json",
-        "src/maps/random/basic.json",
-        "src/maps/random/test.bak.json"
+        "src/maps/random/basic.json"
     ]
 }

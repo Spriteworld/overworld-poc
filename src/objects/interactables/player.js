@@ -8,7 +8,8 @@ export default class {
     this.loadedPlayer = false;
     this.player = {};
     this.playerMon = {};
-
+    this.hasPlayerMon = false;
+    
     this.jumpTiles = [];
   }
   
@@ -78,6 +79,7 @@ export default class {
     }
 
     // if (this.scene.get('Preload').enablePlayerOWPokemon) {
+    //   this.hasPlayerMon = true;
     //   this.playerMon = this.scene.addMonToScene('025', x +1, y, {
     //     id: 'playerMon',
     //     follow: this.player.config.id,

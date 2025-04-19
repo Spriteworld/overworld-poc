@@ -15,17 +15,6 @@ export default class extends GameMap {
     this.npc2 = {};
     this.pokemon = [3, 6, 9, 22, 25, 197, '197s'];
   }
-  
-  initPlugins() {
-    // this.mapPlugins['debug'] = new Interactables.Debug(this);
-    // this.mapPlugins['sign'] = new Interactables.Sign(this);
-    // this.mapPlugins['warp'] = new Interactables.Warp(this); # broke
-    this.mapPlugins['slidetile'] = new Interactables.SlideTile(this);
-    this.mapPlugins['spintile'] = new Interactables.SpinTile(this);
-    this.mapPlugins['npc'] = new Interactables.NPC(this);
-    this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
-    this.mapPlugins['player'] = new Interactables.Player(this);
-  }
 
   preload() {
     this.preloadMap();

@@ -106,6 +106,12 @@
          "id":4,
          "name":"top",
          "opacity":1,
+         "properties":[
+                {
+                 "name":"ge_charLayer",
+                 "type":"string",
+                 "value":"top"
+                }],
          "type":"tilelayer",
          "visible":true,
          "width":24,
@@ -231,7 +237,7 @@
          "y":0
         }],
  "nextlayerid":8,
- "nextobjectid":8,
+ "nextobjectid":9,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
