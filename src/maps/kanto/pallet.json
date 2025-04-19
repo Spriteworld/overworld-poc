@@ -152,12 +152,12 @@
                         {
                          "name":"warp-x",
                          "type":"int",
-                         "value":6
+                         "value":12
                         }, 
                         {
                          "name":"warp-y",
                          "type":"int",
-                         "value":8
+                         "value":41
                         }],
                  "rotation":0,
                  "type":"warp",
@@ -169,7 +169,7 @@
                 {
                  "height":32,
                  "id":6,
-                 "name":"Route1SWarp",
+                 "name":"HeroHouseF1Warp",
                  "properties":[
                         {
                          "name":"warp",

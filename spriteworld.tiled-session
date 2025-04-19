@@ -3,8 +3,11 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "src/maps/kanto/route1.json",
     "expandedProjectPaths": [
+        "src/maps/kanto",
+        "src",
+        "src/maps"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -32,37 +35,40 @@
                 7
             ],
             "scale": 2,
-            "selectedLayer": 2,
+            "selectedLayer": 3,
             "viewCenter": {
                 "x": 415.75,
-                "y": 307
+                "y": 266.25
             }
         },
         "src/maps/kanto/prof_lab.json": {
             "scale": 2.5946875,
-            "selectedLayer": 0,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 239.72058292183544,
-                "y": 239.72058292183547
+                "x": 239.5278814886186,
+                "y": 239.52788148861856
             }
         },
         "src/maps/kanto/route1.json": {
-            "scale": 2,
-            "selectedLayer": 0,
+            "expandedObjectLayers": [
+                7
+            ],
+            "scale": 4,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 510.75,
-                "y": 1164
+                "x": 389.375,
+                "y": -29.875
             }
         },
         "src/maps/kanto/viridian_city.json": {
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 1.5,
-            "selectedLayer": 4,
+            "scale": 2,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 764.3333333333333,
-                "y": 648
+                "x": 768.25,
+                "y": 1295.75
             }
         },
         "src/maps/random/base.json": {
@@ -113,12 +119,15 @@
     "map.fixedSize": true,
     "map.lastUsedFormat": "json",
     "openFiles": [
+        "src/maps/kanto/pallet.json",
+        "src/maps/kanto/viridian_city.json",
+        "src/maps/kanto/route1.json"
     ],
     "project": "spriteworld.tiled-project",
     "recentFiles": [
-        "src/maps/kanto/route1.json",
-        "src/maps/kanto/viridian_city.json",
         "src/maps/kanto/pallet.json",
+        "src/maps/kanto/viridian_city.json",
+        "src/maps/kanto/route1.json",
         "src/maps/kanto/prof_lab.json",
         "src/maps/random/test.json",
         "src/maps/random/base.json",

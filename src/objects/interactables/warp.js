@@ -94,12 +94,12 @@ export default class {
     };
 
     // move the player
-    this.scene.gridengine.setPosition(char.id, pos, playerLocation.layer);
+    this.scene.gridEngine.setPosition(char.name, pos, playerLocation.layer);
     char.look(playerLocation.dir);
 
     if (this.scene.mapPlugins['player'].hasPlayerMon) {
       // get the pokemon to be in the right spot
-      this.scene.gridengine.setPosition(
+      this.scene.gridEngine.setPosition(
         this.playerMon.config.id,
         char.getPosInBehindDirection(),
         playerLocation.layer

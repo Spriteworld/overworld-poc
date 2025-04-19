@@ -13,6 +13,13 @@
             "width": 768,
             "x": 768,
             "y": 0
+        },
+        {
+            "fileName": "viridian_city.json",
+            "height": 1280,
+            "width": 1536,
+            "x": 384,
+            "y": -1280
         }
     ],
     "onlyShowAdjacentMaps": false,
