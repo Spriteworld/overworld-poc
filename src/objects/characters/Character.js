@@ -21,7 +21,8 @@ export default class extends Phaser.GameObjects.Sprite {
       'seen-radius': 0,
       'seen-character': null,
       // 'char-layer': 'ground',
-      'can-run': true
+      'can-run': true,
+      'ignore-warp': false,
     }, ...config};
     if (this.config.scene.characters.get(this.config.id)) {
       console.warn('Character::constructor', this.config.id, 'already exists!');

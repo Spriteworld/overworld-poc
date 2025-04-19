@@ -14,6 +14,12 @@ export default class {
     let lights = this.scene.findInteractions('light');
     if (lights.length === 0) { return; }
 
+    if (Debug.nighttimeLightsOnly === true) {
+      if (this.scene.scene.get('TimeOverlay').time.day) {
+        return;
+      }
+    }
+
     lights.forEach(obj => {
       this.scene.add
         .pointlight(

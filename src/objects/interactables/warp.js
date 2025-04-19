@@ -42,6 +42,7 @@ export default class {
       .subscribe(({ charId, exitTile, enterTile }) => {
         let char = this.scene.characters.get(charId);
         if (typeof char === 'undefined') { return; }
+        if (char.config['ignore-warp'] === true) { return; }
 
         this.handleWarps(char, exitTile, enterTile);
       });

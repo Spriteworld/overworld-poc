@@ -86,6 +86,7 @@ export default class extends Phaser.GameObjects.Container {
             y_counter,
             {
               ...pkmnObj,
+              'ignore-warp': true,
             }
           );
           mon.setState(mon.stateDef.MOVE);

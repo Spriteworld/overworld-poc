@@ -2,6 +2,7 @@ export default {
   objects: true,
   grid: !true,
   time: true,
+  nighttimeLightsOnly: true,
   inspector: !true,
   stateMachine: {
     console: false,

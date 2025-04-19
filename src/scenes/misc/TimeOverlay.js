@@ -16,7 +16,6 @@ export default class extends Phaser.Scene {
   }
 
   init() {
-
     let { width, height } = this.sys.game.canvas;
     this.overlay = this.add.image(0, 0, 'blank')
       .setDisplayOrigin(0)
