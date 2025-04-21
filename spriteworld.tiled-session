@@ -86,7 +86,7 @@
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1083,
+                "x": 888.5,
                 "y": 506.5
             }
         },
@@ -94,11 +94,11 @@
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 1.5,
-            "selectedLayer": 9,
+            "scale": 1,
+            "selectedLayer": 11,
             "viewCenter": {
-                "x": 944.3333333333333,
-                "y": 400
+                "x": 612.5,
+                "y": 701.5
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -127,6 +127,7 @@
         "src/maps/kanto/route1.json"
     ],
     "project": "spriteworld.tiled-project",
+    "property.type": "int",
     "recentFiles": [
         "src/maps/kanto/pallet.json",
         "src/maps/kanto/viridian_city.json",

@@ -1,16 +1,17 @@
+import { getValue } from '@Utilities';
 
-var createToast = function (scene, x, y, config) {
-  var wrapWidth = scene.getValue(config, 'wrapWidth', 0);
-  var fixedWidth = scene.getValue(config, 'fixedWidth', 0);
-  var fixedHeight = scene.getValue(config, 'fixedHeight', 0);
+var toast = function (scene, x, y, config) {
+  var wrapWidth = getValue(config, 'wrapWidth', 0);
+  var fixedWidth = getValue(config, 'fixedWidth', 0);
+  var fixedHeight = getValue(config, 'fixedHeight', 0);
   var toast = scene.rexUI.add.toast({
     x: x,
     y: y,
     background: scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x000000)
       .setStrokeStyle(2, 0xffffff),
     text: scene.add.text(0, 0, '', {
-        fontSize: '20px',
-        color: '#fff',
+      fontSize: '20px',
+      color: '#fff',
     }),
     space: {
       left: 20,
@@ -25,7 +26,7 @@ var createToast = function (scene, x, y, config) {
       hold: 1500,
       out: 450,
     },
-  }) .setOrigin(0);
+  }).setOrigin(0);
 
   scene.plugins.get('rexAnchor').add(toast, {
     left: 'left+10',
@@ -34,4 +35,5 @@ var createToast = function (scene, x, y, config) {
 
   return toast;
 }
-export { createToast };
+
+export { toast };

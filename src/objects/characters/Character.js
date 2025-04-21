@@ -23,7 +23,13 @@ export default class extends Phaser.GameObjects.Sprite {
       // 'char-layer': 'ground',
       'can-run': true,
       'ignore-warp': false,
+      'track-player': false,
+      'track-player-radius': 2,
     }, ...config};
+    this.rectColor = {
+      normal: 0x1d7196,
+      selected: 0xff0000
+    };
     if (this.config.scene.characters.get(this.config.id)) {
       console.warn('Character::constructor', this.config.id, 'already exists!');
       this.config.id = (Math.random() + 1).toString(36).substring(7);
@@ -52,8 +58,8 @@ export default class extends Phaser.GameObjects.Sprite {
     this.config.scene.add.existing(this);
     this.config.scene.addCharacter(this);
 
-    // seen-radius config
     this.initSeenRadius(identification);
+    this.initTrackingRadius(identification);
   }
 
   characterFramesDef() {
@@ -94,27 +100,30 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   initSeenRadius(identification) {
-    this.rectColor = {
-      normal: 0x1d7196,
-      selected: 0xff0000
-    };
     this.seenRect = this.config.scene.add.rectangle(
       this.config.x * Tile.WIDTH, this.config.y * Tile.HEIGHT,
       0, 0,
       this.rectColor.normal,
-      Debug.functions.characterSeen ? 0.4 : 0
+      Debug.functions.rectOutlines ? 0.4 : 0
     );
     this.characterRect = this.config.scene.add.rectangle(
       this.config.x * Tile.WIDTH, this.config.y * Tile.HEIGHT,
       30, 30,
       this.rectColor.normal,
-      Debug.functions.characterRect ? 0.5 : 0
+      Debug.functions.rectOutlines ? 0.5 : 0
     );
 
     this.seenRect.setOrigin(0, 0);
     this.seenRect.setName(identification+'-seen');
     this.characterRect.setOrigin(0, 0);
     this.characterRect.setName(identification+'-character');
+  }
+
+  initTrackingRadius(identification) {
+    if (typeof this.config['track-player'] === 'undefined') { return; }
+    if (this.config['track-player'] === false) { return; }
+
+    this.trackingCoords = [];
   }
 
   idleOnEnter() {
@@ -317,6 +326,136 @@ export default class extends Phaser.GameObjects.Sprite {
     this.config.spin = true;
   }
 
+  generateTrackingCoords() {
+    let radius = this.config['track-player-radius'] || 2;
+    this.trackingCoords = [];
+    let npcBounds = this.getBounds();
+    let pyramidCount = [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29];
+
+    let npcCoords = { 
+      x: parseInt(npcBounds.x / Tile.WIDTH), 
+      y: parseInt(npcBounds.y / Tile.HEIGHT)
+    };
+
+    // top pyramid
+    npcCoords.x -= 1;
+    for (let i=0; i<radius; i++) {
+      let coord = {...npcCoords};
+      coord.x -= i;
+      coord.y -= i;
+
+      for (let j=0; j<pyramidCount[i]; j++) {
+        coord.x += 1;
+        
+        this.trackingCoords.push({x: coord.x, y: coord.y, dir: 'up'});
+        if (!this.isMoving() && Debug.functions.rectOutlines && Debug.functions.playerTracking) {
+          let tile = this.config.scene.add.rectangle(
+            coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
+            Tile.WIDTH, Tile.HEIGHT,
+            this.rectColor.normal,
+            0.5
+          );
+          tile.setOrigin(0,0);
+        }
+      }
+    }
+
+    // bottom pyramid
+    npcCoords.x += 2;
+    npcCoords.y += 2;
+    for (let i=0; i<radius; i++) {
+      let coord = {...npcCoords};
+      coord.x += i;
+      coord.y += i;
+
+      for (let j=0; j<pyramidCount[i]; j++) {
+        coord.x -= 1;
+        
+        this.trackingCoords.push({x: coord.x, y: coord.y, dir: 'down'});
+        if (!this.isMoving() && Debug.functions.rectOutlines && Debug.functions.playerTracking) {
+          let tile = this.config.scene.add.rectangle(
+            coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
+            Tile.WIDTH, Tile.HEIGHT,
+            this.rectColor.normal,
+            0.5
+          );
+          tile.setOrigin(0,0);
+        }
+      }
+    }
+
+    // right pyramid
+    npcCoords.y -= 2;
+    for (let i=0; i<radius; i++) {
+      let coord = {...npcCoords};
+      coord.x += i;
+      coord.y -= i;
+
+      for (let j=0; j<pyramidCount[i]; j++) {
+        coord.y += 1;
+        
+        this.trackingCoords.push({x: coord.x, y: coord.y, dir: 'right'});
+        if (!this.isMoving() && Debug.functions.rectOutlines && Debug.functions.playerTracking) {
+          let tile = this.config.scene.add.rectangle(
+            coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
+            Tile.WIDTH, Tile.HEIGHT,
+            this.rectColor.normal,
+            0.5
+          );
+          tile.setOrigin(0,0);
+        }
+      }
+    }
+
+    // left pyramid
+    npcCoords.x -= 2;
+    for (let i=0; i<radius; i++) {
+      let coord = {...npcCoords};
+      coord.x -= i;
+      coord.y -= i;
+
+      for (let j=0; j<pyramidCount[i]; j++) {
+        coord.y += 1;
+        
+        this.trackingCoords.push({x: coord.x, y: coord.y, dir: 'left'});
+        if (!this.isMoving() && Debug.functions.rectOutlines && Debug.functions.playerTracking) {
+          let tile = this.config.scene.add.rectangle(
+            coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
+            Tile.WIDTH, Tile.HEIGHT,
+            this.rectColor.normal,
+            0.5
+          );
+          tile.setOrigin(0,0);
+        }
+      }
+    }
+  }
+
+  canTrackPlayer() {
+    if (typeof this.config['track-player'] === 'undefined') { return; }
+    if (this.config['track-player'] === false) { return; }
+    let radius = this.config['track-player-radius'] || 2;
+
+    let player = this.config.scene.mapPlugins['player'].player;
+    let playerPos = player.getPosition();
+    
+    if (this.trackingCoords.length === 0) {
+      this.scene.mapPlugins['debug'].debugObject(this, radius);
+      this.generateTrackingCoords();
+    }
+
+    let coord = Object.values(this.trackingCoords).find((coord) => {
+      if (coord.x === parseInt(playerPos.x) && coord.y === parseInt(playerPos.y)) {
+        return true;
+      }
+    });
+
+    if (coord) {
+      console.log(['Character::canTrackPlayer', this.config.id +' can track the player!', coord.dir]);
+      this.look(coord.dir);
+    }
+  }
+
   canSeeCharacter() {
     if (this.config['seen-radius'] === 0) { return; }
     if (
@@ -328,7 +467,7 @@ export default class extends Phaser.GameObjects.Sprite {
     }
 
     if (!this.gridengine.hasCharacter(this.config['seen-character'])) {
-      if (Debug.functions.characterSeen) {
+      if (Debug.functions.rectOutlines) {
         console.log('GridEngine doesnt know about character: ', this.config['seen-character'], this.config.id);
       }
       return;
@@ -336,7 +475,7 @@ export default class extends Phaser.GameObjects.Sprite {
 
     let character = this.config.scene.characters.get(this.config['seen-character']);
     if (typeof character === 'undefined') {
-      if (Debug.functions.characterSeen) {
+      if (Debug.functions.rectOutlines) {
         console.log(character, this.config['seen-character'], 'gamemap doesnt has character');
       }
       return;
@@ -457,6 +596,10 @@ export default class extends Phaser.GameObjects.Sprite {
 
   moveTo(x, y, config) {
     return this.gridengine.moveTo(this.config.id, { x: x, y: y }, config);
+  }
+
+  isMoving() {
+    return this.gridengine.isMoving(this.config.id);
   }
 
   stopMovement() {

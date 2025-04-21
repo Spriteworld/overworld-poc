@@ -1,5 +1,5 @@
 export default {
-  objects: true,
+  objects: !true,
   grid: !true,
   time: true,
   nighttimeLightsOnly: true,
@@ -11,8 +11,8 @@ export default {
     preload: !true,
     gameMap: !true,
     timeOverlay: false,
-    characterSeen: false,
-    characterRect: false,
+    rectOutlines: !false,
+    playerTracking: !false,
     interactables: {
       player: false,
       npc: false,
@@ -20,7 +20,7 @@ export default {
       sign: false,
       slideTile: false,
       spinTile: false,
-      warp: false,
+      warp: !false,
       light: false,
       cutTree: false,
     },

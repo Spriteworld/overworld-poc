@@ -14,7 +14,7 @@ export default class extends GameMap {
     this.npc1 = {};
     this.npc2 = {};
     this.pokemon = [3, 6, 9, 22, 25, 197, '197s'];
-    this.hasFlock = true;//Math.random() < 0.5;
+    this.hasFlock = Math.random() < 0.1;
   }
 
   preload() {
@@ -23,6 +23,7 @@ export default class extends GameMap {
 
   create () {
     this.loadMap();
+    // this.game.events.emit('toast', 'testing toast');
     this.npc1 = this.mapPlugins?.npc.addToScene('bob', 'police_man', 7, 21);
     this.npc2 = this.mapPlugins?.pokemon.addToScene('pika', 25, 31, 20);
 
@@ -77,6 +78,7 @@ export default class extends GameMap {
           if (npc2Pos.x == 39 && npc2Pos.y == 24) { this.npc2.move('up'); }
           if (npc2Pos.x == 39 && npc2Pos.y == 22) { this.npc2.move('right'); }
         }
+
 
       });
 

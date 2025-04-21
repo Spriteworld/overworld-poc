@@ -1,8 +1,9 @@
+import { getValue } from '@Utilities';
 
-var createTextBox = function (scene, x, y, config) {
-    var wrapWidth = scene.getValue(config, 'wrapWidth', 0);
-    var fixedWidth = scene.getValue(config, 'fixedWidth', 0);
-    var fixedHeight = scene.getValue(config, 'fixedHeight', 0);
+var textBox = function (scene, x, y, config) {
+    var wrapWidth = getValue(config, 'wrapWidth', 0);
+    var fixedWidth = getValue(config, 'fixedWidth', 0);
+    var fixedHeight = getValue(config, 'fixedHeight', 0);
     var textBox = scene.rexUI.add.textBox({
         x: x,
         y: y,
@@ -38,7 +39,7 @@ var createTextBox = function (scene, x, y, config) {
     textBox
       .setInteractive()
       .on('complete', function () {
-        this.scene.get(this.registry.get('scene'))
+        this.scene.get(this.registry.get('map'))
           .time
           .addEvent({
             delay: 500,
@@ -88,4 +89,4 @@ var getBBcodeText = function (scene, wrapWidth, fixedWidth, fixedHeight) {
     maxLines: 2
   })
 }
-export { createTextBox };
+export { textBox };

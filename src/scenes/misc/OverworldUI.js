@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import {textBox, toast} from '@Utilities';
+import {textBox, toast, getValue} from '@Utilities';
 // import {PauseMenu} from '@Objects';
 
 export default class extends Phaser.Scene {
@@ -44,27 +44,23 @@ export default class extends Phaser.Scene {
     this.handleEvents();
   }
 
-  getValue(obj, value, defValue) {
-    return Phaser.Utils.Objects.GetValue(obj, value, defValue);
-  }
-
   handleEvents() {
     // this should trigger on map change
-    this.registry.events.on('changedata-triggerToast', function(parent, value) {
-      this.showMessage(value);
-    }.bind(this.toast));
+    this.game.events.on('toast', (value) => {
+      console.log('toast', value);
+      this.toast.showMessage(value);
+    });
 
-    //
     // do something if interaction == false
-    // this.registry.events.on('changedata-textbox-active', function(parent, value) {
-    //   let activeScene = this.scene.get(this.registry.get('scene'));
-    //   if (value === true) {
-    //     this.textbox.setVisible(true);
-    //     activeScene.player.disableMovement();
-    //   } else {
-    //     this.textbox.setVisible(false);
-    //     activeScene.player.enableMovement();
-    //   }
-    // }.bind(this));
+    this.game.events.on('textbox-changedata-active', (parent, value) => {
+      let activeScene = this.scene.get(this.registry.get('scene'));
+      if (value === true) {
+        this.textbox.setVisible(true);
+        activeScene.player.disableMovement();
+      } else {
+        this.textbox.setVisible(false);
+        activeScene.player.enableMovement();
+      }
+    });
   }
 }

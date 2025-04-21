@@ -57,11 +57,17 @@ export default class {
     let warpProps = warp.obj.properties;
     let warpLocation = getPropertyValue(warpProps, 'warp', null);
     if (warpLocation === null || warpLocation === ''){ return; }
+    let playerLocation = {
+      x: getPropertyValue(warpProps, 'warp-x', 0),
+      y: getPropertyValue(warpProps, 'warp-y', 0),
+      dir: getPropertyValue(warpProps, 'warp-dir', 'down'),
+      charLayer: getPropertyValue(warpProps, 'layer', 'ground')
+    };
 
     if (Debug.functions.interactables.warp) {
       console.log(['Interactables::warp::handleWarps', 'char is trying to warp', char.name, 'to', warpLocation]);
     }
-    if (char.type !== 'player') {
+    if (char.config.type !== 'player') {
       if (this.scene.registry.get('map') === warpLocation) {
         this.warpPlayerInMap(char, playerLocation);
       }
@@ -69,19 +75,12 @@ export default class {
       return;
     }
 
-
     char.disableMovement();
     this.scene.cameras.main.fadeOut(this.cameraFade, 0, 0, 0);
     this.scene.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       (cam, effect) => {
-        let playerLocation = {
-          x: getPropertyValue(warpProps, 'warp-x', 0),
-          y: getPropertyValue(warpProps, 'warp-y', 0),
-          dir: getPropertyValue(warpProps, 'warp-dir', 'down'),
-          charLayer: getPropertyValue(warpProps, 'layer', 'ground')
-        };
-
+        // this.scene.game.events.emit('toast', warpLocation);
         // same map, we dont need to move scene
         if (this.scene.registry.get('map') === warpLocation) {
           this.warpPlayerInMap(char, playerLocation);
