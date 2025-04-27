@@ -1,17 +1,18 @@
 export default {
-  objects: !true,
-  grid: !true,
+  objects: true,
+  grid: false,
   time: true,
   nighttimeLightsOnly: true,
-  inspector: !true,
+  inspector: false,
   stateMachine: {
     console: false,
   },
   functions: {
-    preload: !true,
-    gameMap: !true,
+    preload: false,
+    gameMap: false,
     timeOverlay: false,
-    rectOutlines: !false,
+    outlineColliders: false,
+    rectOutlines: false,
     playerTracking: !false,
     interactables: {
       player: false,
@@ -20,7 +21,7 @@ export default {
       sign: false,
       slideTile: false,
       spinTile: false,
-      warp: !false,
+      warp: false,
       light: false,
       cutTree: false,
     },

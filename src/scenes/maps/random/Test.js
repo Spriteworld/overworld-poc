@@ -78,10 +78,7 @@ export default class extends GameMap {
           if (npc2Pos.x == 39 && npc2Pos.y == 24) { this.npc2.move('up'); }
           if (npc2Pos.x == 39 && npc2Pos.y == 22) { this.npc2.move('right'); }
         }
-
-
       });
-
   }
 
   update(time, delta) {

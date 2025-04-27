@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
 import Debug from '@Data/debug.js';
-import { Tile } from '@Objects';
+import { Tile, Interactables, GameMap } from '@Objects';
 import { getPropertyValue } from '@Utilities';
 
 export default class {
   constructor(scene) {
+    /** @type {GameMap} */
     this.scene = scene;
     this.warps = [];
     this.player = {};
@@ -21,14 +22,60 @@ export default class {
     // empty the warps, and reset them to the current maps warps
     this.scene.registry.set('warps', []);
     warps.forEach((obj) => {
-      this.scene.registry.get('warps').push({
-        name: obj.id,
-        x: obj.x / Tile.WIDTH,
-        y: obj.y / Tile.HEIGHT,
-        obj: obj
-      });
+      let width = parseInt(obj.width / Tile.WIDTH);
+      let height = parseInt(obj.height / Tile.HEIGHT);
+
+      console.log(['Interactables::warp', 'new warp-----------', obj.name, obj.x / Tile.WIDTH, obj.y / Tile.HEIGHT, width, height]);
+
+      if (width === 1 && height === 1) {
+        this.addWarp(obj);
+        return;
+      }
+
+      for (let x = 0; x < width; x++) {
+        for (let y = 0; y < height; y++) {
+          let objCopy = JSON.parse(JSON.stringify(obj));
+          
+          let targetXIdx = objCopy.properties.findIndex(w => w.name === 'warp-x');
+          objCopy.properties[targetXIdx].value = obj.properties[targetXIdx].value + x;
+          objCopy.x = (objCopy.x / Tile.WIDTH) + x;
+            
+          let targetYIdx = objCopy.properties.findIndex(w => w.name === 'warp-y');
+          objCopy.properties[targetYIdx].value = obj.properties[targetYIdx].value + y;
+          objCopy.y = (objCopy.y / Tile.HEIGHT) + y;
+
+          this.addWarp(objCopy);
+        }
+      }
     });
     this.warps = this.scene.registry.get('warps');
+  }
+
+  addWarp(obj) {
+    let warpxIdx = obj.properties.findIndex(w => w.name === 'warp-x');
+    let warpyIdx = obj.properties.findIndex(w => w.name === 'warp-y');
+    if (Debug.functions.interactables.warp) {
+      console.log(['Interactables::warp::addWarp', parseInt(obj.x), parseInt(obj.y), obj.properties[warpxIdx].value, obj.properties[warpyIdx].value]);
+    }
+    this.scene.registry.get('warps').push({
+      name: obj.id,
+      x: parseInt(obj.x),
+      y: parseInt(obj.y),
+      obj: obj
+    });
+    if (Debug.functions.interactables.warp) {
+      let rect = this.scene.add.rectangle(
+        obj.x * Tile.WIDTH, obj.y * Tile.HEIGHT,
+        32, 32,
+        0x000000, 0.5
+      ).setOrigin(0,0);
+
+      /** @type {Interactables.Debug} */
+      this.scene.mapPlugins['debug'].debugObject(rect, [
+        obj.properties[warpxIdx].value,
+        obj.properties[warpyIdx].value,
+      ].join(','));
+    }
   }
 
   event() {

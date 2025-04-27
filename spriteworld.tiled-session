@@ -35,10 +35,10 @@
                 7
             ],
             "scale": 2,
-            "selectedLayer": 3,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 415.75,
-                "y": 266.25
+                "x": 384.25,
+                "y": 247.75
             }
         },
         "src/maps/kanto/prof_lab.json": {
@@ -48,30 +48,38 @@
             "scale": 2.5946875,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 239.5278814886186,
-                "y": 239.52788148861856
+                "x": 239.33518005540168,
+                "y": 239.33518005540165
             }
         },
         "src/maps/kanto/route1.json": {
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 4,
-            "selectedLayer": 5,
+            "scale": 5.5,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 389.375,
-                "y": -29.875
+                "x": 374.2727272727273,
+                "y": -23
+            }
+        },
+        "src/maps/kanto/route21.json": {
+            "scale": 2,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 359.5,
+                "y": -1747
             }
         },
         "src/maps/kanto/viridian_city.json": {
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 2,
+            "scale": 5.5,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 768.25,
-                "y": 1295.75
+                "x": 758.2727272727273,
+                "y": 1257
             }
         },
         "src/maps/random/base.json": {
@@ -94,11 +102,11 @@
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 1,
-            "selectedLayer": 11,
+            "scale": 1.5,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 612.5,
-                "y": 701.5
+                "x": 610.9999999999999,
+                "y": 375.66666666666663
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -129,17 +137,18 @@
     "project": "spriteworld.tiled-project",
     "property.type": "int",
     "recentFiles": [
-        "src/maps/kanto/pallet.json",
-        "src/maps/kanto/viridian_city.json",
-        "src/maps/kanto/route1.json",
-        "src/maps/kanto/prof_lab.json",
-        "src/maps/random/test.json",
-        "src/maps/random/base.json",
         "src/tileset/gen3_outside.json",
+        "src/maps/kanto/prof_lab.json",
+        "src/maps/random/skyland.json",
+        "src/maps/random/test.json",
+        "src/maps/kanto/route1.json",
+        "src/maps/kanto/viridian_city.json",
+        "src/maps/kanto/pallet.json",
+        "src/maps/random/base.json",
         "src/tileset/gen3_inside.json",
         "src/maps/kanto/hero_house_floor1.json",
         "src/maps/kanto/hero_house_floor2.json",
-        "src/maps/random/skyland.json",
         "src/maps/random/basic.json"
-    ]
+    ],
+    "resizeMap.removeObjects": true
 }
