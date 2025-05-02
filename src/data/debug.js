@@ -12,7 +12,7 @@ export default {
     gameMap: false,
     timeOverlay: false,
     outlineColliders: false,
-    rectOutlines: false,
+    rectOutlines: !false,
     playerTracking: !false,
     interactables: {
       player: false,

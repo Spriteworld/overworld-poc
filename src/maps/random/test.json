@@ -1828,8 +1828,8 @@
                  "type":"playerSpawn",
                  "visible":true,
                  "width":32,
-                 "x":800,
-                 "y":1568
+                 "x":480,
+                 "y":1280
                 }, 
                 {
                  "height":32,

@@ -25,8 +25,6 @@ export default class {
       let width = parseInt(obj.width / Tile.WIDTH);
       let height = parseInt(obj.height / Tile.HEIGHT);
 
-      console.log(['Interactables::warp', 'new warp-----------', obj.name, obj.x / Tile.WIDTH, obj.y / Tile.HEIGHT, width, height]);
-
       if (width === 1 && height === 1) {
         this.addWarp(obj);
         return;

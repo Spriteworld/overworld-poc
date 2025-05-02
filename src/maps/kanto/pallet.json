@@ -189,7 +189,7 @@
                         {
                          "name":"warp-y",
                          "type":"int",
-                         "value":41
+                         "value":42
                         }],
                  "rotation":0,
                  "type":"warp",
