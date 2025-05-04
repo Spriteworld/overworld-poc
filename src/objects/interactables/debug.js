@@ -8,7 +8,7 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.gameMap) {
+    if (Debug.functions.gameMap || Debug.functions.interactableShout) {
       console.log('Interactables::debug');
     }
 

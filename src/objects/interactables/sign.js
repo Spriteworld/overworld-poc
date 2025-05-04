@@ -7,7 +7,7 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.interactables.sign) {
+    if (Debug.functions.interactables.sign || Debug.functions.interactableShout) {
       console.log('Interactables::Signs');
     }
     let signs = this.scene.findInteractions('sign');

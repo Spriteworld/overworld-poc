@@ -27,7 +27,7 @@ export default class extends Phaser.Scene {
     })
 
     // toast
-    this.toast = toast(this, 10, 10, {});
+    // this.toast = toast(this, 10, 10, {});
 
     // textbox
     // this.textbox = textBox(this, 100, 400, {
@@ -46,10 +46,10 @@ export default class extends Phaser.Scene {
 
   handleEvents() {
     // this should trigger on map change
-    this.game.events.on('toast', (value) => {
-      console.log('toast', value);
-      this.toast.showMessage(value);
-    });
+    // this.game.events.on('toast', (value) => {
+    //   console.log('toast', value);
+    //   this.toast.showMessage(value);
+    // });
 
     // do something if interaction == false
     this.game.events.on('textbox-changedata-active', (parent, value) => {

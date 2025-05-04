@@ -8,7 +8,7 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.interactables.pokemon) {
+    if (Debug.functions.interactables.pokemon || Debug.functions.interactableShout) {
       console.log('Interactables::pokemon');
     }
     this.scene.pkmn = this.scene.add.group();

@@ -12,7 +12,7 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.interactables.warp) {
+    if (Debug.functions.interactables.warp || Debug.functions.interactableShout) {
       console.log('Interactables::warp', this.scene.config.mapName);
     }
 
@@ -120,6 +120,30 @@ export default class {
       return;
     }
 
+    this.warpPlayerToMap(char, warpLocation, playerLocation);
+  }
+
+  warpPlayerInMap(char, playerLocation) {
+    let pos = {
+      x: playerLocation.x,
+      y: playerLocation.y
+    };
+
+    // move the player
+    this.scene.gridEngine.setPosition(char.name, pos, playerLocation.layer);
+    char.look(playerLocation.dir);
+
+    if (this.scene.mapPlugins['player'].hasPlayerMon) {
+      // get the pokemon to be in the right spot
+      this.scene.gridEngine.setPosition(
+        this.playerMon.config.id,
+        char.getPosInBehindDirection(),
+        playerLocation.layer
+      );
+    }
+  }
+
+  warpPlayerToMap(char, warpLocation, playerLocation) {
     char.disableMovement();
     this.scene.cameras.main.fadeOut(this.cameraFade, 0, 0, 0);
     this.scene.cameras.main.once(
@@ -142,26 +166,6 @@ export default class {
         char.enableMovement();
       }
     );
-  }
-
-  warpPlayerInMap(char, playerLocation) {
-    let pos = {
-      x: playerLocation.x,
-      y: playerLocation.y
-    };
-
-    // move the player
-    this.scene.gridEngine.setPosition(char.name, pos, playerLocation.layer);
-    char.look(playerLocation.dir);
-
-    if (this.scene.mapPlugins['player'].hasPlayerMon) {
-      // get the pokemon to be in the right spot
-      this.scene.gridEngine.setPosition(
-        this.playerMon.config.id,
-        char.getPosInBehindDirection(),
-        playerLocation.layer
-      );
-    }
   }
 
 }

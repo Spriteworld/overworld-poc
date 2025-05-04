@@ -8,7 +8,7 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.interactables.light) {
+    if (Debug.functions.interactables.light || Debug.functions.interactableShout) {
       console.log('Interactables::light');
     }
     let lights = this.scene.findInteractions('light');

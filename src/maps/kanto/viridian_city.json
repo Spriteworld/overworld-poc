@@ -316,6 +316,38 @@
                  "width":128,
                  "x":704,
                  "y":1248
+                }, 
+                {
+                 "height":128,
+                 "id":3,
+                 "name":"Route22EWarp",
+                 "properties":[
+                        {
+                         "name":"warp",
+                         "type":"string",
+                         "value":"Route22"
+                        }, 
+                        {
+                         "name":"warp-dir",
+                         "type":"string",
+                         "value":"up"
+                        }, 
+                        {
+                         "name":"warp-x",
+                         "type":"int",
+                         "value":49
+                        }, 
+                        {
+                         "name":"warp-y",
+                         "type":"int",
+                         "value":16
+                        }],
+                 "rotation":0,
+                 "type":"warp",
+                 "visible":true,
+                 "width":32,
+                 "x":0,
+                 "y":512
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -324,7 +356,7 @@
          "y":0
         }],
  "nextlayerid":8,
- "nextobjectid":3,
+ "nextobjectid":4,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

@@ -14,6 +14,7 @@ export default {
     outlineColliders: false,
     rectOutlines: !false,
     playerTracking: !false,
+    interactableShout: false,
     interactables: {
       player: false,
       npc: false,

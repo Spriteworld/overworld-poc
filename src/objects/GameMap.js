@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Interactables, Tile } from '@Objects';
-import { getValue } from '@Utilities';
+import { getValue, EventBus } from '@Utilities';
 import Debug from '@Data/debug.js';
 
 export default class extends Phaser.Scene {
@@ -30,6 +30,7 @@ export default class extends Phaser.Scene {
     this.mapPlugins['slidetile'] = new Interactables.SlideTile(this);
     this.mapPlugins['spintile'] = new Interactables.SpinTile(this);
     this.mapPlugins['light'] = new Interactables.Light(this);
+    this.mapPlugins['ledge'] = new Interactables.Ledge(this);
     this.mapPlugins['npc'] = new Interactables.NPC(this);
     this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
     this.mapPlugins['player'] = new Interactables.Player(this);
@@ -70,9 +71,11 @@ export default class extends Phaser.Scene {
         this.tilemaps[layer.name] = tilemap
           .createLayer(layer.name, tilesets)
           .setName(layer.name)
-          .setAlpha(layer.visible ? 1 : 0)
+          .setAlpha(layer.visible 
+            ? layer.alpha || 1 
+            : 0
+          )
         ;
-        
       });
 
     this.registry.set('interactions', []);
@@ -88,6 +91,8 @@ export default class extends Phaser.Scene {
       }
       plugin.init(this);
     });
+
+    EventBus.emit('current-scene-ready', this);
   }
 
   findInteractions(type) {

@@ -8,7 +8,7 @@ export default class {
   }
   
   init() {
-    if (Debug.functions.interactables.spinTile) {
+    if (Debug.functions.interactables.spinTile || Debug.functions.interactableShout) {
       console.log('Interactables::slideTile');
     }
     this.iceTiles = this.scene.getTilesWithProperty('sw_slide');
@@ -18,6 +18,8 @@ export default class {
     if (Debug.functions.interactables.spinTile) {
       console.log(['Interactables::slideTile::event', this.scene])
     }
+    if (this.iceTiles.length === 0) { return; }
+
     // handle ice & spin tiles
     this.scene.gridEngine
       .positionChangeStarted()

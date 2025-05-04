@@ -8,7 +8,7 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.interactables.npc) {
+    if (Debug.functions.interactables.npc || Debug.functions.interactableShout) {
       console.log('Interactables::npc');
     }
     this.scene.npcs = this.scene.add.group();

@@ -17,10 +17,11 @@ export default class extends GameMap {
 
   create () {
     this.loadMap();
+    this.createCharacters();
   }
 
   update(time, delta) {
-    // this.updateCharacters(time, delta);
+    this.updateCharacters(time, delta);
   }
 
 }

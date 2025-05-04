@@ -14,7 +14,7 @@ export default class {
   }
   
   init() {
-    if (Debug.functions.interactables.player) {
+    if (Debug.functions.interactables.player || Debug.functions.interactableShout) {
       console.log('Interactables::player');
     }
 
@@ -35,12 +35,6 @@ export default class {
   }
 
   addPlayerToScene(x, y) {
-    // this.tintTile(this.config.tilemap,
-    //   this.config.playerLocation.length > 0 ? this.config.playerLocation.x : x,
-    //   this.config.playerLocation.length > 0 ? this.config.playerLocation.y : y,
-    //   random_rgba()
-    // );
-
     if (Debug.functions.interactables.player) {
       console.log('Interactables::player::addPlayerToScene', x, y);
     }
@@ -110,19 +104,6 @@ export default class {
         let char = this.scene.characters.get(charId);
         if (typeof char === 'undefined') { return; }
 
-        // check for jump ledges
-        // this.handleJumps(char, exitTile, enterTile);
       });
-  }
-
-  handleJumps(char, exitTile, enterTile) {
-    if (this.jumpTiles.length === 0) { return; }
-
-    let isJumpTile = this.jumpTiles.some(tile => {
-      return tile[0] == enterTile.x && tile[1] == enterTile.y;
-    });
-    if (isJumpTile) {
-      char.stateMachine.setState(char.stateDef.JUMP_LEDGE);
-    }
   }
 };

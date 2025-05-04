@@ -1,5 +1,5 @@
 {
-  "name": "spriteworld-character",
+  "name": "overworld-poc",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -13,7 +13,8 @@
     "grid-engine": "^2.44.5",
     "phaser-animated-tiles-phaser3.5": "^2.0.5",
     "phaser-tiled-json-external-loader": "^0.1.1",
-    "phaser3-rex-plugins": "^1.80.15"
+    "phaser3-rex-plugins": "^1.80.15",
+    "vue": "3.5.13"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",

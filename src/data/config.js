@@ -6,7 +6,7 @@ import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles';
 import Scenes from '@Scenes';
 
 const config = {
-  parent: 'app',
+  parent: 'game-container',
   type: Phaser.WEBGL,
   width: 800,
   height: 600,

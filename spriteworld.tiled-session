@@ -42,11 +42,11 @@
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 3,
+            "scale": 2,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 569.6666666666667,
-                "y": -1547.6666666666665
+                "x": 597.5,
+                "y": -1870
             }
         },
         "src/maps/kanto/prof_lab.json": {
@@ -56,7 +56,7 @@
             "scale": 2.5946875,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 239.33518005540168,
+                "x": 239.33518005540165,
                 "y": 239.33518005540165
             }
         },
@@ -64,11 +64,11 @@
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 2,
+            "scale": 3,
             "selectedLayer": 6,
             "viewCenter": {
-                "x": 512,
-                "y": 272
+                "x": 569.6666666666667,
+                "y": 1542.3333333333333
             }
         },
         "src/maps/kanto/route21.json": {
@@ -83,22 +83,22 @@
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 1.5,
+            "scale": 2,
             "selectedLayer": 6,
             "viewCenter": {
-                "x": 1208,
-                "y": 674.6666666666665
+                "x": 1672,
+                "y": 759
             }
         },
         "src/maps/kanto/viridian_city.json": {
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 1.5,
-            "selectedLayer": 1,
+            "scale": 2,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": -227.33333333333337,
-                "y": 644.6666666666665
+                "x": 72,
+                "y": 759
             }
         },
         "src/maps/random/base.json": {
@@ -111,10 +111,10 @@
         },
         "src/maps/random/skyland.json": {
             "scale": 1,
-            "selectedLayer": 0,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 888.5,
-                "y": 506.5
+                "x": 888,
+                "y": 506
             }
         },
         "src/maps/random/test.json": {
