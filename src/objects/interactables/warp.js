@@ -12,7 +12,7 @@ export default class {
   }
 
   init() {
-    if (this.scene.game.config.debug.functions.interactables.warp || this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.functions.interactableShout) {
       console.log('Interactables::warp', this.scene.game.config.mapName);
     }
 
@@ -52,7 +52,7 @@ export default class {
   addWarp(obj) {
     let warpxIdx = obj.properties.findIndex(w => w.name === 'warp-x');
     let warpyIdx = obj.properties.findIndex(w => w.name === 'warp-y');
-    if (this.scene.game.config.debug.functions.interactables.warp) {
+    if (this.scene.game.config.debug.functions.interactableShout) {
       console.log(['Interactables::warp::addWarp', parseInt(obj.x), parseInt(obj.y), obj.properties[warpxIdx].value, obj.properties[warpyIdx].value]);
     }
     this.scene.registry.get('warps').push({
@@ -61,7 +61,7 @@ export default class {
       y: parseInt(obj.y),
       obj: obj
     });
-    if (this.scene.game.config.debug.functions.interactables.warp) {
+    if (this.scene.game.config.debug.functions.interactableShout) {
       let rect = this.scene.add.rectangle(
         obj.x * Tile.WIDTH, obj.y * Tile.HEIGHT,
         Tile.WIDTH, Tile.HEIGHT,
@@ -77,7 +77,7 @@ export default class {
   }
 
   event() {
-    if (this.scene.game.config.debug.functions.interactables.warp) {
+    if (this.scene.game.config.debug.functions.interactableShout) {
       console.log(['Interactables::warp::event', this.scene])
     }
 
@@ -109,7 +109,7 @@ export default class {
       charLayer: getPropertyValue(warpProps, 'layer', 'ground')
     };
 
-    if (this.scene.game.config.debug.functions.interactables.warp) {
+    if (this.scene.game.config.debug.functions.interactableShout) {
       console.log(['Interactables::warp::handleWarps', 'char is trying to warp', char.name, 'to', warpLocation]);
     }
     if (char.config.type !== 'player') {

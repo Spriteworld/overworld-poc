@@ -14,7 +14,7 @@ export default class {
   }
   
   init() {
-    if (this.scene.game.config.debug.functions.interactables.player || this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.functions.interactableShout) {
       console.log('Interactables::player');
     }
 
@@ -35,7 +35,7 @@ export default class {
   }
 
   addPlayerToScene(x, y) {
-    if (this.scene.game.config.debug.functions.interactables.player) {
+    if (this.scene.game.config.debug.functions.interactableShout) {
       console.log('Interactables::player::addPlayerToScene', x, y);
     }
     this.loadedPlayer = true;
@@ -95,7 +95,7 @@ export default class {
   }
 
   event() {
-    if (this.scene.game.config.debug.functions.interactables.player) {
+    if (this.scene.game.config.debug.functions.interactableShout) {
       console.log(['Interactables::player::event', this.scene])
     }
     this.scene.gridEngine

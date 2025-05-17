@@ -14,17 +14,5 @@ export default {
     playerTracking: false,
     playerBlockers: false,
     interactableShout: false,
-    interactables: {
-      player: false,
-      npc: false,
-      pokemon: false,
-      sign: false,
-      slideTile: false,
-      spinTile: false,
-      warp: false,
-      light: false,
-      cutTree: false,
-      grass: !false,
-    },
   },
 };

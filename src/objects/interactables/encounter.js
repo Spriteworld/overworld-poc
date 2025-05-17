@@ -10,7 +10,7 @@ export default class {
   }
 
   init() {
-    if (this.scene.game.config.debug.functions.interactables.grass || this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.functions.interactableShout) {
       console.log('Interactables::encounter');
     }
     if (this.disabled) { return;  }
