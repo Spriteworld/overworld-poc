@@ -8,7 +8,7 @@ export default class {
   }
   
   init() {
-    if (Debug.functions.interactables.spinTile || Debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.functions.interactables.spinTile || this.scene.game.config.debug.functions.interactableShout) {
       console.log('Interactables::spinTile');
     }
     this.spinTiles = this.scene.getTilesWithProperty('sw_spin');
@@ -16,7 +16,7 @@ export default class {
   }
 
   event() {
-    if (Debug.functions.interactables.spinTile) {
+    if (this.scene.game.config.debug.functions.interactables.spinTile) {
       console.log(['Interactables::spinTile::event', this.scene]);
     }
 

@@ -12,8 +12,8 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.interactables.warp || Debug.functions.interactableShout) {
-      console.log('Interactables::warp', this.scene.config.mapName);
+    if (this.scene.game.config.debug.functions.interactables.warp || this.scene.game.config.debug.functions.interactableShout) {
+      console.log('Interactables::warp', this.scene.game.config.mapName);
     }
 
     let warps = this.scene.findInteractions('warp');
@@ -52,7 +52,7 @@ export default class {
   addWarp(obj) {
     let warpxIdx = obj.properties.findIndex(w => w.name === 'warp-x');
     let warpyIdx = obj.properties.findIndex(w => w.name === 'warp-y');
-    if (Debug.functions.interactables.warp) {
+    if (this.scene.game.config.debug.functions.interactables.warp) {
       console.log(['Interactables::warp::addWarp', parseInt(obj.x), parseInt(obj.y), obj.properties[warpxIdx].value, obj.properties[warpyIdx].value]);
     }
     this.scene.registry.get('warps').push({
@@ -61,10 +61,10 @@ export default class {
       y: parseInt(obj.y),
       obj: obj
     });
-    if (Debug.functions.interactables.warp) {
+    if (this.scene.game.config.debug.functions.interactables.warp) {
       let rect = this.scene.add.rectangle(
         obj.x * Tile.WIDTH, obj.y * Tile.HEIGHT,
-        32, 32,
+        Tile.WIDTH, Tile.HEIGHT,
         0x000000, 0.5
       ).setOrigin(0,0);
 
@@ -77,7 +77,7 @@ export default class {
   }
 
   event() {
-    if (Debug.functions.interactables.warp) {
+    if (this.scene.game.config.debug.functions.interactables.warp) {
       console.log(['Interactables::warp::event', this.scene])
     }
 
@@ -109,7 +109,7 @@ export default class {
       charLayer: getPropertyValue(warpProps, 'layer', 'ground')
     };
 
-    if (Debug.functions.interactables.warp) {
+    if (this.scene.game.config.debug.functions.interactables.warp) {
       console.log(['Interactables::warp::handleWarps', 'char is trying to warp', char.name, 'to', warpLocation]);
     }
     if (char.config.type !== 'player') {
@@ -149,9 +149,9 @@ export default class {
     this.scene.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       (cam, effect) => {
-        // this.scene.game.events.emit('toast', warpLocation);
+        // this.scene.scene.events.emit('toast', warpLocation);
         // same map, we dont need to move scene
-        if (this.scene.registry.get('map') === warpLocation) {
+        if (this.scene.registry.get('map') === warpLocation && playerLocation) {
           this.warpPlayerInMap(char, playerLocation);
           this.scene.cameras.main.fadeIn(this.cameraFade, 0, 0, 0);
           char.enableMovement();
@@ -160,12 +160,26 @@ export default class {
 
         // new map!
         this.scene.registry.set('map', warpLocation);
-        this.scene.scene.start(warpLocation, {
-          playerLocation: playerLocation
-        });
+        if (typeof playerLocation === 'undefined') {
+          this.scene.scene.start(warpLocation);
+        }else {
+          this.scene.scene.start(warpLocation, {
+            playerLocation: playerLocation
+          });
+        }
         char.enableMovement();
       }
     );
   }
 
+  warpPlayerToMapWithoutFade(char, warpLocation, playerLocation) {
+    this.scene.registry.set('map', warpLocation);
+    if (typeof playerLocation === 'undefined') {
+      this.scene.scene.start(warpLocation);
+    }else {
+      this.scene.scene.start(warpLocation, {
+        playerLocation: playerLocation
+      });
+    }
+  }
 }

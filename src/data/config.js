@@ -34,7 +34,7 @@ const config = {
       { key: 'animatedTiles', plugin: AnimatedTiles, mapping: 'animatedTiles' },
     ]
   },
-  scene: [Scenes.Preload]
+  scene: [Scenes.Preload],
 };
 
 export default config;

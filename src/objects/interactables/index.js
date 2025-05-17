@@ -8,6 +8,7 @@ import SlideTile from '@Objects/interactables/slidetile.js';
 import SpinTile from '@Objects/interactables/spintile.js';
 import Light from '@Objects/interactables/light.js';
 import Ledge from '@Objects/interactables/ledge.js';
+import Encounter from '@Objects/interactables/encounter.js';
 
 export default {
   Debug,
@@ -20,4 +21,5 @@ export default {
   SpinTile,
   Light,
   Ledge,
+  Encounter,
 }

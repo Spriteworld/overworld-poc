@@ -14,7 +14,7 @@ export default class {
   }
   
   init() {
-    if (Debug.functions.interactables.player || Debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.functions.interactables.player || this.scene.game.config.debug.functions.interactableShout) {
       console.log('Interactables::player');
     }
 
@@ -35,7 +35,7 @@ export default class {
   }
 
   addPlayerToScene(x, y) {
-    if (Debug.functions.interactables.player) {
+    if (this.scene.game.config.debug.functions.interactables.player) {
       console.log('Interactables::player::addPlayerToScene', x, y);
     }
     this.loadedPlayer = true;
@@ -53,7 +53,7 @@ export default class {
     this.scene.cameras.main.setSize(25 * Tile.WIDTH, 19 * Tile.HEIGHT);
 
     // debug for time overlay stuffs
-    if (Debug.functions.timeOverlay === true) {
+    if (this.scene.game.config.debug.functions.timeOverlay === true) {
       this.scene.cameras.main.setSize(400, 300);
 
       // evening
@@ -86,7 +86,7 @@ export default class {
 
   update(time, delta) {
     if (this.loadedPlayer) {
-      // console.log(['GameMap::update::player', this.scene])
+      // console.log(['sceneMap::update::player', this.scene])
       this.player.update(time, delta);
     }
     // if (this.scene.get('Preload').enablePlayerOWPokemon) {
@@ -95,7 +95,7 @@ export default class {
   }
 
   event() {
-    if (Debug.functions.interactables.player) {
+    if (this.scene.game.config.debug.functions.interactables.player) {
       console.log(['Interactables::player::event', this.scene])
     }
     this.scene.gridEngine

@@ -8,13 +8,13 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.interactables.light || Debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.functions.interactables.light || this.scene.game.config.debug.functions.interactableShout) {
       console.log('Interactables::light');
     }
     let lights = this.scene.findInteractions('light');
     if (lights.length === 0) { return; }
 
-    if (Debug.nighttimeLightsOnly === true) {
+    if (this.scene.game.config.debug.nighttimeLightsOnly === true) {
       if (this.scene.scene.get('TimeOverlay').time.day) {
         return;
       }

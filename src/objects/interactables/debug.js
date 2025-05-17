@@ -8,19 +8,19 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.gameMap || Debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.functions.gameMap || this.scene.game.config.debug.functions.interactableShout) {
       console.log('Interactables::debug');
     }
 
-    if (Debug.grid === true) {
+    if (this.scene.game.config.debug.grid === true) {
       this.showGrid();
     }
 
-    if (Debug.objects === true) {
+    if (this.scene.game.config.debug.objects === true) {
       this.#identifyObjects();
     }
 
-    if (Debug.functions.outlineColliders === true) {
+    if (this.scene.game.config.debug.functions.outlineColliders === true) {
       this.#identifyColliders();
     }
   }
@@ -67,7 +67,18 @@ export default class {
           })
         ;
 
-        let tile = this.scene.add.rectangle(obj.x, obj.y, obj.width, obj.height);
+        let tile = null;
+        if (typeof obj.polygon !== 'undefined') {
+          tile = this.scene.add
+            .polygon(
+              obj.x, obj.y,
+              obj.polygon,
+            )
+          ;
+        } else {
+          tile = this.scene.add.rectangle(obj.x, obj.y, obj.width, obj.height);
+        }
+
         tile.setOrigin(0,0);
         tile.setStrokeStyle(1, 0x1a65ac);
         var debugObj = this.scene.add.container(0,0, [

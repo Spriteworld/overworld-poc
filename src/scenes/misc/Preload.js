@@ -15,11 +15,11 @@ export default class extends Phaser.Scene {
   }
 
   preload () {
-    if (Debug.functions.preload) {
+    if (this.game.config.debug.functions.preload) {
       console.group('Preload::start');
     }
     
-    if (Debug.inspector) {
+    if (this.game.config.debug.inspector) {
       this.load.scripts('inspector', [
         'https://cdn.jsdelivr.net/npm/tweakpane@3.1.0/dist/tweakpane.js',
         'https://cdn.jsdelivr.net/npm/phaser-plugin-inspector@2.0.0-1/dist/phaser-plugin-inspector.umd.js'
@@ -59,17 +59,17 @@ export default class extends Phaser.Scene {
       })
     ;
 
-    if (Debug.functions.preload) {
+    if (this.game.config.debug.functions.preload) {
       console.log('Preload::complete');
       console.groupEnd();
     }
   }
 
   create () {
-    this.scene.start('Test');
-    // this.scene.start('Route1');
+    // this.scene.start('Test');
+    this.scene.start('Kanto');
 
-    if (Debug.time) {
+    if (this.game.config.debug.time) {
       this.scene.start('TimeOverlay');
       this.scene.bringToTop('TimeOverlay');
     }
@@ -84,7 +84,7 @@ export default class extends Phaser.Scene {
     if (!this.enableOWTrainers) {
       return;
     }
-    if (Debug.functions.preload) {
+    if (this.game.config.debug.functions.preload) {
       console.log('Preload::preloadTrainers');
     }
     Object.keys(Tileset.trainers)
@@ -116,7 +116,7 @@ export default class extends Phaser.Scene {
     if (!this.enableOWPokemon) {
       return;
     }
-    if (Debug.functions.preload) {
+    if (this.game.config.debug.functions.preload) {
       console.log('Preload::preloadPokemon');
     }
 
@@ -153,7 +153,7 @@ export default class extends Phaser.Scene {
     if (!this.enableOWPokemon) {
       return;
     }
-    if (Debug.functions.preload) {
+    if (this.game.config.debug.functions.preload) {
       console.log('Preload::loadPokemonAnimations');
     }
 

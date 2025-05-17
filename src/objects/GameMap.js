@@ -31,6 +31,7 @@ export default class extends Phaser.Scene {
     this.mapPlugins['spintile'] = new Interactables.SpinTile(this);
     this.mapPlugins['light'] = new Interactables.Light(this);
     this.mapPlugins['ledge'] = new Interactables.Ledge(this);
+    // this.mapPlugins['encounter'] = new Interactables.Encounter(this);
     this.mapPlugins['npc'] = new Interactables.NPC(this);
     this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
     this.mapPlugins['player'] = new Interactables.Player(this);
@@ -56,6 +57,9 @@ export default class extends Phaser.Scene {
   loadMap() {
     var tilemap = this.make.tilemap({ key: this.config.mapName });
     this.config.tilemap = tilemap;
+    console.log(['GameMap::loadMap', this.config.mapName]);
+    console.log(['GameMap::loadMap::tilesets', tilemap.tilesets]);
+    console.log(['GameMap::loadMap::layers', tilemap.layers]);
 
     // all the tilesets!
     let tilesets = [];
@@ -86,7 +90,7 @@ export default class extends Phaser.Scene {
 
     // loop and init the plugins
     Object.entries(this.mapPlugins).forEach(([key, plugin]) => {
-      if (Debug.functions.gameMap) {
+      if (this.game.config.debug.functions.gameMap) {
         console.log(['GameMap::loadMap', key]);
       }
       plugin.init(this);
@@ -114,7 +118,7 @@ export default class extends Phaser.Scene {
     x = parseInt(x);
     y = parseInt(y);
     
-    if (Debug.functions.gameMap) {
+    if (this.game.config.debug.functions.gameMap) {
       console.log(['GameMap::getTileProperties', x, y]);
     }
     var props = new Map();
@@ -220,7 +224,7 @@ export default class extends Phaser.Scene {
         .map(([_, plugin]) => plugin.update(time, delta));
 
     if (this.mapPlugins.player?.loadedPlayer) {
-
+      
       this.mapPlugins['player'].player.update(time, delta);
       // if (this.scene.get('Preload').enablePlayerOWPokemon) {
       //   this.mapPlugins.player.playerMon.update(time, delta);
@@ -239,7 +243,7 @@ export default class extends Phaser.Scene {
 
   
   initGEEvents() {
-    if (Debug.functions.gameMap) {
+    if (this.game.config.debug.functions.gameMap) {
       console.log(['GameMap::initGEEvents']);
     }
     Object.entries(this.mapPlugins)

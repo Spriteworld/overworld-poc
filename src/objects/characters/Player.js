@@ -1,10 +1,13 @@
-import { Character } from '@Objects';
+import { Character, Tile } from '@Objects';
+import { EventBus } from '@Utilities';
 
 export default class extends Character {
   constructor(config) {
     config.type = 'player';
+    // config.collides = false;
     super(config);
-    this.config = config;
+
+    console.log(['Player::constructor', this.scene.characters.get(this.config.id)]);
 
     this.stateMachine
       .addState(this.stateDef.IDLE, {
@@ -53,10 +56,43 @@ export default class extends Character {
     ;
 
     this.setOrigin(0.5, 0.5);
+
+    this.blockedRight = this.scene.add
+      .rectangle(0, 0, Tile.WIDTH, Tile.HEIGHT)
+      .setFillStyle(0xB81D15, 1)
+      .setOrigin(0,0)
+      .setDepth(9999999)
+      .setName('blocked-right')
+    ;
+    this.blockedDown = this.scene.add
+      .rectangle(0, 0, Tile.WIDTH, Tile.HEIGHT)
+      .setFillStyle(0xB81D15, 1)
+      .setOrigin(0,0)
+      .setDepth(9999999)
+      .setName('blocked-down')
+    ;
+    this.blockedLeft = this.scene.add
+      .rectangle(0, 0, Tile.WIDTH, Tile.HEIGHT)
+      .setFillStyle(0xB81D15, 1)
+      .setOrigin(0,0)
+      .setDepth(9999999)
+      .setName('blocked-left')
+    ;
+    this.blockedUp = this.scene.add
+      .rectangle(0, 0, Tile.WIDTH, Tile.HEIGHT)
+      .setFillStyle(0xB81D15, 1)
+      .setOrigin(0,0)
+      .setDepth(9999999)
+      .setName('blocked-up')
+    ;
   }
 
   update(time, delta) {
     this.stateMachine.update(time);
+
+    if (this.config.scene.game.config.debug.functions.playerBlockers) {
+      this.debugBlockers();
+    }
   }
 
   moveOnUpdate() {
@@ -78,6 +114,7 @@ export default class extends Character {
     //   up: keys.up.isDown,
     //   down: keys.down.isDown,
     // })
+
     if (keys.left.isDown) {
       this.handleMove('left');
     } else if (keys.right.isDown) {
@@ -89,6 +126,7 @@ export default class extends Character {
     } else {
       this.stateMachine.setState(this.stateDef.IDLE);
     }
+    EventBus.emit('player-move-complete', this);
   }
 
   disableMovement() {
@@ -99,4 +137,62 @@ export default class extends Character {
     this.config.scene.registry.set('player_input', true);
   }
 
+  debugBlockers() {
+    console.log('Player::debugBlockers');
+    let player = this.config.scene.characters.get(this.config.id);
+    let tilePos = {};
+
+    // console.log(player.gridengine.isBlocked('left'));
+    tilePos = this.getPosInDirection('left');
+    if (player.gridengine.isBlocked(tilePos)) {
+      this.blockedLeft.x = tilePos.x * Tile.WIDTH;
+      this.blockedLeft.y = tilePos.y * Tile.WIDTH;
+      this.blockedLeft.width = Tile.WIDTH;
+      this.blockedLeft.height = Tile.HEIGHT;
+      this.blockedLeft.setAlpha(0.5);
+    } else {
+      this.blockedLeft.x = 0;
+      this.blockedLeft.y = 0;
+      this.blockedLeft.setAlpha(0);
+    }
+
+    tilePos = this.getPosInDirection('up');
+    if (player.gridengine.isBlocked(tilePos)) {
+      this.blockedUp.x = tilePos.x * Tile.WIDTH;
+      this.blockedUp.y = tilePos.y * Tile.WIDTH;
+      this.blockedUp.width = Tile.WIDTH;
+      this.blockedUp.height = Tile.HEIGHT;
+      this.blockedUp.setAlpha(0.5);
+    } else {
+      this.blockedUp.x = 0;
+      this.blockedUp.y = 0;
+      this.blockedUp.setAlpha(0);
+    }
+
+    tilePos = this.getPosInDirection('right');
+    if (player.gridengine.isBlocked(tilePos)) {
+      this.blockedRight.x = tilePos.x * Tile.WIDTH;
+      this.blockedRight.y = tilePos.y * Tile.WIDTH;
+      this.blockedRight.width = Tile.WIDTH;
+      this.blockedRight.height = Tile.HEIGHT;
+      this.blockedRight.setAlpha(0.5);
+    } else {
+      this.blockedRight.x = 0;
+      this.blockedRight.y = 0;
+      this.blockedRight.setAlpha(0);
+    }
+
+    tilePos = this.getPosInDirection('down');
+    if (player.gridengine.isBlocked(tilePos)) {
+      this.blockedDown.x = tilePos.x * Tile.WIDTH;
+      this.blockedDown.y = tilePos.y * Tile.WIDTH;
+      this.blockedDown.width = Tile.WIDTH;
+      this.blockedDown.height = Tile.HEIGHT;
+      this.blockedDown.setAlpha(0.5);
+    } else {
+      this.blockedDown.x = 0;
+      this.blockedDown.y = 0;
+      this.blockedDown.setAlpha(0);
+    }
+  }
 }

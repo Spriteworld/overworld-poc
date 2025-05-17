@@ -8,17 +8,17 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.interactables.npc || Debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.functions.interactables.npc || this.scene.game.config.debug.functions.interactableShout) {
       console.log('Interactables::npc');
     }
     this.scene.npcs = this.scene.add.group();
     this.scene.npcs.setName('npcs');
     let npcs = this.scene.findInteractions('npc');
     if (npcs.length === 0) { 
-      console.log(['Interactables::npc', 'No NPCs found']);
+      //console.log(['Interactables::npc', 'No NPCs found']);
       return; 
     }
-    if (Debug.functions.interactables.npc) {
+    if (this.scene.game.config.debug.functions.interactables.npc) {
       console.log(['Interactables::npc', npcs]);
     }
 
@@ -47,12 +47,12 @@ export default class {
       scene: this.scene
     }, ...config };
 
-    if (Debug.functions.interactables.npc) {
+    if (this.scene.game.config.debug.functions.interactables.npc) {
       console.log('Interactables::npc::addToScene', name, texture, x, y);
     }
     let npcObj = new NPC(npcDef);
     this.scene.npcs.add(npcObj);
-    this.scene.interactTile(this.scene.config.tilemap, npcDef, 0x000000);
+    this.scene.interactTile(this.scene.game.config.tilemap, npcDef, 0x000000);
     return npcObj;
   }
 }

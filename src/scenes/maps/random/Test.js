@@ -9,7 +9,6 @@ export default class extends GameMap {
       active: false,
       visible: false,
     });
-    this.config['char-layer'] = 'ground';
 
     this.npc1 = {};
     this.npc2 = {};

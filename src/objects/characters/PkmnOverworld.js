@@ -4,7 +4,6 @@ export default class extends Character {
   constructor(config) {
     config.type = 'pkmn';
     super(config);
-    this.config = config;
 
     this.stateMachine
       .addState(this.stateDef.IDLE, {

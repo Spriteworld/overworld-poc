@@ -1,5 +1,3 @@
-import Debug from '@Data/debug.js';
-
 /**
  * https://github.com/ourcade/sidescrolling-platformer-template-phaser3/blob/master/src/statemachine/StateMachine.ts
  */
@@ -56,7 +54,7 @@ export default class StateMachine {
     }
 
     this.isChangingState = true;
-    if (Debug.stateMachine.console) {
+    if (this.context.scene.game.config.debug.stateMachine) {
       console.log(`[StateMachine (${this.id})] change from ${this.currentState?.name ?? 'none'} to ${name}`);
     }
 

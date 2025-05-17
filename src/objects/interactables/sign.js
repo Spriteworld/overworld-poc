@@ -7,7 +7,7 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.interactables.sign || Debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.functions.interactables.sign || this.scene.game.config.debug.functions.interactableShout) {
       console.log('Interactables::Signs');
     }
     let signs = this.scene.findInteractions('sign');
@@ -16,7 +16,7 @@ export default class {
     signs.forEach((sign) => {
       // sign.x /= Tile.WIDTH;
       // sign.y /= Tile.HEIGHT;
-      this.scene.interactTile(this.scene.config.tilemap, sign, 0x00afe4);
+      this.scene.interactTile(this.scene.game.config.tilemap, sign, 0x00afe4);
     });
   }
 }

@@ -24,32 +24,31 @@ export default class extends Phaser.Scene {
   }
 
   create () {
-    if (Debug.functions.timeOverlay) {
-      this.add.text(16, 16, 'Day', { fontSize: '32px', fill: '#000', stroke: '#000', strokeThickness: 2});
-      this.add.text(416, 16, 'Evening', { fontSize: '32px', fill: '#000', stroke: '#000', strokeThickness: 2});
-      let cam2overlay = this.add.image(400, 0, 'blank')
-        .setOrigin(0)
-        .setDisplaySize(400, 300)
-      ;
-      this.doEvening(cam2overlay);
-
-      this.add.text(16, 316, 'Night', { fontSize: '32px', fill: '#000', stroke: '#000', strokeThickness: 2});
-      let cam3overlay = this.add.image(0, 300, 'blank')
-        .setOrigin(0)
-        .setDisplaySize(400, 300)
-      ;
-      this.doNight(cam3overlay);
-
-      this.add.text(416, 316, 'Morning', { fontSize: '32px', fill: '#000', stroke: '#000', strokeThickness: 2});
-      let cam4overlay = this.add.image(400, 300, 'blank')
-        .setOrigin(0)
-        .setDisplaySize(400, 300)
-      ;
-      this.doMorning(cam4overlay);
-
+    if (!this.game.config.debug.functions.timeOverlay) {
       return;
     }
 
+    this.add.text(16, 16, 'Day', { fontSize: '32px', fill: '#000', stroke: '#000', strokeThickness: 2});
+    this.add.text(416, 16, 'Evening', { fontSize: '32px', fill: '#000', stroke: '#000', strokeThickness: 2});
+    let cam2overlay = this.add.image(400, 0, 'blank')
+      .setOrigin(0)
+      .setDisplaySize(400, 300)
+    ;
+    this.doEvening(cam2overlay);
+
+    this.add.text(16, 316, 'Night', { fontSize: '32px', fill: '#000', stroke: '#000', strokeThickness: 2});
+    let cam3overlay = this.add.image(0, 300, 'blank')
+      .setOrigin(0)
+      .setDisplaySize(400, 300)
+    ;
+    this.doNight(cam3overlay);
+
+    this.add.text(416, 316, 'Morning', { fontSize: '32px', fill: '#000', stroke: '#000', strokeThickness: 2});
+    let cam4overlay = this.add.image(400, 300, 'blank')
+      .setOrigin(0)
+      .setDisplaySize(400, 300)
+    ;
+    this.doMorning(cam4overlay);
   }
 
   doMorning(overlay) {
@@ -85,7 +84,7 @@ export default class extends Phaser.Scene {
     // console.log(hour, mins, this.time);
 
 
-    if (!Debug.functions.timeOverlay) {
+    if (!this.game.config.debug.functions.timeOverlay) {
       if (this.time.morning) {
         // console.log('timeoverlay::morning');
         this.doMorning(this.overlay);

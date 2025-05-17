@@ -8,14 +8,14 @@ export default class {
   }
   
   init() {
-    if (Debug.functions.interactables.spinTile || Debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.functions.interactables.spinTile || this.scene.game.config.debug.functions.interactableShout) {
       console.log('Interactables::slideTile');
     }
     this.iceTiles = this.scene.getTilesWithProperty('sw_slide');
   }
 
   event() {
-    if (Debug.functions.interactables.spinTile) {
+    if (this.scene.game.config.debug.functions.interactables.spinTile) {
       console.log(['Interactables::slideTile::event', this.scene])
     }
     if (this.iceTiles.length === 0) { return; }

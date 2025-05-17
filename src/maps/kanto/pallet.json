@@ -104,7 +104,7 @@
             0, 0, 0, 0, 0, 0, 0, 2307, 0, 0, 2309, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":21,
          "id":8,
-         "name":"water",
+         "name":"middle",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,

@@ -8,7 +8,7 @@ export default class {
   }
 
   init() {
-    if (Debug.functions.interactables.cutTree || Debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.functions.interactables.cutTree || this.scene.game.config.debug.functions.interactableShout) {
       console.log('Interactables::cutTree');
     }
   }

@@ -45,7 +45,7 @@ export default class extends Phaser.Scene {
   }
 
   loadMap() {
-    if (Debug.functions.gameMap) {
+    if (this.game.config.debug.functions.gameMap) {
       console.log('GameMap::loadMap: '+ this.config.mapName);
     }
     var tilemap = this.make.tilemap({ key: this.config.mapName });
@@ -85,7 +85,7 @@ export default class extends Phaser.Scene {
     // load ALL THE THINGSSSSS
     this.objects = tilemap.getObjectLayer('interactions');
     if (this.objects !== null) {
-      if (Debug.functions.gameMap) {
+      if (this.game.config.debug.functions.gameMap) {
         console.log('GameMap::loadMap->objects');
       }
       this.registry.set('interactions', []);
@@ -108,7 +108,7 @@ export default class extends Phaser.Scene {
  
 
   initJumps() {
-    if (Debug.functions.gameMap) {
+    if (this.game.config.debug.functions.gameMap) {
       console.log('GameMap::initJumps');
     }
     if (this.jumpTiles.length === 0) { return; }
@@ -118,7 +118,7 @@ export default class extends Phaser.Scene {
   }
 
   initLights() {
-    if (Debug.functions.gameMap) {
+    if (this.game.config.debug.functions.gameMap) {
       console.log('GameMap::initLights');
     }
     let lights = this.findInteractions('light');

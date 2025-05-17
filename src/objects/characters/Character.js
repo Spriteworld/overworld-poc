@@ -31,9 +31,7 @@ export default class extends Phaser.GameObjects.Sprite {
       selected: 0xff0000
     };
     if (this.config.scene.characters.get(this.config.id)) {
-      console.warn('Character::constructor', this.config.id, 'already exists!');
       this.config.id = (Math.random() + 1).toString(36).substring(7);
-      console.warn('Character::constructor', this.config.id, 'new id generated!');
     }
 
     let identification = (this.config.id ?? this.config.texture);
@@ -104,13 +102,13 @@ export default class extends Phaser.GameObjects.Sprite {
       this.config.x * Tile.WIDTH, this.config.y * Tile.HEIGHT,
       0, 0,
       this.rectColor.normal,
-      Debug.functions.rectOutlines ? 0.4 : 0
+      this.scene.game.config.debug.functions.rectOutlines ? 0.4 : 0
     );
     this.characterRect = this.config.scene.add.rectangle(
       this.config.x * Tile.WIDTH, this.config.y * Tile.HEIGHT,
       30, 30,
       this.rectColor.normal,
-      Debug.functions.rectOutlines ? 0.5 : 0
+      this.scene.game.config.debug.functions.rectOutlines ? 0.5 : 0
     );
 
     this.seenRect.setOrigin(0, 0);
@@ -348,7 +346,7 @@ export default class extends Phaser.GameObjects.Sprite {
         coord.x += 1;
         
         this.trackingCoords.push({x: coord.x, y: coord.y, dir: 'up'});
-        if (!this.isMoving() && Debug.functions.rectOutlines && Debug.functions.playerTracking) {
+        if (!this.isMoving() && this.scene.game.config.debug.functions.rectOutlines && this.scene.game.config.debug.functions.playerTracking) {
           let tile = this.config.scene.add.rectangle(
             coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
             Tile.WIDTH, Tile.HEIGHT,
@@ -372,7 +370,7 @@ export default class extends Phaser.GameObjects.Sprite {
         coord.x -= 1;
         
         this.trackingCoords.push({x: coord.x, y: coord.y, dir: 'down'});
-        if (!this.isMoving() && Debug.functions.rectOutlines && Debug.functions.playerTracking) {
+        if (!this.isMoving() && this.scene.game.config.debug.functions.rectOutlines && this.scene.game.config.debug.functions.playerTracking) {
           let tile = this.config.scene.add.rectangle(
             coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
             Tile.WIDTH, Tile.HEIGHT,
@@ -395,7 +393,7 @@ export default class extends Phaser.GameObjects.Sprite {
         coord.y += 1;
         
         this.trackingCoords.push({x: coord.x, y: coord.y, dir: 'right'});
-        if (!this.isMoving() && Debug.functions.rectOutlines && Debug.functions.playerTracking) {
+        if (!this.isMoving() && this.scene.game.config.debug.functions.rectOutlines && this.scene.game.config.debug.functions.playerTracking) {
           let tile = this.config.scene.add.rectangle(
             coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
             Tile.WIDTH, Tile.HEIGHT,
@@ -418,7 +416,7 @@ export default class extends Phaser.GameObjects.Sprite {
         coord.y += 1;
         
         this.trackingCoords.push({x: coord.x, y: coord.y, dir: 'left'});
-        if (!this.isMoving() && Debug.functions.rectOutlines && Debug.functions.playerTracking) {
+        if (!this.isMoving() && this.scene.game.config.debug.functions.rectOutlines && this.scene.game.config.debug.functions.playerTracking) {
           let tile = this.config.scene.add.rectangle(
             coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
             Tile.WIDTH, Tile.HEIGHT,
@@ -467,7 +465,7 @@ export default class extends Phaser.GameObjects.Sprite {
     }
 
     if (!this.gridengine.hasCharacter(this.config['seen-character'])) {
-      if (Debug.functions.rectOutlines) {
+      if (this.scene.game.config.debug.functions.rectOutlines) {
         console.log('GridEngine doesnt know about character: ', this.config['seen-character'], this.config.id);
       }
       return;
@@ -475,7 +473,7 @@ export default class extends Phaser.GameObjects.Sprite {
 
     let character = this.config.scene.characters.get(this.config['seen-character']);
     if (typeof character === 'undefined') {
-      if (Debug.functions.rectOutlines) {
+      if (this.scene.game.config.debug.functions.rectOutlines) {
         console.log(character, this.config['seen-character'], 'gamemap doesnt has character');
       }
       return;
@@ -620,8 +618,13 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   getPosInFacingDirection() {
+    return this.getPosInDirection(
+      this.getFacingDirection()
+    );
+  }
+
+  getPosInDirection(dir) {
     let pos = this.getPosition();
-    let dir = this.getFacingDirection();
     if (dir === 'up') {
       return { ...pos, y: pos.y - 1 };
     } else if (dir === 'down') {
