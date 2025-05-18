@@ -24,7 +24,7 @@ export default class extends Phaser.Scene {
   }
 
   create () {
-    if (!this.game.config.debug.functions.timeOverlay) {
+    if (!this.game.config.debug.tests.timeOverlay) {
       return;
     }
 
@@ -84,7 +84,7 @@ export default class extends Phaser.Scene {
     // console.log(hour, mins, this.time);
 
 
-    if (!this.game.config.debug.functions.timeOverlay) {
+    if (!this.game.config.debug.tests.timeOverlay) {
       if (this.time.morning) {
         // console.log('timeoverlay::morning');
         this.doMorning(this.overlay);

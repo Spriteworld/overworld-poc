@@ -57,10 +57,12 @@ export default class extends Phaser.Scene {
   loadMap() {
     var tilemap = this.make.tilemap({ key: this.config.mapName });
     this.config.tilemap = tilemap;
-    console.log(['GameMap::loadMap', this.config.mapName]);
-    console.log(['GameMap::loadMap::tilesets', tilemap.tilesets]);
-    console.log(['GameMap::loadMap::layers', tilemap.layers]);
-
+    if (this.game.config.debug.console.gameMap) {
+      console.log(['GameMap::loadMap', this.config.mapName]);
+      console.log(['GameMap::loadMap::tilesets', tilemap.tilesets]);
+      console.log(['GameMap::loadMap::layers', tilemap.layers]);
+    }
+    
     // all the tilesets!
     let tilesets = [];
     tilemap.tilesets.forEach((tileset) => {
@@ -70,8 +72,6 @@ export default class extends Phaser.Scene {
     // load all the layers!
     tilemap.layers
       .forEach((layer) => {
-        // console.log('[GameMap]', layer);
-
         this.tilemaps[layer.name] = tilemap
           .createLayer(layer.name, tilesets)
           .setName(layer.name)
@@ -90,7 +90,7 @@ export default class extends Phaser.Scene {
 
     // loop and init the plugins
     Object.entries(this.mapPlugins).forEach(([key, plugin]) => {
-      if (this.game.config.debug.functions.gameMap) {
+      if (this.game.config.debug.console.gameMap) {
         console.log(['GameMap::loadMap', key]);
       }
       plugin.init(this);
@@ -118,7 +118,7 @@ export default class extends Phaser.Scene {
     x = parseInt(x);
     y = parseInt(y);
     
-    if (this.game.config.debug.functions.gameMap) {
+    if (this.game.config.debug.console.gameMap) {
       console.log(['GameMap::getTileProperties', x, y]);
     }
     var props = new Map();
@@ -243,7 +243,7 @@ export default class extends Phaser.Scene {
 
   
   initGEEvents() {
-    if (this.game.config.debug.functions.gameMap) {
+    if (this.game.config.debug.console.gameMap) {
       console.log(['GameMap::initGEEvents']);
     }
     Object.entries(this.mapPlugins)

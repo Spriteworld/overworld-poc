@@ -14,7 +14,7 @@ export default class {
   }
   
   init() {
-    if (this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::player');
     }
 
@@ -35,7 +35,7 @@ export default class {
   }
 
   addPlayerToScene(x, y) {
-    if (this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::player::addPlayerToScene', x, y);
     }
     this.loadedPlayer = true;
@@ -53,7 +53,7 @@ export default class {
     this.scene.cameras.main.setSize(25 * Tile.WIDTH, 19 * Tile.HEIGHT);
 
     // debug for time overlay stuffs
-    if (this.scene.game.config.debug.functions.timeOverlay === true) {
+    if (this.scene.game.config.debug.tests.timeOverlay === true) {
       this.scene.cameras.main.setSize(400, 300);
 
       // evening
@@ -95,7 +95,7 @@ export default class {
   }
 
   event() {
-    if (this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.console.interactableShout) {
       console.log(['Interactables::player::event', this.scene])
     }
     this.scene.gridEngine

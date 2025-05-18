@@ -8,7 +8,7 @@ export default class {
   }
 
   init() {
-    if (this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::debug');
     }
 
@@ -20,7 +20,7 @@ export default class {
       this.#identifyObjects();
     }
 
-    if (this.scene.game.config.debug.functions.outlineColliders === true) {
+    if (this.scene.game.config.debug.tests.outlineColliders === true) {
       this.#identifyColliders();
     }
   }

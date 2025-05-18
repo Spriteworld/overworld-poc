@@ -5,14 +5,15 @@ export default {
   nighttimeLightsOnly: true,
   inspector: false,
   stateMachine: false,
-  functions: {
-    preload: false,
-    gameMap: false,
+  tests: {
     timeOverlay: false,
     outlineColliders: false,
-    rectOutlines: false,
-    playerTracking: false,
     playerBlockers: false,
+    rectOutlines: false,
+  },
+  console: {
+    preload: false,
+    gameMap: false,
     interactableShout: false,
   },
 };

@@ -8,7 +8,7 @@ export default class {
   }
 
   init() {
-    if (this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::pokemon');
     }
     this.scene.pkmn = this.scene.add.group();
@@ -19,7 +19,7 @@ export default class {
 
     this.scene.pkmn.runChildUpdate = true;
     pkmn.forEach((pokemon) => {
-      if (this.scene.game.config.debug.functions.interactableShout) {
+      if (this.scene.game.config.debug.console.interactableShout) {
         console.log(
           'Interactables::pokemon::each',
           pokemon.name,
@@ -62,7 +62,7 @@ export default class {
       texture += 's';
     }
 
-    if (this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::pokemon::addToScene', {
         id: name || 'pkmn_' + (this.scene.pkmn.length || monId),
         monId: monId, 

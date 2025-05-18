@@ -38,6 +38,14 @@
                 "y": 176.07772291139753
             }
         },
+        "src/maps/kanto/kanto.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 5168,
+                "y": 8656
+            }
+        },
         "src/maps/kanto/pallet.json": {
             "expandedObjectLayers": [
                 7
@@ -178,10 +186,10 @@
     "project": "spriteworld.tiled-project",
     "property.type": "int",
     "recentFiles": [
+        "src/maps/kanto/route22.json",
         "src/maps/kanto/test.json",
         "src/tileset/gen3_outside.json",
         "src/maps/kanto/route21.json",
-        "src/maps/kanto/route22.json",
         "src/maps/kanto/route1.json",
         "src/maps/kanto/viridian_city.json",
         "src/maps/kanto/pallet.json",

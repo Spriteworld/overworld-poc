@@ -7,8 +7,6 @@ export default class extends Character {
     // config.collides = false;
     super(config);
 
-    console.log(['Player::constructor', this.scene.characters.get(this.config.id)]);
-
     this.stateMachine
       .addState(this.stateDef.IDLE, {
         onEnter: this.idleOnEnter,
@@ -90,7 +88,7 @@ export default class extends Character {
   update(time, delta) {
     this.stateMachine.update(time);
 
-    if (this.config.scene.game.config.debug.functions.playerBlockers) {
+    if (this.config.scene.game.config.debug.tests.playerBlockers) {
       this.debugBlockers();
     }
   }
@@ -104,8 +102,8 @@ export default class extends Character {
     const C = this.config.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
 
     let moveSpeed = 4;
-    if (X.isDown) { moveSpeed = 8; }
-    if (C.isDown) { moveSpeed = 20; }
+    if (this.config.scene.game.config.gameFlags.has_running_shoes && X.isDown) { moveSpeed = 8; }
+    if (this.config.scene.game.config.gameFlags.has_bike && C.isDown) { moveSpeed = 20; }
 
     this.gridengine.setSpeed(this.config.id, moveSpeed);
     // console.log({

@@ -7,6 +7,7 @@ import { config } from '@Data'
 import { Game, Tile } from '@Objects'
 import { EventBus } from '@Utilities';
 import Debug from '@Data/debug.js';
+import GameFlags from '@Data/gameFlags.js';
 
 export default {
   name: 'PhaserGame',
@@ -17,11 +18,12 @@ export default {
       scene: null,
     };
   },
-  emits: ['current-active-scene', 'current-coords'],
+  emits: ['current-active-scene', 'current-coords', 'debug'],
 
   mounted() {
     this.game = new Game(config);
     this.game.config.debug = Debug;
+    this.game.config.gameFlags = GameFlags;
 
     EventBus.on('current-scene-ready', (currentScene) => {
       this.$emit('current-active-scene', currentScene);
@@ -33,6 +35,9 @@ export default {
         y: parseInt(player.y / Tile.HEIGHT),
       });
     });
+    EventBus.on('debug', (payload) => {
+      this.$emit('debug', payload);
+    });
   },
 
   unmounted() {
@@ -40,6 +45,7 @@ export default {
       this.game.destroy(true);
       EventBus.off('current-scene-ready');
       EventBus.off('player-move-complete');
+      EventBus.off('debug');
     }
   },
 }

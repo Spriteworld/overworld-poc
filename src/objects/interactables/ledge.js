@@ -8,14 +8,14 @@ export default class {
   }
 
   init() {
-    if (this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::ledge');
     }
     this.ledgeTiles = this.scene.getTilesWithProperty('sw_jump');
   }
 
   event() {
-    if (this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.console.interactableShout) {
       console.log(['Interactables::ledge::event', this.scene])
     }
     if (this.ledgeTiles.length === 0) { return; }

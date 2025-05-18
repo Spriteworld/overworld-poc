@@ -8,7 +8,7 @@ export default class {
   }
 
   init() {
-    if (this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::npc');
     }
     this.scene.npcs = this.scene.add.group();
@@ -18,7 +18,7 @@ export default class {
       //console.log(['Interactables::npc', 'No NPCs found']);
       return; 
     }
-    if (this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.console.interactableShout) {
       console.log(['Interactables::npc', npcs]);
     }
 
@@ -47,7 +47,7 @@ export default class {
       scene: this.scene
     }, ...config };
 
-    if (this.scene.game.config.debug.functions.interactableShout) {
+    if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::npc::addToScene', name, texture, x, y);
     }
     let npcObj = new NPC(npcDef);

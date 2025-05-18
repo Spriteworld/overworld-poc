@@ -15,7 +15,7 @@ export default class extends Phaser.Scene {
   }
 
   preload () {
-    if (this.game.config.debug.functions.preload) {
+    if (this.game.config.debug.console.preload) {
       console.group('Preload::start');
     }
     
@@ -59,15 +59,15 @@ export default class extends Phaser.Scene {
       })
     ;
 
-    if (this.game.config.debug.functions.preload) {
+    if (this.game.config.debug.console.preload) {
       console.log('Preload::complete');
       console.groupEnd();
     }
   }
 
   create () {
-    this.scene.start('Test');
-    // this.scene.start('Kanto');
+    // this.scene.start('Test');
+    this.scene.start('Kanto');
 
     if (this.game.config.debug.time) {
       this.scene.start('TimeOverlay');
@@ -84,7 +84,7 @@ export default class extends Phaser.Scene {
     if (!this.enableOWTrainers) {
       return;
     }
-    if (this.game.config.debug.functions.preload) {
+    if (this.game.config.debug.console.preload) {
       console.log('Preload::preloadTrainers');
     }
     Object.keys(Tileset.trainers)
@@ -116,7 +116,7 @@ export default class extends Phaser.Scene {
     if (!this.enableOWPokemon) {
       return;
     }
-    if (this.game.config.debug.functions.preload) {
+    if (this.game.config.debug.console.preload) {
       console.log('Preload::preloadPokemon');
     }
 
@@ -153,7 +153,7 @@ export default class extends Phaser.Scene {
     if (!this.enableOWPokemon) {
       return;
     }
-    if (this.game.config.debug.functions.preload) {
+    if (this.game.config.debug.console.preload) {
       console.log('Preload::loadPokemonAnimations');
     }
 
