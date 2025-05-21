@@ -1,18 +1,17 @@
 import Phaser from 'phaser';
-import {textBox, toast, getValue} from '@Utilities';
+import { textBox, toast, EventBus } from '@Utilities';
 // import {PauseMenu} from '@Objects';
 
 export default class extends Phaser.Scene {
   constructor() {
     super({ key: 'OverworldUI' });
 
+    this.textbox = null;
   }
 
-  preload () {
-  }
+  preload () { }
 
   create () {
-    this.activeScene = this.registry.get('scene');
 
     // init some events
     let events = {
@@ -30,18 +29,27 @@ export default class extends Phaser.Scene {
     // this.toast = toast(this, 10, 10, {});
 
     // textbox
-    // this.textbox = textBox(this, 100, 400, {
-    //   wrapWidth: 500,
-    //   fixedWidth: 500,
-    //   fixedHeight: 65
-    // });
-    // this.textbox.setVisible(false);
+    if (this.textbox === null) {
+      this.textbox = textBox(this, 100, 400, {
+        wrapWidth: 500,
+        fixedWidth: 500,
+        fixedHeight: 65
+      });
+    }
+    this.textbox.setVisible(false);
+    console.log(['OverworldUI::create::textbox', this.textbox]);
 
     // set pause menu
     // this.pauseMenu = new PauseMenu(this, 0, 0);
     // this.pauseMenu.setVisible(false);
 
     this.handleEvents();
+  }
+
+  destroy() {
+    // this.toast.destroy();
+    this.textbox.destroy();
+    // this.pauseMenu.destroy();
   }
 
   handleEvents() {
@@ -51,16 +59,15 @@ export default class extends Phaser.Scene {
     //   this.toast.showMessage(value);
     // });
 
-    // do something if interaction == false
-    this.game.events.on('textbox-changedata-active', (parent, value) => {
-      let activeScene = this.scene.get(this.registry.get('scene'));
-      if (value === true) {
-        this.textbox.setVisible(true);
-        activeScene.player.disableMovement();
-      } else {
-        this.textbox.setVisible(false);
-        activeScene.player.enableMovement();
-      }
+    this.game.events.on('textbox-disable', () => {
+      this.textbox.setVisible(false);
+      EventBus.emit('player-move-enable');
+    });
+
+    this.game.events.on('textbox-changedata', (value) => {
+      this.textbox.start(value);
+      this.textbox.setVisible(true);
+      EventBus.emit('player-move-disable');
     });
   }
 }

@@ -1,68 +1,62 @@
 import { getValue } from '@Utilities';
+import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
 
 var textBox = function (scene, x, y, config) {
-    var wrapWidth = getValue(config, 'wrapWidth', 0);
-    var fixedWidth = getValue(config, 'fixedWidth', 0);
-    var fixedHeight = getValue(config, 'fixedHeight', 0);
-    var textBox = scene.rexUI.add.textBox({
-        x: x,
-        y: y,
+  var wrapWidth = getValue(config, 'wrapWidth', 0);
+  var fixedWidth = getValue(config, 'fixedWidth', 0);
+  var fixedHeight = getValue(config, 'fixedHeight', 0);
+  var textBox = scene.rexUI.add.textBox({
+      x: x,
+      y: y,
 
-        background: scene.rexUI.add
-          .roundRectangle(0, 0, 2, 2, 20, 0x000000)
-          .setStrokeStyle(2, 0xffffff),
-        icon: null,
+      background: scene.rexUI.add
+        .roundRectangle(0, 0, 2, 2, 20, 0x000000)
+        .setStrokeStyle(2, 0xffffff),
+      icon: null,
 
-        // text: getBuiltInText(scene, wrapWidth, fixedWidth, fixedHeight),
-        text: getBBcodeText(scene, wrapWidth, fixedWidth, fixedHeight),
+      // text: getBuiltInText(scene, wrapWidth, fixedWidth, fixedHeight),
+      text: getBBcodeText(scene, wrapWidth, fixedWidth, fixedHeight),
 
-        action: scene.add.image(0, 0, 'nextPage').setTint(0x7b5e57).setVisible(false),
+      action: scene.add.image(0, 0, 'nextPage').setTint(0x7b5e57).setVisible(false),
 
-        space: {
-          left: 20,
-          right: 20,
-          top: 20,
-          bottom: 20,
-          icon: 10,
-          text: 10,
-        }
-      })
-      .setOrigin(0)
-      .layout()
-    ;
-
-    scene.plugins.get('rexAnchor').add(textBox, {
-      bottom: '100%-10%',
-      centerX: 'center'
-    });
-
-    textBox
-      .setInteractive()
-      .on('complete', function () {
-        this.scene.get(this.registry.get('map'))
-          .time
-          .addEvent({
-            delay: 500,
-            callbackScope: this,
-            callback: () => {
-              this.registry.set('textbox-active', false);
-            }
-          })
-        ;
-      }, scene)
-    ;
-
-    scene.input.keyboard.on('keydown-Z', function () {
-      if (this.isTyping) {
-        console.log('textbox::insta finish');
-        this.stop(true);
-      } else if (!this.isLastPage) {
-        console.log('textbox::next page');
-        this.typeNextPage();
+      space: {
+        left: 5,
+        right: 10,
+        top: 20,
+        bottom: 10,
+        icon: 10,
+        text: 10,
       }
-    }.bind(textBox));
+    })
+    .setOrigin(0)
+    .layout()
+  ;
 
-    return textBox;
+  new Anchor(textBox, {
+    bottom: '100%-10%',
+    centerX: 'center'
+  });
+
+  textBox
+    .setInteractive()
+    .on('complete', () => {
+      scene.input.keyboard.once('keydown-Z', () => {
+        setTimeout(() => {
+          scene.game.events.emit('textbox-disable');
+        }, 500);
+      });
+    }, scene)
+  ;
+
+  scene.input.keyboard.on('keydown-Z', () => {
+    if (textBox.isTyping) {
+      textBox.stop(true);
+    } else if (!textBox.isLastPage) {
+      textBox.typeNextPage();
+    }
+  });
+
+  return textBox;
 }
 
 var getBuiltInText = function (scene, wrapWidth, fixedWidth, fixedHeight) {
@@ -87,6 +81,6 @@ var getBBcodeText = function (scene, wrapWidth, fixedWidth, fixedHeight) {
       width: wrapWidth
     },
     maxLines: 2
-  })
-}
+  });
+};
 export { textBox };

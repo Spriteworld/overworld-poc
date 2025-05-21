@@ -93,6 +93,20 @@ export default class extends Character {
     }
   }
 
+  idleOnUpdate() {
+    Character.prototype.idleOnUpdate.call(this);
+    if (this.config.scene.registry.get('player_input') === false) {
+      return;
+    }
+    const Z = this.config.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
+    Z.emitOnRepeat = false;
+
+    if (Z.isDown) {
+      // this.stateMachine.setState(this.stateDf.IDLE);
+      this.handleInteractables();
+    }
+  }
+
   moveOnUpdate() {
     if (this.config.scene.registry.get('player_input') === false) {
       return;
@@ -128,11 +142,42 @@ export default class extends Character {
   }
 
   disableMovement() {
+    // console.log('Player::disableMovement');
     this.config.scene.registry.set('player_input', false);
   }
 
   enableMovement() {
+    // console.log('Player::enableMovement');
     this.config.scene.registry.set('player_input', true);
+  }
+
+  handleInteractables() {
+    let facingTile = this.getPosInFacingDirection();
+
+    // check for interactable tiles
+    let interactableTiles = this.scene.registry.get('interactions');
+    if (interactableTiles.length === 0) { return; }
+    let tile = interactableTiles.find((tile) => {
+      return (
+        tile.x / Tile.WIDTH === facingTile.x &&
+        tile.y / Tile.HEIGHT === facingTile.y
+      );
+    });
+    if (!tile) { return; }
+
+    switch (tile.obj.type) {
+      case 'sign':
+        let signProps = this.scene.getPropertiesFromTile(tile.obj);
+        if (signProps.size === 0) { return; }
+
+        this.config.scene.game.events.emit(
+          'textbox-changedata', 
+          this.scene.getPropertyFromTile(tile.obj, 'text')
+        );
+      break;
+    }
+
+
   }
 
   debugBlockers() {

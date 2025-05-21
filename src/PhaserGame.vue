@@ -18,7 +18,13 @@ export default {
       scene: null,
     };
   },
-  emits: ['current-active-scene', 'current-coords', 'debug'],
+  emits: [
+    'current-active-scene', 
+    'current-coords', 
+    'player-move-disable', 
+    'player-move-enable', 
+    'debug'
+  ],
 
   mounted() {
     this.game = new Game(config);
@@ -35,6 +41,12 @@ export default {
         y: parseInt(player.y / Tile.HEIGHT),
       });
     });
+    EventBus.on('player-move-disable', () => {
+      this.$emit('player-move-disable');
+    });
+    EventBus.on('player-move-enable', () => {
+      this.$emit('player-move-enable');
+    });
     EventBus.on('debug', (payload) => {
       this.$emit('debug', payload);
     });
@@ -45,6 +57,8 @@ export default {
       this.game.destroy(true);
       EventBus.off('current-scene-ready');
       EventBus.off('player-move-complete');
+      EventBus.off('player-move-disable');
+      EventBus.off('player-move-enable');
       EventBus.off('debug');
     }
   },

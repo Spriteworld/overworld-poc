@@ -20,7 +20,7 @@ export default class extends Phaser.GameObjects.Sprite {
       'facing-direction': 'down',
       'seen-radius': 0,
       'seen-character': null,
-      // 'char-layer': 'ground',
+      'char-layer': 'ground',
       'can-run': true,
       'ignore-warp': false,
       'track-player': false,
@@ -88,7 +88,7 @@ export default class extends Phaser.GameObjects.Sprite {
       startPosition: { x: def.x, y: def.y },
       facingDirection: def['facing-direction'] ?? 'down',
       collides: def.collides,
-      // charLayer: def['char-layer'] ?? 'ground',
+      charLayer: def['char-layer'] ?? 'ground',
       move: def.move,
     };
   }
@@ -456,11 +456,14 @@ export default class extends Phaser.GameObjects.Sprite {
       this.generateTrackingCoords();
     }
 
-    let coord = Object.values(this.trackingCoords).find((coord) => {
-      if (coord.x === parseInt(playerPos.x) && coord.y === parseInt(playerPos.y)) {
-        return true;
-      }
-    });
+    let coord = Object
+      .values(this.trackingCoords)
+      .find((coord) => {
+        if (coord.x === parseInt(playerPos.x) && coord.y === parseInt(playerPos.y)) {
+          return true;
+        }
+      })
+    ;
 
     if (coord) {
       console.log(['Character::canTrackPlayer', this.config.id +' can track the player!', coord.dir]);
@@ -516,18 +519,19 @@ export default class extends Phaser.GameObjects.Sprite {
         break;
       }
 
-      var props = this.scene.getTileProperties(tile.x, tile.y);
+      // var props = this.scene.getTileProperties(tile.x, tile.y);
       var check = [
-        props.get('ge_collide') || false,
-        props.get('ge_collide_left') || false,
-        props.get('ge_collide_right') || false,
-        props.get('ge_collide_up') || false,
-        props.get('ge_collide_down') || false,
-        props.get('sw_stop') || false,
-        props.get('sw_slide') || false,
-        props.get('sw_spin') || false,
-        props.get('sw_jump') || false,
+        // props.has('ge_collide') ? props.get('ge_collide') : false,
+        // props.has('ge_collide_left') ? props.get('ge_collide_left') : false,
+        // props.has('ge_collide_right') ? props.get('ge_collide_right') : false,
+        // props.has('ge_collide_up') ? props.get('ge_collide_up') : false,
+        // props.has('ge_collide_down') ? props.get('ge_collide_down') : false,
+        // props.has('sw_stop') ? props.get('sw_stop') : false,
+        // props.has('sw_slide') ? props.get('sw_slide') : false,
+        // props.has('sw_spin') ? props.get('sw_spin') : false,
+        // props.has('sw_jump') ? props.get('sw_jump') : false,
         this.config.scene.isCharacterOnTile(tile.x, tile.y),
+        this.gridengine.isBlocked(tile),
       ].includes(true);
 
       if (check) {
@@ -578,7 +582,7 @@ export default class extends Phaser.GameObjects.Sprite {
       break;
     }
 
-    let isInside = Phaser.Geom.Rectangle.ContainsPoint(this.seenRect, this.characterRect);
+    let isInside = Phaser.Geom.Rectangle.ContainsPoint(this.seenRect, character.characterRect);
     if (isInside) {
       console.log(['Character::canSeeCharacter', this.config.id +' can see '+character.config.id+'!']);
     }

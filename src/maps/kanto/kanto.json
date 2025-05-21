@@ -1859,6 +1859,155 @@
                  "width":32,
                  "x":3552,
                  "y":9216
+                }, 
+                {
+                 "height":32,
+                 "id":3,
+                 "name":"HeroHouseF1Warp",
+                 "properties":[
+                        {
+                         "name":"warp",
+                         "type":"string",
+                         "value":"HeroHouseF1"
+                        }, 
+                        {
+                         "name":"warp-dir",
+                         "type":"string",
+                         "value":"down"
+                        }, 
+                        {
+                         "name":"warp-x",
+                         "type":"int",
+                         "value":6
+                        }, 
+                        {
+                         "name":"warp-y",
+                         "type":"int",
+                         "value":8
+                        }],
+                 "rotation":0,
+                 "type":"warp",
+                 "visible":true,
+                 "width":32,
+                 "x":3552,
+                 "y":9184
+                }, 
+                {
+                 "height":32,
+                 "id":4,
+                 "name":"ProfessorLabWarp",
+                 "properties":[
+                        {
+                         "name":"warp",
+                         "type":"string",
+                         "value":"ProfessorLab"
+                        }, 
+                        {
+                         "name":"warp-dir",
+                         "type":"string",
+                         "value":"down"
+                        }, 
+                        {
+                         "name":"warp-x",
+                         "type":"int",
+                         "value":7
+                        }, 
+                        {
+                         "name":"warp-y",
+                         "type":"int",
+                         "value":13
+                        }],
+                 "rotation":0,
+                 "type":"warp",
+                 "visible":true,
+                 "width":32,
+                 "x":3872,
+                 "y":9376
+                }, 
+                {
+                 "height":32,
+                 "id":5,
+                 "name":"HeroHouseSign",
+                 "properties":[
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"Hero[b]House[\/b]"
+                        }],
+                 "rotation":0,
+                 "type":"sign",
+                 "visible":true,
+                 "width":32,
+                 "x":3488,
+                 "y":9184
+                }, 
+                {
+                 "height":32,
+                 "id":6,
+                 "name":"RivalHouseSign",
+                 "properties":[
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"Rival[b]House[\/b]"
+                        }],
+                 "rotation":0,
+                 "type":"sign",
+                 "visible":true,
+                 "width":32,
+                 "x":3776,
+                 "y":9184
+                }, 
+                {
+                 "height":32,
+                 "id":7,
+                 "name":"PalletSWSign",
+                 "properties":[
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10"
+                        }],
+                 "rotation":0,
+                 "type":"sign",
+                 "visible":true,
+                 "width":32,
+                 "x":3520,
+                 "y":9408
+                }, 
+                {
+                 "height":32,
+                 "id":8,
+                 "name":"PalletNESign",
+                 "properties":[
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"PALLET TOWN\nShades of your journey await!"
+                        }],
+                 "rotation":0,
+                 "type":"sign",
+                 "visible":true,
+                 "width":32,
+                 "x":3648,
+                 "y":9312
+                }, 
+                {
+                 "height":32,
+                 "id":9,
+                 "name":"OakResearchLabSign",
+                 "properties":[
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"OAK POK\u00e9MON RESEARCH LAB"
+                        }],
+                 "rotation":0,
+                 "type":"sign",
+                 "visible":true,
+                 "width":32,
+                 "x":3872,
+                 "y":9472
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1867,7 +2016,7 @@
          "y":0
         }],
  "nextlayerid":15,
- "nextobjectid":2,
+ "nextobjectid":10,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

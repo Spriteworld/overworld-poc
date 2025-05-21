@@ -6,6 +6,8 @@
           ref="phaserRef" 
           @current-active-scene="updateCurrentScene"
           @current-coords="(coords) => xy = coords"
+          @player-move-disable="disablePlayerMove"
+          @player-move-enable="enablePlayerMove"
           @debug="(payload) => debugContent = payload"
         />
       </div>
@@ -128,7 +130,15 @@ export default {
         dir: char.getFacingDirection(),
         charLayer: char.layer,
       });
-    }
+    },
+    disablePlayerMove() {
+      let char = this.scene.characters.get('player');
+      char.disableMovement();
+    },
+    enablePlayerMove() {
+      let char = this.scene.characters.get('player');
+      char.enableMovement();
+    },
   },
 
   computed: {

@@ -134,28 +134,50 @@ export default class extends Phaser.Scene {
       }
 
       layerTiles.forEach(layerTile => {
-        if (!layerTile || !layerTile.properties) {
-          return;
-        }
-
-        Object.entries(layerTile.properties).forEach(([prop, value]) => {
-          // if we dont have it, add it
-          if (typeof props.get(prop) === 'undefined') {
-            props.set(prop, value);
-          }
-          // if we already have it and its a bool
-          if (typeof props.get(prop) === 'boolean') {
-            // make it true
-            if (value === true) {
-              props.set(prop, value);
-            }
-            // dont care about falses
-          }
-        });
+        this.getPropertiesFromTile(layerTile)
+          .forEach((value, key) => {
+            props.set(key, value);
+          })
+        ;
       });
     });
 
     return props;
+  }
+
+  getPropertiesFromTile(tile) {
+    var props = new Map();
+    if (!tile || !tile.properties) {
+      return props;
+    }
+    
+    Object.entries(tile.properties).forEach(([prop, value]) => {
+      // if we dont have it, add it
+      if (typeof props.get(prop) === 'undefined') {
+        props.set(prop, value);
+      }
+      // if we already have it and its a bool
+      if (typeof props.get(prop) === 'boolean') {
+        // make it true
+        if (value === true) {
+          props.set(prop, value);
+        }
+        // dont care about falses
+      }
+    });
+    
+    return props;
+  }
+
+  getPropertyFromTile(tile, property) {
+    if (!tile || !tile.properties) {
+      return null;
+    }
+
+    let props = this.getPropertiesFromTile(tile);
+    let findProp = props.values().find((value) => value.name === property);
+
+    return findProp ? findProp.value : null;
   }
 
   getTilesWithProperty(property) {

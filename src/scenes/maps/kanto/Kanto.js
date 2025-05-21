@@ -12,7 +12,6 @@ export default class extends GameMap {
       active: false,
       visible: false,
     });
-    this.config['char-layer'] = 'ground';
 
     this.rect = [];
   }
@@ -42,7 +41,7 @@ export default class extends GameMap {
     this.updateCharacters(time, delta);
 
     if (this.game.config.gameFlags.has_pokemon === false) {
-      let player = this.mapPlugins.player.player;
+      let player = this.mapPlugins['player'].player;
       let isInside = this.rect.some((point) => parseInt(player.x / Tile.WIDTH) === point[0] && parseInt(player.y / Tile.HEIGHT) === point[1]);
       if (isInside) {
         console.log('You need to get the Pokedex from Professor Oak!');

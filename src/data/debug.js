@@ -7,9 +7,9 @@ export default {
   stateMachine: false,
   tests: {
     timeOverlay: false,
-    outlineColliders: false,
+    outlineColliders: !false,
     playerBlockers: false,
-    rectOutlines: false,
+    rectOutlines: !false,
   },
   console: {
     preload: false,
