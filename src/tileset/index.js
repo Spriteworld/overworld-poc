@@ -28,20 +28,21 @@ loadPokemonSprites = loadPokemonSprites.map(id => {
   return id.padStart(3, '0');
 });
 
-let pokemonGlob = import.meta.glob('@Tileset/overworld/pokemon/*.png', { eager: true, query: '?url', import: 'default' });
+// let pokemonGlob = import.meta.glob('@Tileset/overworld/pokemon/*.png', { eager: false, query: '?url', import: 'default' });
+let pokemonGlob = loadPokemonSprites.filter(id => id.length === 3);
 let pokemon = {};
-Object.entries(pokemonGlob).map(([key, img]) => {
+Object.values(pokemonGlob).map((key) => {
   let id = key.split('/').pop().split('.')[0].padStart(3, '0');
   if(!loadPokemonSprites.includes(id)) { return; }
-  pokemon[id] = new URL(img, import.meta.url).href;
+  pokemon[id] = new URL('overworld/pokemon/'+id+'.png', import.meta.url).href;
 });
 
-let pokemon_shinyGlob = import.meta.glob('@Tileset/overworld/pokemon_shiny/*.png', { eager: true, query: '?url', import: 'default' });
+let pokemon_shinyGlob = loadPokemonSprites.filter(id => id.length !== 3);
 let pokemon_shiny = {};
-Object.entries(pokemon_shinyGlob).map(([key, img]) => {
+Object.values(pokemon_shinyGlob).map((key) => {
   let id = key.split('/').pop().split('.')[0].padStart(3, '0');
   if(!loadPokemonSprites.includes(id)) { return; }
-  pokemon_shiny[id] = new URL(img, import.meta.url).href;
+  pokemon_shiny[id] = new URL('overworld/pokemon_shiny/'+id+'.png', import.meta.url).href;
 });
 
 export default {

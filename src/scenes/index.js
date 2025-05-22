@@ -8,6 +8,7 @@ import Preload from './misc/Preload.js';
 import Test from '@Scenes/maps/random/Test.js';
 import Skyland from '@Scenes/maps/random/Skyland.js';
 import Base from '@Scenes/maps/random/Base.js';
+import Forest from '@Scenes/maps/random/Forest.js';
 
 import Kanto from '@Scenes/maps/kanto/Kanto.js';
 // import PalletTown from '@Scenes/maps/kanto/PalletTown.js';
@@ -24,6 +25,7 @@ export default {
   Test,
   Skyland,
   Base,
+  Forest,
 
   Kanto,
   // PalletTown,
