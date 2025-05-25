@@ -143,11 +143,13 @@ export default class extends Character {
 
   disableMovement() {
     // console.log('Player::disableMovement');
+    EventBus.emit('debug', 'Player::disableMovement');
     this.config.scene.registry.set('player_input', false);
   }
-
+  
   enableMovement() {
     // console.log('Player::enableMovement');
+    EventBus.emit('debug', 'Player::enableMovement');
     this.config.scene.registry.set('player_input', true);
   }
 
@@ -166,7 +168,7 @@ export default class extends Character {
         tile.y === facingTile.y
       );
     });
-    console.log('Player::handleInteractables', tile);
+
     if (!tile) { return; }
 
     let text = null;
@@ -178,7 +180,8 @@ export default class extends Character {
 
         this.config.scene.game.events.emit(
           'textbox-changedata', 
-          this.scene.getPropertyFromTile(tile.obj, 'text')
+          this.scene.getPropertyFromTile(tile.obj, 'text'), 
+          tile.obj
         );
       break;
 
@@ -186,10 +189,17 @@ export default class extends Character {
       case 'npc':
         text = this.scene.getPropertyFromTile(tile.obj, 'text');
         if (!text) { return; }
+        let player = this.scene.characters.get('player');
+        let char = this.scene.characters.get(tile.obj.id);
+        char.look(player.getOppositeFacingDirection());
+        char.stopSpin(true);
+        console.log(['Player::handleInteractions', char, this.scene.registry.get('player').name]);
         
+        this.scene.registry.set('last-spoke-to', tile.obj.id);
         this.config.scene.game.events.emit(
           'textbox-changedata', 
-          text
+          text, 
+          tile.obj
         );
       break;
 
@@ -199,15 +209,15 @@ export default class extends Character {
         
         this.config.scene.game.events.emit(
           'textbox-changedata', 
-          `You found a ${item}!`
+          `You found a ${item}!`, 
+          tile.obj
         );
         this.config.scene.game.events.emit('item-pickup', item);
+        this.scene.registry.set('last-spoke-to', tile.obj.id);
         this.config.scene.game.events.once('textbox-disable', () => {
           this.scene.removeInteraction(tile.obj.id);
-          this.scene.gridEngine.setPosition(
-            tile.obj.id,
-            { x: -1, y: -1 }
-          );
+          let char = this.scene.characters.get(tile.obj.id);
+          char.remove();
         });
       break;
       
@@ -217,20 +227,16 @@ export default class extends Character {
         
         this.config.scene.game.events.emit(
           'textbox-changedata', 
-          text
+          text, 
+          tile.obj
         );
         this.config.scene.game.events.once('textbox-disable', () => {
           this.scene.removeInteraction(tile.obj.id);
-          this.scene.gridEngine.setPosition(
-            tile.obj.id,
-            { x: -1, y: -1 }
-          );
+          let char = this.scene.characters.get(tile.obj.id);
+          char.remove();
         });
       break;
-
     }
-
-
   }
 
   debugBlockers() {

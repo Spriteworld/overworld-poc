@@ -14,6 +14,7 @@ export default {
   console: {
     preload: false,
     gameMap: false,
+    character: !false,
     interactableShout: false,
   },
 };

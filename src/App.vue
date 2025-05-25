@@ -1,5 +1,8 @@
 <template>
   <div class="flex flex-col">
+    <div class="flex flex-row text-white h-[10vh] overflow-y-scroll"><pre>
+{{ JSON.stringify(debugContent, null, '\t') }}
+    </pre></div>
     <div class="flex flex-row h-[90vh]">
       <div class="flex w-10/12">
         <PhaserGame 
@@ -59,9 +62,6 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-row text-white h-[10vh]"><pre>
-{{ JSON.stringify(debugContent, null, '\t') }}
-    </pre></div>
   </div>
 </template>
 

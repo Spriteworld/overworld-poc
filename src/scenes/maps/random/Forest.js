@@ -24,6 +24,7 @@ export default class extends GameMap {
       10: { x: 14, y: 40 },
     };
     this.cutTree = {};
+    this.cutTree2 = {};
   }
 
   preload() {
@@ -34,7 +35,6 @@ export default class extends GameMap {
     this.loadMap();
 
     this.farfetchd = this.mapPlugins?.pokemon.addToScene('farfetchd', 83, 26, 45, {
-    // this.farfetchd = this.mapPlugins?.pokemon.addToScene('farfetchd', 83, 34, 35, {
       text: 'FARFETCH\'D: kwaaaa!',
       spin: true,
       'spin-rate': 1000,
@@ -43,7 +43,9 @@ export default class extends GameMap {
     });
 
     this.game.events.on('textbox-disable', () => {
-      this.moveFarfetchd();
+      if (this.registry.get('last-spoke-to') === this.farfetchd.config.id) {
+        this.moveFarfetchd();
+      }
     });
 
     this.cutTree = new Items.CutTree({
@@ -52,15 +54,36 @@ export default class extends GameMap {
       y: 36,
     });
 
+    this.cutTree2 = new Items.CutTree({
+      scene: this,
+      x: 16,
+      y: 37,
+    });
+
     this.createCharacters();
 
+    this.gridEngine
+      .movementStopped()
+      .subscribe(({ charId }) => {
+        if ([this.farfetchd.config.id].includes(charId)) {
+          let player = this.registry.get('player');
+          player.enableMovement();
+        } 
+      });
 
+    this.gridEngine
+      .movementStarted()
+      .subscribe(({ charId }) => {
+        if ([this.farfetchd.config.id].includes(charId)) {
+          let player = this.registry.get('player');
+          player.disableMovement();
+        } 
+      });
   }
 
   update(time, delta) {
     this.updateCharacters(time, delta);
-    this.farfetchd.update(time);
-    this.cutTree.update(time);
+    this.farfetchd.update(time, delta);
   }
 
   moveFarfetchd() {
@@ -68,20 +91,13 @@ export default class extends GameMap {
     let currentLocation = farfetchd.getPosition();
     let playerLookingDirection = this.registry.get('player').getFacingDirection();
 
-    // console.group('currentLocation');
-    // Object.values(this.farfetchdLocations).forEach((loc, index) => {
-    //   console.log(currentLocation, loc, index, JSON.stringify(currentLocation) === JSON.stringify(loc));
-    // });
-    // console.groupEnd('currentLocation');
     let sendFarfetchdTo = {};
     switch (true) {
-      case (JSON.stringify(currentLocation) === JSON.stringify(this.farfetchdLocations[1])):
-        // console.log('Farfetch\'d is at location 1');
+      case this.#checkFarfetchdLocation(currentLocation, 1):
         sendFarfetchdTo = this.farfetchdLocations[2];
       break;
 
-      case (JSON.stringify(currentLocation) === JSON.stringify(this.farfetchdLocations[2])):
-        // console.log('Farfetch\'d is at location 2');
+      case this.#checkFarfetchdLocation(currentLocation, 2):
         if (['left', 'up'].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[3];
         }
@@ -90,19 +106,16 @@ export default class extends GameMap {
         }
       break;
 
-      case (JSON.stringify(currentLocation) === JSON.stringify(this.farfetchdLocations[3])):
-        // console.log('Farfetch\'d is at location 3');
+      case this.#checkFarfetchdLocation(currentLocation, 3):
         if (['left'].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[2];
         }
         if (['down'].includes(playerLookingDirection)) {
-          farfetchd.moveTo(48, 35, { noPathFoundStrategy: 'RETRY' });
           sendFarfetchdTo = this.farfetchdLocations[4];
         }
       break;
 
-      case (JSON.stringify(currentLocation) === JSON.stringify(this.farfetchdLocations[4])):
-        // console.log('Farfetch\'d is at location 4');
+      case this.#checkFarfetchdLocation(currentLocation, 4):
         if (['right'].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[5];
         }
@@ -111,8 +124,7 @@ export default class extends GameMap {
         }
       break;
 
-      case (JSON.stringify(currentLocation) === JSON.stringify(this.farfetchdLocations[5])):
-        // console.log('Farfetch\'d is at location 5');
+      case this.#checkFarfetchdLocation(currentLocation, 5):
         if (['left'].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[6];
         }
@@ -124,8 +136,7 @@ export default class extends GameMap {
         }
       break;
 
-      case (JSON.stringify(currentLocation) === JSON.stringify(this.farfetchdLocations[6])):
-        // console.log('Farfetch\'d is at location 6');
+      case this.#checkFarfetchdLocation(currentLocation, 6):
         if (['down'].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[7];
         }
@@ -134,8 +145,7 @@ export default class extends GameMap {
         }
       break;
 
-      case (JSON.stringify(currentLocation) === JSON.stringify(this.farfetchdLocations[7])):
-        // console.log('Farfetch\'d is at location 7');
+      case this.#checkFarfetchdLocation(currentLocation, 7):
         if (['left'].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[6];
         }
@@ -144,8 +154,7 @@ export default class extends GameMap {
         }
       break;
 
-      case (JSON.stringify(currentLocation) === JSON.stringify(this.farfetchdLocations[8])):
-        // console.log('Farfetch\'d is at location 8');
+      case this.#checkFarfetchdLocation(currentLocation, 8):
         if (['left'].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[2];
         }
@@ -160,8 +169,7 @@ export default class extends GameMap {
         }
       break;
 
-      case (JSON.stringify(currentLocation) === JSON.stringify(this.farfetchdLocations[9])):
-        // console.log('Farfetch\'d is at location 9');
+      case this.#checkFarfetchdLocation(currentLocation, 9):
         if (['left'].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[10];
         }
@@ -183,5 +191,9 @@ export default class extends GameMap {
     }, undefined);
 
     farfetchd.moveTo(sendFarfetchdTo.x, sendFarfetchdTo.y, { noPathFoundStrategy: 'RETRY' });
+  }
+
+  #checkFarfetchdLocation(currentLocation, locationIdx) {
+    return JSON.stringify(currentLocation) === JSON.stringify(this.farfetchdLocations[locationIdx]);
   }
 }

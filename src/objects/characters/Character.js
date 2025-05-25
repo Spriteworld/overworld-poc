@@ -1,8 +1,7 @@
 import Phaser from 'phaser';
 import StateMachine from '@Objects/StateMachine';
 import { Tile, Direction } from '@Objects';
-import Debug from '@Data/debug.js';
-import { getValue } from '@Utilities';
+import { EventBus } from '@Utilities';
 
 export default class extends Phaser.GameObjects.Sprite {
   constructor(config) {
@@ -52,7 +51,7 @@ export default class extends Phaser.GameObjects.Sprite {
     this.gridengine = this.config.scene.gridEngine;
     this.stateMachine = new StateMachine(this, this.config.id);
     this.initalCreation = true;
-    this.spinRate = this.config['spin-rate'];
+    this.spinRate = parseInt(this.config['spin-rate']);
 
     this.config.scene.add.existing(this);
     this.config.scene.addCharacter(this);
@@ -293,10 +292,6 @@ export default class extends Phaser.GameObjects.Sprite {
   }
 
   addAutoSpin(delta) {
-    if (this.config.type === 'npc') {
-      // console.log('Character::addAutoSpin', this.config.id, this.config.spin);
-    }
-
     if (this.initalCreation) {
       let lookDir = this.config['facing-direction'] ?? 'down';
       let faceDir = this.getFacingDirection();
@@ -308,10 +303,10 @@ export default class extends Phaser.GameObjects.Sprite {
       this.initalCreation = !this.initalCreation;
     }
 
-    if (this.config.spin !== true) { return; }
+    if (this.config.spin !== true && this.config['spin-rate'] && delta) { return; }
     this.spinRate -= delta;
     if (this.spinRate <= 0) {
-      this.spinRate = this.config['spin-rate'];
+      this.spinRate = parseInt(this.config['spin-rate']);
 
       let dir = Direction.DOWN;
       switch (Math.floor(Math.random() * 8) +1) {
@@ -321,6 +316,9 @@ export default class extends Phaser.GameObjects.Sprite {
         case 4: dir = Direction.RIGHT; break;
         default: break;
       }
+      if (this.scene.game.config.debug.console.character) {
+        console.log('Character::addAutoSpin', this.config.id, 'looking at', dir);
+      }
       this.look(dir.toLowerCase());
     }
   }
@@ -329,9 +327,7 @@ export default class extends Phaser.GameObjects.Sprite {
     this.config.spin = false;
 
     if (restart) {
-      let textbox = this.config.scene.scene.get('OverworldUI').textbox;
-
-      textbox.on('complete', () => this.startSpin());
+      this.scene.game.events.on('textbox-disable', () => this.startSpin());
     }
   }
 
@@ -616,8 +612,26 @@ export default class extends Phaser.GameObjects.Sprite {
     return this.gridengine.stopMovement(this.config.id);
   }
 
+  remove() {
+    this.destroy();
+    return this.gridEngine.removeCharacter(this.config.id);
+  }
+
   getFacingDirection() {
     return this.gridengine.getFacingDirection(this.config.id);
+  }
+
+  getOppositeFacingDirection() {
+    let dir = this.getFacingDirection();
+    if (dir === 'up') {
+      return 'down';
+    } else if (dir === 'down') {
+      return 'up';
+    } else if (dir === 'left') {
+      return 'right';
+    } else if (dir === 'right') {
+      return 'left';
+    }
   }
 
   getFacingTile() {

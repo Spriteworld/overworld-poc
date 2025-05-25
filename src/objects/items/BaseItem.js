@@ -36,4 +36,9 @@ export default class BaseItem extends Phaser.GameObjects.Sprite {
       move: def.move,
     };
   }
+
+  remove() {
+    this.destroy();
+    return this.gridengine.removeCharacter(this.config.id);
+  }
 }
