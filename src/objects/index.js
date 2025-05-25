@@ -3,7 +3,7 @@ import * as Direction from './Direction.js';
 import Game from './Game.js';
 import GameMap from './GameMap.js';
 import Interactables from './interactables/index.js';
-import OverworldItem from './OverworldItem.js';
+import Items from './items/index.js';
 
 import Character from './characters/Character.js';
 import Player from './characters/Player.js';
@@ -19,7 +19,7 @@ export {
   Tile, Direction,
   Game, GameMap,
   Interactables,
-  OverworldItem,
+  Items,
 
   Character,
   Player,

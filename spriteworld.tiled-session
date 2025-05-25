@@ -43,10 +43,10 @@
                 7
             ],
             "scale": 2,
-            "selectedLayer": 2,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 3877,
-                "y": 9245.5
+                "x": 3628,
+                "y": 9108.5
             }
         },
         "src/maps/kanto/pallet.json": {
@@ -142,23 +142,37 @@
                 "y": 2392
             }
         },
-        "src/maps/random/skyland.json": {
-            "scale": 1,
-            "selectedLayer": 2,
+        "src/maps/random/forest.json": {
+            "expandedObjectLayers": [
+                7
+            ],
+            "scale": 1.5,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 888,
-                "y": 506
+                "x": 877.9999999999999,
+                "y": 1411.333333333333
+            }
+        },
+        "src/maps/random/skyland.json": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 1,
+            "selectedLayer": 9,
+            "viewCenter": {
+                "x": 624,
+                "y": 496
             }
         },
         "src/maps/random/test.json": {
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 1,
-            "selectedLayer": 1,
+            "scale": 1.5,
+            "selectedLayer": 9,
             "viewCenter": {
-                "x": 624,
-                "y": 851
+                "x": 748.6666666666667,
+                "y": 196
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -189,6 +203,7 @@
     "project": "spriteworld.tiled-project",
     "property.type": "int",
     "recentFiles": [
+        "src/maps/random/forest.json",
         "src/maps/random/test.json",
         "src/maps/kanto/pallet.json",
         "src/maps/random/skyland.json",
@@ -199,8 +214,7 @@
         "src/maps/kanto/route21.json",
         "src/maps/kanto/route1.json",
         "src/maps/kanto/viridian_city.json",
-        "src/maps/kanto/world.json",
-        "src/maps/kanto/prof_lab.json"
+        "src/maps/kanto/world.json"
     ],
     "resizeMap.removeObjects": false
 }

@@ -37,7 +37,6 @@ export default class extends Phaser.Scene {
       });
     }
     this.textbox.setVisible(false);
-    console.log(['OverworldUI::create::textbox', this.textbox]);
 
     // set pause menu
     // this.pauseMenu = new PauseMenu(this, 0, 0);

@@ -3,6 +3,10 @@ import { Character } from '@Objects';
 export default class extends Character {
   constructor(config) {
     config.type = 'pkmn';
+    config.properties = [];
+    config.properties.push(config.scene.addPropertyToTile(
+      config, 'text', config.text
+    ));    
     super(config);
 
     this.stateMachine

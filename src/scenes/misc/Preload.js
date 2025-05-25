@@ -40,10 +40,22 @@ export default class extends Phaser.Scene {
     this.load.on('complete', () => progress.destroy());
 
     this.load.image('blank', Tileset.blank);
-    this.load.image('gen3_inside', Tileset.gen3inside);
-    this.load.image('gen3_outside', Tileset.gen3outside);
-    this.load.image('rse_inside', Tileset.rse_inside);
-    this.load.image('rse_outside', Tileset.rse_outside);
+    this.load.spritesheet('gen3_inside', Tileset.gen3inside, {
+      frameWidth: Tile.WIDTH,
+      frameHeight: Tile.HEIGHT,
+    });
+    this.load.spritesheet('gen3_outside', Tileset.gen3outside, {
+      frameWidth: Tile.WIDTH,
+      frameHeight: Tile.HEIGHT,
+    });
+    this.load.spritesheet('rse_inside', Tileset.rse_inside, {
+      frameWidth: Tile.WIDTH,
+      frameHeight: Tile.HEIGHT,
+    });
+    this.load.spritesheet('rse_outside', Tileset.rse_outside, {
+      frameWidth: Tile.WIDTH,
+      frameHeight: Tile.HEIGHT,
+    });
     this.load.spritesheet('red', Tileset.red, {
       frameWidth: Tile.WIDTH,
       frameHeight: 40
@@ -66,8 +78,9 @@ export default class extends Phaser.Scene {
   }
 
   create () {
-    this.scene.start('Test');
+    // this.scene.start('Test');
     // this.scene.start('Kanto');
+    this.scene.start('Forest');
 
     if (this.game.config.debug.time) {
       this.scene.start('TimeOverlay');

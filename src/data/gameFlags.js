@@ -15,6 +15,17 @@ export default {
   // mt moon
   // obtained_fossil: false,
 
+  // hms
+  has_cut: false,
+  // has_flash: false,
+  // has_rock_smash: false,
+  // has_fly: false,
+  // has_strength: false,
+  // has_waterfall: false,
+  // has_diving: false,
+  // has_surf: false,
+  // has_whirlpool: false,
+
   // misc
   // obtained_badge_1: false,
   // obtained_badge_2: false,

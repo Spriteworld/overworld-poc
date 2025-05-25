@@ -26,6 +26,7 @@ export default class extends Phaser.GameObjects.Sprite {
       'track-player': false,
       'track-player-radius': 2,
     }, ...config};
+    console.log('Character::constructor', this.config.id, this.config);
     this.rectColor = {
       normal: 0x1d7196,
       selected: 0xff0000

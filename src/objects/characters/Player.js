@@ -161,10 +161,16 @@ export default class extends Character {
       return (
         tile.x / Tile.WIDTH === facingTile.x &&
         tile.y / Tile.HEIGHT === facingTile.y
+      ) || (
+        tile.x === facingTile.x &&
+        tile.y === facingTile.y
       );
     });
+    console.log('Player::handleInteractables', tile);
     if (!tile) { return; }
 
+    let text = null;
+    let item = null;
     switch (tile.obj.type) {
       case 'sign':
         let signProps = this.scene.getPropertiesFromTile(tile.obj);
@@ -175,6 +181,53 @@ export default class extends Character {
           this.scene.getPropertyFromTile(tile.obj, 'text')
         );
       break;
+
+      case 'pkmn':
+      case 'npc':
+        text = this.scene.getPropertyFromTile(tile.obj, 'text');
+        if (!text) { return; }
+        
+        this.config.scene.game.events.emit(
+          'textbox-changedata', 
+          text
+        );
+      break;
+
+      case 'item':
+        item = this.scene.getPropertyFromTile(tile.obj, 'item');
+        if (!item) { return; }
+        
+        this.config.scene.game.events.emit(
+          'textbox-changedata', 
+          `You found a ${item}!`
+        );
+        this.config.scene.game.events.emit('item-pickup', item);
+        this.config.scene.game.events.once('textbox-disable', () => {
+          this.scene.removeInteraction(tile.obj.id);
+          this.scene.gridEngine.setPosition(
+            tile.obj.id,
+            { x: -1, y: -1 }
+          );
+        });
+      break;
+      
+      case 'cut-tree':
+        text = this.scene.getPropertyFromTile(tile.obj, 'text');
+        if (!text) { return; }
+        
+        this.config.scene.game.events.emit(
+          'textbox-changedata', 
+          text
+        );
+        this.config.scene.game.events.once('textbox-disable', () => {
+          this.scene.removeInteraction(tile.obj.id);
+          this.scene.gridEngine.setPosition(
+            tile.obj.id,
+            { x: -1, y: -1 }
+          );
+        });
+      break;
+
     }
 
 

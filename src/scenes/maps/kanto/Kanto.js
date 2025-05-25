@@ -14,6 +14,14 @@ export default class extends GameMap {
     });
 
     this.rect = [];
+
+    this.items = [
+      {
+        x: 110,
+        y: 203,
+        item: 'Potion',
+      }
+    ]
   }
 
   preload() {

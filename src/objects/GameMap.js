@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Interactables, Tile } from '@Objects';
+import { Interactables, Items } from '@Objects';
 import { getValue, EventBus } from '@Utilities';
 import Debug from '@Data/debug.js';
 
@@ -21,6 +21,7 @@ export default class extends Phaser.Scene {
     this.ge_events_init = false;
     
     this.mapPlugins = new Map();
+    this.items = [];
   }
   
   initPlugins() {
@@ -68,7 +69,10 @@ export default class extends Phaser.Scene {
     tilemap.tilesets.forEach((tileset) => {
       tilesets.push(tilemap.addTilesetImage(tileset.name));
     });
-
+    if (this.game.config.debug.console.gameMap) {
+      console.log(['GameMap::loadMap::tilesets', tilesets]);
+    }
+    
     // load all the layers!
     tilemap.layers
       .forEach((layer) => {
@@ -107,11 +111,33 @@ export default class extends Phaser.Scene {
   }
 
   interactTile(map, obj, color) {
+    if (this.game.config.debug.console.gameMap) {
+      console.log(['GameMap::interactTile', map, obj, color]);
+    }
     this.registry.get('interactions').push({
       x: obj.x,
       y: obj.y,
       obj: obj
     });
+    if (this.game.config.debug.tests.rectOutlines) {
+      this.mapPlugins.debug.debugObject(obj, obj.id);
+    }
+  }
+
+  removeInteraction(id) {
+    if (this.game.config.debug.console.gameMap) {
+      console.log(['GameMap::removeInteraction', id]);
+    }
+    let interactions = this.registry.get('interactions');
+    let idx = interactions.findIndex((obj) => obj.obj.id === id);
+    if (idx !== -1) {
+      interactions.splice(idx, 1);
+      if (this.game.config.debug.console.gameMap) {
+        console.log(['GameMap::removeInteraction', 'removing the interaction', id, idx]);
+        console.log(['GameMap::removeInteraction', interactions]);
+      }
+      this.registry.set('interactions', interactions);
+    }
   }
 
   getTileProperties(x, y) {
@@ -180,6 +206,25 @@ export default class extends Phaser.Scene {
     return findProp ? findProp.value : null;
   }
 
+  addPropertyToTile(tile, property, value) {
+    if (!tile || !tile.properties) {
+      return [];
+    }
+    console.log(['GameMap::addPropertyToTile', tile, tile.properties]);
+    
+    if (typeof tile.properties === 'undefined') {
+      tile.properties = [];
+    }
+
+    tile.properties.push({
+      name: property,
+      type: typeof value,
+      value: value
+    });
+
+    return tile.properties;
+  }
+
   getTilesWithProperty(property) {
     var tiles = []
     this.config.tilemap.getTileLayerNames().forEach(layer => {
@@ -232,6 +277,16 @@ export default class extends Phaser.Scene {
     this.characters.forEach((char, key) => {
       chars.push(char.characterDef());
     });
+
+    if (this.items.length > 0) {
+      
+      this.items.forEach((item) => {
+        chars.push(new Items.Pokeball({
+          scene: this,
+          ...item,
+        }).characterDef());
+      });
+    }
 
     this.gridEngine.create(this.config.tilemap, {
       characters: chars
