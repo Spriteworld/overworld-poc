@@ -389,23 +389,6 @@
                  "width":32,
                  "x":736,
                  "y":1504
-                }, 
-                {
-                 "height":32,
-                 "id":2,
-                 "name":"test",
-                 "properties":[
-                        {
-                         "name":"text",
-                         "type":"string",
-                         "value":"test"
-                        }],
-                 "rotation":0,
-                 "type":"sign",
-                 "visible":true,
-                 "width":32,
-                 "x":512,
-                 "y":1152
                 }],
          "opacity":1,
          "type":"objectgroup",

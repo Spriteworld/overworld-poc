@@ -39,6 +39,7 @@ export default {
       this.$emit('current-coords', {
         x: parseInt(player.x / Tile.WIDTH),
         y: parseInt(player.y / Tile.HEIGHT),
+        layer: this.scene.gridEngine.getCharLayer('player'),
       });
     });
     EventBus.on('player-move-disable', () => {

@@ -210,7 +210,6 @@ export default class extends Phaser.Scene {
     if (!tile || !tile.properties) {
       return [];
     }
-    console.log(['GameMap::addPropertyToTile', tile, tile.properties]);
     
     if (typeof tile.properties === 'undefined') {
       tile.properties = [];

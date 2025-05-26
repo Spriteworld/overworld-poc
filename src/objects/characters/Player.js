@@ -240,11 +240,9 @@ export default class extends Character {
   }
 
   debugBlockers() {
-    console.log('Player::debugBlockers');
     let player = this.config.scene.characters.get(this.config.id);
     let tilePos = {};
 
-    // console.log(player.gridengine.isBlocked('left'));
     tilePos = this.getPosInDirection('left');
     if (player.gridengine.isBlocked(tilePos)) {
       this.blockedLeft.x = tilePos.x * Tile.WIDTH;

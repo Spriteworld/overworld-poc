@@ -8,7 +8,7 @@
         <PhaserGame 
           ref="phaserRef" 
           @current-active-scene="updateCurrentScene"
-          @current-coords="(coords) => xy = coords"
+          @current-coords="updateCoords"
           @player-move-disable="disablePlayerMove"
           @player-move-enable="enablePlayerMove"
           @debug="(payload) => debugContent = payload"
@@ -19,6 +19,7 @@
           <div>
             <p>Current Map: {{ currentSceneName }}</p>
             <p>Co-ords: {{ Object.values(xy).join(',') }}</p>
+            <p>Char Layer: {{ charLayer }}</p>
             <p>InGame Time: {{ ingameTime }}</p>
           </div>
           <div>Load Map</div>
@@ -86,6 +87,7 @@ export default {
         x: 0,
         y: 0,
       },
+      charLayer: null,
       showDebug: false,
       showGameFlags: false,
       debug: {},
@@ -107,6 +109,13 @@ export default {
         x: scene.characters.get('player').x,
         y: scene.characters.get('player').y,
       };
+    },
+    updateCoords(coords) {
+      this.xy = {
+        x: coords.x,
+        y: coords.y,
+      };
+      this.charLayer = coords.layer;
     },
     swapScene(sceneName) {
       let char = this.scene.characters.get('player');

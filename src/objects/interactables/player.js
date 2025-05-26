@@ -1,5 +1,5 @@
-import Debug from '@Data/debug.js';
 import { Tile, Player } from '@Objects';
+import { EventBus, getPropertyValue } from '@Utilities';
 
 export default class {
   constructor(scene) {
@@ -82,6 +82,7 @@ export default class {
     //     spin: false,
     //   });
     // }
+
   }
 
   update(time, delta) {
@@ -98,12 +99,18 @@ export default class {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log(['Interactables::player::event', this.scene])
     }
-    this.scene.gridEngine
-      .positionChangeStarted()
-      .subscribe(({ charId, exitTile, enterTile }) => {
-        let char = this.scene.characters.get(charId);
-        if (typeof char === 'undefined') { return; }
 
-      });
+    let layerTransitions = this.scene.findInteractions('layerTransition');
+    if (layerTransitions.length === 0) { return; }
+
+    layerTransitions.forEach(tile => {
+      let from = getPropertyValue(tile.properties, 'from');
+      let to = getPropertyValue(tile.properties, 'to');
+
+      this.scene.gridEngine.setTransition({
+        x: tile.x / Tile.WIDTH,
+        y: tile.y / Tile.HEIGHT,
+      }, from, to);
+    });
   }
 };

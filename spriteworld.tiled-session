@@ -147,20 +147,20 @@
                 7
             ],
             "scale": 1.5,
-            "selectedLayer": 0,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 877.9999999999999,
-                "y": 1411.333333333333
+                "x": 1104,
+                "y": 1104
             }
         },
         "src/maps/random/skyland.json": {
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 1,
+            "scale": 3,
             "selectedLayer": 9,
             "viewCenter": {
-                "x": 624,
+                "x": 784,
                 "y": 496
             }
         },

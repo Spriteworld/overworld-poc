@@ -1,4 +1,4 @@
-import {GameMap, Flock, Direction, Tile} from '@Objects';
+import {GameMap} from '@Objects';
 import {SkylandMap} from '@Maps';
 
 export default class extends GameMap {
