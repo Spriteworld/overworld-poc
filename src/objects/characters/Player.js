@@ -170,73 +170,10 @@ export default class extends Character {
     });
 
     if (!tile) { return; }
+    
+    this.scene.registry.set('last-spoke-to', tile.obj.id);
 
-    let text = null;
-    let item = null;
-    switch (tile.obj.type) {
-      case 'sign':
-        let signProps = this.scene.getPropertiesFromTile(tile.obj);
-        if (signProps.size === 0) { return; }
-
-        this.config.scene.game.events.emit(
-          'textbox-changedata', 
-          this.scene.getPropertyFromTile(tile.obj, 'text'), 
-          tile.obj
-        );
-      break;
-
-      case 'pkmn':
-      case 'npc':
-        text = this.scene.getPropertyFromTile(tile.obj, 'text');
-        if (!text) { return; }
-        let player = this.scene.characters.get('player');
-        let char = this.scene.characters.get(tile.obj.id);
-        char.look(player.getOppositeFacingDirection());
-        char.stopSpin(true);
-        console.log(['Player::handleInteractions', char, this.scene.registry.get('player').name]);
-        
-        this.scene.registry.set('last-spoke-to', tile.obj.id);
-        this.config.scene.game.events.emit(
-          'textbox-changedata', 
-          text, 
-          tile.obj
-        );
-      break;
-
-      case 'item':
-        item = this.scene.getPropertyFromTile(tile.obj, 'item');
-        if (!item) { return; }
-        
-        this.config.scene.game.events.emit(
-          'textbox-changedata', 
-          `You found a ${item}!`, 
-          tile.obj
-        );
-        this.config.scene.game.events.emit('item-pickup', item);
-        this.scene.registry.set('last-spoke-to', tile.obj.id);
-        this.config.scene.game.events.once('textbox-disable', () => {
-          this.scene.removeInteraction(tile.obj.id);
-          let char = this.scene.characters.get(tile.obj.id);
-          char.remove();
-        });
-      break;
-      
-      case 'cut-tree':
-        text = this.scene.getPropertyFromTile(tile.obj, 'text');
-        if (!text) { return; }
-        
-        this.config.scene.game.events.emit(
-          'textbox-changedata', 
-          text, 
-          tile.obj
-        );
-        this.config.scene.game.events.once('textbox-disable', () => {
-          this.scene.removeInteraction(tile.obj.id);
-          let char = this.scene.characters.get(tile.obj.id);
-          char.remove();
-        });
-      break;
-    }
+    this.config.scene.game.events.emit('interact-with-obj', tile);
   }
 
   debugBlockers() {

@@ -55,4 +55,27 @@ export default class {
     this.scene.interactTile(this.scene.game.config.tilemap, npcDef, 0x000000);
     return npcObj;
   }
+
+  event() {
+    if (this.scene.game.config.debug.console.interactableShout) {
+      console.log(['Interactables::pokemon::event', this.scene]);
+    }
+
+    this.scene.game.events.on('interact-with-obj', (tile) => {
+      if (tile.obj.type !== 'npc') { return; }
+
+      let text = this.scene.getPropertyFromTile(tile.obj, 'text');
+      if (!text) { return; }
+      let player = this.scene.characters.get('player');
+      let char = this.scene.characters.get(tile.obj.id);
+      char.look(player.getOppositeFacingDirection());
+      char.stopSpin(true);
+      
+      this.scene.game.events.emit(
+        'textbox-changedata', 
+        text, 
+        tile.obj
+      );
+    });
+  }
 }

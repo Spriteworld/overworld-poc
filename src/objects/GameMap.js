@@ -36,6 +36,8 @@ export default class extends Phaser.Scene {
     this.mapPlugins['npc'] = new Interactables.NPC(this);
     this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
     this.mapPlugins['player'] = new Interactables.Player(this);
+    this.mapPlugins['cuttree'] = new Interactables.CutTree(this);
+    this.mapPlugins['item'] = new Interactables.Item(this);
   }
 
   init(data) {
