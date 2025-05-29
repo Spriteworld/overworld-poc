@@ -42,11 +42,11 @@
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 2,
+            "scale": 1,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 3628,
-                "y": 9108.5
+                "x": 3782.5,
+                "y": 8141
             }
         },
         "src/maps/kanto/pallet.json": {
@@ -75,11 +75,11 @@
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 0.75,
-            "selectedLayer": 3,
+            "scale": 1.5,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 1098.6666666666667,
-                "y": 1097.333333333333
+                "x": 356.33333333333326,
+                "y": 1048.6666666666665
             }
         },
         "src/maps/kanto/route21.json": {
@@ -109,15 +109,23 @@
                 "y": 22548
             }
         },
+        "src/maps/kanto/vermillion_gym.json": {
+            "scale": 2.002421875,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 134.58702352619878,
+                "y": 327.85299051929303
+            }
+        },
         "src/maps/kanto/viridian_city.json": {
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 0.5,
+            "scale": 0.75,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 767,
-                "y": 639
+                "x": -243.33333333333337,
+                "y": 2246
             }
         },
         "src/maps/kanto/world.json": {
@@ -138,41 +146,41 @@
             "scale": 0.75,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 2930.6666666666665,
-                "y": 2392
+                "x": 1998,
+                "y": 1976.6666666666665
             }
         },
         "src/maps/random/forest.json": {
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 1.5,
-            "selectedLayer": 5,
+            "scale": 1,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 1104,
-                "y": 1104
+                "x": 752.5,
+                "y": 1520.5
             }
         },
         "src/maps/random/skyland.json": {
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 3,
+            "scale": 1.5,
             "selectedLayer": 9,
             "viewCenter": {
-                "x": 784,
-                "y": 496
+                "x": 882.9999999999999,
+                "y": 442
             }
         },
         "src/maps/random/test.json": {
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 1.5,
-            "selectedLayer": 9,
+            "scale": 1,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 748.6666666666667,
-                "y": 196
+                "x": 911.5,
+                "y": 849
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -193,8 +201,9 @@
     "loadedWorlds": [
         "//dev/www/linky/spriteworld.dev.xlink.cybershade.org/character/src/maps/kanto/kanto.world"
     ],
-    "map.fixedSize": false,
+    "map.fixedSize": true,
     "map.lastUsedFormat": "json",
+    "map.width": 11,
     "openFiles": [
         "src/maps/kanto/pallet.json",
         "src/maps/kanto/viridian_city.json",
@@ -203,6 +212,7 @@
     "project": "spriteworld.tiled-project",
     "property.type": "int",
     "recentFiles": [
+        "src/maps/kanto/vermillion_gym.json",
         "src/maps/random/forest.json",
         "src/maps/random/test.json",
         "src/maps/kanto/pallet.json",
@@ -213,8 +223,7 @@
         "src/tileset/gen3_outside.json",
         "src/maps/kanto/route21.json",
         "src/maps/kanto/route1.json",
-        "src/maps/kanto/viridian_city.json",
-        "src/maps/kanto/world.json"
+        "src/maps/kanto/viridian_city.json"
     ],
     "resizeMap.removeObjects": false
 }
