@@ -20,39 +20,29 @@ export default class {
     this.scene.gridEngine
       .positionChangeFinished()
       .subscribe(({charId}) => {
-        if (charId !== 'player') {
-          return;
-        }
+        if (charId !== 'player') { return; }
 
         let player = this.scene.characters.get('player');
         if (typeof player === 'undefined') { return; }
-        let playerLayer = this.scene.gridEngine.getCharLayer('player');
         
-        let playerFacing = player.getFacingDirection().toUpperCase();        
-        let boulderPosition = player.getFacingPosition();        
-        let characters = this.scene.gridEngine.getCharactersAt(boulderPosition, playerLayer)[0];
-        let boulder = this.scene.characters.get(characters);
-        if (!boulder || boulder.config.type !== 'strength-boulder') { 
-          console.log('No boulder found at position', boulderPosition);
-          return; 
-        }
-        console.log('Boulder found at position', boulderPosition, boulder);
-        console.log('Move boulder in direction', playerFacing, {
-          canMoveDown: boulder.canMoveDown(),
-          canMoveUp: boulder.canMoveUp(),
-          canMoveLeft: boulder.canMoveLeft(),
-          canMoveRight: boulder.canMoveRight()
-        });
-        if (playerFacing === Direction.DOWN && boulder.canMoveDown()) {
-          boulder.move(Direction.DOWN);
-        } else if (playerFacing === Direction.UP && boulder.canMoveUp()) {
-          boulder.move(Direction.UP);
-        } else if (playerFacing === Direction.LEFT && boulder.canMoveLeft()) {
-          boulder.move(Direction.LEFT);
-        } else if (playerFacing === Direction.RIGHT && boulder.canMoveRight()) {
-          boulder.move(Direction.RIGHT);
-        }
+        let playerFacing = player.getFacingDirection().toUpperCase();
+        console.log('Player facing direction:', playerFacing);
+        
+        let boulder = this.#getBoulderInfrontOfPlayer();
+        if (!boulder) { return; }
+        this.#moveBoulder(boulder, playerFacing);
       });
+
+    this.scene.gridEngine
+      .directionChanged()
+      .subscribe(({charId, direction}) => {
+        if (charId !== 'player') { return; }
+
+        let boulder = this.#getBoulderInfrontOfPlayer();
+        if (!boulder) { return; }
+        this.#moveBoulder(boulder, direction);
+      });
+
 
     this.scene.game.events.on('interact-with-obj', (tile) => {
       if (tile.obj.type !== 'strength-boulder') { return; }
@@ -66,5 +56,30 @@ export default class {
         tile.obj
       );
     });
+  }
+
+  #getBoulderInfrontOfPlayer() {
+    let player = this.scene.characters.get('player');
+    if (typeof player === 'undefined') { return false; }
+    let playerLayer = this.scene.gridEngine.getCharLayer('player');
+
+    let playerFacing = player.getFacingDirection().toUpperCase();        
+    let boulderPosition = player.getFacingPosition();        
+    let characters = this.scene.gridEngine.getCharactersAt(boulderPosition, playerLayer)[0];
+    let boulder = this.scene.characters.get(characters);
+    if (!boulder || boulder.config.type !== 'strength-boulder') { 
+      console.log('No boulder found at position', boulderPosition);
+      return; 
+    }
+    
+    return boulder;
+  }
+
+  #moveBoulder(boulder, dir) {
+    if (boulder.config.type !== 'strength-boulder') { return; }
+    if (typeof dir === 'undefined') { return; }
+    if (!boulder.canMove(dir)) { return; }
+
+    boulder.move(dir);
   }
 };
