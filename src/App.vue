@@ -106,8 +106,8 @@ export default {
       this.currentSceneName = scene.config.mapName;
       this.scene = scene;
       this.xy = {
-        x: scene.characters.get('player').x,
-        y: scene.characters.get('player').y,
+        x: scene.characters.get('player')?.x || 0,
+        y: scene.characters.get('player')?.y || 0,
       };
     },
     updateCoords(coords) {

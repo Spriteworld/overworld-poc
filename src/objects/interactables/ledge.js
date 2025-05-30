@@ -21,6 +21,7 @@ export default class {
       .subscribe(({ charId, exitTile, enterTile }) => {
         let char = this.scene.characters.get(charId);
         if (typeof char === 'undefined') { return; }
+        if (char.isDumbCharacter()) { return; }
 
         // check for jump ledges
         this.handleJumps(char, exitTile, enterTile);

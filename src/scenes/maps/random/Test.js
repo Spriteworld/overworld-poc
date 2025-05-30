@@ -1,4 +1,4 @@
-import {GameMap, Flock, Direction} from '@Objects';
+import {GameMap, Flock, Direction, Items} from '@Objects';
 import {TestMap} from '@Maps';
 
 export default class extends GameMap {
@@ -13,6 +13,7 @@ export default class extends GameMap {
     this.npc1 = {};
     this.npc2 = {};
     this.hasFlock = Math.random() < 0.1;
+    this.strengthb1 = {};
   }
 
   preload() {
@@ -43,6 +44,12 @@ export default class extends GameMap {
         ]
       );
     }
+
+    this.strengthb1 = new Items.StrengthBoulder({
+      scene: this,
+      x: 32,
+      y: 28,
+    });
 
     this.createCharacters();
 
@@ -84,6 +91,7 @@ export default class extends GameMap {
     if (this.hasFlock) this.flock.update(time, delta);
     this.npc1.update(time);
     this.npc2.update(time);
+    this.strengthb1.update(time);
 
     let npcPos = this.npc1.getPosition();
     if (npcPos.x == 7 && npcPos.y == 21) {

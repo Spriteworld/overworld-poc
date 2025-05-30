@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { Interactables, Items } from '@Objects';
 import { getValue, EventBus } from '@Utilities';
-import Debug from '@Data/debug.js';
 
 export default class extends Phaser.Scene {
   constructor(config) {
@@ -38,6 +37,7 @@ export default class extends Phaser.Scene {
     this.mapPlugins['player'] = new Interactables.Player(this);
     this.mapPlugins['cuttree'] = new Interactables.CutTree(this);
     this.mapPlugins['item'] = new Interactables.Item(this);
+    this.mapPlugins['strengthboulder'] = new Interactables.StrengthBoulder(this);
   }
 
   init(data) {

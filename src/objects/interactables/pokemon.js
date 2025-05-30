@@ -99,8 +99,8 @@ export default class {
       if (!text) { return; }
       let player = this.scene.characters.get('player');
       let char = this.scene.characters.get(tile.obj.id);
-      char.look(player.getOppositeFacingDirection());
-      char.stopSpin(true);
+      char?.look(player.getOppositeFacingDirection());
+      char?.stopSpin(true);
       
       this.scene.game.events.emit(
         'textbox-changedata', 

@@ -1,11 +1,10 @@
-import Phaser from 'phaser';
 import StateMachine from '@Objects/StateMachine';
+import MovableSprite from '@Objects/characters/MovableSprite';
 import { Tile, Direction } from '@Objects';
-import { EventBus } from '@Utilities';
 
-export default class extends Phaser.GameObjects.Sprite {
+export default class extends MovableSprite {
   constructor(config) {
-    super(config.scene, config.x, config.y, config.texture);
+    super(config);
     this.config = {...{
       scene: null,
       id: null,
@@ -47,11 +46,10 @@ export default class extends Phaser.GameObjects.Sprite {
       JUMP_LEDGE: 'jump_ledge',
     };
 
-    this.gridengine = this.config.scene.gridEngine;
     this.stateMachine = new StateMachine(this, this.config.id);
     this.initalCreation = true;
     this.spinRate = parseInt(this.config['spin-rate']);
-
+    
     this.config.scene.add.existing(this);
     this.config.scene.addCharacter(this);
 
@@ -74,21 +72,6 @@ export default class extends Phaser.GameObjects.Sprite {
       down: { leftFoot: 0, standing: 0, rightFoot: 0 },
       left: { leftFoot: 4, standing: 4, rightFoot: 4 },
       right: { leftFoot: 8, standing: 8, rightFoot: 8 },
-    };
-  }
-
-  characterDef() {
-    let def = this.config;
-
-    return {
-      id: def.id,
-      sprite: this,
-      walkingAnimationMapping: this.characterFramesDef(),
-      startPosition: { x: def.x, y: def.y },
-      facingDirection: def['facing-direction'] ?? 'down',
-      collides: def.collides,
-      charLayer: def['char-layer'] ?? 'ground',
-      move: def.move,
     };
   }
 
@@ -150,6 +133,9 @@ export default class extends Phaser.GameObjects.Sprite {
 
   updateCharacterRect() {
     let character = this.config.scene.characters.get(this.config.id);
+    if (!character) {
+      return;
+    }
     let characterBounds = character.getBounds();
 
     this.characterRect.x = (characterBounds.x+1) +
@@ -587,91 +573,4 @@ export default class extends Phaser.GameObjects.Sprite {
       : this.rectColor.normal;
   }
 
-  look(dir) {
-    return this.gridengine.turnTowards(this.config.id, dir.toLowerCase());
-  }
-
-  lookAt(charId) {
-    return this.gridengine.turnTowards(this.config.id, this.gridengine.getFacingPosition(charId));
-  }
-
-  move(dir) {
-    return this.gridengine.move(this.config.id, dir.toLowerCase());
-  }
-
-  moveTo(x, y, config) {
-    return this.gridengine.moveTo(this.config.id, { x: x, y: y }, config);
-  }
-
-  isMoving() {
-    return this.gridengine.isMoving(this.config.id);
-  }
-
-  stopMovement() {
-    return this.gridengine.stopMovement(this.config.id);
-  }
-
-  remove() {
-    this.destroy();
-    return this.gridEngine.removeCharacter(this.config.id);
-  }
-
-  getFacingDirection() {
-    return this.gridengine.getFacingDirection(this.config.id);
-  }
-
-  getOppositeFacingDirection() {
-    let dir = this.getFacingDirection();
-    if (dir === 'up') {
-      return 'down';
-    } else if (dir === 'down') {
-      return 'up';
-    } else if (dir === 'left') {
-      return 'right';
-    } else if (dir === 'right') {
-      return 'left';
-    }
-  }
-
-  getFacingTile() {
-    let faceDir = this.getPosInFacingDirection();
-    return this.scene.getTileProperties(faceDir.x, faceDir.y);
-  }
-
-  getPosition() {
-    return this.gridengine.getPosition(this.config.id);
-  }
-
-  getPosInFacingDirection() {
-    return this.getPosInDirection(
-      this.getFacingDirection()
-    );
-  }
-
-  getPosInDirection(dir) {
-    let pos = this.getPosition();
-    if (dir === 'up') {
-      return { ...pos, y: pos.y - 1 };
-    } else if (dir === 'down') {
-      return { ...pos, y: pos.y + 1 };
-    } else if (dir === 'left') {
-      return { ...pos, x: pos.x - 1 };
-    } else if (dir === 'right') {
-      return { ...pos, x: pos.x + 1 };
-    }
-  }
-
-  getPosInBehindDirection() {
-    let pos = this.getPosition();
-    let dir = this.getFacingDirection();
-    if (dir === 'up') {
-      return { ...pos, y: pos.y + 1 };
-    } else if (dir === 'down') {
-      return { ...pos, y: pos.y - 1 };
-    } else if (dir === 'left') {
-      return { ...pos, x: pos.x + 1 };
-    } else if (dir === 'right') {
-      return { ...pos, x: pos.x - 1 };
-    }
-  }
 }

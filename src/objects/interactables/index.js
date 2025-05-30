@@ -11,6 +11,7 @@ import Ledge from '@Objects/interactables/ledge.js';
 import Encounter from '@Objects/interactables/encounter.js';
 import CutTree from '@Objects/interactables/cuttree.js';
 import Item from '@Objects/interactables/item.js';
+import StrengthBoulder from '@Objects/interactables/strengthboulder.js';
 
 export default {
   Debug,
@@ -26,4 +27,5 @@ export default {
   Encounter,
   CutTree,
   Item,
+  StrengthBoulder,
 }

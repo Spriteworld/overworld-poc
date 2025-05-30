@@ -26,6 +26,7 @@ export default class {
       .subscribe(({ charId, exitTile, enterTile }) => {
         let char = this.scene.characters.get(charId);
         if (typeof char === 'undefined') { return; }
+        if (char.isDumbCharacter()) { return; }
 
         // check for spin tiles
         this.handleSpinTiles(char, exitTile, enterTile);
@@ -36,9 +37,10 @@ export default class {
       .subscribe(({ charId, direction }) => {
         let char = this.scene.characters.get(charId);
         if (typeof char === 'undefined') { return; }
+        if (char.isDumbCharacter()) { return; }
 
         if (char.slidingDir !== null) {
-          char.stateMachine.setState(char.stateDef.IDLE);
+          char?.stateMachine.setState(char.stateDef.IDLE);
         }
       });
   }
