@@ -1637,8 +1637,8 @@
                  "type":"playerSpawn",
                  "visible":true,
                  "width":32,
-                 "x":992,
-                 "y":864
+                 "x":320,
+                 "y":128
                 }, 
                 {
                  "height":32,

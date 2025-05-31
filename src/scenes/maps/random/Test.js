@@ -59,7 +59,6 @@ export default class extends GameMap {
       y: 30,
     });
 
-    console.log(['GameMap::create', this.characters]);
     this.createCharacters();
 
     this.gridEngine

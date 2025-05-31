@@ -80,7 +80,7 @@ export default class {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log(['Interactables::warp::event', this.scene])
     }
-
+    console.log(this.warps);
     // handle warp tiles
     this.scene.gridEngine
       .positionChangeStarted()
@@ -96,8 +96,9 @@ export default class {
   handleWarps(char, exitTile, enterTile) {
     if (this.warps.length === 0) { return; }
 
-    let warp = this.warps.find(p => p.x === enterTile.x && p.y === enterTile.y);
+    let warp = this.warps.find(p => p.x / Tile.WIDTH === enterTile.x && p.y / Tile.HEIGHT === enterTile.y);
     if (typeof warp === 'undefined') { return; }
+    console.log(['Interactables::warp::handleWarps', warp]);
 
     let warpProps = warp.obj.properties;
     let warpLocation = getPropertyValue(warpProps, 'warp', null);
