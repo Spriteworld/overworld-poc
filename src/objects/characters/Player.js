@@ -142,14 +142,10 @@ export default class extends Character {
   }
 
   disableMovement() {
-    // console.log('Player::disableMovement');
-    EventBus.emit('debug', 'Player::disableMovement');
     this.config.scene.registry.set('player_input', false);
   }
   
   enableMovement() {
-    // console.log('Player::enableMovement');
-    EventBus.emit('debug', 'Player::enableMovement');
     this.config.scene.registry.set('player_input', true);
   }
 

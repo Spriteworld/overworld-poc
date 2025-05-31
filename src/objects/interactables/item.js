@@ -26,10 +26,13 @@ export default class {
         `You found a ${item}!`, 
         tile.obj
       );
-      this.scene.game.events.emit('item-pickup', item);
       this.scene.game.events.once('textbox-disable', () => {
+        this.scene.game.events.emit('item-pickup', item);
+
         this.scene.removeInteraction(tile.obj.id);
+        
         let char = this.scene.characters.get(tile.obj.id);
+        if (typeof char === 'undefined') { return; }
         char.remove();
       });
     });

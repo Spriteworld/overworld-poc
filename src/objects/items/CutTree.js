@@ -5,11 +5,14 @@ export default class CutTree extends BaseItem {
     config.tileId = 17;
     config.type = 'cut-tree';
     config.properties = [];
-    if (config.scene.game.config.gameFlags.has_cut !== true) {
-      config.properties.push(config.scene.addPropertyToTile(
-        config, 'text', 'This tree can be CUT.'
-      ));
-    }
+
+    let text = config.scene.game.config.gameFlags.has_cut === false
+      ? 'You need the CUT ability to cut this tree.'
+      : 'This tree can be CUT.';
+
+    config.properties.push(config.scene.addPropertyToTile(
+      config, 'text', text
+    ));
     super(config);
   }
 }

@@ -19,8 +19,4 @@ export default class BaseItem extends MovableSprite {
     }
   }
 
-  remove() {
-    this.destroy();
-    return this.gridengine.removeCharacter(this.config.id);
-  }
 }

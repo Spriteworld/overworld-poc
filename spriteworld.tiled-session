@@ -45,8 +45,8 @@
             "scale": 1,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 3782.5,
-                "y": 8141
+                "x": 3864.5,
+                "y": 7203
             }
         },
         "src/maps/kanto/pallet.json": {
@@ -147,10 +147,10 @@
                 5
             ],
             "scale": 0.75,
-            "selectedLayer": 4,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 1995.3333333333333,
-                "y": 1976.6666666666665
+                "x": 2722,
+                "y": 2753.333333333333
             }
         },
         "src/maps/random/forest.json": {
@@ -180,10 +180,10 @@
                 5
             ],
             "scale": 1,
-            "selectedLayer": 1,
+            "selectedLayer": 9,
             "viewCenter": {
-                "x": 172.5,
-                "y": 537.5
+                "x": 1008.5,
+                "y": 367.5
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -215,10 +215,10 @@
     "project": "spriteworld.tiled-project",
     "property.type": "int",
     "recentFiles": [
+        "src/maps/random/base.json",
         "src/tileset/gen3_inside.json",
         "src/maps/kanto/vermillion_gym.json",
         "src/maps/random/forest.json",
-        "src/maps/random/base.json",
         "src/maps/kanto/viridian_city.json",
         "src/maps/kanto/route1.json",
         "src/maps/kanto/pallet.json",

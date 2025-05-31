@@ -14,6 +14,7 @@ export default class extends GameMap {
     this.npc2 = {};
     this.hasFlock = Math.random() < 0.1;
     this.strengthb1 = {};
+    this.item1 = {};
   }
 
   preload() {
@@ -45,12 +46,20 @@ export default class extends GameMap {
       );
     }
 
-    this.strengthb1 = new Items.StrengthBoulder({
+    this.item1 = new Items.Pokeball({
       scene: this,
-      x: 32,
+      x: 35,
       y: 28,
+      item: 'Rare Candy'
     });
 
+    this.strengthb1 = new Items.StrengthBoulder({
+      scene: this,
+      x: 35,
+      y: 30,
+    });
+
+    console.log(['GameMap::create', this.characters]);
     this.createCharacters();
 
     this.gridEngine
@@ -91,7 +100,6 @@ export default class extends GameMap {
     if (this.hasFlock) this.flock.update(time, delta);
     this.npc1.update(time);
     this.npc2.update(time);
-    this.strengthb1.update(time);
 
     let npcPos = this.npc1.getPosition();
     if (npcPos.x == 7 && npcPos.y == 21) {

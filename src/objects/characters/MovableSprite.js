@@ -148,4 +148,17 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
       return { ...pos, x: pos.x - 1 };
     }
   }
+  
+  remove() {
+    // remove sprite
+    this.destroy();
+
+    // remove character from scene
+    if (this.config.scene && this.config.scene.characters) {
+      this.config.scene.characters.delete(this.config.id);
+    }
+
+    // remove character from gridengine
+    return this.gridengine.removeCharacter(this.config.id);
+  }
 };
