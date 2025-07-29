@@ -99,7 +99,7 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
 
   canMove(dir) {
     // return true;
-    let pos = this.getPosInDirection(dir);
+    let pos = this.getPosInDirection(dir.toLowerCase());
     let layer = this.config['char-layer'] || 'ground';
     return this.gridengine.isBlocked(pos, layer) === false;
   }

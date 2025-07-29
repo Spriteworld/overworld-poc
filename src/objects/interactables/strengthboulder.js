@@ -93,8 +93,8 @@ export default class {
     if (boulder.config.type !== 'strength-boulder') { return; }
     if (boulder.config.id !== this.activeBoulder) { return; }
     if (typeof dir === 'undefined') { return; }
+    console.log('Moving boulder:', boulder.config.id, 'in direction:', dir);
     if (!boulder.canMove(dir)) { return; }
-
     boulder.move(dir);
   }
 };
