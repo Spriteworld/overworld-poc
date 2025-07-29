@@ -188,7 +188,6 @@ export default class extends GameMap {
   }
 
   moveCharacterAway(character, direction) {
-    // console.log('Character::moveCharacterAway', character, direction);
     let player = this.characters.get('player');
     let char = this.characters.get(character);
     if (char === null) {
@@ -196,48 +195,7 @@ export default class extends GameMap {
       return;
     }
 
-    let directions = [Direction.UP, 'down', Direction.LEFT, Direction.RIGHT];
-    let approachDir = player.getOppositeFacingDirection();
-    // console.log('Character is approaching from:', approachDir, char.config.id);
-    directions = directions.filter(dir => dir !== approachDir);
-    // if ([Direction.UP, 'down'].includes(approachDir)) {
-    //   // check if the character is more to the left or right
-    //   let checkXSide = char.x > player.x ? Direction.LEFT : Direction.RIGHT;
-    //   console.log('Character is more to the:', checkXSide);
-    //   directions = directions.filter(dir => dir !== checkXSide);
-
-    // } else {
-    //   // check if the character is more above or below
-    //   let checkYSide = char.y > player.y ? Direction.UP : 'down';
-    //   console.log('Character is more to the:', checkYSide);
-    //   directions = directions.filter(dir => dir !== checkYSide);
-    // }
-    // console.log('Filtered directions:', directions);
-
-    // // if no directions left, start the list again, and just check for collisions
-    // if (directions.length === 0) {
-    //   console.log('No valid directions left, checking all directions');
-    //   directions = [Direction.UP, 'down', Direction.LEFT, Direction.RIGHT];
-    // }
-
-    // // remove directions that the character cannot move in
-    // directions.forEach((dir) => {
-    //   if (!char.canMove(dir)) {
-    //     console.log('Character cannot move in direction:', dir);
-    //     directions = directions.filter(d => d !== dir);
-    //   } 
-    // });
-
-    // console.log('Final directions:', directions);
-
-    let randomDirection = Phaser.Math.RND.pick(directions);
-    // console.log('Moving character away in direction:', randomDirection, char.config.id);
-    if (typeof randomDirection === 'undefined' || randomDirection === null) {
-      console.warn('No valid direction to move character away');
-      return;
-    }
-
-    char.move(randomDirection);
+    char.move(player.getFacingDirection());
   }
 
   checkAreaForPokemon(area, howManyPokemon=1) {
