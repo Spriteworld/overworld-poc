@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@spriteworld/pokemon-data": "git+https://github.com/Spriteworld/data.git",
+    "@spriteworld/pokemon-data": "../data",
     "grid-engine": "^2.48.0",
     "phaser-animated-tiles-phaser3.5": "^2.0.5",
     "phaser-tiled-json-external-loader": "^0.1.1",

@@ -19,7 +19,7 @@ import red from '@Tileset/characters/red.png';
 import trainers from '@Tileset/characters';
 
 let loadPokemonSprites = [
-  1,2,3,4,5,6,7,8,9,22,25,83,197,'197s','025s'
+  1,2,3,4,5,6,7,8,9,22,25,83,179,180,197,'197s','025s'
 ];
 loadPokemonSprites = loadPokemonSprites.map(id => {
   if (typeof id === 'number') {

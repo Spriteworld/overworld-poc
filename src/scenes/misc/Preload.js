@@ -78,10 +78,11 @@ export default class extends Phaser.Scene {
   }
 
   create () {
-    this.scene.start('Test');
+    // this.scene.start('Test');
     // this.scene.start('Kanto');
-    // this.scene.start('Forest');
+    this.scene.start('Forest');
     // this.scene.start('VermillionGym');
+    // this.scene.start('TurffieldGym');
 
     if (this.game.config.debug.time) {
       this.scene.start('TimeOverlay');

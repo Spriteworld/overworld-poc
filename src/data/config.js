@@ -14,11 +14,7 @@ const config = {
   disableContextMenu: true,
   fps: {
     target: 30,
-    forceSetTimeOut: true
-  },
-  scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH
+    forceSetTimeOut: true,
   },
   physics: {
     default: 'arcade',
@@ -35,6 +31,14 @@ const config = {
     ]
   },
   scene: [Scenes.Preload],
+  callbacks: {
+    postBoot: (game) => {
+      game.canvas.style.width = '100%';
+      game.canvas.style.height = '100%';
+      game.canvas.style['object-fit'] = 'contain';
+      window.dispatchEvent(new Event('resize'));
+    }
+  }
 };
 
 export default config;

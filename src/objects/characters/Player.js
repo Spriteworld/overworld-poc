@@ -60,6 +60,7 @@ export default class extends Character {
       .setFillStyle(0xB81D15, 1)
       .setOrigin(0,0)
       .setDepth(9999999)
+      .setAlpha(0)
       .setName('blocked-right')
     ;
     this.blockedDown = this.scene.add
@@ -67,6 +68,7 @@ export default class extends Character {
       .setFillStyle(0xB81D15, 1)
       .setOrigin(0,0)
       .setDepth(9999999)
+      .setAlpha(0)
       .setName('blocked-down')
     ;
     this.blockedLeft = this.scene.add
@@ -74,6 +76,7 @@ export default class extends Character {
       .setFillStyle(0xB81D15, 1)
       .setOrigin(0,0)
       .setDepth(9999999)
+      .setAlpha(0)
       .setName('blocked-left')
     ;
     this.blockedUp = this.scene.add
@@ -81,6 +84,7 @@ export default class extends Character {
       .setFillStyle(0xB81D15, 1)
       .setOrigin(0,0)
       .setDepth(9999999)
+      .setAlpha(0)
       .setName('blocked-up')
     ;
   }

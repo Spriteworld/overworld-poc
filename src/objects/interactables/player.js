@@ -45,7 +45,6 @@ export default class {
       x: x,
       y: y,
       scene: this.scene,
-      'seen-radius': 3,
     });
     this.scene.registry.set('player', this.player);
     this.scene.cameras.main.startFollow(this.player, true, 1);

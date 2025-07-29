@@ -3,6 +3,7 @@ import SkylandMap from './random/skyland.json';
 import BaseMap from './random/base.json';
 import ForestMap from './random/forest.json';
 import VermillionGymMap from './random/vermillion_gym.json';
+import TurffieldGymMap from './random/turffield_gym.json';
 
 import KantoMap from './kanto/kanto.json';
 // import PalletTownMap from './kanto/pallet.json';
@@ -18,7 +19,7 @@ import ProfessorLabMap from './kanto/prof_lab.json';
 
 export {
     TestMap,SkylandMap,BaseMap,ForestMap,
-    VermillionGymMap,
+    VermillionGymMap, TurffieldGymMap,
 
     // kanto
     KantoMap,

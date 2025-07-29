@@ -21,18 +21,34 @@ export default class {
     }
 
     lights.forEach(obj => {
-      this.scene.add
+      let radius = getPropertyValue(obj.properties, 'radius', 100);
+      let intensity = getPropertyValue(obj.properties, 'intensity', 0.2);
+
+      let light = this.scene.add
         .pointlight(
           obj.x + (Tile.WIDTH / 2),
           obj.y + (Tile.HEIGHT / 4),
           '0x'+getPropertyValue(obj.properties, 'color', '#ffffff').substr(1),
-          getPropertyValue(obj.properties, 'radius', 100),
-          getPropertyValue(obj.properties, 'intensity', 0.2),
+          radius,
+          intensity,
           getPropertyValue(obj.properties, 'attenuation', 0.06)
         )
         .setDepth(9999)
         .setName(obj.name)
       ;
+
+      let glow = getPropertyValue(obj.properties, 'glow', false);
+      if (glow !== false) {
+        this.scene.tweens.add({
+          targets: light,
+          radius: radius * 3,
+          intensity: intensity * 2,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1,
+          duration: 5000
+        });
+      }
     });
   }
 };

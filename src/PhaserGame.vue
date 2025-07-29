@@ -1,5 +1,5 @@
 <template>
-  <div id="game-container" style="flex: 1 0 50%;"></div>
+  <div id="game-container" class="flex flex-grow h-full w-full object-contain"></div>
 </template>
 
 <script>

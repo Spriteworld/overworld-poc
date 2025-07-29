@@ -1,10 +1,7 @@
 <template>
   <div class="flex flex-col">
-    <div class="flex flex-row text-white h-[10vh] overflow-y-scroll"><pre>
-{{ JSON.stringify(debugContent, null, '\t') }}
-    </pre></div>
-    <div class="flex flex-row h-[90vh]">
-      <div class="flex w-10/12">
+    <div class="flex flex-row h-screen">
+      <div class="flex" style="width: calc(100% - 400px);">
         <PhaserGame 
           ref="phaserRef" 
           @current-active-scene="updateCurrentScene"
@@ -14,7 +11,7 @@
           @debug="(payload) => debugContent = payload"
         />
       </div>
-      <div class="flex flex-row gap-2 justify-center items-center text-white p-2 w-full">
+      <div class="flex flex-col gap-2 justify-center items-center text-white p-2 w-[400px]">
         <div class="flex flex-col gap-1">
           <div>
             <p>Current Map: {{ currentSceneName }}</p>

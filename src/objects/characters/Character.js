@@ -1,11 +1,11 @@
+import Phaser from 'phaser';
 import StateMachine from '@Objects/StateMachine';
 import MovableSprite from '@Objects/characters/MovableSprite';
 import { Tile, Direction } from '@Objects';
 
 export default class extends MovableSprite {
   constructor(config) {
-    super(config);
-    this.config = {...{
+    config = {...{
       scene: null,
       id: null,
       spin: false,
@@ -24,10 +24,14 @@ export default class extends MovableSprite {
       'track-player': false,
       'track-player-radius': 2,
     }, ...config};
+    super(config);
+    this.config = config;
+
     this.rectColor = {
       normal: 0x1d7196,
       selected: 0xff0000
     };
+
     if (this.config.scene.characters.get(this.config.id)) {
       this.config.id = (Math.random() + 1).toString(36).substring(7);
     }
@@ -99,9 +103,12 @@ export default class extends MovableSprite {
     this.characterRect.setName(identification+'-character');
   }
 
-  initTrackingRadius(identification) {
-    if (typeof this.config['track-player'] === 'undefined') { return; }
-    if (this.config['track-player'] === false) { return; }
+  initTrackingRadius() {
+    if (typeof this.config['track-player'] === 'undefined' 
+        && typeof this.config['avoid-character'] === 'undefined') { return; }
+        
+    if (this.config['track-player'] === false
+        && this.config['avoid-character'] === false) { return; }
 
     this.trackingCoords = [];
   }
@@ -112,7 +119,7 @@ export default class extends MovableSprite {
     this.slidingDir = null;
     this.jumpingDir = null;
     if (this.config.type === 'player') {
-      space.on('down', () => { this.stateMachine.setState(this.stateDef.JUMP); });
+      // space.on('down', () => { this.stateMachine.setState(this.stateDef.JUMP); });
     }
   }
   idleOnExit() {}
@@ -293,14 +300,9 @@ export default class extends MovableSprite {
     if (this.spinRate <= 0) {
       this.spinRate = parseInt(this.config['spin-rate']);
 
-      let dir = Direction.DOWN;
-      switch (Math.floor(Math.random() * 8) +1) {
-        case 1: dir = Direction.UP; break;
-        case 2: dir = Direction.DOWN; break;
-        case 3: dir = Direction.LEFT; break;
-        case 4: dir = Direction.RIGHT; break;
-        default: break;
-      }
+      let directions = [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT];
+      let dir = Phaser.Math.RND.pick(directions);
+
       if (this.scene.game.config.debug.console.character) {
         console.log('Character::addAutoSpin', this.config.id, 'looking at', dir);
       }
@@ -426,15 +428,17 @@ export default class extends MovableSprite {
   }
 
   canTrackPlayer() {
-    if (typeof this.config['track-player'] === 'undefined') { return; }
-    if (this.config['track-player'] === false) { return; }
+    if (this.config['track-player'] === false 
+      && this.config['avoid-character'] === false) { 
+      return; 
+    }
     let radius = this.config['track-player-radius'] || 2;
 
     let player = this.config.scene.mapPlugins['player'].player;
     let playerPos = player.getPosition();
     
     if (this.trackingCoords.length === 0) {
-      this.scene.mapPlugins['debug'].debugObject(this, radius);
+      // this.scene.mapPlugins['debug'].debugObject(this, radius);
       this.generateTrackingCoords();
     }
 
@@ -449,6 +453,10 @@ export default class extends MovableSprite {
 
     if (coord) {
       console.log(['Character::canTrackPlayer', this.config.id +' can track the player!', coord.dir]);
+      if (typeof this.config['event-can-see-character'] === 'function') {
+        console.log(['Character::canTrackPlayer', this.config.id, 'event-can-see-character', coord.dir]);
+        this.config['event-can-see-character'](this.config.id, coord.dir);
+      }
       this.look(coord.dir);
     }
   }
@@ -501,17 +509,7 @@ export default class extends MovableSprite {
         break;
       }
 
-      // var props = this.scene.getTileProperties(tile.x, tile.y);
       var check = [
-        // props.has('ge_collide') ? props.get('ge_collide') : false,
-        // props.has('ge_collide_left') ? props.get('ge_collide_left') : false,
-        // props.has('ge_collide_right') ? props.get('ge_collide_right') : false,
-        // props.has('ge_collide_up') ? props.get('ge_collide_up') : false,
-        // props.has('ge_collide_down') ? props.get('ge_collide_down') : false,
-        // props.has('sw_stop') ? props.get('sw_stop') : false,
-        // props.has('sw_slide') ? props.get('sw_slide') : false,
-        // props.has('sw_spin') ? props.get('sw_spin') : false,
-        // props.has('sw_jump') ? props.get('sw_jump') : false,
         this.config.scene.isCharacterOnTile(tile.x, tile.y),
         this.gridengine.isBlocked(tile),
       ].includes(true);
@@ -567,6 +565,10 @@ export default class extends MovableSprite {
     let isInside = Phaser.Geom.Rectangle.ContainsPoint(this.seenRect, character.characterRect);
     if (isInside) {
       console.log(['Character::canSeeCharacter', this.config.id +' can see '+character.config.id+'!']);
+      if (typeof this.config['event-can-see-character'] === 'function') {
+        console.log(['Character::canSeeCharacter', this.config.id, 'event-can-see-character', coord.dir]);
+        this.config['event-can-see-character'](this.config.id, coord.dir);
+      }
     }
     this.seenRect.fillColor = isInside
       ? this.rectColor.selected

@@ -45,7 +45,14 @@ export default class extends Character {
     if (!this.config.scene.ge_init) { return; }
     this.stateMachine.update(time);
     this.canSeeCharacter();
+    this.canTrackPlayer();
     this.addAutoSpin(delta);
     this.addAutoMove();
+
+    if (this.trackingCoords && this.trackingCoords.length){
+      if (this.isMoving()) {
+        this.generateTrackingCoords();
+      }
+    }
   }
 }

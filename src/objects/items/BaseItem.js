@@ -1,11 +1,15 @@
 import MovableSprite from '@Objects/characters/MovableSprite';
+import { Tile } from '@Objects';
 
 export default class BaseItem extends MovableSprite {
   constructor(config) {
     config.texture = 'gen3_outside';
     config.frame = config.tileId;
     super(config);
+    
     this.setOrigin(0);
+    this.x = config.x * Tile.WIDTH;
+    this.y = config.y * Tile.HEIGHT;
 
     config.id = this.constructor.name + (Math.random() + 1).toString(36).substring(7);
     this.setName(config.id);

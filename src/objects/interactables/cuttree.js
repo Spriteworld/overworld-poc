@@ -25,6 +25,11 @@ export default class {
         text, 
         tile.obj
       );
+
+      // if we dont have cut, do nothing
+      if (this.scene.game.config.gameFlags.has_cut === false) {
+        return;
+      }
       this.scene.game.events.once('textbox-disable', () => {
         this.scene.removeInteraction(tile.obj.id);
         let char = this.scene.characters.get(tile.obj.id);

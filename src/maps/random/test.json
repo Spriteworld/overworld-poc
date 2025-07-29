@@ -1637,8 +1637,8 @@
                  "type":"playerSpawn",
                  "visible":true,
                  "width":32,
-                 "x":320,
-                 "y":128
+                 "x":992,
+                 "y":960
                 }, 
                 {
                  "height":32,
@@ -1814,6 +1814,11 @@
                          "name":"color",
                          "type":"string",
                          "value":"#FFFFFF"
+                        }, 
+                        {
+                         "name":"glow",
+                         "type":"bool",
+                         "value":true
                         }, 
                         {
                          "name":"intensity",

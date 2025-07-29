@@ -147,11 +147,11 @@ export default class extends GameMap {
         return;
       }
     } else {
-      this.resetSwitches();
       if (this.switch2 !== false) {
+        this.resetSwitches();
         this.game.events.emit(
           'textbox-changedata', 
-          'Nothng here! Oh no, the switch reset.',
+          'Nothing here! Oh no, the switch reset.',
         );
       } else {
         this.game.events.emit(
@@ -218,10 +218,10 @@ export default class extends GameMap {
     } while(binIdx === -1);
 
     this.switch2 = binIdx.toString();
-    this.switch2Rect.setPosition(
-      bin.x * Tile.WIDTH,
-      bin.y * Tile.HEIGHT
-    );
-    this.switch2Rect.setAlpha(0.5);
+    // this.switch2Rect.setPosition(
+    //   bin.x * Tile.WIDTH,
+    //   bin.y * Tile.HEIGHT
+    // );
+    // this.switch2Rect.setAlpha(0.5);
   }
 }

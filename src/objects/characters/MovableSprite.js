@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { Direction } from '@Objects';
+import { Vector2 } from '@Utilities';
 
 export default class MovableSprite extends Phaser.GameObjects.Sprite {
   constructor(config) {
@@ -42,6 +43,12 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
   }
 
   move(dir) {
+    dir = dir?.toUpperCase();
+    if ([Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT].indexOf(dir) === -1) {
+      console.warn('Invalid direction:', dir);
+      return false;
+    }
+    
     return this.gridengine.move(this.config.id, dir.toLowerCase());
   }
 
@@ -74,25 +81,26 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
     return this.gridengine.getFacingPosition(this.config.id);
   }
 
-  canMoveUp(layer) {
-    return this.canMove(Direction.UP, layer);
+  canMoveUp() {
+    return this.canMove(Direction.UP);
   }
 
-  canMoveDown(layer) {
-    return this.canMove(Direction.DOWN, layer);
+  canMoveDown() {
+    return this.canMove(Direction.DOWN);
   }
 
-  canMoveLeft(layer) {
-    return this.canMove(Direction.LEFT, layer);
+  canMoveLeft() {
+    return this.canMove(Direction.LEFT);
   }
 
-  canMoveRight(layer) {
-    return this.canMove(Direction.RIGHT, layer);
+  canMoveRight() {
+    return this.canMove(Direction.RIGHT);
   }
 
-  canMove(dir, layer) {
-    return true;
+  canMove(dir) {
+    // return true;
     let pos = this.getPosInDirection(dir);
+    let layer = this.config['char-layer'] || 'ground';
     return this.gridengine.isBlocked(pos, layer) === false;
   }
 
@@ -148,7 +156,20 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
       return { ...pos, x: pos.x - 1 };
     }
   }
-  
+
+  isInArea(topLeft, bottomRight) {
+    let charXY = this.getPosition();
+    let coords = [];
+    
+    // generate a list of coords from top left to bottom right
+    for (let x = topLeft.x; x <= bottomRight.x; x++) {
+      for (let y = topLeft.y; y <= bottomRight.y; y++) {
+        coords.push(Vector2(x, y));
+      }
+    }
+    return coords.includes(charXY);
+  }
+    
   remove() {
     // remove sprite
     this.destroy();
