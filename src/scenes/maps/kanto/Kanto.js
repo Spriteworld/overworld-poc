@@ -1,8 +1,6 @@
-import Phaser from 'phaser';
 import { GameMap } from '@Objects';
 import { KantoMap } from '@Maps';
-import { Tile } from '@Objects';
-import { EventBus } from '@Utilities';
+import { Tile, Direction } from '@Objects';
 
 export default class extends GameMap {
   constructor() {

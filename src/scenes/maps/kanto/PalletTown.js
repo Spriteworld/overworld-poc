@@ -1,5 +1,5 @@
-import {GameMap} from '@Objects';
-import {PalletTownMap} from '@Maps';
+import { GameMap, Direction } from '@Objects';
+import { PalletTownMap } from '@Maps';
 
 export default class extends GameMap {
   constructor() {

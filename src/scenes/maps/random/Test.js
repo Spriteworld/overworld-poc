@@ -1,5 +1,5 @@
-import {GameMap, Flock, Direction, Items} from '@Objects';
-import {TestMap} from '@Maps';
+import { GameMap, Flock, Direction, Items } from '@Objects';
+import { TestMap } from '@Maps';
 
 export default class extends GameMap {
   constructor() {
@@ -88,7 +88,7 @@ export default class extends GameMap {
           }
           if (npc2Pos.x == 36 && npc2Pos.y == 22) { this.npc2.move('down'); }
           if (npc2Pos.x == 36 && npc2Pos.y == 24) { this.npc2.move('right'); }
-          if (npc2Pos.x == 39 && npc2Pos.y == 24) { this.npc2.move('up'); }
+          if (npc2Pos.x == 39 && npc2Pos.y == 24) { this.npc2.move(Direction.UP); }
           if (npc2Pos.x == 39 && npc2Pos.y == 22) { this.npc2.move('right'); }
         }
       });

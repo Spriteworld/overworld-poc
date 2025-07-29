@@ -196,11 +196,11 @@ export default class extends GameMap {
       return;
     }
 
-    let directions = [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT];
+    let directions = [Direction.UP, 'down', Direction.LEFT, Direction.RIGHT];
     let approachDir = player.getOppositeFacingDirection();
     // console.log('Character is approaching from:', approachDir, char.config.id);
     directions = directions.filter(dir => dir !== approachDir);
-    // if ([Direction.UP, Direction.DOWN].includes(approachDir)) {
+    // if ([Direction.UP, 'down'].includes(approachDir)) {
     //   // check if the character is more to the left or right
     //   let checkXSide = char.x > player.x ? Direction.LEFT : Direction.RIGHT;
     //   console.log('Character is more to the:', checkXSide);
@@ -208,7 +208,7 @@ export default class extends GameMap {
 
     // } else {
     //   // check if the character is more above or below
-    //   let checkYSide = char.y > player.y ? Direction.UP : Direction.DOWN;
+    //   let checkYSide = char.y > player.y ? Direction.UP : 'down';
     //   console.log('Character is more to the:', checkYSide);
     //   directions = directions.filter(dir => dir !== checkYSide);
     // }
@@ -217,7 +217,7 @@ export default class extends GameMap {
     // // if no directions left, start the list again, and just check for collisions
     // if (directions.length === 0) {
     //   console.log('No valid directions left, checking all directions');
-    //   directions = [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT];
+    //   directions = [Direction.UP, 'down', Direction.LEFT, Direction.RIGHT];
     // }
 
     // // remove directions that the character cannot move in
@@ -251,10 +251,7 @@ export default class extends GameMap {
     }
 
     // for each tile in area, check if a character is present
-    let coords = generateTileCoords(
-      area[0], 
-      4, 2
-    );
+    let coords = generateTileCoords(area[0], 4, 2);
 
     let charactersInArea = [];
     this.characters.forEach((character, key) => {

@@ -238,7 +238,7 @@ export default class extends MovableSprite {
     let faceDir = this.getFacingDirection();
     let bounds = this.getBounds();
 
-    if (faceDir === 'up') {
+    if (faceDir === Direction.UP) {
       dir.y -= 1;
       bounds.y -= (Tile.HEIGHT + (Tile.HEIGHT/4));
     } else
@@ -300,7 +300,7 @@ export default class extends MovableSprite {
     if (this.spinRate <= 0) {
       this.spinRate = parseInt(this.config['spin-rate']);
 
-      let directions = [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT];
+      let directions = [Direction.UP, 'down', Direction.LEFT, Direction.RIGHT];
       let dir = Phaser.Math.RND.pick(directions);
 
       if (this.scene.game.config.debug.console.character) {
@@ -343,7 +343,7 @@ export default class extends MovableSprite {
       for (let j=0; j<pyramidCount[i]; j++) {
         coord.x += 1;
         
-        this.trackingCoords.push({x: coord.x, y: coord.y, dir: 'up'});
+        this.trackingCoords.push({x: coord.x, y: coord.y, dir: Direction.UP});
         if (!this.isMoving() && this.scene.game.config.debug.tests.rectOutlines) {
           let tile = this.config.scene.add.rectangle(
             coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
@@ -494,17 +494,17 @@ export default class extends MovableSprite {
     // check for collision objects
     let count = this.config['seen-radius'];
     for (let i=0; i<this.config['seen-radius']; i++) {
-      switch(this.getFacingDirection()) {
-        case 'left':
+      switch(this.getFacingDirection().toUpperCase()) {
+        case Direction.LEFT:
           tile = {x: faceDir.x-i, y: faceDir.y};
         break;
-        case 'right':
+        case Direction.RIGHT:
           tile = {x: faceDir.x+i, y: faceDir.y};
         break;
-        case 'up':
+        case Direction.UP:
           tile = {x: faceDir.x, y: faceDir.y-i};
         break;
-        case 'down':
+        case Direction.DOWN:
           tile = {x: faceDir.x, y: faceDir.y+i};
         break;
       }
@@ -547,7 +547,7 @@ export default class extends MovableSprite {
         this.seenRect.height = Tile.HEIGHT;
       break;
 
-      case 'up':
+      case Direction.UP:
         this.seenRect.x = npcBounds.x + (this.config.type === 'pkmn' ? 15 : 0);
         this.seenRect.y = ((faceDir.y+1) * Tile.HEIGHT) - seenRadiusInTiles;
         this.seenRect.width = Tile.WIDTH;

@@ -1,4 +1,4 @@
-import { Character, Tile } from '@Objects';
+import { Character, Tile, Direction } from '@Objects';
 import { EventBus } from '@Utilities';
 
 export default class extends Character {
@@ -136,7 +136,7 @@ export default class extends Character {
     } else if (keys.right.isDown) {
       this.handleMove('right');
     } else if (keys.up.isDown) {
-      this.handleMove('up');
+      this.handleMove(Direction.UP);
     } else if (keys.down.isDown) {
       this.handleMove('down');
     } else {
@@ -193,7 +193,7 @@ export default class extends Character {
       this.blockedLeft.setAlpha(0);
     }
 
-    tilePos = this.getPosInDirection('up');
+    tilePos = this.getPosInDirection(Direction.UP);
     if (player.gridengine.isBlocked(tilePos)) {
       this.blockedUp.x = tilePos.x * Tile.WIDTH;
       this.blockedUp.y = tilePos.y * Tile.WIDTH;

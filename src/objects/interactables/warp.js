@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
-import Debug from '@Data/debug.js';
-import { Tile, Interactables, GameMap } from '@Objects';
+import { Tile, Interactables, GameMap, Direction } from '@Objects';
 import { getPropertyValue } from '@Utilities';
 
 export default class {

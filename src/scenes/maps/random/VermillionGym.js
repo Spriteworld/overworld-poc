@@ -1,7 +1,5 @@
-import {GameMap, Tile} from '@Objects';
-import {VermillionGymMap} from '@Maps';
-import { EventBus } from '@Utilities';
-
+import { GameMap, Tile, Direction } from '@Objects';
+import { VermillionGymMap } from '@Maps';
 
 export default class extends GameMap {
   constructor() {
@@ -186,7 +184,7 @@ export default class extends GameMap {
   rngSwitch2() {
     this.switch2 = false;
 
-    let directions = ['up', 'down', 'left', 'right'];
+    let directions = [Direction.UP, 'down', 'left', 'right'];
 
     let binIdx = -1;
     let bin = null;
@@ -195,7 +193,7 @@ export default class extends GameMap {
       bin = {...this.switches[this.switch1]};
 
       switch (direction) {
-        case 'up':
+        case Direction.UP:
           bin.y -= 2;
           break;
         case 'down':
