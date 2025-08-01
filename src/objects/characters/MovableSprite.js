@@ -22,7 +22,7 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
       id: def.id,
       sprite: this,
       walkingAnimationMapping: this.characterFramesDef(),
-      startPosition: { x: def.x, y: def.y },
+      startPosition: Vector2(def.x, def.y),
       facingDirection: (def['facing-direction'] ?? Direction.DOWN).toLowerCase(),
       collides: def.collides,
       charLayer: def['char-layer'] ?? 'ground',
@@ -58,8 +58,8 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
     return this.gridengine.move(this.config.id, dir.toLowerCase());
   }
 
-  moveTo(x, y, config) {
-    return this.gridengine.moveTo(this.config.id, Vector2(x, y), config);
+  moveTo(coords, config) {
+    return this.gridengine.moveTo(this.config.id, coords.x, coords.y, config);
   }
 
   isMoving() {
@@ -140,13 +140,13 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
     dir = dir?.toUpperCase();
     let pos = this.getPosition();
     if (dir === Direction.UP) {
-      return { ...pos, y: pos.y - 1 };
+      return Vector2(pos.x, pos.y - 1);
     } else if (dir === Direction.DOWN) {
-      return { ...pos, y: pos.y + 1 };
+      return Vector2(pos.x, pos.y + 1);
     } else if (dir === Direction.LEFT) {
-      return { ...pos, x: pos.x - 1 };
+      return Vector2(pos.x - 1, pos.y);
     } else if (dir === Direction.RIGHT) {
-      return { ...pos, x: pos.x + 1 };
+      return Vector2(pos.x + 1, pos.y);
     }
   }
 
@@ -154,13 +154,13 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
     let pos = this.getPosition();
     let dir = this.getFacingDirection();
     if (dir === Direction.UP) {
-      return { ...pos, y: pos.y + 1 };
+      return Vector2(pos.x, pos.y + 1);
     } else if (dir === Direction.DOWN) {
-      return { ...pos, y: pos.y - 1 };
+      return Vector2(pos.x, pos.y - 1);
     } else if (dir === Direction.LEFT) {
-      return { ...pos, x: pos.x + 1 };
+      return Vector2(pos.x + 1, pos.y);
     } else if (dir === Direction.RIGHT) {
-      return { ...pos, x: pos.x - 1 };
+      return Vector2(pos.x - 1, pos.y);
     }
   }
 

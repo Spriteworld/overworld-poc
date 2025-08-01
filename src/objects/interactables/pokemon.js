@@ -1,6 +1,6 @@
 import Debug from '@Data/debug.js';
 import { Tile, PkmnOverworld } from '@Objects';
-import { getValue, getPropertyValue, remapProps } from '@Utilities';
+import { getValue, getPropertyValue, remapProps, Vector2 } from '@Utilities';
 
 export default class {
   constructor(scene) {
@@ -30,8 +30,7 @@ export default class {
       this.addToScene(
         pokemon.name,
         getPropertyValue(pokemon.properties, 'texture'),
-        pokemon.x / Tile.WIDTH,
-        pokemon.y / Tile.HEIGHT,
+        Vector2(pokemon.x / Tile.WIDTH, pokemon.y / Tile.HEIGHT),
         {
           ...remapProps(pokemon.properties)
         }
@@ -39,7 +38,7 @@ export default class {
     });
   }
 
-  addToScene(name, monId, x, y, config) {
+  addToScene(name, monId, coords, config) {
     if (config && config.texture) { delete config.texture; }
 
     let rng = false;
@@ -67,16 +66,16 @@ export default class {
         id: name || 'pkmn_' + (this.scene.pkmn.length || monId),
         monId: monId, 
         texture: texture, 
-        x: x, 
-        y: y
+        x: coords.x, 
+        y: coords.y
       });
     }
     
     let pkmnDef = {...{
       id: name || 'pkmn_' + (this.scene.pkmn.length || monId),
       texture: texture,
-      x: x,
-      y: y,
+      x: coords.x,
+      y: coords.y,
       scene: this.scene,
       'char-layer': 'ground'
     }, ...config };

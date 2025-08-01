@@ -1,5 +1,6 @@
 import { GameMap, Flock, Direction, Items } from '@Objects';
 import { TestMap } from '@Maps';
+import { Vector2 } from '@Utilities';
 
 export default class extends GameMap {
   constructor() {
@@ -24,8 +25,8 @@ export default class extends GameMap {
   create () {
     this.loadMap();
     // this.game.events.emit('toast', 'testing toast');
-    this.npc1 = this.mapPlugins?.npc.addToScene('bob', 'police_man', 7, 21);
-    this.npc2 = this.mapPlugins?.pokemon.addToScene('pika', 25, 31, 20);
+    this.npc1 = this.mapPlugins?.npc.addToScene('bob', 'police_man', Vector2(7, 21));
+    this.npc2 = this.mapPlugins?.pokemon.addToScene('pika', 25, Vector2(31, 20));
 
     // make 10% chance to run this function
     if (this.hasFlock) {
@@ -67,7 +68,7 @@ export default class extends GameMap {
         if ([this.npc1.config.id].includes(charId)) {
           let npc1Pos = this.npc1.getPosition();
           if (npc1Pos.x == 10 && npc1Pos.y == 21) {
-            this.npc1.moveTo(4, 20, {
+            this.npc1.moveTo(Vector2(4, 20), {
               noPathFoundStrategy: 'RETRY'
             });
           }
@@ -76,13 +77,13 @@ export default class extends GameMap {
         if ([this.npc2.config.id].includes(charId)) {
           let npc2Pos = this.npc2.getPosition();
           if (npc2Pos.x == 41 && npc2Pos.y == 22) {
-            this.npc2.moveTo(41, 20, {
+            this.npc2.moveTo(Vector2(41, 20), {
               noPathFoundStrategy: 'RETRY'
             });
           }
           if (npc2Pos.x == 33 && npc2Pos.y == 20) { this.npc2.move(Direction.DOWN);}
           if (npc2Pos.x == 31 && npc2Pos.y == 24) { 
-            this.npc2.moveTo(32, 22, {
+            this.npc2.moveTo(Vector2(32, 22), {
               noPathFoundStrategy: 'RETRY'
             });
           }
@@ -102,12 +103,12 @@ export default class extends GameMap {
 
     let npcPos = this.npc1.getPosition();
     if (npcPos.x == 7 && npcPos.y == 21) {
-      this.npc1.moveTo(4, 20);
+      this.npc1.moveTo(Vector2(4, 20));
     }
 
     npcPos = this.npc2.getPosition();
     if (npcPos.x == 31 && npcPos.y == 20) {
-      this.npc2.moveTo(32, 22);
+      this.npc2.moveTo(Vector2(32, 22));
     }
   }
 

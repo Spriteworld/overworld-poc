@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { Direction } from '@Objects';
+import { Vector2 } from '@Utilities';
 
 export default class extends Phaser.GameObjects.Container {
   constructor(scene, name, pokeId, x, y, dir, grid) {
@@ -82,8 +83,7 @@ export default class extends Phaser.GameObjects.Container {
           let mon = this.scene.mapPlugins?.pokemon.addToScene(
             'flock_'+this.name+'_'+counter,
             this.pokeId,
-            x_counter,
-            y_counter,
+            Vector2(x_counter, y_counter),
             {
               ...pkmnObj,
               'ignore-warp': true,

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import StateMachine from '@Objects/StateMachine';
 import MovableSprite from '@Objects/characters/MovableSprite';
 import { Tile, Direction } from '@Objects';
+import { Vector2 } from '@Utilities';
 
 export default class extends MovableSprite {
   constructor(config) {
@@ -265,7 +266,7 @@ export default class extends MovableSprite {
       ease: 'linear',
       duration: 320,
       active: () => {
-        this.moveTo(dir.x, dir.y);
+        this.moveTo(dir);
       },
       complete: () => {
         this.stateMachine.setState(this.stateDef.IDLE);
@@ -343,7 +344,7 @@ export default class extends MovableSprite {
       for (let j=0; j<pyramidCount[i]; j++) {
         coord.x += 1;
         
-        this.trackingCoords.push({x: coord.x, y: coord.y, dir: Direction.UP});
+        this.trackingCoords.push({...coord, dir: Direction.UP});
         if (!this.isMoving() && this.scene.game.config.debug.tests.rectOutlines) {
           let tile = this.config.scene.add.rectangle(
             coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
@@ -367,7 +368,7 @@ export default class extends MovableSprite {
       for (let j=0; j<pyramidCount[i]; j++) {
         coord.x -= 1;
         
-        this.trackingCoords.push({x: coord.x, y: coord.y, dir: Direction.DOWN});
+        this.trackingCoords.push({...coord, dir: Direction.DOWN});
         if (!this.isMoving() && this.scene.game.config.debug.tests.rectOutlines) {
           let tile = this.config.scene.add.rectangle(
             coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
@@ -390,7 +391,7 @@ export default class extends MovableSprite {
       for (let j=0; j<pyramidCount[i]; j++) {
         coord.y += 1;
 
-        this.trackingCoords.push({x: coord.x, y: coord.y, dir: Direction.RIGHT});
+        this.trackingCoords.push({...coord, dir: Direction.RIGHT});
         if (!this.isMoving() && this.scene.game.config.debug.tests.rectOutlines) {
           let tile = this.config.scene.add.rectangle(
             coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
@@ -413,7 +414,7 @@ export default class extends MovableSprite {
       for (let j=0; j<pyramidCount[i]; j++) {
         coord.y += 1;
 
-        this.trackingCoords.push({x: coord.x, y: coord.y, dir: Direction.LEFT});
+        this.trackingCoords.push({...coord, dir: Direction.LEFT});
         if (!this.isMoving() && this.scene.game.config.debug.tests.rectOutlines) {
           let tile = this.config.scene.add.rectangle(
             coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
@@ -496,16 +497,16 @@ export default class extends MovableSprite {
     for (let i=0; i<this.config['seen-radius']; i++) {
       switch(this.getFacingDirection().toUpperCase()) {
         case Direction.LEFT:
-          tile = {x: faceDir.x-i, y: faceDir.y};
+          tile = Vector2(faceDir.x-i, faceDir.y);
         break;
         case Direction.RIGHT:
-          tile = {x: faceDir.x+i, y: faceDir.y};
+          tile = Vector2(faceDir.x+i, faceDir.y);
         break;
         case Direction.UP:
-          tile = {x: faceDir.x, y: faceDir.y-i};
+          tile = Vector2(faceDir.x, faceDir.y-i);
         break;
         case Direction.DOWN:
-          tile = {x: faceDir.x, y: faceDir.y+i};
+          tile = Vector2(faceDir.x, faceDir.y+i);
         break;
       }
 

@@ -1,6 +1,5 @@
-import Debug from '@Data/debug.js';
 import { Tile, NPC } from '@Objects';
-import { getPropertyValue, remapProps } from '@Utilities';
+import { getPropertyValue, remapProps, Vector2 } from '@Utilities';
 
 export default class {
   constructor(scene) {
@@ -27,8 +26,7 @@ export default class {
       this.addToScene(
         npc.name,
         getPropertyValue(npc.properties, 'texture'),
-        npc.x / Tile.WIDTH,
-        npc.y / Tile.HEIGHT,
+        Vector2(npc.x / Tile.WIDTH, npc.y / Tile.HEIGHT),
         {
           id: npc.name,
           scene: this.scene,
@@ -38,17 +36,17 @@ export default class {
     });
   }
 
-  addToScene(name, texture, x, y, config) {
+  addToScene(name, texture, coords, config) {
     let npcDef = {...{
       id: 'npc_'+name,
       texture: texture,
-      x: x,
-      y: y,
+      x: coords.x,
+      y: coords.y,
       scene: this.scene
     }, ...config };
 
     if (this.scene.game.config.debug.console.interactableShout) {
-      console.log('Interactables::npc::addToScene', name, texture, x, y);
+      console.log('Interactables::npc::addToScene', name, texture, coords.x, coords.y);
     }
     let npcObj = new NPC(npcDef);
     this.scene.npcs.add(npcObj);

@@ -66,9 +66,8 @@ export default class extends GameMap {
         this.pokemon.push(
           this.mapPlugins?.pokemon.addToScene(
             ['mareep', key, i+1].join('-'), 
-            Math.random() > 0.1 ? 179 : 180, 
-            x, 
-            y, 
+            Math.random() > 0.1 ? 179 : 180,
+            Vector2(x, y), 
             {
               spin: true,
               'avoid-character': 'player',

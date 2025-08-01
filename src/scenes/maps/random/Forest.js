@@ -1,5 +1,6 @@
 import { GameMap, Items, Direction } from '@Objects';
 import { ForestMap } from '@Maps';
+import { Vector2 } from '@Utilities';
 
 export default class extends GameMap {
   constructor() {
@@ -12,16 +13,16 @@ export default class extends GameMap {
 
     this.farfetchd = {};
     this.farfetchdLocations = {
-      1:  { x: 26, y: 45 },
-      2:  { x: 26, y: 35 },
-      3:  { x: 34, y: 35 },
-      4:  { x: 48, y: 32 },
-      5:  { x: 46, y: 44 },
-      6:  { x: 37, y: 44 },
-      7:  { x: 40, y: 49 },
-      8:  { x: 27, y: 41 },
-      9:  { x: 21, y: 48 },
-      10: { x: 14, y: 40 },
+      1:  Vector2(26, 45),
+      2:  Vector2(26, 35),
+      3:  Vector2(34, 35),
+      4:  Vector2(48, 32),
+      5:  Vector2(46, 44),
+      6:  Vector2(37, 44),
+      7:  Vector2(40, 49),
+      8:  Vector2(27, 41),
+      9:  Vector2(21, 48),
+      10: Vector2(14, 40),
     };
     this.cutTree = {};
     this.cutTree2 = {};
@@ -34,13 +35,18 @@ export default class extends GameMap {
   create () {
     this.loadMap();
 
-    this.farfetchd = this.mapPlugins?.pokemon.addToScene('farfetchd', 83, 26, 45, {
-      text: 'FARFETCH\'D: kwaaaa!',
-      spin: true,
-      'spin-rate': 1000,
-      'track-player': true,
-      'track-player-radius': 1,
-    });
+    this.farfetchd = this.mapPlugins?.pokemon.addToScene(
+      'farfetchd', 
+      83, 
+      Vector2(26, 45), 
+      {
+        text: 'FARFETCH\'D: kwaaaa!',
+        spin: true,
+        'spin-rate': 1000,
+        'track-player': true,
+        'track-player-radius': 1,
+      }
+    );
 
     this.game.events.on('textbox-disable', () => {
       if (this.registry.get('last-spoke-to') === this.farfetchd.config.id) {
@@ -50,14 +56,12 @@ export default class extends GameMap {
 
     this.cutTree = new Items.CutTree({
       scene: this,
-      x: 17,
-      y: 36,
+      coords: Vector2(17, 36),
     });
 
     this.cutTree2 = new Items.CutTree({
       scene: this,
-      x: 16,
-      y: 37,
+      coords: Vector2(17, 37),
     });
 
     this.createCharacters();
@@ -190,7 +194,7 @@ export default class extends GameMap {
       y: sendFarfetchdTo.y,
     }, undefined);
 
-    farfetchd.moveTo(sendFarfetchdTo.x, sendFarfetchdTo.y, { noPathFoundStrategy: 'RETRY' });
+    farfetchd.moveTo(sendFarfetchdTo, { noPathFoundStrategy: 'RETRY' });
   }
 
   #checkFarfetchdLocation(currentLocation, locationIdx) {

@@ -1,5 +1,6 @@
 import { GameMap, Tile, Direction } from '@Objects';
 import { VermillionGymMap } from '@Maps';
+import { Vector2 } from '@Utilities';
 
 export default class extends GameMap {
   constructor() {
@@ -12,21 +13,21 @@ export default class extends GameMap {
 
     this.rect = null;
     this.switches = {
-      1: { x: 1, y: 9 },
-      2: { x: 3, y: 9 },
-      3: { x: 5, y: 9 },
-      4: { x: 7, y: 9 },
-      5: { x: 9, y: 9 },
-      6: { x: 1, y: 11 },
-      7: { x: 3, y: 11 },
-      8: { x: 5, y: 11 },
-      9: { x: 7, y: 11 },
-      10: { x: 9, y: 11 },
-      11: { x: 1, y: 13 },
-      12: { x: 3, y: 13 },
-      13: { x: 5, y: 13 },
-      14: { x: 7, y: 13 },
-      15: { x: 9, y: 13 },
+      1: Vector2(1, 9),
+      2: Vector2(3, 9),
+      3: Vector2(5, 9),
+      4: Vector2(7, 9),
+      5: Vector2(9, 9),
+      6: Vector2(1, 11),
+      7: Vector2(3, 11),
+      8: Vector2(5, 11),
+      9: Vector2(7, 11),
+      10: Vector2(9, 11),
+      11: Vector2(1, 13),
+      12: Vector2(3, 13),
+      13: Vector2(5, 13),
+      14: Vector2(7, 13),
+      15: Vector2(9, 13),
     };
     this.switch1 = false;
     this.switch1Rect = null;
@@ -93,7 +94,7 @@ export default class extends GameMap {
     this.updateCharacters(time, delta);
 
     let player = this.mapPlugins['player'].player;
-    let isInside = [ [4,5], [5,5], [6,5] ].some((point) => parseInt(player.x / Tile.WIDTH) === point[0] && parseInt(player.y / Tile.HEIGHT) === point[1]);
+    let isInside = [ Vector2(4, 5), Vector2(5, 5), Vector2(6, 5) ].some((point) => parseInt(player.x / Tile.WIDTH) === point.x && parseInt(player.y / Tile.HEIGHT) === point.y);
     if (isInside && this.stopBinEvent === false) {
       this.game.events.emit(
         'textbox-changedata', 
