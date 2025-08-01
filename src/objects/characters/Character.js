@@ -15,7 +15,7 @@ export default class extends MovableSprite {
       'move-radius': 1,
       follow: false,
       collides: true,
-      'facing-direction': 'down',
+      'facing-direction': Direction.DOWN,
       'seen-radius': 0,
       'seen-character': null,
       'char-layer': 'ground',
@@ -242,16 +242,16 @@ export default class extends MovableSprite {
       dir.y -= 1;
       bounds.y -= (Tile.HEIGHT + (Tile.HEIGHT/4));
     } else
-    if (faceDir === 'down') {
+    if (faceDir === Direction.DOWN) {
       dir.y += 1;
       bounds.y += (Tile.HEIGHT + (Tile.HEIGHT/4));
     } else
-    if (faceDir === 'left') {
+    if (faceDir === Direction.LEFT) {
       dir.x -= 1;
       bounds.x -= (Tile.WIDTH + (Tile.WIDTH/4));
       bounds.y -= (Tile.HEIGHT/4);
     } else
-    if (faceDir === 'right') {
+    if (faceDir === Direction.RIGHT) {
       dir.x += 1;
       bounds.x += (Tile.WIDTH + (Tile.WIDTH/4));
       bounds.y -= (Tile.HEIGHT/4);
@@ -285,11 +285,11 @@ export default class extends MovableSprite {
 
   addAutoSpin(delta) {
     if (this.initalCreation) {
-      let lookDir = this.config['facing-direction'] ?? 'down';
+      let lookDir = this.config['facing-direction'];
       let faceDir = this.getFacingDirection();
 
       if (faceDir !== lookDir) {
-        this.look(lookDir.toLowerCase());
+        this.look(lookDir);
         return;
       }
       this.initalCreation = !this.initalCreation;
@@ -300,13 +300,13 @@ export default class extends MovableSprite {
     if (this.spinRate <= 0) {
       this.spinRate = parseInt(this.config['spin-rate']);
 
-      let directions = [Direction.UP, 'down', Direction.LEFT, Direction.RIGHT];
+      let directions = [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT];
       let dir = Phaser.Math.RND.pick(directions);
 
       if (this.scene.game.config.debug.console.character) {
         console.log('Character::addAutoSpin', this.config.id, 'looking at', dir);
       }
-      this.look(dir.toLowerCase());
+      this.look(dir);
     }
   }
 
@@ -367,7 +367,7 @@ export default class extends MovableSprite {
       for (let j=0; j<pyramidCount[i]; j++) {
         coord.x -= 1;
         
-        this.trackingCoords.push({x: coord.x, y: coord.y, dir: 'down'});
+        this.trackingCoords.push({x: coord.x, y: coord.y, dir: Direction.DOWN});
         if (!this.isMoving() && this.scene.game.config.debug.tests.rectOutlines) {
           let tile = this.config.scene.add.rectangle(
             coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
@@ -389,8 +389,8 @@ export default class extends MovableSprite {
 
       for (let j=0; j<pyramidCount[i]; j++) {
         coord.y += 1;
-        
-        this.trackingCoords.push({x: coord.x, y: coord.y, dir: 'right'});
+
+        this.trackingCoords.push({x: coord.x, y: coord.y, dir: Direction.RIGHT});
         if (!this.isMoving() && this.scene.game.config.debug.tests.rectOutlines) {
           let tile = this.config.scene.add.rectangle(
             coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
@@ -412,8 +412,8 @@ export default class extends MovableSprite {
 
       for (let j=0; j<pyramidCount[i]; j++) {
         coord.y += 1;
-        
-        this.trackingCoords.push({x: coord.x, y: coord.y, dir: 'left'});
+
+        this.trackingCoords.push({x: coord.x, y: coord.y, dir: Direction.LEFT});
         if (!this.isMoving() && this.scene.game.config.debug.tests.rectOutlines) {
           let tile = this.config.scene.add.rectangle(
             coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
@@ -533,14 +533,14 @@ export default class extends MovableSprite {
 
     // calc the actual seen box
     switch(this.getFacingDirection()) {
-      case 'left':
+      case Direction.LEFT:
         this.seenRect.x = ((faceDir.x+1) * Tile.WIDTH) - seenRadiusInTiles;
         this.seenRect.y = npcBounds.y + (this.config.type === 'pkmn' ? 30 : 8);
         this.seenRect.width = seenRadiusInTiles;
         this.seenRect.height = Tile.HEIGHT;
       break;
 
-      case 'right':
+      case Direction.RIGHT:
         this.seenRect.x = faceDir.x * Tile.WIDTH;
         this.seenRect.y = npcBounds.y + (this.config.type === 'pkmn' ? 30 : 8);
         this.seenRect.width = seenRadiusInTiles;
@@ -554,7 +554,7 @@ export default class extends MovableSprite {
         this.seenRect.height = seenRadiusInTiles;
       break;
 
-      case 'down':
+      case Direction.DOWN:
         this.seenRect.x = npcBounds.x + (this.config.type === 'pkmn' ? 15 : 0);
         this.seenRect.y = faceDir.y * Tile.HEIGHT;
         this.seenRect.width = Tile.WIDTH;

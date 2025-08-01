@@ -104,7 +104,7 @@ export default class {
     let playerLocation = {
       x: getPropertyValue(warpProps, 'warp-x', 0),
       y: getPropertyValue(warpProps, 'warp-y', 0),
-      dir: getPropertyValue(warpProps, 'warp-dir', 'down'),
+      dir: getPropertyValue(warpProps, 'warp-dir', Direction.DOWN),
       charLayer: getPropertyValue(warpProps, 'layer', 'ground')
     };
 

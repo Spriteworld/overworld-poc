@@ -99,7 +99,7 @@ export default class extends GameMap {
         'textbox-changedata', 
         'Theres a door here, but it is locked.', 
       );
-      player.move('down');
+      player.move(Direction.DOWN);
     }
 
   }
@@ -184,7 +184,7 @@ export default class extends GameMap {
   rngSwitch2() {
     this.switch2 = false;
 
-    let directions = [Direction.UP, 'down', 'left', 'right'];
+    let directions = [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT];
 
     let binIdx = -1;
     let bin = null;
@@ -196,13 +196,13 @@ export default class extends GameMap {
         case Direction.UP:
           bin.y -= 2;
           break;
-        case 'down':
+        case Direction.DOWN:
           bin.y += 2;
           break;
-        case 'left':
+        case Direction.LEFT:
           bin.x -= 2;
           break;
-        case 'right':
+        case Direction.RIGHT:
           bin.x += 2;
           break;
       }

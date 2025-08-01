@@ -132,13 +132,13 @@ export default class extends Character {
     // })
 
     if (keys.left.isDown) {
-      this.handleMove('left');
+      this.handleMove(Direction.LEFT);
     } else if (keys.right.isDown) {
-      this.handleMove('right');
+      this.handleMove(Direction.RIGHT);
     } else if (keys.up.isDown) {
       this.handleMove(Direction.UP);
     } else if (keys.down.isDown) {
-      this.handleMove('down');
+      this.handleMove(Direction.DOWN);
     } else {
       this.stateMachine.setState(this.stateDef.IDLE);
     }
@@ -180,7 +180,7 @@ export default class extends Character {
     let player = this.config.scene.characters.get(this.config.id);
     let tilePos = {};
 
-    tilePos = this.getPosInDirection('left');
+    tilePos = this.getPosInDirection(Direction.LEFT);
     if (player.gridengine.isBlocked(tilePos)) {
       this.blockedLeft.x = tilePos.x * Tile.WIDTH;
       this.blockedLeft.y = tilePos.y * Tile.WIDTH;
@@ -206,7 +206,7 @@ export default class extends Character {
       this.blockedUp.setAlpha(0);
     }
 
-    tilePos = this.getPosInDirection('right');
+    tilePos = this.getPosInDirection(Direction.RIGHT);
     if (player.gridengine.isBlocked(tilePos)) {
       this.blockedRight.x = tilePos.x * Tile.WIDTH;
       this.blockedRight.y = tilePos.y * Tile.WIDTH;
@@ -219,7 +219,7 @@ export default class extends Character {
       this.blockedRight.setAlpha(0);
     }
 
-    tilePos = this.getPosInDirection('down');
+    tilePos = this.getPosInDirection(Direction.DOWN);
     if (player.gridengine.isBlocked(tilePos)) {
       this.blockedDown.x = tilePos.x * Tile.WIDTH;
       this.blockedDown.y = tilePos.y * Tile.WIDTH;

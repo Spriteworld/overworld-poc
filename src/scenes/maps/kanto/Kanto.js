@@ -51,7 +51,7 @@ export default class extends GameMap {
       let isInside = this.rect.some((point) => parseInt(player.x / Tile.WIDTH) === point[0] && parseInt(player.y / Tile.HEIGHT) === point[1]);
       if (isInside) {
         console.log('You need to get the Pokedex from Professor Oak!');
-        player.move('down');
+        player.move(Direction.DOWN);
       }
     }
   }

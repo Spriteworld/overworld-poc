@@ -80,16 +80,16 @@ export default class extends GameMap {
               noPathFoundStrategy: 'RETRY'
             });
           }
-          if (npc2Pos.x == 33 && npc2Pos.y == 20) { this.npc2.move('down');}
+          if (npc2Pos.x == 33 && npc2Pos.y == 20) { this.npc2.move(Direction.DOWN);}
           if (npc2Pos.x == 31 && npc2Pos.y == 24) { 
             this.npc2.moveTo(32, 22, {
               noPathFoundStrategy: 'RETRY'
             });
           }
-          if (npc2Pos.x == 36 && npc2Pos.y == 22) { this.npc2.move('down'); }
-          if (npc2Pos.x == 36 && npc2Pos.y == 24) { this.npc2.move('right'); }
+          if (npc2Pos.x == 36 && npc2Pos.y == 22) { this.npc2.move(Direction.DOWN); }
+          if (npc2Pos.x == 36 && npc2Pos.y == 24) { this.npc2.move(Direction.RIGHT); }
           if (npc2Pos.x == 39 && npc2Pos.y == 24) { this.npc2.move(Direction.UP); }
-          if (npc2Pos.x == 39 && npc2Pos.y == 22) { this.npc2.move('right'); }
+          if (npc2Pos.x == 39 && npc2Pos.y == 22) { this.npc2.move(Direction.RIGHT); }
         }
       });
   }

@@ -23,6 +23,6 @@ export default class extends GameMap {
   update(time, delta) {
     this.updateCharacters(time, delta);
 
-    // this.mapPlugins['player'].player.handleMove('down');
+    // this.mapPlugins['player'].player.handleMove(Direction.DOWN);
   }
 }

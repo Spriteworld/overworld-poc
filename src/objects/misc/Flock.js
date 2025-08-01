@@ -57,16 +57,16 @@ export default class extends Phaser.GameObjects.Container {
   }
 
   sortMon() {
-    switch(this.direction.toLowerCase()) {
-      case 'left':
-      case 'right':
+    switch(this.direction) {
+      case Direction.LEFT:
+      case Direction.RIGHT:
         this.list = this.list.sort((a, b) => a.x == b.x ? a.y - b.y : a.x - b.x);
-        if (this.direction === 'right') { this.list = this.list.reverse(); }
+        if (this.direction === Direction.RIGHT) { this.list = this.list.reverse(); }
       break;
-      case 'down':
+      case Direction.DOWN:
       case Direction.UP:
         this.list = this.list.sort((a, b) => a.y == b.y ? a.x - b.x : a.y - b.y);
-        if (this.direction === 'down') { this.list = this.list.reverse(); }
+        if (this.direction === Direction.DOWN) { this.list = this.list.reverse(); }
       break;
     }
   }

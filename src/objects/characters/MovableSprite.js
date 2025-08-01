@@ -23,7 +23,7 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
       sprite: this,
       walkingAnimationMapping: this.characterFramesDef(),
       startPosition: { x: def.x, y: def.y },
-      facingDirection: def['facing-direction'] ?? 'down',
+      facingDirection: (def['facing-direction'] ?? Direction.DOWN).toLowerCase(),
       collides: def.collides,
       charLayer: def['char-layer'] ?? 'ground',
       move: def.move,
@@ -59,7 +59,7 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
   }
 
   moveTo(x, y, config) {
-    return this.gridengine.moveTo(this.config.id, { x: x, y: y }, config);
+    return this.gridengine.moveTo(this.config.id, Vector2(x, y), config);
   }
 
   isMoving() {
@@ -105,7 +105,7 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
 
   canMove(dir) {
     // return true;
-    let pos = this.getPosInDirection(dir.toLowerCase());
+    let pos = this.getPosInDirection(dir);
     let layer = this.config['char-layer'] || 'ground';
     return this.gridengine.isBlocked(pos, layer) === false;
   }
@@ -113,13 +113,13 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
   getOppositeFacingDirection() {
     let dir = this.getFacingDirection();
     if (dir === Direction.UP) {
-      return 'down';
-    } else if (dir === 'down') {
+      return Direction.DOWN;
+    } else if (dir === Direction.DOWN) {
       return Direction.UP;
-    } else if (dir === 'left') {
-      return 'right';
-    } else if (dir === 'right') {
-      return 'left';
+    } else if (dir === Direction.LEFT) {
+      return Direction.RIGHT;
+    } else if (dir === Direction.RIGHT) {
+      return Direction.LEFT;
     }
   }
 
@@ -141,11 +141,11 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
     let pos = this.getPosition();
     if (dir === Direction.UP) {
       return { ...pos, y: pos.y - 1 };
-    } else if (dir === 'down') {
+    } else if (dir === Direction.DOWN) {
       return { ...pos, y: pos.y + 1 };
-    } else if (dir === 'left') {
+    } else if (dir === Direction.LEFT) {
       return { ...pos, x: pos.x - 1 };
-    } else if (dir === 'right') {
+    } else if (dir === Direction.RIGHT) {
       return { ...pos, x: pos.x + 1 };
     }
   }
@@ -155,11 +155,11 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
     let dir = this.getFacingDirection();
     if (dir === Direction.UP) {
       return { ...pos, y: pos.y + 1 };
-    } else if (dir === 'down') {
+    } else if (dir === Direction.DOWN) {
       return { ...pos, y: pos.y - 1 };
-    } else if (dir === 'left') {
+    } else if (dir === Direction.LEFT) {
       return { ...pos, x: pos.x + 1 };
-    } else if (dir === 'right') {
+    } else if (dir === Direction.RIGHT) {
       return { ...pos, x: pos.x - 1 };
     }
   }

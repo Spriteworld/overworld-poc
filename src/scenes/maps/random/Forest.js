@@ -98,25 +98,25 @@ export default class extends GameMap {
       break;
 
       case this.#checkFarfetchdLocation(currentLocation, 2):
-        if (['left', Direction.UP].includes(playerLookingDirection)) {
+        if ([Direction.LEFT, Direction.UP].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[3];
         }
-        if (['down'].includes(playerLookingDirection)) {
+        if ([Direction.DOWN].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[8];
         }
       break;
 
       case this.#checkFarfetchdLocation(currentLocation, 3):
-        if (['left'].includes(playerLookingDirection)) {
+        if ([Direction.LEFT].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[2];
         }
-        if (['down'].includes(playerLookingDirection)) {
+        if ([Direction.DOWN].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[4];
         }
       break;
 
       case this.#checkFarfetchdLocation(currentLocation, 4):
-        if (['right'].includes(playerLookingDirection)) {
+        if ([Direction.RIGHT].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[5];
         }
         if ([Direction.UP].includes(playerLookingDirection)) {
@@ -125,43 +125,43 @@ export default class extends GameMap {
       break;
 
       case this.#checkFarfetchdLocation(currentLocation, 5):
-        if (['left'].includes(playerLookingDirection)) {
+        if ([Direction.LEFT].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[6];
         }
-        if (['right', Direction.UP].includes(playerLookingDirection)) {
+        if ([Direction.RIGHT, Direction.UP].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[4];
         }
-        if (['down'].includes(playerLookingDirection)) {
+        if ([Direction.DOWN].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[7];
         }
       break;
 
       case this.#checkFarfetchdLocation(currentLocation, 6):
-        if (['down'].includes(playerLookingDirection)) {
+        if ([Direction.DOWN].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[7];
         }
-        if ([Direction.UP, 'left'].includes(playerLookingDirection)) {
+        if ([Direction.UP, Direction.LEFT].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[8];
         }
       break;
 
       case this.#checkFarfetchdLocation(currentLocation, 7):
-        if (['left'].includes(playerLookingDirection)) {
+        if ([Direction.LEFT].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[6];
         }
-        if (['right'].includes(playerLookingDirection)) {
+        if ([Direction.RIGHT].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[5];
         }
       break;
 
       case this.#checkFarfetchdLocation(currentLocation, 8):
-        if (['left'].includes(playerLookingDirection)) {
+        if ([Direction.LEFT].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[2];
         }
-        if (['right'].includes(playerLookingDirection)) {
+        if ([Direction.RIGHT].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[6];
         }
-        if (['down'].includes(playerLookingDirection)) {
+        if ([Direction.DOWN].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[9];
         }
         if ([Direction.UP].includes(playerLookingDirection)) {
@@ -170,10 +170,10 @@ export default class extends GameMap {
       break;
 
       case this.#checkFarfetchdLocation(currentLocation, 9):
-        if (['left'].includes(playerLookingDirection)) {
+        if ([Direction.LEFT].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[10];
         }
-        if (['right'].includes(playerLookingDirection)) {
+        if ([Direction.RIGHT].includes(playerLookingDirection)) {
           sendFarfetchdTo = this.farfetchdLocations[8];
         }
       break;
