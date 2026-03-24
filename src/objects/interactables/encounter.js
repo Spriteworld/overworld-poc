@@ -1,6 +1,6 @@
 import { Tile } from '@Objects';
 import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves } from '@spriteworld/pokemon-data';
-import { defaultParty } from '@Data/party.js';
+import { gameState } from '@Data/gameState.js';
 
 const ENCOUNTER_RATE = 0.1; // 10% chance per tile step
 const WILD_LEVEL_MIN = 3;
@@ -106,7 +106,7 @@ export default class {
       field: { weather: null, terrain: 'normal' },
       player: {
         name: 'Red',
-        team: defaultParty.map(p => ({
+        team: gameState.party.map(p => ({
           ...p,
           moves: p.moves.map(m => ({ ...m, pp: { ...m.pp } })),
           ivs: { ...p.ivs },

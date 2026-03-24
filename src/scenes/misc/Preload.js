@@ -3,6 +3,7 @@ import { Tile } from '@Objects';
 import Tileset from '@Tileset';
 import Scenes from '@Scenes';
 import Debug from '@Data/debug.js';
+import { loadGame } from '@Data/gameState.js';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -78,6 +79,8 @@ export default class extends Phaser.Scene {
   }
 
   create () {
+    loadGame();
+
     this.scene.start('Test');
     // this.scene.start('Kanto');
     // this.scene.start('Forest');

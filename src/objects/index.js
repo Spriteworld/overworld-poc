@@ -15,6 +15,7 @@ import * as ObjectTypesImport from '../tileset/objecttypes.json';
 let ObjectTypes = ObjectTypesImport.default;
 
 import Flock from './misc/Flock.js';
+import PauseMenu from './PauseMenu.js';
 
 export {
   Tile, Direction,
@@ -31,4 +32,5 @@ export {
   ObjectTypes,
 
   Flock,
+  PauseMenu,
 };

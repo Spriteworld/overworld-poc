@@ -1,12 +1,15 @@
 import Phaser from 'phaser';
 import { textBox, toast, EventBus } from '@Utilities';
-// import {PauseMenu} from '@Objects';
+import { PauseMenu } from '@Objects';
+import { gameState, saveGame } from '@Data/gameState.js';
 
 export default class extends Phaser.Scene {
   constructor() {
     super({ key: 'OverworldUI' });
 
     this.textbox = null;
+    this.toast   = null;
+    this.pauseMenu = null;
   }
 
   preload () { }
@@ -23,10 +26,10 @@ export default class extends Phaser.Scene {
       if (this.registry.has(eventKey) === false) {
         this.registry.set(eventKey, events[eventKey]);
       }
-    })
+    });
 
-    // toast
-    // this.toast = toast(this, 10, 10, {});
+    // toast notification
+    this.toast = toast(this, 10, 10, {});
 
     // textbox
     if (this.textbox === null) {
@@ -44,21 +47,21 @@ export default class extends Phaser.Scene {
       .setAlpha(0)
       .setDepth(Number.MAX_SAFE_INTEGER);
 
+    // pause menu
+    this.pauseMenu = new PauseMenu(this);
+
     this.handleEvents();
   }
 
   destroy() {
-    // this.toast.destroy();
     this.textbox.destroy();
-    // this.pauseMenu.destroy();
+    this.pauseMenu.destroy();
   }
 
   handleEvents() {
-    // this should trigger on map change
-    // this.game.events.on('toast', (value) => {
-    //   console.log('toast', value);
-    //   this.toast.showMessage(value);
-    // });
+    this.game.events.on('toast', (value) => {
+      this.toast.showMessage(value);
+    });
 
     this.game.events.on('textbox-disable', () => {
       this.textbox.setVisible(false);
@@ -73,6 +76,10 @@ export default class extends Phaser.Scene {
 
     this.game.events.on('battle-start', (data) => {
       const mapName = this.registry.get('map');
+      // Close menu if somehow open when battle fires
+      if (this.pauseMenu.visible) {
+        this.pauseMenu.close();
+      }
       this.registry.set('player_input', false);
 
       // 3 white flashes, then hold white and cut to battle
@@ -125,5 +132,61 @@ export default class extends Phaser.Scene {
         },
       });
     });
+
+    // ─── Pause menu keyboard ──────────────────────────────────────────────
+    this.input.keyboard.on('keydown', (event) => {
+      if (this.pauseMenu.visible) {
+        switch (event.code) {
+          case 'ArrowUp':
+            this.pauseMenu.moveUp();
+            break;
+          case 'ArrowDown':
+            this.pauseMenu.moveDown();
+            break;
+          case 'KeyZ':
+          case 'Enter':
+            if (!event.repeat) this._handleMenuConfirm();
+            break;
+          case 'KeyX':
+          case 'Escape':
+            if (!event.repeat) {
+              const closed = this.pauseMenu.back();
+              if (closed) this.registry.set('player_input', true);
+            }
+            break;
+        }
+      } else if (event.code === 'Enter' && !event.repeat) {
+        if (this.registry.get('player_input') !== false) {
+          this.registry.set('player_input', false);
+          this.pauseMenu.open();
+        }
+      }
+    });
+  }
+
+  _handleMenuConfirm() {
+    const option = this.pauseMenu.confirm();
+    switch (option) {
+      case 'pokedex':
+      case 'option':
+        this.pauseMenu.showSubScreen(option);
+        break;
+      case 'team':
+      case 'bag':
+      case 'user':
+        this.pauseMenu.showSubScreen(option);
+        break;
+      case 'save':
+        gameState.currentMap = this.registry.get('map') ?? gameState.currentMap;
+        saveGame();
+        this.toast.showMessage('Progress saved!');
+        this.pauseMenu.close();
+        this.registry.set('player_input', true);
+        break;
+      case 'close':
+        this.pauseMenu.close();
+        this.registry.set('player_input', true);
+        break;
+    }
   }
 }
