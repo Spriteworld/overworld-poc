@@ -116,6 +116,9 @@ export default class extends Phaser.Scene {
     if (!this.enableOWTrainers) {
       return;
     }
+    if (this.game.config.debug.console.preload) {
+      console.log('Preload::preloadTrainers');
+    }
 
     Object.keys(Tileset.trainers).forEach((name) => {
       this.anims.create({

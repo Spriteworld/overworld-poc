@@ -106,7 +106,12 @@ export default class {
       field: { weather: null, terrain: 'normal' },
       player: {
         name: 'Red',
-        team: defaultParty,
+        team: defaultParty.map(p => ({
+          ...p,
+          moves: p.moves.map(m => ({ ...m, pp: { ...m.pp } })),
+          ivs: { ...p.ivs },
+          evs: { ...p.evs },
+        })),
         inventory: { items: [], pokeballs: [], tms: [] },
       },
       enemy: {

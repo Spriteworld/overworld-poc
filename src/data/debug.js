@@ -12,7 +12,7 @@ export default {
     rectOutlines: false,
   },
   console: {
-    preload: false,
+    preload: !false,
     gameMap: false,
     character: false,
     interactableShout: false,

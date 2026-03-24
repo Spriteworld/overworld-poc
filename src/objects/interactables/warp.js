@@ -35,11 +35,11 @@ export default class {
           
           let targetXIdx = objCopy.properties.findIndex(w => w.name === 'warp-x');
           objCopy.properties[targetXIdx].value = obj.properties[targetXIdx].value + x;
-          objCopy.x = (objCopy.x / Tile.WIDTH) + x;
-            
+          objCopy.x = objCopy.x + (x * Tile.WIDTH);
+
           let targetYIdx = objCopy.properties.findIndex(w => w.name === 'warp-y');
           objCopy.properties[targetYIdx].value = obj.properties[targetYIdx].value + y;
-          objCopy.y = (objCopy.y / Tile.HEIGHT) + y;
+          objCopy.y = objCopy.y + (y * Tile.HEIGHT);
 
           this.addWarp(objCopy);
         }
@@ -56,8 +56,8 @@ export default class {
     }
     this.scene.registry.get('warps').push({
       name: obj.id,
-      x: parseInt(obj.x),
-      y: parseInt(obj.y),
+      x: parseInt(obj.x / Tile.WIDTH),
+      y: parseInt(obj.y / Tile.HEIGHT),
       obj: obj
     });
     if (this.scene.game.config.debug.console.interactableShout) {
@@ -95,7 +95,7 @@ export default class {
   handleWarps(char, exitTile, enterTile) {
     if (this.warps.length === 0) { return; }
 
-    let warp = this.warps.find(p => p.x / Tile.WIDTH === enterTile.x && p.y / Tile.HEIGHT === enterTile.y);
+    let warp = this.warps.find(p => p.x === enterTile.x && p.y === enterTile.y);
     if (typeof warp === 'undefined') { return; }
 
     let warpProps = warp.obj.properties;
@@ -144,7 +144,7 @@ export default class {
 
   warpPlayerToMap(char, warpLocation, playerLocation) {
     char.disableMovement();
-    this.scene.cameras.main.fadeOut(this.cameraFade, 0, 0, 0);
+    this.scene.cameras.main.fadeOut(500, 0, 0, 0);
     this.scene.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       (cam, effect) => {
@@ -152,7 +152,7 @@ export default class {
         // same map, we dont need to move scene
         if (this.scene.registry.get('map') === warpLocation && playerLocation) {
           this.warpPlayerInMap(char, playerLocation);
-          this.scene.cameras.main.fadeIn(this.cameraFade, 0, 0, 0);
+          this.scene.cameras.main.fadeIn(500, 0, 0, 0);
           char.enableMovement();
           return;
         }

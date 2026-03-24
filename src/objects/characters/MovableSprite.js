@@ -70,15 +70,6 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
     return this.gridengine.stopMovement(this.config.id);
   }
 
-  remove() {
-    this.destroy();
-    return this.gridEngine.removeCharacter(this.config.id);
-  }
-
-  getPosition() {
-    return this.gridengine.getPosition(this.config.id);
-  }
-
   getFacingDirection() {
     return this.gridengine.getFacingDirection(this.config.id);
   }
@@ -174,7 +165,7 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
         coords.push(Vector2(x, y));
       }
     }
-    return coords.includes(charXY);
+    return coords.some(c => c.x === charXY.x && c.y === charXY.y);
   }
     
   remove() {

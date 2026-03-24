@@ -9,7 +9,7 @@ import { BattleScene } from '@spriteworld/battle';
 
 const config = {
   parent: 'game-container',
-  type: Phaser.WEBGL,
+  type: Phaser.AUTO,
   width: 800,
   height: 600,
   pixelArt: true,

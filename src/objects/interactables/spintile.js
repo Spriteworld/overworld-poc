@@ -59,13 +59,13 @@ export default class {
       let props = this.scene.getTileProperties(enterTile.x, enterTile.y);
       let dir = props.get('sw_spin') || false;
       if (dir === false) {
-        dir = char.getSlidingDirection();
+        dir = char.getSpinningDirection();
       }
 
       if (!char.isSpinning() && dir !== false) {
         char.stateMachine.setState(char.stateDef.SPIN);
       }
-      if (dir !== char.getSlidingDirection()) {
+      if (dir !== char.getSpinningDirection()) {
         char.setSpinDirection(dir);
       }
     }

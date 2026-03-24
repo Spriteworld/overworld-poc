@@ -233,47 +233,97 @@ export default class extends MovableSprite {
     console.log('JUMP END');
   }
 
-  jumpLedgeOnEnter() { }
-  jumpLedgeOnUpdate() {
-    let dir = this.getPosInFacingDirection();
-    let faceDir = this.getFacingDirection();
-    let bounds = this.getBounds();
+  jumpLedgeOnEnter() {
+    const faceDir = this.getFacingDirection();
+    // GridEngine returns directions in lowercase; Direction constants are uppercase.
+    const faceDirUpper = faceDir.toUpperCase();
+    this.jumpingDir = faceDirUpper;
+    const currentTile  = this.getPosition();
 
-    if (faceDir === Direction.UP) {
-      dir.y -= 1;
-      bounds.y -= (Tile.HEIGHT + (Tile.HEIGHT/4));
-    } else
-    if (faceDir === Direction.DOWN) {
-      dir.y += 1;
-      bounds.y += (Tile.HEIGHT + (Tile.HEIGHT/4));
-    } else
-    if (faceDir === Direction.LEFT) {
-      dir.x -= 1;
-      bounds.x -= (Tile.WIDTH + (Tile.WIDTH/4));
-      bounds.y -= (Tile.HEIGHT/4);
-    } else
-    if (faceDir === Direction.RIGHT) {
-      dir.x += 1;
-      bounds.x += (Tile.WIDTH + (Tile.WIDTH/4));
-      bounds.y -= (Tile.HEIGHT/4);
-    }
+    this.gridengine.stopMovement(this.config.id);
+    this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesStaticDef());
 
+    const delta = {
+      [Direction.DOWN]:  { dx: 0,  dy: 2  },
+      [Direction.UP]:    { dx: 0,  dy: -2 },
+      [Direction.LEFT]:  { dx: -2, dy: 0  },
+      [Direction.RIGHT]: { dx: 2,  dy: 0  },
+    }[faceDirUpper] || { dx: 0, dy: 0 };
+
+    const landingTile = {
+      x: currentTile.x + delta.dx,
+      y: currentTile.y + delta.dy,
+    };
+
+    // GridEngine updates sprite.x/y every frame via updatePixelPos().
+    // Tweening this.x/y directly fights that and loses.
+    // Instead: anchor GE to landingTile immediately, then tween a visual
+    // offset from (startPixels - landingPixels) back to (0, 0) so GE's
+    // own update carries the sprite to the correct position each frame.
+    const pixelDX  = delta.dx * Tile.WIDTH;
+    const pixelDY  = delta.dy * Tile.HEIGHT;
+    const arcHeight = Tile.HEIGHT; // 32px upward arc
+
+    this.gridengine.setPosition(
+      this.config.id,
+      landingTile,
+      this.config['char-layer'] || 'ground'
+    );
+
+    // Start offset: sprite appears at exitTile visually
+    this.gridengine.setOffsetX(this.config.id, -pixelDX);
+    this.gridengine.setOffsetY(this.config.id, -pixelDY);
+
+    // Arc peak offset: 30% forward + arc up
+    const midOX = -pixelDX + pixelDX * 0.3;
+    const midOY = -pixelDY + pixelDY * 0.3 - arcHeight;
+
+    const proxy = { ox: -pixelDX, oy: -pixelDY };
+
+    // Phase 1 (120 ms): hop up and slightly forward
     this.config.scene.tweens.add({
-      targets: this,
-      x: bounds.x,
-      y: bounds.y,
-      repeat: 0,
-      ease: 'linear',
-      duration: 320,
-      active: () => {
-        this.moveTo(dir);
+      targets:  proxy,
+      ox: midOX,
+      oy: midOY,
+      duration: 120,
+      ease: 'Quad.easeOut',
+      onUpdate: () => {
+        this.gridengine.setOffsetX(this.config.id, proxy.ox);
+        this.gridengine.setOffsetY(this.config.id, proxy.oy);
       },
-      complete: () => {
-        this.stateMachine.setState(this.stateDef.IDLE);
+      onComplete: () => {
+        // Phase 2 (200 ms): fall to landing
+        this.config.scene.tweens.add({
+          targets:  proxy,
+          ox: 0,
+          oy: 0,
+          duration: 200,
+          ease: 'Quad.easeIn',
+          onUpdate: () => {
+            this.gridengine.setOffsetX(this.config.id, proxy.ox);
+            this.gridengine.setOffsetY(this.config.id, proxy.oy);
+          },
+          onComplete: () => {
+            this.gridengine.setOffsetX(this.config.id, 0);
+            this.gridengine.setOffsetY(this.config.id, 0);
+            this.jumpingDir = null;
+            this.gridengine.setWalkingAnimationMapping(
+              this.config.id,
+              this.characterFramesDef()
+            );
+            this.stateMachine.setState(this.stateDef.IDLE);
+          },
+        });
       },
     });
   }
-  jumpLedgeOnExit() { }
+  jumpLedgeOnUpdate() { }
+  jumpLedgeOnExit() {
+    this.jumpingDir = null;
+    this.gridengine.setOffsetX(this.config.id, 0);
+    this.gridengine.setOffsetY(this.config.id, 0);
+    this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesDef());
+  }
   isJumping() {
     return this.jumpingDir !== null;
   }
@@ -315,7 +365,7 @@ export default class extends MovableSprite {
     this.config.spin = false;
 
     if (restart) {
-      this.scene.game.events.on('textbox-disable', () => this.startSpin());
+      this.scene.game.events.once('textbox-disable', this.startSpin, this);
     }
   }
 

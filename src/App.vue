@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-col">
-    <div class="flex flex-row h-screen">
-      <div class="flex" style="width: calc(100% - 400px);">
-        <PhaserGame 
-          ref="phaserRef" 
+  <div class="flex flex-col overflow-hidden" style="height: 100vh; height: 100dvh;">
+    <div class="flex flex-1 min-h-0">
+      <div class="flex flex-1">
+        <PhaserGame
+          ref="phaserRef"
           @current-active-scene="updateCurrentScene"
           @current-coords="updateCoords"
           @player-move-disable="disablePlayerMove"
@@ -60,6 +60,7 @@
         </div>
       </div>
     </div>
+    <MobileControls class="lg:hidden" />
   </div>
 </template>
 
@@ -69,11 +70,12 @@ import Scenes from '@Scenes';
 import Debug from '@Data/debug.js';
 import GameFlags from '@Data/gameFlags.js';
 import ObjectCheckboxes from './components/ObjectCheckboxes.vue';
+import MobileControls from './components/MobileControls.vue';
 
 export default {
   name: 'App',
   components: {
-    PhaserGame, ObjectCheckboxes,
+    PhaserGame, ObjectCheckboxes, MobileControls,
   },
 
   data() {

@@ -24,7 +24,7 @@ export default class {
     }
 
     let spawn = this.scene.findInteractions('playerSpawn');
-    if (typeof spawn === null || spawn.length === 0) {
+    if (spawn === null || spawn.length === 0) {
       throw 'No player spawn found';
     }
     if (spawn.length > 1) {

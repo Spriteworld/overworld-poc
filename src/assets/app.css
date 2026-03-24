@@ -1,8 +1,24 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 body {
   background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Portrait mobile: constrain game to 4:3 so controls sit flush below with no wasted space */
+@media (max-width: 1023px) and (orientation: portrait) {
+  #game-container {
+    height: auto !important;
+    flex-grow: 0 !important;
+    aspect-ratio: 4 / 3;
+    width: 100%;
+  }
 }
