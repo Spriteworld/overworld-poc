@@ -1,44 +1,74 @@
 ## Intro
-This is a POC Repository so things will change a lot and probably infrequently.
-The aim is to replicate Gen3 Pokemon overworld mechanics and battle mechanics utilizing the Phaser Game Engine.
+
+A POC recreation of Gen3 Pokemon overworld and battle mechanics using Phaser 3. Things change frequently — it's a POC. Maps cover the Kanto region plus various test maps.
+
+> For fun. PRs and contributions welcome. Discord: tZeFkKK3bA
+
+## Getting Started
+
+```bash
+npm install        # installs deps — requires ../data and ../battle-claude sibling dirs
+npm run dev        # dev server at http://localhost:8085
+npm run build      # production build → dist/
+npx jest           # run tests
+```
 
 ## Directory Structure
-- src
-  - data // stores game based data, configs, debug flags etc
-  - maps // stores maps in .json form. Could also be a .world file that would describe to Tiled how the maps position themselves in the world
-  - objects // game specific objects, characters, items, etc
-  - scenes // scenes load maps, and other information to build up a scene
-  - tileset // the tilesets this game has access to
-    - characters // character spritesheets
-    - overworld // all the overworld pokemon
-    - battlescene // all the tiles related to the build up of the battlescenes
-  - utilities // game specific utility functions
 
-World Tilesets are stored in a 32 x 32 px grid.
-Character/Pokemon Tilesets are variable in size.
+```
+src/
+├── data/          # Game config, debug flags, game state, default party
+├── maps/          # Tiled JSON maps (kanto/ and random/)
+├── objects/       # Game objects — characters, items, interactable plugins, GameMap
+├── scenes/        # Phaser scenes — maps, misc (Preload, OverworldUI, TimeOverlay)
+├── tileset/       # Spritesheets and tilesets (32×32 px world grid)
+└── utilities/     # EventBus, textbox, tile helpers
+```
 
-## Building a map
-Building up a map needs a few layers:
- - sky: for sky things
- - top: things that should render in front of the character, tops of buildings/trees for eg
- - ground: things that sit on the floor, furnature/buildings/signs/people etc
- - floor: the bottom most layer, the thing the character walks on
+Two sibling packages are required:
+- `../data` (`@spriteworld/pokemon-data`) — Pokédex, moves, natures, stats
+- `../battle-claude` (`@spriteworld/battle`) — battle engine (BattleScene2)
 
-You can add any other layers in between em to build up the world.
+## Building a Map
 
-Each Dynamic Object should have a entry in an Object Layer called `interactions` this will describe positioning and any other relevant data associated.
-There are a few Classes that can be used to build up the interactions layer:
- - playerSpawn: describes where the player should spawn
- - pkmn: overworld pokemon that can be interacted with
- - npc: non playable characters / trainers / etc
- - sign: sign
- - warp: allows the player to warp internal on the maps and to other maps
- - layerTransition: allows the player to move between layers on the map
- - encounters: (NYI) will allow the area to contain wild pokemon
+Maps are Tiled JSON files. Required layers (bottom to top):
 
-Each class has a collection of properties that are associated with it, which can be found in `/src/tileset/objecttypes.json`. Both Phaser and Tiled will read that file.
-These properties will describe things like how the NPC should be facing when it spawns, or what pokemon should be spawned in the overworld.
+| Layer | Purpose |
+|-------|---------|
+| `floor` | Walkable base layer |
+| `ground` | Furniture, buildings, signs |
+| `top` | Renders in front of characters (tree tops, roofs) |
+| `sky` | Background sky layer |
 
-## Collaborating
-This is a for fun project, to better understand the pokemon games, and to try and build one myself.
-Any collaborations are welcome, feel free to submit PRs or join the discord (tZeFkKK3bA)
+Additional layers can be inserted between these as needed.
+
+### Interactions Object Layer
+
+Every dynamic object goes on an object layer named `interactions`. Object type definitions (used by both Phaser and Tiled) are in `src/tileset/objecttypes.json`.
+
+| Type | Description |
+|------|-------------|
+| `playerSpawn` | Player starting position |
+| `npc` | NPC/trainer — facing direction, movement config |
+| `pkmn` | Overworld Pokémon sprite |
+| `sign` | Readable sign — `text` property |
+| `warp` | Teleport to another map or position |
+| `layerTransition` | Move player between render layers |
+| `encounters` | Wild Pokémon zone (rectangle or polygon) |
+| `slidetile` | Ice slide tile |
+| `spintile` | Spin tile |
+| `ledge` | Jumpable ledge |
+| `cuttree` | Requires Cut HM |
+| `strengthboulder` | Requires Strength HM |
+| `item` | Collectible item |
+| `light` | Lighting overlay zone |
+
+See `src/tileset/objecttypes.json` for the full property list for each type.
+
+## Architecture
+
+See [docs/Architecture.md](docs/Architecture.md) for a full breakdown of the two-layer Vue/Phaser system, scene hierarchy, interactable plugin system, and battle integration.
+
+## Events
+
+See [docs/Events.md](docs/Events.md) for all EventBus and game.events signals.

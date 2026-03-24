@@ -4,7 +4,7 @@ import { defaultParty } from '@Data/party.js';
 
 const ENCOUNTER_RATE = 0.1; // 10% chance per tile step
 const WILD_LEVEL_MIN = 3;
-const WILD_LEVEL_MAX = 15;
+const WILD_LEVEL_MAX = 8;
 
 const STAT_KEYS = [
   STATS.HP, STATS.ATTACK, STATS.DEFENSE,

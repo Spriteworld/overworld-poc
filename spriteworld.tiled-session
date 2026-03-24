@@ -5,10 +5,11 @@
     },
     "activeFile": "src/maps/kanto/kanto.json",
     "expandedProjectPaths": [
+        "src/tileset",
+        "src/maps/random",
         "src/maps",
         "src/maps/kanto",
-        "src",
-        "src/maps/random"
+        "src"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -40,14 +41,11 @@
             }
         },
         "src/maps/kanto/kanto.json": {
-            "expandedObjectLayers": [
-                7
-            ],
-            "scale": 1.5,
+            "scale": 1,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 3857,
-                "y": 9228.333333333332
+                "x": 2301.5,
+                "y": 6961.5
             }
         },
         "src/maps/kanto/pallet.json": {
@@ -57,19 +55,19 @@
             "scale": 0.75,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 383.9999999999999,
-                "y": 335.9999999999999
+                "x": 383.33333333333326,
+                "y": 335.33333333333326
             }
         },
         "src/maps/kanto/prof_lab.json": {
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 2.5946875,
+            "scale": 2,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 239.14247862218477,
-                "y": 239.33518005540165
+                "x": 238.75,
+                "y": 239.25
             }
         },
         "src/maps/kanto/route1.json": {
@@ -79,27 +77,27 @@
             "scale": 0.75,
             "selectedLayer": 6,
             "viewCenter": {
-                "x": 415.33333333333326,
-                "y": -920.6666666666665
+                "x": 383.33333333333326,
+                "y": 671.3333333333333
             }
         },
         "src/maps/kanto/route21.json": {
             "scale": 1,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 691,
-                "y": 171
+                "x": 690.5,
+                "y": 170.5
             }
         },
         "src/maps/kanto/route22.json": {
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 1,
+            "scale": 0.75,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 1070,
-                "y": 659
+                "x": 1068.6666666666667,
+                "y": 659.3333333333333
             }
         },
         "src/maps/kanto/test.json": {
@@ -128,7 +126,7 @@
             "scale": 0.75,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 799.3333333333333,
+                "x": 798,
                 "y": 359.33333333333326
             }
         },
@@ -158,16 +156,16 @@
             "scale": 0.75,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 2560,
-                "y": 3327.9999999999995
+                "x": 2722,
+                "y": 2754
             }
         },
         "src/maps/random/bridges.json": {
             "scale": 2,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 320,
-                "y": 320
+                "x": 349.75,
+                "y": 325.75
             }
         },
         "src/maps/random/forest.json": {
@@ -177,8 +175,8 @@
             "scale": 1,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 900,
-                "y": 976
+                "x": 833.5,
+                "y": 928.5
             }
         },
         "src/maps/random/skyland.json": {
@@ -197,10 +195,10 @@
                 5
             ],
             "scale": 1,
-            "selectedLayer": 9,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 625,
-                "y": 801
+                "x": 687.5,
+                "y": 801.5
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -210,19 +208,19 @@
             "expandedObjectLayers": [
                 3
             ],
-            "scale": 1.5,
-            "selectedLayer": 2,
+            "scale": 1,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 787.6666666666665,
-                "y": 753
+                "x": 768.5,
+                "y": 766.5
             }
         },
         "src/maps/random/vermillion_gym.json": {
             "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 176,
-                "y": 320
+                "x": 168.75,
+                "y": 293.75
             }
         },
         "src/tileset/gen3_inside.json": {
@@ -230,7 +228,7 @@
             "scaleInEditor": 2
         },
         "src/tileset/gen3_outside.json": {
-            "scaleInDock": 4,
+            "scaleInDock": 2,
             "scaleInEditor": 1.5
         },
         "src/tileset/rse_inside.json": {
@@ -244,32 +242,33 @@
     "map.height": 32,
     "map.lastUsedFormat": "json",
     "map.width": 32,
+    "mapScene.enableWorlds": true,
     "openFiles": [
         "src/maps/random/turffield_gym.json",
-        "src/maps/random/vermillion_gym.json",
         "src/maps/random/test.json",
-        "src/maps/random/skyland.json",
-        "src/maps/random/forest.json",
-        "src/maps/random/base.json",
-        "src/maps/random/bridges.json",
         "src/maps/kanto/pallet.json",
-        "src/maps/kanto/kanto.json"
+        "src/maps/kanto/route1.json",
+        "src/maps/kanto/kanto.json",
+        "src/maps/kanto/viridian_city.json",
+        "src/maps/kanto/route22.json",
+        "src/maps/kanto/route21.json",
+        "src/maps/kanto/prof_lab.json"
     ],
     "project": "spriteworld.tiled-project",
     "property.type": "bool",
     "recentFiles": [
-        "src/maps/random/turffield_gym.json",
-        "src/maps/random/vermillion_gym.json",
-        "src/maps/random/test.json",
-        "src/maps/random/skyland.json",
-        "src/maps/random/forest.json",
-        "src/maps/random/base.json",
-        "src/maps/random/bridges.json",
-        "src/maps/kanto/pallet.json",
+        "src/maps/kanto/prof_lab.json",
+        "src/maps/kanto/route21.json",
+        "src/maps/kanto/route22.json",
+        "src/maps/kanto/viridian_city.json",
         "src/maps/kanto/kanto.json",
         "src/maps/kanto/route1.json",
-        "src/maps/kanto/viridian_city.json",
-        "src/maps/random/badges.json"
+        "src/maps/kanto/pallet.json",
+        "src/maps/random/test.json",
+        "src/maps/random/turffield_gym.json",
+        "src/tileset/gen3_outside.json",
+        "src/maps/random/vermillion_gym.json",
+        "src/maps/random/bridges.json"
     ],
     "resizeMap.removeObjects": false
 }

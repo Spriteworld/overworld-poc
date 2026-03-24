@@ -8,10 +8,10 @@ export default class extends Phaser.Scene {
   constructor() {
     super({ key: 'Preload' });
     this.loadOverworld = true;
-    this.enableOWTrainers = true;
-    this.enableOWPokemon = true;
+    this.enableOWTrainers = !true;
+    this.enableOWPokemon = !true;
     this.enablePlayerOWPokemon = !true;
-    this.enableAnimations = true;
+    this.enableAnimations = !true;
   }
 
   preload () {

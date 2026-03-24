@@ -38,9 +38,10 @@ export default class extends Phaser.Scene {
     }
     this.textbox.setVisible(false);
 
-    // set pause menu
-    // this.pauseMenu = new PauseMenu(this, 0, 0);
-    // this.pauseMenu.setVisible(false);
+    // full-screen overlay used for encounter transitions
+    this.transitionRect = this.add
+      .rectangle(400, 300, 800, 600, 0xffffff, 0)
+      .setDepth(Number.MAX_SAFE_INTEGER);
 
     this.handleEvents();
   }
@@ -72,14 +73,52 @@ export default class extends Phaser.Scene {
     this.game.events.on('battle-start', (data) => {
       const mapName = this.registry.get('map');
       this.registry.set('player_input', false);
-      this.scene.sleep(mapName);
-      this.scene.launch('BattleScene2', data);
 
-      const battleScene = this.scene.get('BattleScene2');
-      battleScene.events.once('battle-complete', () => {
-        this.scene.stop('BattleScene2');
-        this.scene.wake(mapName);
-        this.registry.set('player_input', true);
+      // 3 white flashes, then hold white and cut to battle
+      this.tweens.add({
+        targets: this.transitionRect,
+        alpha: 1,
+        duration: 80,
+        yoyo: true,
+        repeat: 2,
+        onComplete: () => {
+          this.transitionRect.setAlpha(1);
+          this.scene.sleep(mapName);
+          this.scene.launch('BattleScene2', data);
+          // render OverworldUI (and its overlay) on top of BattleScene2
+          this.scene.bringToTop('OverworldUI');
+
+          // fade the white overlay out to reveal the battle scene
+          this.tweens.add({
+            targets: this.transitionRect,
+            alpha: 0,
+            duration: 300,
+            delay: 100,
+          });
+
+          this.game.events.once('battle-complete', () => {
+            this.time.delayedCall(1, () => {
+              // fade to white, then swap back to overworld
+              this.tweens.add({
+                targets: this.transitionRect,
+                alpha: 1,
+                duration: 250,
+                onComplete: () => {
+                  this.scene.stop('BattleScene2');
+                  this.scene.wake(mapName);
+                  this.tweens.add({
+                    targets: this.transitionRect,
+                    alpha: 0,
+                    duration: 300,
+                    onComplete: () => {
+                      this.registry.set('player_input', true);
+                    },
+                  });
+                },
+              });
+            });
+          });
+        },
       });
     });
   }

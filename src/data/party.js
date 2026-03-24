@@ -16,13 +16,15 @@ export const defaultParty = [
     game:    GAMES.POKEMON_FIRE_RED,
     pid:     1,
     species: 1, // Bulbasaur
-    level:   5,
+    level:   10,
     nature:  NATURES.HARDY.name,
     gender:  GENDERS.MALE,
     ability: { name: 'Overgrow' },
     moves: [
       { name: 'tackle', pp: { max: 35, current: 35 } },
       { name: 'growl',  pp: { max: 40, current: 40 } },
+      { name: 'vine whip',  pp: { max: 10, current: 10 } },
+      { name: 'synthesis',  pp: { max: 15, current: 15 } },
     ],
     ivs: ivMax,
     evs: evZero,
