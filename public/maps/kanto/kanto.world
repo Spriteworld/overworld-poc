@@ -1,0 +1,27 @@
+{
+    "maps": [
+        {
+            "fileName": "pallet.json",
+            "height": 672,
+            "width": 768,
+            "x": 768,
+            "y": 1344
+        },
+        {
+            "fileName": "route1.json",
+            "height": 1344,
+            "width": 768,
+            "x": 768,
+            "y": 0
+        },
+        {
+            "fileName": "viridian_city.json",
+            "height": 1280,
+            "width": 1536,
+            "x": 384,
+            "y": -1280
+        }
+    ],
+    "onlyShowAdjacentMaps": true,
+    "type": "world"
+}

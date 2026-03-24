@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@spriteworld/pokemon-data": "../data",
+    "@spriteworld/battle": "../battle-claude",
     "grid-engine": "^2.48.0",
     "phaser-animated-tiles-phaser3.5": "^2.0.5",
     "phaser-tiled-json-external-loader": "^0.1.1",

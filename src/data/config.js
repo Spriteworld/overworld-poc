@@ -5,6 +5,8 @@ import AnchorPlugin from 'phaser3-rex-plugins/plugins/anchor-plugin.js';
 import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles';
 import Scenes from '@Scenes';
 
+import { BattleScene } from '@spriteworld/battle';
+
 const config = {
   parent: 'game-container',
   type: Phaser.WEBGL,
@@ -30,7 +32,7 @@ const config = {
       { key: 'animatedTiles', plugin: AnimatedTiles, mapping: 'animatedTiles' },
     ]
   },
-  scene: [Scenes.Preload],
+  scene: [Scenes.Preload, BattleScene],
   callbacks: {
     postBoot: (game) => {
       game.canvas.style.width = '100%';

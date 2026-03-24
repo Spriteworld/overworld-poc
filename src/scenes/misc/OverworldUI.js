@@ -68,5 +68,19 @@ export default class extends Phaser.Scene {
       this.textbox.setVisible(true);
       EventBus.emit('player-move-disable');
     });
+
+    this.game.events.on('battle-start', (data) => {
+      const mapName = this.registry.get('map');
+      this.registry.set('player_input', false);
+      this.scene.sleep(mapName);
+      this.scene.launch('BattleScene2', data);
+
+      const battleScene = this.scene.get('BattleScene2');
+      battleScene.events.once('battle-complete', () => {
+        this.scene.stop('BattleScene2');
+        this.scene.wake(mapName);
+        this.registry.set('player_input', true);
+      });
+    });
   }
 }
