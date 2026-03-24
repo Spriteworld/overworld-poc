@@ -40,7 +40,8 @@ export default class extends Phaser.Scene {
 
     // full-screen overlay used for encounter transitions
     this.transitionRect = this.add
-      .rectangle(400, 300, 800, 600, 0xffffff, 0)
+      .rectangle(400, 300, 800, 600, 0xffffff)
+      .setAlpha(0)
       .setDepth(Number.MAX_SAFE_INTEGER);
 
     this.handleEvents();
@@ -85,15 +86,18 @@ export default class extends Phaser.Scene {
           this.transitionRect.setAlpha(1);
           this.scene.sleep(mapName);
           this.scene.launch('BattleScene2', data);
-          // render OverworldUI (and its overlay) on top of BattleScene2
-          this.scene.bringToTop('OverworldUI');
 
-          // fade the white overlay out to reveal the battle scene
-          this.tweens.add({
-            targets: this.transitionRect,
-            alpha: 0,
-            duration: 300,
-            delay: 100,
+          // launch() defers the start to the next frame, where BattleScene2
+          // lands on top of the stack. Wait for it to start before bringing
+          // OverworldUI (and its white overlay) back on top, then fade out.
+          this.scene.get('BattleScene2').events.once('start', () => {
+            this.scene.bringToTop('OverworldUI');
+            this.tweens.add({
+              targets: this.transitionRect,
+              alpha: 0,
+              duration: 300,
+              delay: 100,
+            });
           });
 
           this.game.events.once('battle-complete', () => {
