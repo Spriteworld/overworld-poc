@@ -16,6 +16,8 @@ let ObjectTypes = ObjectTypesImport.default;
 
 import Flock from './misc/Flock.js';
 import PauseMenu from './PauseMenu.js';
+import TypeBadge, { TYPE_COLORS } from './TypeBadge.js';
+import PokemonSprite from './PokemonSprite.js';
 
 export {
   Tile, Direction,
@@ -33,4 +35,7 @@ export {
 
   Flock,
   PauseMenu,
+  TypeBadge,
+  TYPE_COLORS,
+  PokemonSprite,
 };

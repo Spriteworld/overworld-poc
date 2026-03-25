@@ -137,12 +137,10 @@ export default class extends Phaser.Scene {
     this.input.keyboard.on('keydown', (event) => {
       if (this.pauseMenu.visible) {
         switch (event.code) {
-          case 'ArrowUp':
-            this.pauseMenu.moveUp();
-            break;
-          case 'ArrowDown':
-            this.pauseMenu.moveDown();
-            break;
+          case 'ArrowUp':    this.pauseMenu.moveUp();    break;
+          case 'ArrowDown':  this.pauseMenu.moveDown();  break;
+          case 'ArrowLeft':  this.pauseMenu.moveLeft();  break;
+          case 'ArrowRight': this.pauseMenu.moveRight(); break;
           case 'KeyZ':
           case 'Enter':
             if (!event.repeat) this._handleMenuConfirm();
@@ -166,6 +164,7 @@ export default class extends Phaser.Scene {
 
   _handleMenuConfirm() {
     const option = this.pauseMenu.confirm();
+    if (!option) return; // handled internally (e.g. team screen)
     switch (option) {
       case 'pokedex':
       case 'option':

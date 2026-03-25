@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { gameState, getPlaytime } from '@Data/gameState.js';
-import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
+import { Pokedex, GAMES, BasePokemon } from '@spriteworld/pokemon-data';
+import TypeBadge from './TypeBadge.js';
+import PokemonSprite from './PokemonSprite.js';
 
 // ─── Layout ────────────────────────────────────────────────────────────────
 const DEPTH  = Number.MAX_SAFE_INTEGER - 100;
@@ -18,10 +20,29 @@ const SY = 80;
 const SW = 590;
 const SH = 440;
 
+// Team screen layout
+const TEAM_PAD_X   = 16;  // inner left padding of sub-panel
+const TEAM_START_Y = 42;  // y offset from SY for slot area
+
+// Hero slot (active mon, left side)
+const HERO_W        = 210;
+const HERO_H        = 180;
+const HERO_SPRITE   = 80;  // sprite display size
+const HERO_TEXT_X   = 8 + HERO_SPRITE + 10; // x offset from slot left for text
+const HERO_TEXT_W   = HERO_W - HERO_TEXT_X - 8;
+
+// Bench slots (mons 1-5, right column)
+const BENCH_X_OFF = TEAM_PAD_X + HERO_W + 10; // right column x offset from SX
+const BENCH_W     = 330;
+const BENCH_H     = 64;
+const BENCH_GAP   = 8;
+
+
 const TEXT_STYLE      = { fontFamily: 'monospace', fontSize: '14px', color: '#181818' };
 const TEXT_STYLE_BOLD = { fontFamily: 'monospace', fontSize: '14px', color: '#181818', fontStyle: 'bold' };
 const TEXT_STYLE_BODY = { fontFamily: 'monospace', fontSize: '13px', color: '#181818' };
 const TEXT_STYLE_HINT = { fontFamily: 'monospace', fontSize: '12px', color: '#888888' };
+const TEXT_STYLE_SM   = { fontFamily: 'monospace', fontSize: '11px', color: '#181818' };
 
 /**
  * Classic Pokemon-style pause menu displayed in OverworldUI.
@@ -46,8 +67,12 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       gameState.playerName.toUpperCase(),
       'OPTION',
       'SAVE',
-      '× CLOSE',
+      'CLOSE',
     ];
+
+    // Team screen interaction state
+    this._teamCursor   = 0;    // 0 = hero slot, 1-5 = bench slots
+    this._teamSelected = null; // index of slot being moved, or null
 
     // Lazily built Pokedex instance
     this._dex = null;
@@ -150,19 +175,34 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
   }
 
   moveUp() {
+    if (this._currentScreen === 'team') { this._teamNav('up');   return; }
     if (this._currentScreen !== null) return;
     this._selectedIndex = (this._selectedIndex - 1 + this._menuKeys.length) % this._menuKeys.length;
     this._updateCursor();
   }
 
   moveDown() {
+    if (this._currentScreen === 'team') { this._teamNav('down'); return; }
     if (this._currentScreen !== null) return;
     this._selectedIndex = (this._selectedIndex + 1) % this._menuKeys.length;
     this._updateCursor();
   }
 
-  /** @return {string} key of the currently highlighted option */
+  moveLeft() {
+    if (this._currentScreen === 'team') this._teamNav('left');
+  }
+
+  moveRight() {
+    if (this._currentScreen === 'team') this._teamNav('right');
+  }
+
+  /**
+   * When on the team screen, handles pick-up/drop internally and returns null.
+   * Otherwise returns the key of the highlighted main-menu option.
+   * @return {string|null}
+   */
   confirm() {
+    if (this._currentScreen === 'team') { this._teamConfirm(); return null; }
     return this._menuKeys[this._selectedIndex];
   }
 
@@ -171,6 +211,12 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
    * @return {boolean} true if the whole menu was closed
    */
   back() {
+    if (this._currentScreen === 'team' && this._teamSelected !== null) {
+      // Cancel pick-up
+      this._teamSelected = null;
+      this._rebuildTeamScreen();
+      return false;
+    }
     if (this._currentScreen !== null) {
       this._currentScreen = null;
       this._showMainPanel();
@@ -182,17 +228,18 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
 
   showSubScreen(type) {
     this._currentScreen = type;
+    if (type === 'team') {
+      this._teamCursor   = 0;
+      this._teamSelected = null;
+    }
     this._showSubPanel();
     this._clearSubTexts();
 
-    const lines = this._getLines(type);
-
-    lines.forEach((line, i) => {
-      const style = i === 0 ? TEXT_STYLE_BOLD : TEXT_STYLE_BODY;
-      const t = this.scene.add.text(SX + 16, SY + 16 + i * 22, line, style);
-      this.add(t);
-      this._subTexts.push(t);
-    });
+    if (type === 'team') {
+      this._buildTeamScreen();
+    } else {
+      this._buildTextScreen(type);
+    }
 
     // Back hint at bottom
     const hint = this.scene.add.text(SX + 16, SY + SH - 22, 'X  back', TEXT_STYLE_HINT);
@@ -200,37 +247,283 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     this._subTexts.push(hint);
   }
 
-  // ─── Sub-screen content ──────────────────────────────────────────────────
+  // ─── Team navigation & interaction ───────────────────────────────────────
 
-  _getLines(type) {
-    switch (type) {
-      case 'team':   return this._teamLines();
-      case 'bag':    return this._bagLines();
-      case 'user':   return this._userLines();
-      default:       return [type.toUpperCase(), '', 'Not yet implemented.'];
+  _teamNav(dir) {
+    const c = this._teamCursor;
+    if (dir === 'up')    this._teamCursor = c === 0 ? 0 : c === 1 ? 0 : c - 1;
+    if (dir === 'down')  this._teamCursor = c === 0 ? 1 : Math.min(5, c + 1);
+    if (dir === 'left')  this._teamCursor = c > 0 ? 0 : c;
+    if (dir === 'right') this._teamCursor = c === 0 ? 1 : c;
+    this._rebuildTeamScreen();
+  }
+
+  _teamConfirm() {
+    const slot = this._teamCursor;
+    if (this._teamSelected === null) {
+      // Pick up — only occupied slots
+      if (gameState.party[slot]) {
+        this._teamSelected = slot;
+        this._rebuildTeamScreen();
+      }
+    } else {
+      // Drop — only swap with occupied slots
+      if (this._teamSelected !== slot && gameState.party[slot]) {
+        const a = gameState.party[this._teamSelected] ?? null;
+        const b = gameState.party[slot] ?? null;
+        // Mutate in place to keep the same array reference
+        gameState.party[this._teamSelected] = b;
+        gameState.party[slot] = a;
+        // Remove trailing undefineds so party stays compact
+        while (gameState.party.length && !gameState.party[gameState.party.length - 1]) {
+          gameState.party.pop();
+        }
+      }
+      this._teamSelected = null;
+      this._rebuildTeamScreen();
     }
   }
 
-  _teamLines() {
+  _rebuildTeamScreen() {
+    this._clearSubTexts();
+    this._buildTeamScreen();
+    const hint = this.scene.add.text(SX + 16, SY + SH - 22, 'X  back / cancel', TEXT_STYLE_HINT);
+    this.add(hint);
+    this._subTexts.push(hint);
+  }
+
+  // ─── Team sub-screen ─────────────────────────────────────────────────────
+
+  _buildTeamScreen() {
     if (!this._dex) {
       this._dex = new Pokedex(GAMES.POKEMON_FIRE_RED);
     }
 
-    const lines = ['POKÉMON', ''];
-    if (gameState.party.length === 0) {
-      lines.push('No Pokémon in party.');
-    } else {
-      gameState.party.forEach((p, i) => {
-        let name;
-        try {
-          name = this._dex.getPokemonById(p.species).species.toUpperCase();
-        } catch {
-          name = `#${p.species}`;
-        }
-        lines.push(`${i + 1}.  ${name.padEnd(12)}  Lv.${p.level}`);
-      });
+    // Title
+    const title = this.scene.add.text(SX + TEAM_PAD_X, SY + 14, 'POKÉMON', TEXT_STYLE_BOLD);
+    this.add(title);
+    this._subTexts.push(title);
+
+    const heroX = SX + TEAM_PAD_X;
+    const heroY = SY + TEAM_START_Y;
+
+    for (let i = 0; i < 6; i++) {
+      const state = this._slotState(i);
+      const mon   = gameState.party[i] ?? null;
+
+      if (i === 0) {
+        const x = heroX, y = heroY;
+        mon ? this._buildHeroSlot(x, y, mon, state)
+            : this._buildEmptySlot(x, y, HERO_W, HERO_H, state);
+      } else {
+        const x = SX + BENCH_X_OFF;
+        const y = heroY + (i - 1) * (BENCH_H + BENCH_GAP);
+        mon ? this._buildBenchSlot(x, y, mon, state)
+            : this._buildEmptySlot(x, y, BENCH_W, BENCH_H, state);
+      }
     }
-    return lines;
+  }
+
+  /** Returns 'selected' | 'cursor' | 'target' | 'normal' for a given slot index. */
+  _slotState(i) {
+    if (i === this._teamSelected) return 'selected';
+    if (i === this._teamCursor) return this._teamSelected !== null ? 'target' : 'cursor';
+    return 'normal';
+  }
+
+  /** Returns { bg, border, lineWidth } for a slot state. */
+  _slotColors(state) {
+    switch (state) {
+      case 'selected': return { bg: 0xfff5cc, border: 0xffcc00, lw: 3 };
+      case 'cursor':   return { bg: 0xdce8f0, border: 0x3399ff, lw: 3 };
+      case 'target':   return { bg: 0xd4f0d4, border: 0x44aa44, lw: 3 };
+      default:         return { bg: 0xdce8f0, border: 0x181818, lw: 2 };
+    }
+  }
+
+  /** Left-column slot for the active (first) Pokémon. */
+  _buildHeroSlot(x, y, mon, state = 'normal') {
+    const { entry, maxHp, types } = this._resolveMonData(mon);
+    const currentHp  = mon.currentHp ?? maxHp;
+    const hpRatio    = Math.max(0, currentHp / maxHp);
+    const speciesName = entry ? entry.species.toUpperCase() : `#${mon.species}`;
+    const gender      = mon.gender === 'male' ? ' ♂' : mon.gender === 'female' ? ' ♀' : '';
+
+    const tx = x + HERO_TEXT_X; // text column x
+
+    // Background
+    const { bg, border, lw } = this._slotColors(state);
+    const g = this.scene.add.graphics();
+    g.fillStyle(bg, 1);
+    g.fillRoundedRect(x, y, HERO_W, HERO_H, 8);
+    g.lineStyle(lw, border, 1);
+    g.strokeRoundedRect(x, y, HERO_W, HERO_H, 8);
+    this.add(g);
+    this._subTexts.push(g);
+
+    // Sprite — top-left
+    const heroSprite = new PokemonSprite(this.scene, x + 8, y + 8, {
+      species: mon.species,
+      shiny:   mon.shiny ?? false,
+      gender:  mon.gender,
+      forme:   mon.forme ?? null,
+      size:    HERO_SPRITE,
+    });
+    this.add(heroSprite);
+    this._subTexts.push(heroSprite);
+
+    // Name
+    const nameText = this.scene.add.text(tx, y + 10, speciesName + gender, TEXT_STYLE_BOLD);
+    this.add(nameText);
+    this._subTexts.push(nameText);
+
+    // Level
+    const lvText = this.scene.add.text(x + HERO_W - 8, y + 10, `Lv.${mon.level}`, { ...TEXT_STYLE_SM, align: 'right' });
+    lvText.setOrigin(1, 0);
+    this.add(lvText);
+    this._subTexts.push(lvText);
+
+    // Type badges
+    this._drawTypeBadges(tx, y + 30, types);
+
+    // Nature / ability
+    const natText = this.scene.add.text(tx, y + 56, `${mon.nature ?? ''}`, TEXT_STYLE_SM);
+    this.add(natText);
+    this._subTexts.push(natText);
+
+    if (mon.ability?.name) {
+      const abilText = this.scene.add.text(tx, y + 70, mon.ability.name, TEXT_STYLE_SM);
+      this.add(abilText);
+      this._subTexts.push(abilText);
+    }
+
+    // HP row — full width, below sprite
+    this._drawHpRow(x + 8, y + 96, HERO_W - 16, currentHp, maxHp, hpRatio);
+  }
+
+  /** Compact right-column slot for bench Pokémon. */
+  _buildBenchSlot(x, y, mon, state = 'normal') {
+    const BENCH_SPRITE_SIZE = 48;
+    const TEXT_X = x + BENCH_SPRITE_SIZE + 12;
+    const TEXT_W = BENCH_W - BENCH_SPRITE_SIZE - 20;
+
+    const { entry, maxHp } = this._resolveMonData(mon);
+    const currentHp  = mon.currentHp ?? maxHp;
+    const hpRatio    = Math.max(0, currentHp / maxHp);
+    const speciesName = entry ? entry.species.toUpperCase() : `#${mon.species}`;
+    const gender      = mon.gender === 'male' ? ' ♂' : mon.gender === 'female' ? ' ♀' : '';
+
+    const { bg, border, lw } = this._slotColors(state);
+    const g = this.scene.add.graphics();
+    g.fillStyle(bg, 1);
+    g.fillRoundedRect(x, y, BENCH_W, BENCH_H, 6);
+    g.lineStyle(lw, border, 1);
+    g.strokeRoundedRect(x, y, BENCH_W, BENCH_H, 6);
+    this.add(g);
+    this._subTexts.push(g);
+
+    // Sprite on the left
+    const benchSprite = new PokemonSprite(this.scene, x + 8, y + Math.floor((BENCH_H - BENCH_SPRITE_SIZE) / 2), {
+      species: mon.species,
+      shiny:   mon.shiny ?? false,
+      gender:  mon.gender,
+      forme:   mon.forme ?? null,
+      size:    BENCH_SPRITE_SIZE,
+    });
+    this.add(benchSprite);
+    this._subTexts.push(benchSprite);
+
+    // Name + level to the right of the sprite
+    const nameText = this.scene.add.text(TEXT_X, y + 8, speciesName + gender, TEXT_STYLE_BOLD);
+    this.add(nameText);
+    this._subTexts.push(nameText);
+
+    const lvText = this.scene.add.text(x + BENCH_W - 8, y + 8, `Lv.${mon.level}`, { ...TEXT_STYLE_SM, align: 'right' });
+    lvText.setOrigin(1, 0);
+    this.add(lvText);
+    this._subTexts.push(lvText);
+
+    this._drawHpRow(TEXT_X, y + 32, TEXT_W, currentHp, maxHp, hpRatio);
+  }
+
+  _buildEmptySlot(x, y, w, h, state = 'normal') {
+    const isCursor = state === 'cursor' || state === 'target';
+    const g = this.scene.add.graphics();
+    g.lineStyle(isCursor ? 3 : 2, isCursor ? 0x3399ff : 0xcccccc, 1);
+    g.strokeRoundedRect(x, y, w, h, 6);
+    this.add(g);
+    this._subTexts.push(g);
+
+    const t = this.scene.add.text(x + w / 2, y + h / 2, '---', { ...TEXT_STYLE_HINT, align: 'center' });
+    t.setOrigin(0.5, 0.5);
+    this.add(t);
+    this._subTexts.push(t);
+  }
+
+  /** Shared HP bar row: "HP" label, track, "cur/max". */
+  _drawHpRow(x, y, width, currentHp, maxHp, hpRatio) {
+    const labelW = 20;
+    const hpColor = hpRatio > 0.5 ? 0x48c050 : hpRatio > 0.25 ? 0xf0c040 : 0xe04040;
+
+    const hpLabel = this.scene.add.text(x, y, 'HP', { ...TEXT_STYLE_SM, color: '#444444' });
+    this.add(hpLabel);
+    this._subTexts.push(hpLabel);
+
+    const barX = x + labelW + 2, barW = width - labelW - 2 - 52;
+    const track = this.scene.add.graphics();
+    track.fillStyle(0xaaaaaa, 1);
+    track.fillRoundedRect(barX, y + 3, barW, 8, 3);
+    track.fillStyle(hpColor, 1);
+    track.fillRoundedRect(barX, y + 3, Math.max(2, barW * hpRatio), 8, 3);
+    this.add(track);
+    this._subTexts.push(track);
+
+    const hpNums = this.scene.add.text(x + width, y, `${currentHp}/${maxHp}`, { ...TEXT_STYLE_SM, align: 'right' });
+    hpNums.setOrigin(1, 0);
+    this.add(hpNums);
+    this._subTexts.push(hpNums);
+  }
+
+  /** Shared type badge renderer. */
+  _drawTypeBadges(x, y, types) {
+    (types ?? []).slice(0, 2).forEach((type, ti) => {
+      const badge = new TypeBadge(this.scene, x + ti * (TypeBadge.WIDTH + 4), y, type);
+      this.add(badge);
+      this._subTexts.push(badge);
+    });
+  }
+
+  /** Resolve species entry + maxHp from a party mon object. */
+  _resolveMonData(mon) {
+    try {
+      const entry = this._dex.getPokemonById(mon.species);
+      const bp    = new BasePokemon({ ...mon });
+      return { entry, maxHp: bp.getMaxHp(), types: entry.types ?? [] };
+    } catch {
+      return { entry: null, maxHp: mon.level * 3 + 10, types: [] };
+    }
+  }
+
+  // ─── Generic text sub-screen ─────────────────────────────────────────────
+
+  _buildTextScreen(type) {
+    const lines = this._getLines(type);
+    lines.forEach((line, i) => {
+      const style = i === 0 ? TEXT_STYLE_BOLD : TEXT_STYLE_BODY;
+      const t = this.scene.add.text(SX + 16, SY + 16 + i * 22, line, style);
+      this.add(t);
+      this._subTexts.push(t);
+    });
+  }
+
+  // ─── Sub-screen content ──────────────────────────────────────────────────
+
+  _getLines(type) {
+    switch (type) {
+      case 'bag':    return this._bagLines();
+      case 'user':   return this._userLines();
+      default:       return [type.toUpperCase(), '', 'Not yet implemented.'];
+    }
   }
 
   _bagLines() {
