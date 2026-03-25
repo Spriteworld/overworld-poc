@@ -36,7 +36,7 @@ Two event channels are used in this project:
 
 | Event | Pattern | Description |
 |-------|---------|-------------|
-| Menu selection | `{menu-name}-select-option-{idx}` | Fired when a menu option is selected. |
+| Menu selection | `{menu-name}-select-option-{idx}` | Fired when a menu option is confirmed. |
 
 ## game.events (Cross-Scene)
 
@@ -46,8 +46,6 @@ These are emitted on `this.game.events` / `scene.game.events` so all running sce
 |-------|---------|----------|-------------|
 | `battle-start` | `encounter.js` | `OverworldUI` | Trigger a wild encounter. Payload: full battle data object (see Architecture.md). |
 | `battle-complete` | `BattleScene2` state machine | `OverworldUI` | Battle ended. Payload: `{ result: 'won' \| 'lost' \| 'run' }`. |
-| `textbox-changedata` | any | `OverworldUI` | Show textbox. |
-| `textbox-disable` | `OverworldUI` | any | Hide textbox. |
 
 ### battle-start payload
 
@@ -56,7 +54,7 @@ These are emitted on `this.game.events` / `scene.game.events` so all running sce
   field:  { weather: string | null, terrain: string },
   player: {
     name: string,
-    team: PokemonConfig[],
+    team: PokemonConfig[],          // deep-cloned from store.state.party.list
     inventory: { items: [], pokeballs: [], tms: [] },
   },
   enemy: {
@@ -67,6 +65,8 @@ These are emitted on `this.game.events` / `scene.game.events` so all running sce
 }
 ```
 
+The player team is a deep clone of the current party — changes inside the battle do not affect the store until `battle-complete` fires and `OverworldUI` commits `party/SYNC_AFTER_BATTLE`.
+
 ### battle-complete payload
 
 ```js
@@ -74,3 +74,5 @@ These are emitted on `this.game.events` / `scene.game.events` so all running sce
 ```
 
 Emitted by `BattleWon`, `BattleLost`, and `BattleEnd` states inside `@spriteworld/battle`.
+
+On receipt, `OverworldUI` reads `BattleScene2.config.player.team.pokemon` directly from the live scene to obtain updated HP and PP, then commits `party/SYNC_AFTER_BATTLE` before starting the fade-out transition.

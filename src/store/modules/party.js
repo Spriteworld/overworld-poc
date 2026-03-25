@@ -20,5 +20,27 @@ export default {
     LOAD(state, saved) {
       if (Array.isArray(saved.party)) state.list = saved.party;
     },
+
+    SWAP(state, { a, b }) {
+      const tmp = state.list[a];
+      state.list[a] = state.list[b];
+      state.list[b] = tmp;
+      // Remove trailing nulls/undefineds
+      while (state.list.length && !state.list[state.list.length - 1]) {
+        state.list.pop();
+      }
+    },
+
+    SYNC_AFTER_BATTLE(state, team) {
+      // team: [{ pid, currentHp, moves: [{ name, pp: { max, current } }] }]
+      team.forEach(snapshot => {
+        const entry = state.list.find(p => p.pid === snapshot.pid);
+        if (!entry) return;
+        entry.currentHp = snapshot.currentHp;
+        snapshot.moves.forEach((mSnap, i) => {
+          if (entry.moves[i]) entry.moves[i].pp.current = mSnap.pp.current;
+        });
+      });
+    },
   },
 };

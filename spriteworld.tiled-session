@@ -56,7 +56,7 @@
             "selectedLayer": 1,
             "viewCenter": {
                 "x": 383.33333333333326,
-                "y": 335.33333333333326
+                "y": -279.33333333333326
             }
         },
         "src/maps/kanto/prof_lab.json": {
@@ -195,10 +195,10 @@
                 5
             ],
             "scale": 1,
-            "selectedLayer": 4,
+            "selectedLayer": 9,
             "viewCenter": {
-                "x": 687.5,
-                "y": 801.5
+                "x": 618.5,
+                "y": 702.5
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -236,7 +236,8 @@
         }
     },
     "loadedWorlds": [
-        "//dev/www/linky/spriteworld.dev.xlink.cybershade.org/character/src/maps/kanto/kanto.world"
+        "//dev/www/linky/spriteworld.dev.xlink.cybershade.org/character/src/maps/kanto/kanto.world",
+        "//dev/www/linky/spriteworld.dev.xlink.cybershade.org/character-claude/src/maps/kanto/kanto.world"
     ],
     "map.fixedSize": true,
     "map.height": 32,

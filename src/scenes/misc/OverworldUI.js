@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { textBox, toast, EventBus } from '@Utilities';
 import { PauseMenu } from '@Objects';
 import { gameState, saveGame } from '@Data/gameState.js';
+import store from '../../store/index.js';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -108,6 +109,16 @@ export default class extends Phaser.Scene {
           });
 
           this.game.events.once('battle-complete', () => {
+            const battleScene = this.scene.get('BattleScene2');
+            const pokemon = battleScene?.config?.player?.team?.pokemon;
+            if (pokemon) {
+              const team = pokemon.map(p => ({
+                pid:      p.pid,
+                currentHp: p.currentHp,
+                moves:    p.moves.map(m => ({ name: m.name, pp: { max: m.pp.max, current: m.pp.current } })),
+              }));
+              store.commit('party/SYNC_AFTER_BATTLE', team);
+            }
             this.time.delayedCall(1, () => {
               // fade to white, then swap back to overworld
               this.tweens.add({
