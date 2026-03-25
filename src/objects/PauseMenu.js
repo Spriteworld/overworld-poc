@@ -14,11 +14,18 @@ const MW = 170; // width
 const ITEM_H = 28;
 const PAD = 12;
 
-// Sub-screen panel (fills most of canvas)
-const SX = 10;
-const SY = 80;
-const SW = 590;
-const SH = 440;
+// Sub-screen panel (full canvas)
+const SX = 0;
+const SY = 0;
+const SW = 800;
+const SH = 600;
+
+// Pokédex screen layout
+const DEX_LIST_W   = 200;  // width of left list pane
+const DEX_ITEM_H   = 20;   // height of each list row
+const DEX_VISIBLE  = 25;   // max visible list rows
+const DEX_DETAIL_X = SX + DEX_LIST_W + 28;  // right panel x
+const DEX_DETAIL_W = SW - DEX_LIST_W - 44;  // right panel width
 
 // Team screen layout
 const TEAM_PAD_X   = 16;  // inner left padding of sub-panel
@@ -73,6 +80,11 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     // Team screen interaction state
     this._teamCursor   = 0;    // 0 = hero slot, 1-5 = bench slots
     this._teamSelected = null; // index of slot being moved, or null
+
+    // Pokédex screen state
+    this._dexCursor  = 1;   // nat_dex_id of selected entry (1-based)
+    this._dexScroll  = 0;   // index of first visible list row (0-based)
+    this._dexEntries = null; // sorted array of all pokedex entries, built once
 
     // Lazily built Pokedex instance
     this._dex = null;
@@ -175,14 +187,16 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
   }
 
   moveUp() {
-    if (this._currentScreen === 'team') { this._teamNav('up');   return; }
+    if (this._currentScreen === 'team')    { this._teamNav('up'); return; }
+    if (this._currentScreen === 'pokedex') { this._dexNav(-1);    return; }
     if (this._currentScreen !== null) return;
     this._selectedIndex = (this._selectedIndex - 1 + this._menuKeys.length) % this._menuKeys.length;
     this._updateCursor();
   }
 
   moveDown() {
-    if (this._currentScreen === 'team') { this._teamNav('down'); return; }
+    if (this._currentScreen === 'team')    { this._teamNav('down'); return; }
+    if (this._currentScreen === 'pokedex') { this._dexNav(1);       return; }
     if (this._currentScreen !== null) return;
     this._selectedIndex = (this._selectedIndex + 1) % this._menuKeys.length;
     this._updateCursor();
@@ -202,7 +216,8 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
    * @return {string|null}
    */
   confirm() {
-    if (this._currentScreen === 'team') { this._teamConfirm(); return null; }
+    if (this._currentScreen === 'team')    { this._teamConfirm(); return null; }
+    if (this._currentScreen !== null)      return null; // sub-screens handle Enter internally
     return this._menuKeys[this._selectedIndex];
   }
 
@@ -232,19 +247,27 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       this._teamCursor   = 0;
       this._teamSelected = null;
     }
+    if (type === 'pokedex') {
+      this._dexCursor = 1;
+      this._dexScroll = 0;
+    }
     this._showSubPanel();
     this._clearSubTexts();
 
     if (type === 'team') {
       this._buildTeamScreen();
+    } else if (type === 'pokedex') {
+      this._buildPokedexScreen();
     } else {
       this._buildTextScreen(type);
     }
 
-    // Back hint at bottom
-    const hint = this.scene.add.text(SX + 16, SY + SH - 22, 'X  back', TEXT_STYLE_HINT);
-    this.add(hint);
-    this._subTexts.push(hint);
+    // Back hint at bottom (team screen rebuilds its own hint)
+    if (type !== 'team' && type !== 'pokedex') {
+      const hint = this.scene.add.text(SX + 16, SY + SH - 22, 'X  back', TEXT_STYLE_HINT);
+      this.add(hint);
+      this._subTexts.push(hint);
+    }
   }
 
   // ─── Team navigation & interaction ───────────────────────────────────────
@@ -502,6 +525,238 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     } catch {
       return { entry: null, maxHp: mon.level * 3 + 10, types: [] };
     }
+  }
+
+  // ─── Pokédex navigation & build ──────────────────────────────────────────
+
+  _dexNav(dir) {
+    if (!this._dexEntries) return;
+    const total = this._dexEntries.length;
+    this._dexCursor = Math.max(1, Math.min(total, this._dexCursor + dir));
+    // Keep cursor inside the visible scroll window
+    const idx = this._dexCursor - 1;
+    if (idx < this._dexScroll) this._dexScroll = idx;
+    if (idx >= this._dexScroll + DEX_VISIBLE) this._dexScroll = idx - DEX_VISIBLE + 1;
+    this._rebuildDexScreen();
+  }
+
+  _rebuildDexScreen() {
+    this._clearSubTexts();
+    this._buildPokedexScreen();
+    const hint = this.scene.add.text(SX + 16, SY + SH - 22, 'X  back', TEXT_STYLE_HINT);
+    this.add(hint);
+    this._subTexts.push(hint);
+  }
+
+  _buildPokedexScreen() {
+    if (!this._dex) this._dex = new Pokedex(GAMES.POKEMON_FIRE_RED);
+    if (!this._dexEntries) {
+      this._dexEntries = Object.values(this._dex.pokedex)
+        .sort((a, b) => a.nat_dex_id - b.nat_dex_id);
+    }
+
+    // Title
+    const title = this.scene.add.text(SX + 16, SY + 14, 'POKÉDEX', TEXT_STYLE_BOLD);
+    this.add(title);
+    this._subTexts.push(title);
+
+    // ── Left list pane ───────────────────────────────────────────────────
+    const listX = SX + 16;
+    const listY = SY + 40;
+
+    // Vertical divider between list and detail
+    const divider = this.scene.add.graphics();
+    divider.lineStyle(1, 0xcccccc, 1);
+    divider.lineBetween(SX + DEX_LIST_W + 16, SY + 36, SX + DEX_LIST_W + 16, SY + SH - 30);
+    this.add(divider);
+    this._subTexts.push(divider);
+
+    const visibleEntries = this._dexEntries.slice(this._dexScroll, this._dexScroll + DEX_VISIBLE);
+    visibleEntries.forEach((entry, i) => {
+      const rowY    = listY + i * DEX_ITEM_H;
+      const dexId   = entry.nat_dex_id;
+      const isSelected = dexId === this._dexCursor;
+      const seen    = gameState.pokedex[dexId];
+      const caught  = seen?.caught;
+
+      if (isSelected) {
+        const sel = this.scene.add.graphics();
+        sel.fillStyle(0x3399ff, 1);
+        sel.fillRect(listX - 4, rowY - 1, DEX_LIST_W - 4, DEX_ITEM_H);
+        this.add(sel);
+        this._subTexts.push(sel);
+      }
+
+      const numStr  = `#${String(dexId).padStart(3, '0')}`;
+      const nameStr = seen ? entry.species.toUpperCase() : '???';
+      const color   = isSelected ? '#ffffff' : seen ? '#181818' : '#888888';
+      const style   = { fontFamily: 'monospace', fontSize: '12px', color };
+
+      const numT  = this.scene.add.text(listX, rowY + 2, numStr, style);
+      const nameT = this.scene.add.text(listX + 38, rowY + 2, nameStr, style);
+      this.add(numT);
+      this.add(nameT);
+      this._subTexts.push(numT, nameT);
+
+      if (caught) {
+        const ball = this._drawMiniBall(listX + 38 + nameT.width + 8, rowY + DEX_ITEM_H / 2, 5);
+        this.add(ball);
+        this._subTexts.push(ball);
+      }
+    });
+
+    // Scroll indicators
+    if (this._dexScroll > 0) {
+      const up = this.scene.add.text(listX + DEX_LIST_W / 2, listY - 14, '▲', TEXT_STYLE_HINT);
+      up.setOrigin(0.5, 0);
+      this.add(up);
+      this._subTexts.push(up);
+    }
+    if (this._dexScroll + DEX_VISIBLE < this._dexEntries.length) {
+      const dn = this.scene.add.text(listX + DEX_LIST_W / 2, listY + DEX_VISIBLE * DEX_ITEM_H + 2, '▼', TEXT_STYLE_HINT);
+      dn.setOrigin(0.5, 0);
+      this.add(dn);
+      this._subTexts.push(dn);
+    }
+
+    // ── Right detail pane ────────────────────────────────────────────────
+    const entry = this._dexEntries[this._dexCursor - 1];
+    if (entry) this._buildDexDetail(entry);
+  }
+
+  _buildDexDetail(entry) {
+    const dx     = DEX_DETAIL_X;
+    const dy     = SY + 36;
+    const record = gameState.pokedex[entry.nat_dex_id];
+    const seen   = !!record?.seen;
+    const caught = !!record?.caught;
+
+    // Dex number
+    const numStr = `#${String(entry.nat_dex_id).padStart(3, '0')}`;
+    const numT = this.scene.add.text(dx, dy, numStr, TEXT_STYLE_HINT);
+    this.add(numT);
+    this._subTexts.push(numT);
+
+    // Species name — revealed once seen
+    const nameStr = seen ? entry.species.toUpperCase() : '???';
+    const nameT = this.scene.add.text(dx + 44, dy, nameStr, TEXT_STYLE_BOLD);
+    this.add(nameT);
+    this._subTexts.push(nameT);
+
+    // Sprite — only shown when caught; grey silhouette when only seen
+    const spriteSize = 80;
+    if (caught) {
+      const sprite = new PokemonSprite(this.scene, dx, dy + 22, {
+        species: entry.nat_dex_id,
+        size: spriteSize,
+      });
+      this.add(sprite);
+      this._subTexts.push(sprite);
+    } else {
+      const unk = this.scene.add.graphics();
+      unk.fillStyle(0xcccccc, 1);
+      unk.fillRect(dx, dy + 22, spriteSize, spriteSize);
+      const q = this.scene.add.text(
+        dx + spriteSize / 2, dy + 22 + spriteSize / 2,
+        seen ? '!' : '?',
+        { fontFamily: 'monospace', fontSize: '32px', color: '#888888' }
+      );
+      q.setOrigin(0.5, 0.5);
+      this.add(unk);
+      this.add(q);
+      this._subTexts.push(unk, q);
+    }
+
+    // Types, height/weight — only when caught
+    const infoX = dx + spriteSize + 10;
+    if (caught && entry.types?.length) {
+      this._drawTypeBadges(infoX, dy + 28, entry.types);
+      const hw = this.scene.add.text(infoX, dy + 52,
+        `HT  ${entry.height.toFixed(1)} m\nWT  ${entry.weight.toFixed(1)} kg`,
+        { ...TEXT_STYLE_SM, lineSpacing: 6 }
+      );
+      this.add(hw);
+      this._subTexts.push(hw);
+    } else if (seen && !caught) {
+      const seenNote = this.scene.add.text(infoX, dy + 36, 'Not yet caught', TEXT_STYLE_HINT);
+      this.add(seenNote);
+      this._subTexts.push(seenNote);
+    }
+
+    // ── Base stats — only when caught ────────────────────────────────────
+    const statsY   = dy + 22 + spriteSize + 14;
+    const statW    = DEX_DETAIL_W - 4;
+    const LABEL_W  = 30;
+    const BAR_W    = Math.min(180, statW - LABEL_W - 36);
+    const STAT_MAX = 255;
+
+    const STAT_ROWS = [
+      { label: 'HP',  key: 'HP' },
+      { label: 'ATK', key: 'ATTACK' },
+      { label: 'DEF', key: 'DEFENSE' },
+      { label: 'SPA', key: 'SPECIAL_ATTACK' },
+      { label: 'SPD', key: 'SPECIAL_DEFENSE' },
+      { label: 'SPE', key: 'SPEED' },
+    ];
+
+    if (caught) {
+      const statsTitle = this.scene.add.text(dx, statsY - 14, 'BASE STATS', TEXT_STYLE_HINT);
+      this.add(statsTitle);
+      this._subTexts.push(statsTitle);
+
+      STAT_ROWS.forEach(({ label, key }, i) => {
+        const rowY = statsY + i * 18;
+        const val  = entry.base_stats[key] ?? 0;
+        const ratio = val / STAT_MAX;
+        const barColor = ratio > 0.6 ? 0x48c050 : ratio > 0.35 ? 0xf0c040 : 0xe04040;
+
+        const lbl = this.scene.add.text(dx, rowY, label, { ...TEXT_STYLE_SM, color: '#555555' });
+        this.add(lbl);
+        this._subTexts.push(lbl);
+
+        const track = this.scene.add.graphics();
+        const barX = dx + LABEL_W;
+        track.fillStyle(0xdddddd, 1);
+        track.fillRoundedRect(barX, rowY + 2, BAR_W, 9, 2);
+        track.fillStyle(barColor, 1);
+        track.fillRoundedRect(barX, rowY + 2, Math.max(3, BAR_W * ratio), 9, 2);
+        this.add(track);
+        this._subTexts.push(track);
+
+        const valT = this.scene.add.text(dx + LABEL_W + BAR_W + 4, rowY, String(val), { ...TEXT_STYLE_SM, align: 'right' });
+        valT.setOrigin(0, 0);
+        this.add(valT);
+        this._subTexts.push(valT);
+      });
+    }
+  }
+
+  /** Draw a mini Pokéball graphic centred at (cx, cy) with radius r. Returns the Graphics object. */
+  _drawMiniBall(cx, cy, r) {
+    const g = this.scene.add.graphics();
+    // Top half — red arc
+    g.fillStyle(0xee1111, 1);
+    g.beginPath();
+    g.arc(cx, cy, r, Math.PI, 0, false);
+    g.closePath();
+    g.fillPath();
+    // Bottom half — white arc
+    g.fillStyle(0xffffff, 1);
+    g.beginPath();
+    g.arc(cx, cy, r, 0, Math.PI, false);
+    g.closePath();
+    g.fillPath();
+    // Outer border
+    g.lineStyle(1, 0x111111, 1);
+    g.strokeCircle(cx, cy, r);
+    // Horizontal divider
+    g.lineBetween(cx - r, cy, cx + r, cy);
+    // Centre button — white fill then border
+    g.fillStyle(0xffffff, 1);
+    g.fillCircle(cx, cy, 2);
+    g.lineStyle(1, 0x111111, 1);
+    g.strokeCircle(cx, cy, 2);
+    return g;
   }
 
   // ─── Generic text sub-screen ─────────────────────────────────────────────

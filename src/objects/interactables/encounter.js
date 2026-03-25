@@ -1,6 +1,7 @@
 import { Tile } from '@Objects';
 import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
+import store from '../../store/index.js';
 
 const ENCOUNTER_RATE = 0.1; // 10% chance per tile step
 const WILD_LEVEL_MIN = 3;
@@ -94,6 +95,9 @@ export default class {
     const dex        = new Pokedex(GAMES.POKEMON_FIRE_RED);
     const allSpecies = Object.values(dex.pokedex).filter(p => p.nat_dex_id <= 151);
     const entry      = pick(allSpecies);
+
+    // Mark the wild Pokémon as seen in the Pokédex
+    store.commit('pokedex/SEE', entry.nat_dex_id);
     const level      = WILD_LEVEL_MIN + Math.floor(Math.random() * (WILD_LEVEL_MAX - WILD_LEVEL_MIN + 1));
     const moves      = pickUnique(this._movePool, 4).map(m => ({
       name: m.name,

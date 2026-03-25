@@ -1,53 +1,42 @@
-import { defaultParty } from './party.js';
-import defaultFlags from './gameFlags.js';
-
 /**
- * Mutable runtime game state — single source of truth for party, bag, flags, and persistence.
- * Loaded from localStorage on boot (Preload.create); saved explicitly via saveGame().
+ * Compatibility shim for Phaser code.
+ *
+ * All game state now lives in Vuex modules (src/store/modules/).
+ * This shim re-exposes the relevant slices under a flat `gameState` object
+ * so existing Phaser imports need no changes.
+ *
+ *   import { gameState } from '@Data/gameState.js'
+ *   gameState.party      → store.state.party.list   (same array reference)
+ *   gameState.pokedex    → store.state.pokedex.entries
+ *   gameState.currentMap → store.state.player.currentMap  (writable)
+ *   etc.
  */
-export const gameState = {
-  playerName: 'Red',
-  party: defaultParty.map(p => ({
-    ...p,
-    moves: p.moves.map(m => ({ ...m, pp: { ...m.pp } })),
-    ivs: { ...p.ivs },
-    evs: { ...p.evs },
-  })),
-  bag: { items: [], pokeballs: [], tms: [] },
-  gameFlags: { ...defaultFlags },
-  currentMap: 'Test',
-  playtime: 0,          // accumulated seconds from saved sessions
-  sessionStart: Date.now(),
-};
+import store from '../store/index.js';
 
-/** Total playtime in seconds, including unsaved current session. */
+export const gameState = Object.defineProperties({}, {
+  playerName:  { get: () => store.state.player.playerName,   enumerable: true },
+  currentMap:  {
+    get: () => store.state.player.currentMap,
+    set: (v) => { store.state.player.currentMap = v; },
+    enumerable: true,
+  },
+  gameFlags:   { get: () => store.state.player.gameFlags,    enumerable: true },
+  party:       { get: () => store.state.party.list,          enumerable: true },
+  bag:         { get: () => store.state.bag,                 enumerable: true },
+  pokedex:     { get: () => store.state.pokedex.entries,     enumerable: true },
+});
+
+/** Total playtime in seconds including the current unsaved session. */
 export function getPlaytime() {
-  return gameState.playtime + (Date.now() - gameState.sessionStart) / 1000;
+  return store.getters['player/playtime'];
 }
 
-/** Flush session time and write state to localStorage. */
+/** Persist current state to localStorage. */
 export function saveGame() {
-  gameState.playtime = getPlaytime();
-  gameState.sessionStart = Date.now();
-  localStorage.setItem('spriteworld_save', JSON.stringify({
-    ...gameState,
-    savedAt: Date.now(),
-  }));
+  return store.dispatch('saveGame');
 }
 
-/**
- * Load state from localStorage into gameState.
- * @returns {boolean} true if a save was found and applied.
- */
+/** Load state from localStorage into the store. */
 export function loadGame() {
-  const raw = localStorage.getItem('spriteworld_save');
-  if (!raw) return false;
-  try {
-    const saved = JSON.parse(raw);
-    Object.assign(gameState, saved);
-    gameState.sessionStart = Date.now(); // start a fresh session timer
-    return true;
-  } catch {
-    return false;
-  }
+  return store.dispatch('loadGame');
 }
