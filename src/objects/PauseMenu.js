@@ -34,6 +34,9 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     /** Shared Pokedex instance — created lazily, reused by all screens. */
     this.dex = null;
 
+    // Bind reg so screens can safely destructure it without losing `this`
+    this.reg = this.reg.bind(this);
+
     this._selectedIndex = 0;
     this._currentScreen = null; // null = main menu visible
 
@@ -107,6 +110,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     this._mainBg.setVisible(true);
     this._cursorText.setVisible(true);
     this._mainTexts.forEach(t => t.setVisible(true));
+    this._subBg.setAlpha(1);
     this._subBg.setVisible(false);
     this._clearSubTexts();
     this._updateCursor();
@@ -137,6 +141,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
   _transitionTo(name) {
     this._currentScreen = name;
     this._clearSubTexts();
+    this._subBg.setAlpha(1);
 
     switch (name) {
       case 'team':
@@ -212,11 +217,15 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
   }
 
   moveLeft() {
-    if (this._currentScreen === 'team') this.teamScreen.nav('left');
+    if (this._currentScreen === 'team')        this.teamScreen.nav('left');
+    if (this._currentScreen === 'team-detail') this.teamDetail.tabNav(-1);
+    if (this._currentScreen === 'pokedex')     this.pokedexScreen.tabNav(-1);
   }
 
   moveRight() {
-    if (this._currentScreen === 'team') this.teamScreen.nav('right');
+    if (this._currentScreen === 'team')        this.teamScreen.nav('right');
+    if (this._currentScreen === 'team-detail') this.teamDetail.tabNav(1);
+    if (this._currentScreen === 'pokedex')     this.pokedexScreen.tabNav(1);
   }
 
   /**

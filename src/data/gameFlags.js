@@ -26,6 +26,9 @@ export default {
   // has_surf: false,
   // has_whirlpool: false,
 
+  // debug
+  debug_fill_pokedex: !false,
+
   // misc
   // obtained_badge_1: false,
   // obtained_badge_2: false,

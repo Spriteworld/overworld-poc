@@ -38,6 +38,10 @@ export default class PokemonSprite extends Phaser.GameObjects.Container {
     this._fallbackKey  = `pkmn-icon-${base}`;
     this._fallbackPath = new URL('../tileset/pokemon/icons/' + base + '.png', import.meta.url).href;
 
+    // Ultimate fallback: unknown Pokémon silhouette (species 0)
+    this._unknownKey  = 'pkmn-icon-unknown';
+    this._unknownPath = new URL('../tileset/pokemon/front/0.png', import.meta.url).href;
+
     // Placeholder while loading
     this._placeholder = scene.add.graphics();
     this._placeholder.fillStyle(0xe0e8f0, 0.5);
@@ -58,24 +62,48 @@ export default class PokemonSprite extends Phaser.GameObjects.Container {
       this._show(scene, this._fallbackKey);
       return;
     }
+    if (scene.textures.exists(this._unknownKey)) {
+      this._show(scene, this._unknownKey);
+      return;
+    }
 
     scene.load.image(this._key, this._path);
     scene.load.once('filecomplete-image-' + this._key, () => this._show(scene, this._key));
 
-    // If the variant file is missing fall back to the base icon
+    // If the variant file is missing fall back to the base icon, then to the unknown sprite
     if (this._key !== this._fallbackKey) {
       scene.load.once('loaderror', (file) => {
         if (file.key !== this._key) return;
         if (!scene.textures.exists(this._fallbackKey)) {
           scene.load.image(this._fallbackKey, this._fallbackPath);
           scene.load.once('filecomplete-image-' + this._fallbackKey, () => this._show(scene, this._fallbackKey));
+          scene.load.once('loaderror', (f) => {
+            if (f.key !== this._fallbackKey) return;
+            this._showUnknown(scene);
+          });
           scene.load.start();
         } else {
           this._show(scene, this._fallbackKey);
         }
       });
+    } else {
+      // primary IS the base — if it fails, go straight to unknown
+      scene.load.once('loaderror', (file) => {
+        if (file.key !== this._key) return;
+        this._showUnknown(scene);
+      });
     }
 
+    scene.load.start();
+  }
+
+  _showUnknown(scene) {
+    if (scene.textures.exists(this._unknownKey)) {
+      this._show(scene, this._unknownKey);
+      return;
+    }
+    scene.load.image(this._unknownKey, this._unknownPath);
+    scene.load.once('filecomplete-image-' + this._unknownKey, () => this._show(scene, this._unknownKey));
     scene.load.start();
   }
 

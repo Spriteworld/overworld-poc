@@ -107,6 +107,7 @@ export default class {
     const evs = Object.fromEntries(STAT_KEYS.map(s => [s, 0]));
 
     return {
+      tilesetBaseUrl: new URL('../../tileset/pokemon/', import.meta.url).href,
       field: { weather: null, terrain: 'normal' },
       player: {
         name: 'Red',

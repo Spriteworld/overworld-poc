@@ -1,5 +1,5 @@
 import { gameState } from '@Data/gameState.js';
-import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
+import { Pokedex } from '@spriteworld/pokemon-data';
 import PokemonSprite from '../PokemonSprite.js';
 import {
   SX, SY, SW, SH,
@@ -7,6 +7,7 @@ import {
   TEXT_STYLE_BOLD, TEXT_STYLE_HINT, TEXT_STYLE_SM,
 } from './layout.js';
 import { drawTypeBadges, drawMiniBall } from './helpers.js';
+import { drawMonDetail, getMonDetailTabs } from './MonDetail.js';
 
 export default class PokedexScreen {
   constructor(menu) {
@@ -14,11 +15,13 @@ export default class PokedexScreen {
     this.cursor  = 1;   // nat_dex_id (1-based)
     this.scroll  = 0;   // index of first visible row
     this.entries = null; // sorted array, built once
+    this.dexTab  = 0;
   }
 
   reset() {
     this.cursor = 1;
     this.scroll = 0;
+    this.dexTab = 0;
   }
 
   // ─── Navigation ──────────────────────────────────────────────────────────
@@ -32,6 +35,16 @@ export default class PokedexScreen {
     this.rebuild();
   }
 
+  tabNav(dir) {
+    const entry  = this.entries?.[this.cursor - 1];
+    if (!entry) return;
+    const record = gameState.pokedex[entry.nat_dex_id];
+    if (!record?.seen) return;
+    const tabs = getMonDetailTabs(null); // dex mode = null mon
+    this.dexTab = (this.dexTab + dir + tabs.length) % tabs.length;
+    this.rebuild();
+  }
+
   // ─── Build ───────────────────────────────────────────────────────────────
 
   rebuild() {
@@ -41,10 +54,8 @@ export default class PokedexScreen {
   }
 
   build() {
-    if (!this.menu.dex) this.menu.dex = new Pokedex(GAMES.POKEMON_FIRE_RED);
     if (!this.entries) {
-      this.entries = Object.values(this.menu.dex.pokedex)
-        .sort((a, b) => a.nat_dex_id - b.nat_dex_id);
+      this.entries = new Pokedex(null).getNationalDex(3);
     }
 
     const { scene, reg } = this.menu;
@@ -109,84 +120,29 @@ export default class PokedexScreen {
   }
 
   _buildDetail(entry) {
-    const dx     = DEX_DETAIL_X;
-    const dy     = SY + 36;
     const record = gameState.pokedex[entry.nat_dex_id];
     const seen   = !!record?.seen;
-    const caught = !!record?.caught;
 
+    if (seen) {
+      drawMonDetail(this.menu, {
+        entry,
+        x:   DEX_DETAIL_X,
+        y:   SY + 36,
+        w:   DEX_DETAIL_W,
+        h:   SH - 66,
+        tab: this.dexTab,
+      });
+      return;
+    }
+
+    // ── Unseen fallback ────────────────────────────────────────────────
     const { scene, reg } = this.menu;
+    const dx  = DEX_DETAIL_X;
+    const dy  = SY + 36;
 
     const numStr = `#${String(entry.nat_dex_id).padStart(3, '0')}`;
     reg(scene.add.text(dx, dy, numStr, TEXT_STYLE_HINT));
-    reg(scene.add.text(dx + 44, dy, seen ? entry.species.toUpperCase() : '???', TEXT_STYLE_BOLD));
-
-    const spriteSize = 80;
-    if (caught) {
-      reg(new PokemonSprite(scene, dx, dy + 22, { species: entry.nat_dex_id, size: spriteSize }));
-    } else {
-      const unk = scene.add.graphics();
-      unk.fillStyle(0xcccccc, 1);
-      unk.fillRect(dx, dy + 22, spriteSize, spriteSize);
-      reg(unk);
-
-      const q = scene.add.text(
-        dx + spriteSize / 2, dy + 22 + spriteSize / 2,
-        seen ? '!' : '?',
-        { fontFamily: 'monospace', fontSize: '32px', color: '#888888' }
-      );
-      q.setOrigin(0.5, 0.5);
-      reg(q);
-    }
-
-    const infoX = dx + spriteSize + 10;
-    if (caught && entry.types?.length) {
-      drawTypeBadges(this.menu, infoX, dy + 28, entry.types);
-      const hw = scene.add.text(infoX, dy + 52,
-        `HT  ${entry.height.toFixed(1)} m\nWT  ${entry.weight.toFixed(1)} kg`,
-        { ...TEXT_STYLE_SM, lineSpacing: 6 }
-      );
-      reg(hw);
-    } else if (seen && !caught) {
-      reg(scene.add.text(infoX, dy + 36, 'Not yet caught', TEXT_STYLE_HINT));
-    }
-
-    if (!caught) return;
-
-    // Base stats
-    const statsY  = dy + 22 + spriteSize + 14;
-    const LABEL_W = 30;
-    const BAR_W   = Math.min(180, DEX_DETAIL_W - LABEL_W - 40);
-    const STAT_MAX = 255;
-
-    reg(scene.add.text(dx, statsY - 14, 'BASE STATS', TEXT_STYLE_HINT));
-
-    [
-      { label: 'HP',  key: 'HP' },
-      { label: 'ATK', key: 'ATTACK' },
-      { label: 'DEF', key: 'DEFENSE' },
-      { label: 'SPA', key: 'SPECIAL_ATTACK' },
-      { label: 'SPD', key: 'SPECIAL_DEFENSE' },
-      { label: 'SPE', key: 'SPEED' },
-    ].forEach(({ label, key }, i) => {
-      const rowY     = statsY + i * 18;
-      const val      = entry.base_stats[key] ?? 0;
-      const ratio    = val / STAT_MAX;
-      const barColor = ratio > 0.6 ? 0x48c050 : ratio > 0.35 ? 0xf0c040 : 0xe04040;
-      const barX     = dx + LABEL_W;
-
-      reg(scene.add.text(dx, rowY, label, { ...TEXT_STYLE_SM, color: '#555555' }));
-
-      const track = scene.add.graphics();
-      track.fillStyle(0xdddddd, 1);
-      track.fillRoundedRect(barX, rowY + 2, BAR_W, 9, 2);
-      track.fillStyle(barColor, 1);
-      track.fillRoundedRect(barX, rowY + 2, Math.max(3, BAR_W * ratio), 9, 2);
-      reg(track);
-
-      const valT = scene.add.text(dx + LABEL_W + BAR_W + 4, rowY, String(val), { ...TEXT_STYLE_SM, align: 'right' });
-      valT.setOrigin(0, 0);
-      reg(valT);
-    });
+    reg(scene.add.text(dx + 44, dy, '???', TEXT_STYLE_BOLD));
+    reg(new PokemonSprite(scene, dx, dy + 22, { species: 0, size: 80 }));
   }
 }
