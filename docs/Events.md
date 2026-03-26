@@ -51,6 +51,7 @@ These are emitted on `this.game.events` / `scene.game.events` so all running sce
 
 ```js
 {
+  tilesetBaseUrl: string,           // base URL of the pokemon tileset directory (trailing slash)
   field:  { weather: string | null, terrain: string },
   player: {
     name: string,

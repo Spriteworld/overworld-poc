@@ -27,7 +27,7 @@ src/
 
 Two sibling packages are required:
 - `../data` (`@spriteworld/pokemon-data`) — Pokédex, moves, natures, stats
-- `../battle-claude` (`@spriteworld/battle`) — battle engine (BattleScene2)
+- `../battle` (`@spriteworld/battle`) — battle engine (BattleScene2)
 
 ## Building a Map
 

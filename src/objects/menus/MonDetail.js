@@ -229,54 +229,86 @@ function _drawEvolutionsTab(scene, reg, menu, entry, x, y, w) {
 }
 
 function _drawLinearChain(scene, reg, menu, stages, x, y, w, currentId) {
-  const SPR   = 52;
-  const COND  = 56;
-  const total = stages.length * SPR + (stages.length - 1) * COND;
-  let   sx    = x + Math.max(0, Math.round((w - total) / 2));
-  const cy    = y + 20;
+  const SPR    = 52;
+  const COND_H = 52; // space between bottom of sprite and top of next sprite
+  const cx     = x + Math.round(w / 2);
+  let   sy     = y + 8;
 
   stages.forEach(({ id, label }) => {
-    _evoSprite(scene, reg, menu, id, sx, cy, SPR, id === currentId);
-
+    _evoSprite(scene, reg, menu, id, cx - Math.round(SPR / 2), sy, SPR, id === currentId);
     if (label) {
-      const ax  = sx + SPR + COND / 2;
-      const arr = scene.add.text(ax, cy + SPR / 2 - 8, '▶', { fontFamily: 'monospace', fontSize: '12px', color: '#888888' });
-      arr.setOrigin(0.5, 0.5);
+      const arrY = sy + SPR + 10;
+      const arr  = scene.add.text(cx, arrY, '▼', { fontFamily: 'monospace', fontSize: '11px', color: '#888888' });
+      arr.setOrigin(0.5, 0);
       reg(arr);
-      const lbl = scene.add.text(ax, cy + SPR / 2 + 6, label, { fontFamily: 'monospace', fontSize: '10px', color: '#555555' });
+      const lbl  = scene.add.text(cx, arrY + 15, label, { fontFamily: 'monospace', fontSize: '10px', color: '#555555' });
       lbl.setOrigin(0.5, 0);
       reg(lbl);
+      sy += SPR + COND_H;
+    } else {
+      sy += SPR;
     }
-
-    sx += SPR + (label ? COND : 0);
   });
 }
 
 function _drawBranchingChain(scene, reg, menu, tree, x, y, w, currentId) {
-  const SPR     = 48;
-  const ROW_H   = SPR + 18;
-  const ROW_GAP = 10;
-  const COND_W  = 72;
-  const branches  = tree.next;
-  const totalH    = branches.length * ROW_H + (branches.length - 1) * ROW_GAP;
-  const baseCY    = y + totalH / 2;
-  const BASE_X    = x + 8;
-  const BRANCH_X  = BASE_X + SPR + COND_W;
+  // Walk forward through single-child nodes to find the actual branch point.
+  const prefix = [];
+  let cur = tree;
+  while (cur.next.length === 1) {
+    prefix.push({ id: cur.id, label: cur.next[0].label });
+    cur = cur.next[0].node;
+  }
+  const branchNode = cur;
+  const branches   = branchNode.next;
+  const n          = branches.length;
 
-  _evoSprite(scene, reg, menu, tree.id, BASE_X, baseCY - SPR / 2, SPR, tree.id === currentId);
+  _drawTopDownBranching(scene, reg, menu, prefix, branchNode, branches, x, y, w, currentId);
+}
+
+function _drawTopDownBranching(scene, reg, menu, prefix, branchNode, branches, x, y, w, currentId) {
+  const n      = branches.length;
+  const SPR    = 46;
+  const COND_H = 52;
+  const cx     = x + Math.round(w / 2);
+
+  // Draw prefix top-to-bottom (same pattern as linear chain)
+  let sy = y + 8;
+  for (const { id, label } of prefix) {
+    _evoSprite(scene, reg, menu, id, cx - Math.round(SPR / 2), sy, SPR, id === currentId);
+    if (label) {
+      const arrY = sy + SPR + 10;
+      const arr = scene.add.text(cx, arrY, '▼', { fontFamily: 'monospace', fontSize: '11px', color: '#888888' });
+      arr.setOrigin(0.5, 0); reg(arr);
+      const lbl = scene.add.text(cx, arrY + 15, label, { fontFamily: 'monospace', fontSize: '10px', color: '#555555' });
+      lbl.setOrigin(0.5, 0); reg(lbl);
+      sy += SPR + COND_H;
+    } else {
+      sy += SPR;
+    }
+  }
+
+  // Draw the branch node centred
+  _evoSprite(scene, reg, menu, branchNode.id, cx - Math.round(SPR / 2), sy, SPR, branchNode.id === currentId);
+
+  // Draw each branch target below with ▼ arrow and condition label
+  const gap       = Math.min(60, Math.max(8, Math.floor((w - n * SPR) / (n + 1))));
+  const rowW      = n * SPR + (n - 1) * gap;
+  const rowStartX = x + Math.round((w - rowW) / 2);
+  const condY     = sy + SPR + 10;
+  const targY     = condY + COND_H;
 
   branches.forEach(({ label, node }, i) => {
-    const rowCY = y + i * (ROW_H + ROW_GAP) + ROW_H / 2;
+    const sprX = rowStartX + i * (SPR + gap);
+    const bcx  = sprX + SPR / 2;
 
-    const condCX = BASE_X + SPR + COND_W / 2;
-    const arr = scene.add.text(condCX, rowCY - 8, '▶', { fontFamily: 'monospace', fontSize: '12px', color: '#888888' });
-    arr.setOrigin(0.5, 0.5);
-    reg(arr);
-    const lbl = scene.add.text(condCX, rowCY + 6, label, { fontFamily: 'monospace', fontSize: '10px', color: '#555555' });
-    lbl.setOrigin(0.5, 0);
-    reg(lbl);
+    const arr = scene.add.text(bcx, condY, '▼', { fontFamily: 'monospace', fontSize: '11px', color: '#888888' });
+    arr.setOrigin(0.5, 0); reg(arr);
 
-    _evoSprite(scene, reg, menu, node.id, BRANCH_X, rowCY - SPR / 2, SPR, node.id === currentId);
+    const lbl = scene.add.text(bcx, condY + 14, label, { fontFamily: 'monospace', fontSize: '9px', color: '#555555' });
+    lbl.setOrigin(0.5, 0); reg(lbl);
+
+    _evoSprite(scene, reg, menu, node.id, sprX, targY, SPR, node.id === currentId);
   });
 }
 
@@ -421,12 +453,10 @@ function _addBouncingBalls(scene, reg, bounds) {
   const BALL_TYPES = Object.keys(BALL_COLORS);
   const NUM_BALLS  = 7;
 
-  const state = Array.from({ length: NUM_BALLS }, () => {
+  Array.from({ length: NUM_BALLS }, () => {
     const r    = 6 + Math.floor(Math.random() * 8);
     const bx   = x + r + Math.random() * (w - r * 2);
     const by   = y + r + Math.random() * (h - r * 2);
-    const spd  = 25 + Math.random() * 45;
-    const ang  = Math.random() * Math.PI * 2;
     const type = BALL_TYPES[Math.floor(Math.random() * BALL_TYPES.length)];
     const top  = BALL_COLORS[type];
 
@@ -443,31 +473,8 @@ function _addBouncingBalls(scene, reg, bounds) {
     g.fillCircle(0, 0, Math.round(r * 0.25));
     g.setPosition(bx, by);
     reg(g);
-
-    const spinV = (Math.random() < 0.5 ? 1 : -1) * (2 + Math.random() * 3);
-    return { g, x: bx, y: by, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd, r, rot: 0, spinV };
   });
 
-  const update = (_t, delta) => {
-    const dt = Math.min(delta, 100) / 1000;
-    state.forEach(b => {
-      b.x += b.vx * dt;
-      b.y += b.vy * dt;
-      if (b.x - b.r < x)     { b.x = x + b.r;     b.vx =  Math.abs(b.vx); b.spinV = -Math.abs(b.spinV); }
-      if (b.x + b.r > x + w) { b.x = x + w - b.r; b.vx = -Math.abs(b.vx); b.spinV =  Math.abs(b.spinV); }
-      if (b.y - b.r < y)     { b.y = y + b.r;     b.vy =  Math.abs(b.vy); b.spinV *= -1; }
-      if (b.y + b.r > y + h) { b.y = y + h - b.r; b.vy = -Math.abs(b.vy); b.spinV *= -1; }
-      b.rot += b.spinV * dt;
-      b.g.setPosition(b.x, b.y);
-      b.g.setRotation(b.rot);
-    });
-  };
-
-  scene.events.on('update', update);
-
-  const sentinel = scene.add.graphics();
-  sentinel.once('destroy', () => scene.events.off('update', update));
-  reg(sentinel);
 }
 
 function _addBall(scene, reg, cx, cy, r, ballType = 'poke', rotation = -0.4) {
