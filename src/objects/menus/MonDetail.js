@@ -6,7 +6,7 @@ import {
   TEXT_STYLE_BODY, TEXT_STYLE_HINT, TEXT_STYLE_SM,
 } from './layout.js';
 import { resolveMonData, drawHpRow, drawExpRow, drawTypeBadges } from './helpers.js';
-import TypeBadge, { TYPE_COLORS } from '../TypeBadge.js';
+import TypeBadge, { TYPE_COLORS } from '../common/TypeBadge.js';
 
 export const BALL_COLORS = {
   poke:    0xee1111,

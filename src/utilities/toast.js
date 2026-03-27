@@ -1,39 +1,63 @@
-import { getValue } from '@Utilities';
+const PAD = 20;
+const RADIUS = 10;
 
-var toast = function (scene, x, y, config) {
-  var wrapWidth = getValue(config, 'wrapWidth', 0);
-  var fixedWidth = getValue(config, 'fixedWidth', 0);
-  var fixedHeight = getValue(config, 'fixedHeight', 0);
-  var toast = scene.rexUI.add.toast({
-    x: x,
-    y: y,
-    background: scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x000000)
-      .setStrokeStyle(2, 0xffffff),
-    text: scene.add.text(0, 0, '', {
-      fontSize: '20px',
-      color: '#fff',
-    }),
-    space: {
-      left: 20,
-      right: 20,
-      top: 20,
-      bottom: 20,
-      icon: 10,
-      text: 10,
-    },
-    duration: {
-      in: 450,
-      hold: 1500,
-      out: 450,
-    },
-  }).setOrigin(0);
+class Toast {
+  constructor(scene, x, y) {
+    this.scene = scene;
+    this.ox    = x;
+    this.oy    = y;
 
-  scene.plugins.get('rexAnchor').add(toast, {
-    left: 'left+10',
-    top: 'top+10'
-  });
+    this._tween = null;
+    this._timer = null;
 
-  return toast;
+    const depth = Number.MAX_SAFE_INTEGER;
+    this._bg   = scene.add.graphics().setDepth(depth - 1).setAlpha(0);
+    this._text = scene.add.text(0, 0, '', { fontSize: '20px', color: '#ffffff' })
+      .setDepth(depth)
+      .setAlpha(0);
+  }
+
+  showMessage(msg) {
+    // Cancel in-progress animation
+    this._tween?.stop();
+    this._timer?.remove();
+
+    this._text.setText(msg);
+
+    const bw = this._text.width  + PAD * 2;
+    const bh = this._text.height + PAD * 2;
+
+    this._text.setPosition(this.ox + PAD, this.oy + PAD);
+
+    this._bg.clear();
+    this._bg.fillStyle(0x000000, 1);
+    this._bg.fillRoundedRect(this.ox, this.oy, bw, bh, RADIUS);
+    this._bg.lineStyle(2, 0xffffff, 1);
+    this._bg.strokeRoundedRect(this.ox, this.oy, bw, bh, RADIUS);
+
+    this._bg.setAlpha(0);
+    this._text.setAlpha(0);
+
+    this._tween = this.scene.tweens.add({
+      targets:  [this._bg, this._text],
+      alpha:    1,
+      duration: 450,
+      onComplete: () => {
+        this._timer = this.scene.time.delayedCall(1500, () => {
+          this._tween = this.scene.tweens.add({
+            targets:  [this._bg, this._text],
+            alpha:    0,
+            duration: 450,
+            onComplete: () => { this._tween = null; },
+          });
+        });
+      },
+    });
+  }
 }
+
+var toast = function (scene, x, y, _config) {
+  return new Toast(scene, x, y);
+};
 
 export { toast };

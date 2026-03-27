@@ -157,7 +157,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
         this.pokedexScreen.rebuild();
         break;
       case 'bag':
-        this.bagScreen.build();
+        this.bagScreen.show();
         break;
       case 'user':
         this.userScreen.build();
@@ -196,6 +196,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       case 'team-submenu':this.teamScreen.subMenuNav(-1); return;
       case 'team-detail': this.teamDetail.nav(-1);        return;
       case 'pokedex':     this.pokedexScreen.nav(-1);     return;
+      case 'bag':         this.bagScreen.nav(-1);         return;
       case null: break;
       default: return;
     }
@@ -209,6 +210,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       case 'team-submenu':this.teamScreen.subMenuNav(1); return;
       case 'team-detail': this.teamDetail.nav(1);        return;
       case 'pokedex':     this.pokedexScreen.nav(1);     return;
+      case 'bag':         this.bagScreen.nav(1);         return;
       case null: break;
       default: return;
     }
@@ -220,12 +222,14 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     if (this._currentScreen === 'team')        this.teamScreen.nav('left');
     if (this._currentScreen === 'team-detail') this.teamDetail.tabNav(-1);
     if (this._currentScreen === 'pokedex')     this.pokedexScreen.tabNav(-1);
+    if (this._currentScreen === 'bag')         this.bagScreen.tabNav(-1);
   }
 
   moveRight() {
     if (this._currentScreen === 'team')        this.teamScreen.nav('right');
     if (this._currentScreen === 'team-detail') this.teamDetail.tabNav(1);
     if (this._currentScreen === 'pokedex')     this.pokedexScreen.tabNav(1);
+    if (this._currentScreen === 'bag')         this.bagScreen.tabNav(1);
   }
 
   /**

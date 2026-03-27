@@ -127,6 +127,10 @@ export default class extends Phaser.Scene {
               }));
               store.commit('party/SYNC_AFTER_BATTLE', team);
             }
+            const battleItems = battleScene?.config?.player?.inventory?.items;
+            if (battleItems?.length) {
+              store.commit('bag/SYNC_AFTER_BATTLE', battleItems);
+            }
             this.time.delayedCall(2000, () => {
               // fade to white, then swap back to overworld
               this.tweens.add({

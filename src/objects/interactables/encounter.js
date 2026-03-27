@@ -1,7 +1,33 @@
 import { Tile } from '@Objects';
-import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves } from '@spriteworld/pokemon-data';
+import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves, Items } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
 import store from '../../store/index.js';
+
+/**
+ * Maps item names (as stored in the bag) to their battle item constructors.
+ * Only items that have a corresponding battle class are included; unknown
+ * entries are silently skipped when building the battle inventory.
+ */
+const ITEM_REGISTRY = {
+  'Potion':        Items.Potion,
+  'Super Potion':  Items.SuperPotion,
+  'Hyper Potion':  Items.HyperPotion,
+  'Max Potion':    Items.MaxPotion,
+  'Full Restore':  Items.FullRestore,
+  'Ether':         Items.Ether,
+  'Revive':        Items.Revive,
+};
+
+function buildBattleInventory() {
+  const { items } = store.state.bag;
+  return {
+    items: items
+      .filter(e => ITEM_REGISTRY[e.name] && e.quantity > 0)
+      .map(e => ({ item: new ITEM_REGISTRY[e.name](), quantity: e.quantity })),
+    pokeballs: [],
+    tms: [],
+  };
+}
 
 const ENCOUNTER_RATE = 0.1; // 10% chance per tile step
 const WILD_LEVEL_MIN = 3;
@@ -121,7 +147,7 @@ export default class {
           ivs: { ...p.ivs },
           evs: { ...p.evs },
         })),
-        inventory: { items: [], pokeballs: [], tms: [] },
+        inventory: buildBattleInventory(),
       },
       enemy: {
         isTrainer: false,

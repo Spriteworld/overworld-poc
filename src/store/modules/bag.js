@@ -39,5 +39,19 @@ export default {
         if (Array.isArray(saved.bag.tms))       state.tms       = saved.bag.tms;
       }
     },
+
+    /**
+     * Sync item quantities back from the battle engine after a fight ends.
+     * @param {Array<{ item: { getName(): string }, quantity: number }>} battleItems
+     *   The battle inventory items array — same objects mutated during the fight.
+     */
+    SYNC_AFTER_BATTLE(state, battleItems) {
+      for (const { item, quantity } of battleItems) {
+        const entry = state.items.find(e => e.name === item.getName());
+        if (entry) entry.quantity = quantity;
+      }
+      // Remove items that were fully used up during the battle.
+      state.items = state.items.filter(e => e.quantity > 0);
+    },
   },
 };
