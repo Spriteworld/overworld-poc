@@ -103,6 +103,13 @@ export default class extends Phaser.Scene {
     });
 
     EventBus.emit('current-scene-ready', this);
+
+    // Clean up all plugin event listeners when this scene shuts down.
+    this.events.once('shutdown', () => {
+      Object.values(this.mapPlugins).forEach(plugin => {
+        if (typeof plugin.destroy === 'function') plugin.destroy();
+      });
+    });
   }
 
   findInteractions(type) {

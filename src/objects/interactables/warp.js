@@ -81,7 +81,7 @@ export default class {
     }
 
     // handle warp tiles
-    this.scene.gridEngine
+    this._sub = this.scene.gridEngine
       .positionChangeStarted()
       .subscribe(({ charId, exitTile, enterTile }) => {
         let char = this.scene.characters.get(charId);
@@ -90,6 +90,10 @@ export default class {
 
         this.handleWarps(char, exitTile, enterTile);
       });
+  }
+
+  destroy() {
+    this._sub?.unsubscribe();
   }
 
   handleWarps(char, exitTile, enterTile) {

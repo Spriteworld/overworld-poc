@@ -109,7 +109,7 @@ export default class {
       console.log(['Interactables::pokemon::event', this.scene]);
     }
 
-    this.scene.game.events.on('interact-with-obj', (tile) => {
+    this._onInteract = (tile) => {
       if (tile.obj.type !== 'npc') { return; }
 
       let text = this.scene.getPropertyFromTile(tile.obj, 'text');
@@ -124,6 +124,11 @@ export default class {
         text,
         tile.obj
       );
-    });
+    };
+    this.scene.game.events.on('interact-with-obj', this._onInteract);
+  }
+
+  destroy() {
+    this.scene.game.events.off('interact-with-obj', this._onInteract);
   }
 }

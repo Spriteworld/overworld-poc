@@ -16,7 +16,7 @@ export default class {
     }
     if (this.ledgeTiles.length === 0) { return; }
 
-    this.scene.gridEngine
+    this._sub = this.scene.gridEngine
       .positionChangeStarted()
       .subscribe(({ charId, exitTile, enterTile }) => {
         let char = this.scene.characters.get(charId);
@@ -26,6 +26,10 @@ export default class {
         // check for jump ledges
         this.handleJumps(char, exitTile, enterTile);
       });
+  }
+
+  destroy() {
+    this._sub?.unsubscribe();
   }
 
   handleJumps(char, exitTile, enterTile) {

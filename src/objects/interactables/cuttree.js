@@ -14,15 +14,15 @@ export default class {
       console.log(['Interactables::cutTree::event', this.scene]);
     }
 
-    this.scene.game.events.on('interact-with-obj', (tile) => {
+    this._onInteract = (tile) => {
       if (tile.obj.type !== 'cut-tree') { return; }
 
       let text = this.scene.getPropertyFromTile(tile.obj, 'text');
       if (!text) { return; }
-      
+
       this.scene.game.events.emit(
-        'textbox-changedata', 
-        text, 
+        'textbox-changedata',
+        text,
         tile.obj
       );
 
@@ -36,6 +36,11 @@ export default class {
         if (typeof char === 'undefined') { return; }
         char.remove();
       });
-    });
+    };
+    this.scene.game.events.on('interact-with-obj', this._onInteract);
+  }
+
+  destroy() {
+    this.scene.game.events.off('interact-with-obj', this._onInteract);
   }
 };

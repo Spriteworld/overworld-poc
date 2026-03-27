@@ -16,29 +16,34 @@ export default class {
     }
     if (this.iceTiles.length === 0) { return; }
 
-    // handle ice & spin tiles
-    this.scene.gridEngine
-      .positionChangeStarted()
-      .subscribe(({ charId, exitTile, enterTile }) => {
-        let char = this.scene.characters.get(charId);
-        if (typeof char === 'undefined') { return; }
-        if (char.isDumbCharacter()) { return; }
+    this._subs = [
+      // handle ice tiles
+      this.scene.gridEngine
+        .positionChangeStarted()
+        .subscribe(({ charId, exitTile, enterTile }) => {
+          let char = this.scene.characters.get(charId);
+          if (typeof char === 'undefined') { return; }
+          if (char.isDumbCharacter()) { return; }
 
-        // check for ice tiles
-        this.handleIceTiles(char, exitTile, enterTile);
-      });
-  
-    this.scene.gridEngine
-      .movementStopped()
-      .subscribe(({ charId, direction }) => {
-        let char = this.scene.characters.get(charId);
-        if (typeof char === 'undefined') { return; }
-        if (char.isDumbCharacter()) { return; }
+          this.handleIceTiles(char, exitTile, enterTile);
+        }),
 
-        if (char.slidingDir !== null) {
-          char.stateMachine.setState(char.stateDef.IDLE);
-        }
-      });
+      this.scene.gridEngine
+        .movementStopped()
+        .subscribe(({ charId, direction }) => {
+          let char = this.scene.characters.get(charId);
+          if (typeof char === 'undefined') { return; }
+          if (char.isDumbCharacter()) { return; }
+
+          if (char.slidingDir !== null) {
+            char.stateMachine.setState(char.stateDef.IDLE);
+          }
+        }),
+    ];
+  }
+
+  destroy() {
+    this._subs?.forEach(s => s.unsubscribe());
   }
 
   handleIceTiles(char, exitTile, enterTile) {

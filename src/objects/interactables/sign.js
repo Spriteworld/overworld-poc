@@ -22,17 +22,22 @@ export default class {
       console.log(['Interactables::sign::event', this.scene]);
     }
 
-    this.scene.game.events.on('interact-with-obj', (tile) => {
+    this._onInteract = (tile) => {
       if (tile.obj.type !== 'sign') { return; }
 
       let signProps = this.scene.getPropertiesFromTile(tile.obj);
       if (signProps.size === 0) { return; }
 
       this.scene.game.events.emit(
-        'textbox-changedata', 
-        this.scene.getPropertyFromTile(tile.obj, 'text'), 
+        'textbox-changedata',
+        this.scene.getPropertyFromTile(tile.obj, 'text'),
         tile.obj
       );
-    });
+    };
+    this.scene.game.events.on('interact-with-obj', this._onInteract);
+  }
+
+  destroy() {
+    this.scene.game.events.off('interact-with-obj', this._onInteract);
   }
 }

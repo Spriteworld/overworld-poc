@@ -74,7 +74,7 @@ export default class {
   event() {
     if (this.encounterTiles.length === 0) { return; }
 
-    this.scene.gridEngine.positionChangeFinished().subscribe(({ charId, enterTile }) => {
+    this._sub = this.scene.gridEngine.positionChangeFinished().subscribe(({ charId, enterTile }) => {
       if (charId !== 'player') { return; }
 
       const onEncounterTile = this.encounterTiles.some(
@@ -85,6 +85,10 @@ export default class {
 
       this.scene.game.events.emit('battle-start', this._buildWildBattle());
     });
+  }
+
+  destroy() {
+    this._sub?.unsubscribe();
   }
 
   _buildWildBattle() {

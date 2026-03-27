@@ -18,7 +18,9 @@ export default class {
       console.log(['Interactables::strengthBoulder::event', this.scene]);
     }
 
-    this.scene.game.events.on('interact-with-obj', (tile) => {
+    this._subs = [];
+
+    this._onInteract = (tile) => {
       if (tile.obj.type !== 'strength-boulder') { return; }
 
       let text = this.scene.getPropertyFromTile(tile.obj, 'text');
@@ -27,40 +29,45 @@ export default class {
       this.activeBoulder = tile.obj.id;
       this.scene.removeInteraction(tile.obj.id);
       this.scene.game.events.emit(
-        'textbox-changedata', 
-        text, 
+        'textbox-changedata',
+        text,
         tile.obj
       );
-    });
+    };
+    this.scene.game.events.on('interact-with-obj', this._onInteract);
 
     if (this.scene.game.config.gameFlags.has_strength === false) {
       return;
     }
 
-    this.scene.gridEngine
-      .positionChangeFinished()
-      .subscribe(({charId}) => {
-        if (charId !== 'player') { return; }
+    this._subs.push(
+      this.scene.gridEngine
+        .positionChangeFinished()
+        .subscribe(({charId}) => {
+          if (charId !== 'player') { return; }
 
-        let player = this.scene.characters.get('player');
-        if (typeof player === 'undefined') { return; }
-        
-        let playerFacing = player.getFacingDirection().toUpperCase();
-        
-        let boulder = this.#getBoulderInfrontOfPlayer();
-        if (!boulder) { return; }
-        this.#moveBoulder(boulder, playerFacing);
-      });
+          let player = this.scene.characters.get('player');
+          if (typeof player === 'undefined') { return; }
 
-    this.scene.gridEngine
-      .directionChanged()
-      .subscribe(({charId, direction}) => {
-        if (charId !== 'player') { return; }
+          let playerFacing = player.getFacingDirection().toUpperCase();
 
-        let boulder = this.#getBoulderInfrontOfPlayer();
-        if (!boulder) { return; }
-        this.#moveBoulder(boulder, direction);
-      });
+          let boulder = this.#getBoulderInfrontOfPlayer();
+          if (!boulder) { return; }
+          this.#moveBoulder(boulder, playerFacing);
+        })
+    );
+
+    this._subs.push(
+      this.scene.gridEngine
+        .directionChanged()
+        .subscribe(({charId, direction}) => {
+          if (charId !== 'player') { return; }
+
+          let boulder = this.#getBoulderInfrontOfPlayer();
+          if (!boulder) { return; }
+          this.#moveBoulder(boulder, direction);
+        })
+    );
 
     this.scene.game.events.once('textbox-disable', () => {
       if (this.activeBoulder === null) { return; }
@@ -72,6 +79,11 @@ export default class {
 
       this.#moveBoulder(boulder, playerFacing);
     });
+  }
+
+  destroy() {
+    this.scene.game.events.off('interact-with-obj', this._onInteract);
+    this._subs?.forEach(s => s.unsubscribe());
   }
 
   #getBoulderInfrontOfPlayer() {

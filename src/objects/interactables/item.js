@@ -15,12 +15,12 @@ export default class {
       console.log(['Interactables::sign::event', this.scene]);
     }
 
-    this.scene.game.events.on('interact-with-obj', (tile) => {
+    this._onInteract = (tile) => {
       if (tile.obj.type !== 'item') { return; }
 
       let item = this.scene.getPropertyFromTile(tile.obj, 'item');
       if (!item) { return; }
-      
+
       // Remove immediately so a second Z-press (to dismiss the textbox)
       // doesn't re-trigger interact-with-obj for the same tile.
       this.scene.removeInteraction(tile.obj.id);
@@ -37,6 +37,11 @@ export default class {
         if (typeof char === 'undefined') { return; }
         char.remove();
       });
-    });
+    };
+    this.scene.game.events.on('interact-with-obj', this._onInteract);
+  }
+
+  destroy() {
+    this.scene.game.events.off('interact-with-obj', this._onInteract);
   }
 }
