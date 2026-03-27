@@ -5,7 +5,7 @@ import PokemonSprite from '../PokemonSprite.js';
 import {
   TEXT_STYLE_BODY, TEXT_STYLE_HINT, TEXT_STYLE_SM,
 } from './layout.js';
-import { resolveMonData, drawHpRow, drawTypeBadges } from './helpers.js';
+import { resolveMonData, drawHpRow, drawExpRow, drawTypeBadges } from './helpers.js';
 import TypeBadge, { TYPE_COLORS } from '../TypeBadge.js';
 
 export const BALL_COLORS = {
@@ -120,7 +120,8 @@ export function drawMonDetail(menu, { mon, entry, x, y, w, h, tab = 0 }) {
   if (mon) {
     const { maxHp } = resolveMonData(menu.dex, mon);
     const currentHp = mon.currentHp ?? maxHp;
-    drawHpRow(menu, HP_X, HP_Y, HP_W, currentHp, maxHp, Math.max(0, currentHp / maxHp));
+    drawHpRow(menu, HP_X, HP_Y,      HP_W, currentHp, maxHp, Math.max(0, currentHp / maxHp));
+    drawExpRow(menu, HP_X, HP_Y + 18, HP_W, mon, entry);
   }
 
   // ── Big dex number ────────────────────────────────────────────────

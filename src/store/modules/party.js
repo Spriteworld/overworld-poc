@@ -32,13 +32,21 @@ export default {
     },
 
     SYNC_AFTER_BATTLE(state, team) {
-      // team: [{ pid, currentHp, moves: [{ name, pp: { max, current } }] }]
       team.forEach(snapshot => {
         const entry = state.list.find(p => p.pid === snapshot.pid);
         if (!entry) return;
         entry.currentHp = snapshot.currentHp;
+        if (snapshot.exp                          != null) entry.exp                 = snapshot.exp;
+        if (snapshot.level                        != null) entry.level               = snapshot.level;
+        if (snapshot.readyToEvolve                != null) entry.readyToEvolve       = snapshot.readyToEvolve;
+        if (snapshot.pendingMovesToLearn?.length)          entry.pendingMovesToLearn = snapshot.pendingMovesToLearn;
+        // Sync moves: update PP for existing slots, append any newly learned moves
         snapshot.moves.forEach((mSnap, i) => {
-          if (entry.moves[i]) entry.moves[i].pp.current = mSnap.pp.current;
+          if (entry.moves[i]) {
+            entry.moves[i].pp.current = mSnap.pp.current;
+          } else {
+            entry.moves.push({ name: mSnap.name, pp: { max: mSnap.pp.max, current: mSnap.pp.current } });
+          }
         });
       });
     },

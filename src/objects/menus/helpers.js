@@ -1,4 +1,4 @@
-import { BasePokemon } from '@spriteworld/pokemon-data';
+import { BasePokemon, EXPERIENCE_TABLES, GROWTH } from '@spriteworld/pokemon-data';
 import TypeBadge from '../TypeBadge.js';
 import { TEXT_STYLE_SM } from './layout.js';
 
@@ -43,6 +43,38 @@ export function drawHpRow(menu, x, y, width, currentHp, maxHp, hpRatio) {
   const hpNums = scene.add.text(x + width, y, `${currentHp}/${maxHp}`, { ...TEXT_STYLE_SM, align: 'right' });
   hpNums.setOrigin(1, 0);
   reg(hpNums);
+}
+
+/** Draw an EXP bar row into the menu container. */
+export function drawExpRow(menu, x, y, width, mon, entry) {
+  const { scene, reg } = menu;
+  const growth = entry?.growth ?? GROWTH.MEDIUM_FAST;
+  const table  = EXPERIENCE_TABLES[growth] ?? EXPERIENCE_TABLES[GROWTH.MEDIUM_FAST];
+  const level  = mon.level ?? 1;
+  const exp    = mon.exp   ?? 0;
+
+  let ratio = 1;
+  if (level < 100) {
+    const lo = table[level - 1] ?? 0;
+    const hi = table[level]     ?? lo + 1;
+    // Default exp to the level floor so uninitialized mons show 0% rather than negative
+    ratio = hi > lo ? Math.max(0, Math.min(1, ((exp || lo) - lo) / (hi - lo))) : 0;
+  }
+
+  const labelW = 24;
+  const barX   = x + labelW + 2;
+  const barW   = width - labelW - 2;
+
+  reg(scene.add.text(x, y, 'EXP', { ...TEXT_STYLE_SM, color: '#444444' }));
+
+  const track = scene.add.graphics();
+  track.fillStyle(0xaaaaaa, 1);
+  track.fillRoundedRect(barX, y + 3, barW, 5, 2);
+  if (ratio > 0) {
+    track.fillStyle(0x4848f8, 1);
+    track.fillRoundedRect(barX, y + 3, Math.max(2, barW * ratio), 5, 2);
+  }
+  reg(track);
 }
 
 /** Draw type badge(s) into the menu container. */

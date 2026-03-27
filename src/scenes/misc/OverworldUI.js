@@ -60,6 +60,10 @@ export default class extends Phaser.Scene {
   }
 
   handleEvents() {
+    this.game.events.on('item-pickup', (name) => {
+      store.commit('bag/PICKUP', name);
+    });
+
     this.game.events.on('toast', (value) => {
       this.toast.showMessage(value);
     });
@@ -113,13 +117,17 @@ export default class extends Phaser.Scene {
             const pokemon = battleScene?.config?.player?.team?.pokemon;
             if (pokemon) {
               const team = pokemon.map(p => ({
-                pid:      p.pid,
-                currentHp: p.currentHp,
-                moves:    p.moves.map(m => ({ name: m.name, pp: { max: m.pp.max, current: m.pp.current } })),
+                pid:                 p.pid,
+                currentHp:           p.currentHp,
+                exp:                 p.exp ?? 0,
+                level:               p.level,
+                readyToEvolve:       p.readyToEvolve       ?? null,
+                pendingMovesToLearn: p.pendingMovesToLearn  ?? [],
+                moves:               p.moves.map(m => ({ name: m.name, pp: { max: m.pp.max, current: m.pp.current } })),
               }));
               store.commit('party/SYNC_AFTER_BATTLE', team);
             }
-            this.time.delayedCall(1, () => {
+            this.time.delayedCall(2000, () => {
               // fade to white, then swap back to overworld
               this.tweens.add({
                 targets: this.transitionRect,
