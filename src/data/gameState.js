@@ -14,16 +14,31 @@
 import store from '../store/index.js';
 
 export const gameState = Object.defineProperties({}, {
-  playerName:  { get: () => store.state.player.playerName,   enumerable: true },
+  game: {
+    get: () => store.state.game,
+    enumerable: true,
+  },
   currentMap:  {
     get: () => store.state.player.currentMap,
     set: (v) => { store.state.player.currentMap = v; },
     enumerable: true,
   },
-  gameFlags:   { get: () => store.state.player.gameFlags,    enumerable: true },
-  party:       { get: () => store.state.party.list,          enumerable: true },
-  bag:         { get: () => store.state.bag,                 enumerable: true },
-  pokedex:     { get: () => store.state.pokedex.entries,     enumerable: true },
+  gameFlags: { 
+    get: () => store.state.player.gameFlags, 
+    enumerable: true 
+  },
+  party: { 
+    get: () => store.state.party.list, 
+    enumerable: true 
+  },
+  bag: { 
+    get: () => store.state.bag, 
+    enumerable: true 
+  },
+  pokedex: { 
+    get: () => store.state.pokedex.entries,  
+    enumerable: true 
+  },
 });
 
 /** Total playtime in seconds including the current unsaved session. */

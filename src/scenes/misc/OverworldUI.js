@@ -68,6 +68,13 @@ export default class extends Phaser.Scene {
       this.toast.showMessage(value);
     });
 
+    this.game.events.on('map-enter', (mapName) => {
+      const display = mapName
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/([A-Za-z])(\d)/g, '$1 $2');
+      this.toast.showMessage(display);
+    });
+
     this.game.events.on('textbox-disable', () => {
       this.textbox.setVisible(false);
       EventBus.emit('player-move-enable');
@@ -191,6 +198,7 @@ export default class extends Phaser.Scene {
     switch (option) {
       case 'pokedex':
       case 'option':
+      case 'debug':
         this.pauseMenu.showSubScreen(option);
         break;
       case 'team':

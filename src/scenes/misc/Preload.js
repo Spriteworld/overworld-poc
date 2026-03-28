@@ -41,6 +41,10 @@ export default class extends Phaser.Scene {
     this.load.on('complete', () => progress.destroy());
 
     this.load.image('blank', Tileset.blank);
+    this.load.spritesheet('kanto', Tileset.kanto_map, {
+      frameWidth: Tile.WIDTH,
+      frameHeight: Tile.HEIGHT,
+    });
     this.load.spritesheet('gen3_inside', Tileset.gen3inside, {
       frameWidth: Tile.WIDTH,
       frameHeight: Tile.HEIGHT,
@@ -81,8 +85,8 @@ export default class extends Phaser.Scene {
   create () {
     loadGame();
 
-    this.scene.start('Test');
-    // this.scene.start('Kanto');
+    // this.scene.start('Test');
+    this.scene.start('Kanto');
     // this.scene.start('Forest');
     // this.scene.start('VermillionGym');
     // this.scene.start('TurffieldGym');

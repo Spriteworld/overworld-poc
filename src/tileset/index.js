@@ -5,6 +5,8 @@ import gen3inside_json from '@Tileset/gen3_inside.json';
 import gen3outside from '@Tileset/gen3_outside.png';
 import gen3outside_json from '@Tileset/gen3_outside.json';
 
+import kanto_map from '@Tileset/maps/kanto.png';
+
 import rse_inside from '@Tileset/rse_inside.png';
 import rse_inside_json from '@Tileset/rse_inside.json';
 import rse_outside from '@Tileset/rse_outside.png';
@@ -47,6 +49,7 @@ Object.values(pokemon_shinyGlob).map((key) => {
 
 export default {
   blank,
+  kanto_map,
   gen3inside,
   gen3inside_json,
   gen3outside,

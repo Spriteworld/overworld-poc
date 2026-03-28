@@ -4,6 +4,7 @@ export default {
   namespaced: true,
 
   state: () => ({
+    seed:         Math.floor(Math.random() * 0x100000000) >>> 0,
     playerName:   'Red',
     currentMap:   'Test',
     gameFlags:    { ...defaultFlags },
@@ -27,6 +28,7 @@ export default {
     },
 
     LOAD(state, saved) {
+      if (saved.seed        != null) state.seed        = saved.seed;
       if (saved.playerName  != null) state.playerName  = saved.playerName;
       if (saved.currentMap  != null) state.currentMap  = saved.currentMap;
       if (saved.gameFlags   != null) state.gameFlags   = saved.gameFlags;

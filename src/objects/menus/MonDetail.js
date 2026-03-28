@@ -1,4 +1,5 @@
-import { Pokedex, GAMES, NATURES } from '@spriteworld/pokemon-data';
+import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
+import { drawStatsPanel } from '../common/pokemonStats.js';
 import { gameState } from '@Data/gameState.js';
 import { EVOLUTIONS } from '@Data/evolutions.js';
 import PokemonSprite from '../PokemonSprite.js';
@@ -34,15 +35,6 @@ function blendColors(c1, c2, t = 0.5) {
   const b = Math.round(( c1        & 0xff) + (( c2         & 0xff) - ( c1        & 0xff)) * t);
   return (r << 16) | (g << 8) | b;
 }
-
-const STAT_ROWS = [
-  { label: 'HP',  key: 'HP',             isHp: true  },
-  { label: 'ATK', key: 'ATTACK',         isHp: false },
-  { label: 'DEF', key: 'DEFENSE',        isHp: false },
-  { label: 'SPA', key: 'SPECIAL_ATTACK', isHp: false },
-  { label: 'SPD', key: 'SPECIAL_DEFENSE',isHp: false },
-  { label: 'SPE', key: 'SPEED',          isHp: false },
-];
 
 /**
  * Renders a Pokémon detail panel into an arbitrary bounding rectangle.
@@ -97,7 +89,7 @@ export function drawMonDetail(menu, { mon, entry, x, y, w, h, tab = 0 }) {
 
   _addBouncingBalls(scene, reg, { x, y, w, h: HEADER_H });
 
-  const hStyle = { fontFamily: 'monospace', fontSize: '14px', color: '#ffffff', fontStyle: 'bold' };
+  const hStyle = { fontFamily: 'Gen3', fontSize: '14px', color: '#ffffff', fontStyle: 'bold' };
 
   // ── Title ─────────────────────────────────────────────────────────
   const title = mon ? `${speciesName}${gender} (Lv.${mon.level})` : speciesName + gender;
@@ -128,7 +120,7 @@ export function drawMonDetail(menu, { mon, entry, x, y, w, h, tab = 0 }) {
   if (dexNum) {
     const fontSize = Math.min(64, Math.round(w * 0.1));
     const dexBig = scene.add.text(BALL_CX + BALL_R + 10, y + HEADER_H, dexNum, {
-      fontFamily: 'monospace', fontSize: `${fontSize}px`, color: '#ffffff', fontStyle: 'bold',
+      fontFamily: 'Gen3', fontSize: `${fontSize}px`, color: '#ffffff', fontStyle: 'bold',
     });
     dexBig.setOrigin(0, 1);
     dexBig.setAlpha(0.3);
@@ -153,7 +145,7 @@ export function drawMonDetail(menu, { mon, entry, x, y, w, h, tab = 0 }) {
   // ── Tab content ───────────────────────────────────────────────────
   switch (tabs[activeTab]) {
     case 'MOVES':      _drawMovesTab(scene, reg, mon, CONTENT_X, CONTENT_Y, CONTENT_W); break;
-    case 'STATS':      _drawStatsTab(scene, reg, mon, entry, CONTENT_X, CONTENT_Y, CONTENT_W); break;
+    case 'STATS':      drawStatsPanel(menu, { mon, entry, x: CONTENT_X, y: CONTENT_Y, w: CONTENT_W }); break;
     case 'INFO':       _drawInfoTab(scene, reg, mon, entry, CONTENT_X, CONTENT_Y, CONTENT_W); break;
     case 'EVOLUTIONS': _drawEvolutionsTab(scene, reg, menu, entry, CONTENT_X, CONTENT_Y, CONTENT_W); break;
   }
@@ -239,10 +231,10 @@ function _drawLinearChain(scene, reg, menu, stages, x, y, w, currentId) {
     _evoSprite(scene, reg, menu, id, cx - Math.round(SPR / 2), sy, SPR, id === currentId);
     if (label) {
       const arrY = sy + SPR + 10;
-      const arr  = scene.add.text(cx, arrY, '▼', { fontFamily: 'monospace', fontSize: '11px', color: '#888888' });
+      const arr  = scene.add.text(cx, arrY, '▼', { fontFamily: 'Gen3', fontSize: '11px', color: '#888888' });
       arr.setOrigin(0.5, 0);
       reg(arr);
-      const lbl  = scene.add.text(cx, arrY + 15, label, { fontFamily: 'monospace', fontSize: '10px', color: '#555555' });
+      const lbl  = scene.add.text(cx, arrY + 15, label, { fontFamily: 'Gen3', fontSize: '10px', color: '#555555' });
       lbl.setOrigin(0.5, 0);
       reg(lbl);
       sy += SPR + COND_H;
@@ -279,9 +271,9 @@ function _drawTopDownBranching(scene, reg, menu, prefix, branchNode, branches, x
     _evoSprite(scene, reg, menu, id, cx - Math.round(SPR / 2), sy, SPR, id === currentId);
     if (label) {
       const arrY = sy + SPR + 10;
-      const arr = scene.add.text(cx, arrY, '▼', { fontFamily: 'monospace', fontSize: '11px', color: '#888888' });
+      const arr = scene.add.text(cx, arrY, '▼', { fontFamily: 'Gen3', fontSize: '11px', color: '#888888' });
       arr.setOrigin(0.5, 0); reg(arr);
-      const lbl = scene.add.text(cx, arrY + 15, label, { fontFamily: 'monospace', fontSize: '10px', color: '#555555' });
+      const lbl = scene.add.text(cx, arrY + 15, label, { fontFamily: 'Gen3', fontSize: '10px', color: '#555555' });
       lbl.setOrigin(0.5, 0); reg(lbl);
       sy += SPR + COND_H;
     } else {
@@ -303,10 +295,10 @@ function _drawTopDownBranching(scene, reg, menu, prefix, branchNode, branches, x
     const sprX = rowStartX + i * (SPR + gap);
     const bcx  = sprX + SPR / 2;
 
-    const arr = scene.add.text(bcx, condY, '▼', { fontFamily: 'monospace', fontSize: '11px', color: '#888888' });
+    const arr = scene.add.text(bcx, condY, '▼', { fontFamily: 'Gen3', fontSize: '11px', color: '#888888' });
     arr.setOrigin(0.5, 0); reg(arr);
 
-    const lbl = scene.add.text(bcx, condY + 14, label, { fontFamily: 'monospace', fontSize: '9px', color: '#555555' });
+    const lbl = scene.add.text(bcx, condY + 14, label, { fontFamily: 'Gen3', fontSize: '9px', color: '#555555' });
     lbl.setOrigin(0.5, 0); reg(lbl);
 
     _evoSprite(scene, reg, menu, node.id, sprX, targY, SPR, node.id === currentId);
@@ -329,7 +321,7 @@ function _drawTabBar(scene, reg, tabs, activeTab, x, y, totalW, tabH) {
     reg(bg);
 
     const t = scene.add.text(tx + tabW / 2, y + tabH / 2, label, {
-      fontFamily: 'monospace',
+      fontFamily: 'Gen3',
       fontSize:   '11px',
       color:      isActive ? '#ffffff' : '#555555',
       fontStyle:  isActive ? 'bold' : 'normal',
@@ -355,60 +347,6 @@ function _drawMovesTab(scene, reg, mon, x, y, w) {
     const ppT = scene.add.text(x + w - 10, my + 9, `PP ${ppCur}/${ppMax}`, TEXT_STYLE_SM);
     ppT.setOrigin(1, 0);
     reg(ppT);
-  });
-}
-
-function _drawStatsTab(scene, reg, mon, entry, x, y, w) {
-  const ivs = mon?.ivs ?? {};
-  const evs = mon?.evs ?? {};
-  const lvl = mon?.level ?? 1;
-
-  const natureData = mon?.nature
-    ? Object.values(NATURES).find(n => n.name === mon.nature.toUpperCase())
-    : null;
-  const natInc = natureData?.increase;
-  const natDec = natureData?.decrease;
-
-  const LABEL_W = 32;
-  const VAL_W   = 32;
-  const barX    = x + LABEL_W;
-  const barW    = w - LABEL_W - VAL_W - 8;
-
-  STAT_ROWS.forEach(({ label, key, isHp }, i) => {
-    const rowY = y + i * 26;
-    const base = entry?.base_stats?.[key] ?? 0;
-
-    let stat, labelCol;
-    if (mon) {
-      const iv   = ivs[key] ?? 0;
-      const ev   = evs[key] ?? 0;
-      const term = Math.floor((2 * base + iv + Math.floor(ev / 4)) * lvl / 100);
-      const raw  = isHp ? term + lvl + 10 : term + 5;
-      const mult = (!isHp && natInc === key && natInc !== natDec) ? 1.1
-                 : (!isHp && natDec === key && natInc !== natDec) ? 0.9 : 1;
-      stat     = Math.floor(raw * mult);
-      labelCol = mult > 1 ? '#e03030' : mult < 1 ? '#3060e0' : '#555555';
-    } else {
-      stat     = base;
-      labelCol = '#555555';
-    }
-
-    const maxStat  = mon ? (isHp ? 400 : 300) : 255;
-    const ratio    = Math.min(1, stat / maxStat);
-    const barColor = ratio > 0.5 ? 0x48c050 : ratio > 0.3 ? 0xf0c040 : 0xe04040;
-
-    reg(scene.add.text(x, rowY, label, { ...TEXT_STYLE_SM, color: labelCol }));
-
-    const track = scene.add.graphics();
-    track.fillStyle(0xdddddd, 1);
-    track.fillRoundedRect(barX, rowY + 2, barW, 10, 2);
-    track.fillStyle(barColor, 1);
-    track.fillRoundedRect(barX, rowY + 2, Math.max(3, barW * ratio), 10, 2);
-    reg(track);
-
-    const valT = scene.add.text(barX + barW + 6, rowY, String(stat), TEXT_STYLE_SM);
-    valT.setOrigin(0, 0);
-    reg(valT);
   });
 }
 

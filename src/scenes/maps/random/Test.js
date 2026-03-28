@@ -112,4 +112,24 @@ export default class extends GameMap {
     }
   }
 
+  encounterTable() {
+    return {
+      GRASS_1: [
+        { pokemon: 'caterpie', level: [3, 5], rarity: 0.15 },
+        { pokemon: 'weedle', level: [4, 6], rarity: 0.15 },
+        { pokemon: 'pidgey', level: [3, 5], rarity: 0.40 },
+        { pokemon: 'rattata', level: [3, 5], rarity: 0.45 },
+      ],
+      GRASS_2: [
+        { pokemon: 'pidgey', level: [3, 5], rarity: 0.6 },
+        { pokemon: 'rattata', level: [3, 5], rarity: 0.4 },
+      ],
+      OLD_ROD: [
+        { pokemon: 'magikarp', level: [5, 10], rarity: 1.0 },
+      ],
+      HEADBUTT: [],
+      ROCKS: [],
+    };
+  }
+
 }

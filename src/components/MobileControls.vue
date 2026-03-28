@@ -19,7 +19,7 @@
     <!-- Select / Start -->
     <div class="flex flex-col gap-3 items-center">
       <button class="sys-btn">SEL</button>
-      <button class="sys-btn">STA</button>
+      <button class="sys-btn" v-on="handlers('Enter')">STA</button>
     </div>
 
     <!-- B / A -->
@@ -41,13 +41,13 @@
 <script>
 const KEY_CODES = {
   ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40,
-  z: 90, x: 88,
+  z: 90, x: 88, Enter: 13,
 };
 
 const KEY_CODE_STR = {
   ArrowLeft: 'ArrowLeft', ArrowRight: 'ArrowRight',
   ArrowUp: 'ArrowUp', ArrowDown: 'ArrowDown',
-  z: 'KeyZ', x: 'KeyX',
+  z: 'KeyZ', x: 'KeyX', Enter: 'Enter',
   w: 'ArrowUp', a: 'ArrowLeft', s: 'ArrowDown', d: 'ArrowRight',
 };
 

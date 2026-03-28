@@ -10,11 +10,12 @@ import TeamDetail    from './menus/TeamDetail.js';
 import PokedexScreen from './menus/PokedexScreen.js';
 import BagScreen     from './menus/BagScreen.js';
 import UserScreen    from './menus/UserScreen.js';
+import DebugScreen   from './menus/DebugScreen.js';
 
 const MENU_DEPTH = Number.MAX_SAFE_INTEGER - 100;
 
-const MENU_KEYS   = ['pokedex', 'team', 'bag', 'user', 'option', 'save', 'close'];
-const MENU_LABELS = ['POKÉDEX', 'POKÉMON', 'BAG', null /* playerName */, 'OPTION', 'SAVE', 'CLOSE'];
+const MENU_KEYS   = ['pokedex', 'team', 'bag', 'user', 'option', 'save', 'debug', 'close'];
+const MENU_LABELS = ['POKÉDEX', 'POKÉMON', 'BAG', null /* playerName */, 'OPTION', 'SAVE', 'DEBUG', 'CLOSE'];
 
 /**
  * Classic Pokémon-style pause menu living in OverworldUI's display list.
@@ -46,6 +47,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     this.pokedexScreen = new PokedexScreen(this);
     this.bagScreen     = new BagScreen(this);
     this.userScreen    = new UserScreen(this);
+    this.debugScreen   = new DebugScreen(this);
 
     // ── Persistent UI ──────────────────────────────────────────────────
     this._mainBg     = null;
@@ -54,7 +56,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     this._subBg      = null;
     this._subTexts   = [];
 
-    this._buildMainPanel();
+    this._rebuildMainPanel();
     this._buildSubPanel();
 
     this.setDepth(MENU_DEPTH);
@@ -73,9 +75,27 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
 
   // ─── Panel builders ──────────────────────────────────────────────────────
 
-  _buildMainPanel() {
-    const labels  = MENU_LABELS.map(l => l ?? gameState.playerName.toUpperCase());
-    const panelH  = labels.length * ITEM_H + PAD * 2;
+  /** Returns the subset of menu items visible given current game flags and build env. */
+  _activeItems() {
+    const flags = this.scene.game.config.gameFlags ?? {};
+    return MENU_KEYS
+      .map((key, i) => ({ key, label: MENU_LABELS[i] ?? gameState.game.playerName.toUpperCase() }))
+      .filter(({ key }) => {
+        if (key === 'pokedex') return !!flags.has_pokedex;
+        if (key === 'debug')   return !!import.meta.env.VITE_DEBUG;
+        return true;
+      });
+  }
+
+  /** Destroys any existing main-panel objects and rebuilds from current game flags. */
+  _rebuildMainPanel() {
+    this._mainBg?.destroy();
+    this._cursorText?.destroy();
+    this._mainTexts.forEach(t => t.destroy());
+    this._mainTexts = [];
+
+    const items  = this._activeItems();
+    const panelH = items.length * ITEM_H + PAD * 2;
 
     this._mainBg = this.scene.add.graphics();
     this._mainBg.fillStyle(0xf8f8f8, 1);
@@ -87,7 +107,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     this._cursorText = this.scene.add.text(MX + PAD, MY + PAD, '▶', TEXT_STYLE);
     this.add(this._cursorText);
 
-    labels.forEach((label, i) => {
+    items.forEach(({ label }, i) => {
       const t = this.scene.add.text(MX + PAD + 18, MY + PAD + i * ITEM_H, label, TEXT_STYLE);
       this.add(t);
       this._mainTexts.push(t);
@@ -162,6 +182,9 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       case 'user':
         this.userScreen.build();
         break;
+      case 'debug':
+        this.debugScreen.build();
+        break;
       default:
         this._buildPlaceholderScreen(name);
         break;
@@ -180,6 +203,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     this._selectedIndex = 0;
     this._currentScreen = null;
     this._clearSubTexts();
+    this._rebuildMainPanel();
     this._showMainPanel();
     this.setVisible(true);
   }
@@ -197,10 +221,12 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       case 'team-detail': this.teamDetail.nav(-1);        return;
       case 'pokedex':     this.pokedexScreen.nav(-1);     return;
       case 'bag':         this.bagScreen.nav(-1);         return;
+      case 'debug':       this.debugScreen.nav(-1);       return;
       case null: break;
       default: return;
     }
-    this._selectedIndex = (this._selectedIndex - 1 + MENU_KEYS.length) % MENU_KEYS.length;
+    const len = this._activeItems().length;
+    this._selectedIndex = (this._selectedIndex - 1 + len) % len;
     this._updateCursor();
   }
 
@@ -211,10 +237,11 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       case 'team-detail': this.teamDetail.nav(1);        return;
       case 'pokedex':     this.pokedexScreen.nav(1);     return;
       case 'bag':         this.bagScreen.nav(1);         return;
+      case 'debug':       this.debugScreen.nav(1);       return;
       case null: break;
       default: return;
     }
-    this._selectedIndex = (this._selectedIndex + 1) % MENU_KEYS.length;
+    this._selectedIndex = (this._selectedIndex + 1) % this._activeItems().length;
     this._updateCursor();
   }
 
@@ -223,6 +250,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     if (this._currentScreen === 'team-detail') this.teamDetail.tabNav(-1);
     if (this._currentScreen === 'pokedex')     this.pokedexScreen.tabNav(-1);
     if (this._currentScreen === 'bag')         this.bagScreen.tabNav(-1);
+    if (this._currentScreen === 'debug')       this.debugScreen.tabNav(-1);
   }
 
   moveRight() {
@@ -230,6 +258,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     if (this._currentScreen === 'team-detail') this.teamDetail.tabNav(1);
     if (this._currentScreen === 'pokedex')     this.pokedexScreen.tabNav(1);
     if (this._currentScreen === 'bag')         this.bagScreen.tabNav(1);
+    if (this._currentScreen === 'debug')       this.debugScreen.tabNav(1);
   }
 
   /**
@@ -240,7 +269,8 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     switch (this._currentScreen) {
       case 'team':         this.teamScreen.confirm();        return null;
       case 'team-submenu': this.teamScreen.subMenuConfirm(); return null;
-      case null:           return MENU_KEYS[this._selectedIndex];
+      case 'debug':        this.debugScreen.confirm();       return null;
+      case null:           return this._activeItems()[this._selectedIndex].key;
       default:             return null;
     }
   }

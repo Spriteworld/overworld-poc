@@ -1,6 +1,7 @@
 import { Tile } from '@Objects';
 import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves, Items } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
+import { getPropertyValue } from '@Utilities';
 import store from '../../store/index.js';
 
 /**
@@ -43,6 +44,16 @@ function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function pickWeighted(entries) {
+  const total = entries.reduce((sum, e) => sum + e.rarity, 0);
+  let r = Math.random() * total;
+  for (const e of entries) {
+    r -= e.rarity;
+    if (r <= 0) return e;
+  }
+  return entries[entries.length - 1];
+}
+
 function pickUnique(arr, n) {
   return [...arr].sort(() => Math.random() - 0.5).slice(0, Math.min(n, arr.length));
 }
@@ -62,13 +73,14 @@ export default class {
 
   init() {
     if (this.scene.game.config.debug.console.interactableShout) {
-      console.log('Interactables::encounter');
     }
 
     const encounterZones = this.scene.findInteractions('encounters');
     if (encounterZones.length === 0) { return; }
 
     encounterZones.forEach(obj => {
+      const tableId = this.scene.getPropertyFromTile(obj, 'table-id') || null;
+
       if (typeof obj.polygon === 'undefined') {
         const width  = parseInt(obj.width  / Tile.WIDTH);
         const height = parseInt(obj.height / Tile.HEIGHT);
@@ -77,6 +89,7 @@ export default class {
             this.encounterTiles.push({
               x: (obj.x / Tile.WIDTH) + x,
               y: (obj.y / Tile.HEIGHT) + y,
+              tableId,
             });
           }
         }
@@ -85,13 +98,13 @@ export default class {
           this.encounterTiles.push({
             x: (obj.x + point.x) / Tile.WIDTH,
             y: (obj.y + point.y) / Tile.HEIGHT,
+            tableId,
           });
         });
       }
     });
 
     if (this.scene.game.config.debug.console.interactableShout) {
-      console.log('Interactables::encounter::tiles', this.encounterTiles.length);
     }
   }
 
@@ -103,13 +116,13 @@ export default class {
     this._sub = this.scene.gridEngine.positionChangeFinished().subscribe(({ charId, enterTile }) => {
       if (charId !== 'player') { return; }
 
-      const onEncounterTile = this.encounterTiles.some(
+      const tile = this.encounterTiles.find(
         t => t.x === enterTile.x && t.y === enterTile.y
       );
-      if (!onEncounterTile) { return; }
+      if (!tile) { return; }
       if (Math.random() > ENCOUNTER_RATE) { return; }
 
-      this.scene.game.events.emit('battle-start', this._buildWildBattle());
+      this.scene.game.events.emit('battle-start', this._buildWildBattle(tile.tableId));
     });
   }
 
@@ -117,19 +130,36 @@ export default class {
     this._sub?.unsubscribe();
   }
 
-  _buildWildBattle() {
+  _buildWildBattle(tableId = null) {
     if (!this._movePool) {
       this._movePool = buildMovePool();
     }
 
-    const dex        = new Pokedex(GAMES.POKEMON_FIRE_RED);
-    const allSpecies = Object.values(dex.pokedex).filter(p => p.nat_dex_id <= 151);
-    const entry      = pick(allSpecies);
+    const dex     = new Pokedex(GAMES.POKEMON_FIRE_RED);
+    const allSpec = Object.values(dex.pokedex);
+    const tables  = tableId ? this.scene.encounterTable() : null;
+    const entries = tables?.[tableId];
+    let entry, levelMin, levelMax;
+    if (entries?.length > 0) {
+      const picked  = pickWeighted(entries);
+      const name    = picked.pokemon.toLowerCase();
+      entry         = allSpec.find(p => p.species?.toLowerCase() === name);
+      if (entry == null) {
+        console.warn(`Encounter::buildWildBattle::noEntryFound for '${name}'`);
+        entry = pick(allSpec.filter(p => p.nat_dex_id <= 151));
+      }
+      [levelMin, levelMax] = picked.level;
+    } else {
+      entry    = pick(allSpec.filter(p => p.nat_dex_id <= 151));
+      levelMin = WILD_LEVEL_MIN;
+      levelMax = WILD_LEVEL_MAX;
+    }
 
     // Mark the wild Pokémon as seen in the Pokédex
     store.commit('pokedex/SEE', entry.nat_dex_id);
-    const level      = WILD_LEVEL_MIN + Math.floor(Math.random() * (WILD_LEVEL_MAX - WILD_LEVEL_MIN + 1));
-    const moves      = pickUnique(this._movePool, 4).map(m => ({
+    const level = levelMin + Math.floor(Math.random() * (levelMax - levelMin + 1));
+    // const pid = 
+    const moves = pickUnique(this._movePool, 4).map(m => ({
       name: m.name,
       pp: { max: m.pp, current: m.pp },
     }));

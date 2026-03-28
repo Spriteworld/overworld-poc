@@ -1,24 +1,25 @@
 import { createStore } from 'vuex';
-import player  from './modules/player.js';
+import game  from './modules/game.js';
 import party   from './modules/party.js';
 import bag     from './modules/bag.js';
 import pokedex from './modules/pokedex.js';
 
 export default createStore({
-  modules: { player, party, bag, pokedex },
+  modules: { game, party, bag, pokedex },
 
   actions: {
     saveGame({ state, commit }) {
-      commit('player/FLUSH_PLAYTIME');
+      commit('game/FLUSH_PLAYTIME');
       localStorage.setItem('spriteworld_save', JSON.stringify({
         // player
-        playerName:   state.player.playerName,
-        currentMap:   state.player.currentMap,
-        gameFlags:    state.player.gameFlags,
-        playtime:     state.player.playtime,
+        seed: state.game.seed,
+        playerName: state.game.playerName,
+        currentMap: state.game.currentMap,
+        gameFlags: state.game.gameFlags,
+        playtime: state.game.playtime,
         // party / bag / pokedex
-        party:   state.party.list,
-        bag:     state.bag,
+        party: state.party.list,
+        bag: state.bag,
         pokedex: state.pokedex.entries,
         savedAt: Date.now(),
       }));
@@ -29,9 +30,9 @@ export default createStore({
       if (!raw) return false;
       try {
         const saved = JSON.parse(raw);
-        commit('player/LOAD',  saved);
-        commit('party/LOAD',   saved);
-        commit('bag/LOAD',     saved);
+        commit('game/LOAD', saved);
+        commit('party/LOAD', saved);
+        commit('bag/LOAD', saved);
         commit('pokedex/LOAD', saved);
         return true;
       } catch {

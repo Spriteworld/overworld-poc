@@ -35,7 +35,7 @@ export default class TypeBadge extends Phaser.GameObjects.Container {
     this.add(bg);
 
     const label = scene.add.text(W / 2, H / 2, type.toUpperCase(), {
-      fontFamily: 'monospace',
+      fontFamily: 'Gen3',
       fontSize: '11px',
       color: '#f8f8f8',
     });

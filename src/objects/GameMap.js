@@ -58,6 +58,7 @@ export default class extends Phaser.Scene {
   }
 
   loadMap() {
+    this.registry.set('player_input', true);
     var tilemap = this.make.tilemap({ key: this.config.mapName });
     this.config.tilemap = tilemap;
     if (this.game.config.debug.console.gameMap) {
@@ -103,6 +104,7 @@ export default class extends Phaser.Scene {
     });
 
     EventBus.emit('current-scene-ready', this);
+    this.game.events.emit('map-enter', this.config.mapName);
 
     // Clean up all plugin event listeners when this scene shuts down.
     this.events.once('shutdown', () => {
@@ -110,6 +112,16 @@ export default class extends Phaser.Scene {
         if (typeof plugin.destroy === 'function') plugin.destroy();
       });
     });
+  }
+
+  /**
+   * Returns an encounter table for the given table ID, or null to use defaults.
+   * Override in individual map scenes to define wild Pokémon pools.
+   *
+   * @returns {Record<string, Array<{pokemon: string, level: [number,number], rarity: number}>> | null}
+   */
+  encounterTable() {
+    return null;
   }
 
   findInteractions(type) {

@@ -9,6 +9,13 @@ html, body, #app {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
+@font-face {
+  font-family: 'Gen3';
+  src: url('./font/gen3.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   background-color: rgba(0, 0, 0, 0.8);
 }
