@@ -79,7 +79,8 @@ class TextBox {
 
   start(text) {
     this._cancelPending();
-    this._pages   = this._paginate(text);
+    const str     = Array.isArray(text) ? text.join('\n') : text;
+    this._pages   = this._paginate(str);
     this._pageIdx = 0;
     this._typeCurrentPage();
   }

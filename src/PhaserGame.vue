@@ -26,7 +26,8 @@ export default {
     'debug'
   ],
 
-  mounted() {
+  async mounted() {
+    await document.fonts.ready;
     this.game = new Game(config);
     this.game.config.debug     = this._loadStored('spriteworld_debug',     Debug);
     this.game.config.gameFlags = this._loadStored('spriteworld_gameflags', GameFlags);

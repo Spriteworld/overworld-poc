@@ -16,10 +16,6 @@ html, body, #app {
   font-style: normal;
 }
 
-body {
-  background-color: rgba(0, 0, 0, 0.8);
-}
-
 /* Portrait mobile: constrain game to 4:3 so controls sit flush below with no wasted space */
 @media (max-width: 1023px) and (orientation: portrait) {
   #game-container {

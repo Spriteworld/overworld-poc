@@ -3,6 +3,7 @@ import { textBox, toast, EventBus } from '@Utilities';
 import { PauseMenu } from '@Objects';
 import { gameState, saveGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
+import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -138,26 +139,76 @@ export default class extends Phaser.Scene {
             if (battleItems?.length) {
               store.commit('bag/SYNC_AFTER_BATTLE', battleItems);
             }
-            this.time.delayedCall(2000, () => {
-              // fade to white, then swap back to overworld
-              this.tweens.add({
-                targets: this.transitionRect,
-                alpha: 1,
-                duration: 250,
-                onComplete: () => {
-                  this.scene.stop('BattleScene2');
-                  this.scene.wake(mapName);
-                  this.tweens.add({
-                    targets: this.transitionRect,
-                    alpha: 0,
-                    duration: 300,
-                    onComplete: () => {
-                      this.registry.set('player_input', true);
-                    },
-                  });
+
+            // Check for any pending overworld evolutions (stone use out of battle,
+            // or any that the battle Evolution state didn't process).
+            const evolvingPokemon = (pokemon ?? []).filter(p => p.readyToEvolve != null);
+            const tilesetBaseUrl  = battleScene?.data?.tilesetBaseUrl ?? '';
+
+            const runEvolutionQueue = (queue, onDone) => {
+              if (queue.length === 0) { onDone(); return; }
+              const p = queue[0];
+              const remaining = queue.slice(1);
+              const fromName  = p.getName?.() ?? String(p.species);
+              const targetId  = p.readyToEvolve;
+              let toName;
+              try {
+                const entry = new Pokedex(p.game ?? GAMES.POKEMON_FIRE_RED).getPokemonById(targetId);
+                toName = (entry.species ?? `#${targetId}`).replace(/\b\w/g, c => c.toUpperCase());
+              } catch {
+                toName = `#${targetId}`;
+              }
+              this.scene.launch('EvolutionScene', {
+                fromSpecies:    p.species,
+                toSpecies:      targetId,
+                fromName,
+                toName,
+                shiny:          p.isShiny  ?? false,
+                gender:         p.gender   ?? null,
+                tilesetBaseUrl,
+                canCancel:      false,
+                onComplete: (didEvolve) => {
+                  if (didEvolve) p.evolve(targetId);
+                  p.readyToEvolve = null;
+                  // Re-sync the party after each evolution
+                  const updatedTeam = (pokemon ?? []).map(mon => ({
+                    pid:                 mon.pid,
+                    currentHp:           mon.currentHp,
+                    exp:                 mon.exp ?? 0,
+                    level:               mon.level,
+                    readyToEvolve:       mon.readyToEvolve       ?? null,
+                    pendingMovesToLearn: mon.pendingMovesToLearn  ?? [],
+                    moves:               mon.moves.map(m => ({ name: m.name, pp: { max: m.pp.max, current: m.pp.current } })),
+                  }));
+                  store.commit('party/SYNC_AFTER_BATTLE', updatedTeam);
+                  runEvolutionQueue(remaining, onDone);
                 },
               });
-            });
+            };
+
+            const returnToMap = () => {
+              this.time.delayedCall(2000, () => {
+                this.tweens.add({
+                  targets: this.transitionRect,
+                  alpha: 1,
+                  duration: 250,
+                  onComplete: () => {
+                    this.scene.stop('BattleScene2');
+                    this.scene.wake(mapName);
+                    this.tweens.add({
+                      targets: this.transitionRect,
+                      alpha: 0,
+                      duration: 300,
+                      onComplete: () => {
+                        this.registry.set('player_input', true);
+                      },
+                    });
+                  },
+                });
+              });
+            };
+
+            runEvolutionQueue(evolvingPokemon, returnToMap);
           });
         },
       });
