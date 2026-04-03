@@ -2,6 +2,11 @@ const PAD = 20;
 const RADIUS = 10;
 
 class Toast {
+  /**
+   * @param {Phaser.Scene} scene - The Phaser scene this toast belongs to.
+   * @param {number} x - Left edge of the toast in screen coordinates.
+   * @param {number} y - Top edge of the toast in screen coordinates.
+   */
   constructor(scene, x, y) {
     this.scene = scene;
     this.ox    = x;
@@ -17,6 +22,12 @@ class Toast {
       .setAlpha(0);
   }
 
+  /**
+   * Display a notification message. If a message is already visible its
+   * animation is cancelled and replaced with the new text immediately.
+   * The toast fades in, holds for 1.5 s, then fades out automatically.
+   * @param {string} msg - The text to display.
+   */
   showMessage(msg) {
     // Cancel in-progress animation
     this._tween?.stop();

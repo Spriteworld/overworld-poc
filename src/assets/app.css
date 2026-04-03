@@ -1,27 +1,32 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@import "tailwindcss";
 
-html, body, #app {
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-}
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-@font-face {
-  font-family: 'Gen3';
-  src: url('./font/gen3.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-}
+  html, body, #app {
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
 
-/* Portrait mobile: constrain game to 4:3 so controls sit flush below with no wasted space */
-@media (max-width: 1023px) and (orientation: portrait) {
-  #game-container {
-    height: auto !important;
-    flex-grow: 0 !important;
-    aspect-ratio: 4 / 3;
-    width: 100%;
+  @font-face {
+    font-family: 'Gen3';
+    src: url('./font/gen3.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+
+  /* Portrait mobile: constrain game to 4:3 so controls sit flush below with no wasted space */
+  @media (max-width: 1023px) and (orientation: portrait) {
+    #game-container {
+      height: auto !important;
+      flex-grow: 0 !important;
+      aspect-ratio: 4 / 3;
+      width: 100%;
+    }
   }
 }

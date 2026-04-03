@@ -15,8 +15,8 @@ export const defaultParty = [
   {
     game:    GAMES.POKEMON_FIRE_RED,
     pid:     1,
-    species: 1, // Bulbasaur
-    level:   10,
+    species: 1, // Bulbasaur — one level away from evolving into Ivysaur (lv 16)
+    level:   15,
     nature:  NATURES.HARDY.name,
     gender:  GENDERS.MALE,
     ability: { name: 'Overgrow' },

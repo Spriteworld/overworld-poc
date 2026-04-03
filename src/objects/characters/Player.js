@@ -2,6 +2,11 @@ import { Character, Tile, Direction } from '@Objects';
 import { EventBus } from '@Utilities';
 
 export default class extends Character {
+  /**
+   * The player-controlled character. Registers all movement states including
+   * JUMP and JUMP_LEDGE, and creates debug blocker rectangles for each direction.
+   * @param {object} config - Character configuration (see Character constructor).
+   */
   constructor(config) {
     config.type = 'player';
     // config.collides = false;
@@ -89,6 +94,12 @@ export default class extends Character {
     ;
   }
 
+  /**
+   * Per-frame update. Runs the state machine and, in debug mode, visualises
+   * blocked tiles around the player.
+   * @param {number} time - Current game time in ms.
+   * @param {number} delta - Time since last frame in ms.
+   */
   update(time, delta) {
     this.stateMachine.update(time);
 
@@ -97,6 +108,9 @@ export default class extends Character {
     }
   }
 
+  /**
+   * Override: also checks for the Z key to trigger interaction with facing objects.
+   */
   idleOnUpdate() {
     Character.prototype.idleOnUpdate.call(this);
     if (this.config.scene.registry.get('player_input') === false) {
@@ -111,6 +125,10 @@ export default class extends Character {
     }
   }
 
+  /**
+   * Override: reads directional keys and the run/bike modifier keys to move
+   * the player each tick, adjusting GridEngine speed accordingly.
+   */
   moveOnUpdate() {
     if (this.config.scene.registry.get('player_input') === false) {
       return;
@@ -145,14 +163,24 @@ export default class extends Character {
     EventBus.emit('player-move-complete', this);
   }
 
+  /**
+   * Disable player input by setting the `player_input` registry flag to false.
+   */
   disableMovement() {
     this.config.scene.registry.set('player_input', false);
   }
-  
+
+  /**
+   * Re-enable player input by setting the `player_input` registry flag to true.
+   */
   enableMovement() {
     this.config.scene.registry.set('player_input', true);
   }
 
+  /**
+   * Check the tile in front of the player against the interactable registry
+   * and emit `interact-with-obj` if a match is found.
+   */
   handleInteractables() {
     let facingTile = this.getPosInFacingDirection();
 
@@ -176,6 +204,10 @@ export default class extends Character {
     this.config.scene.game.events.emit('interact-with-obj', tile);
   }
 
+  /**
+   * Show coloured rectangles on tiles blocked in each direction around the player.
+   * Only called when `debug.tests.playerBlockers` is enabled in the game config.
+   */
   debugBlockers() {
     let player = this.config.scene.characters.get(this.config.id);
     let tilePos = {};

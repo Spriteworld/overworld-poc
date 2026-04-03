@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import vue from '@vitejs/plugin-vue';
+import tailwindcss from '@tailwindcss/vite';
+
 
 /** Force a full page reload for any Phaser scene/object file to avoid
  *  "scene.plugins.get(...) is null" errors caused by Phaser's plugin system
@@ -24,6 +26,7 @@ function phaserHmrPlugin() {
 
 export default defineConfig({
   plugins: [
+    tailwindcss(),
     vue(),
     phaserHmrPlugin(),
   ],
@@ -50,6 +53,10 @@ export default defineConfig({
     assetsInlineLimit: 0,
     minify: true,
     rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        test: resolve(__dirname, 'test.html'),
+      },
       output: {
         manualChunks: () => 'app',
         entryFileNames: `assets/[name]-[hash].js`,

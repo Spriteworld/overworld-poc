@@ -2,6 +2,19 @@ import MovableSprite from '@Objects/characters/MovableSprite';
 import { Tile } from '@Objects';
 
 export default class BaseItem extends MovableSprite {
+  /**
+   * Base class for all overworld item/obstacle sprites.
+   * Renders the sprite at the correct pixel position, registers it as both a
+   * scene character and an interactable tile, and optionally draws a debug label.
+   * Subclasses must set `config.tileId`, `config.type`, and `config.properties`
+   * before calling `super(config)`.
+   * @param {object} config - Configuration object.
+   * @param {Phaser.Scene} config.scene - The owning GameMap scene.
+   * @param {number} config.x - Tile x position.
+   * @param {number} config.y - Tile y position.
+   * @param {number} config.tileId - Frame index in the gen3_outside tileset.
+   * @param {string} config.type - Interactable type string (e.g. `'cut-tree'`).
+   */
   constructor(config) {
     config.texture = 'gen3_outside';
     config.frame = config.tileId;

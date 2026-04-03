@@ -2,7 +2,7 @@ export default {
   namespaced: true,
 
   state: () => ({
-    items:     [],
+    items:     [{ name: 'Rare Candy', quantity: 1 }],
     pokeballs: [],
     tms:       [],
   }),
@@ -37,6 +37,19 @@ export default {
         if (Array.isArray(saved.bag.items))     state.items     = saved.bag.items;
         if (Array.isArray(saved.bag.pokeballs)) state.pokeballs = saved.bag.pokeballs;
         if (Array.isArray(saved.bag.tms))       state.tms       = saved.bag.tms;
+      }
+    },
+
+    /**
+     * Decrement the quantity of a named item from the items list.
+     * Removes the entry when it reaches zero.
+     */
+    USE_ITEM(state, itemName) {
+      const idx = state.items.findIndex(e => e.name === itemName);
+      if (idx === -1) return;
+      state.items[idx].quantity--;
+      if (state.items[idx].quantity <= 0) {
+        state.items.splice(idx, 1);
       }
     },
 

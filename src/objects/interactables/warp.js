@@ -3,6 +3,9 @@ import { Tile, Interactables, GameMap, Direction } from '@Objects';
 import { getPropertyValue } from '@Utilities';
 
 export default class {
+  /**
+   * @param {GameMap} scene - The map scene that owns this plugin.
+   */
   constructor(scene) {
     /** @type {GameMap} */
     this.scene = scene;
@@ -10,6 +13,10 @@ export default class {
     this.player = {};
   }
 
+  /**
+   * Discover all warp objects on the map and expand multi-tile warps into
+   * individual single-tile warp entries in the scene registry.
+   */
   init() {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::warp', this.scene.game.config.mapName);
@@ -48,6 +55,10 @@ export default class {
     this.warps = this.scene.registry.get('warps');
   }
 
+  /**
+   * Register a single tile-sized warp object into the scene's warp registry.
+   * @param {object} obj - A Tiled object with warp-x and warp-y properties.
+   */
   addWarp(obj) {
     let warpxIdx = obj.properties.findIndex(w => w.name === 'warp-x');
     let warpyIdx = obj.properties.findIndex(w => w.name === 'warp-y');
@@ -75,6 +86,10 @@ export default class {
     }
   }
 
+  /**
+   * Subscribe to GridEngine position-change events and route characters
+   * through any warp tile they step on.
+   */
   event() {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log(['Interactables::warp::event', this.scene])
@@ -92,10 +107,18 @@ export default class {
       });
   }
 
+  /** Unsubscribe from GridEngine events to prevent memory leaks. */
   destroy() {
     this._sub?.unsubscribe();
   }
 
+  /**
+   * Check whether a character has stepped onto a warp tile and, if so,
+   * initiate the appropriate warp action.
+   * @param {Character} char - The character that moved.
+   * @param {{x:number,y:number}} exitTile - The tile the character left.
+   * @param {{x:number,y:number}} enterTile - The tile the character entered.
+   */
   handleWarps(char, exitTile, enterTile) {
     if (this.warps.length === 0) { return; }
 
@@ -126,6 +149,11 @@ export default class {
     this.warpPlayerToMap(char, warpLocation, playerLocation);
   }
 
+  /**
+   * Teleport a character to a new position within the current map.
+   * @param {Character} char - The character to teleport.
+   * @param {{x:number,y:number,dir:string,layer:string}} playerLocation - Target tile and direction.
+   */
   warpPlayerInMap(char, playerLocation) {
     let pos = {
       x: playerLocation.x,
@@ -146,6 +174,13 @@ export default class {
     }
   }
 
+  /**
+   * Fade out the camera then switch to a different map scene, placing the
+   * character at the given location on arrival.
+   * @param {Character} char - The character to warp.
+   * @param {string} warpLocation - Scene key of the destination map.
+   * @param {{x:number,y:number,dir:string,layer:string}} playerLocation - Spawn position on the new map.
+   */
   warpPlayerToMap(char, warpLocation, playerLocation) {
     char.disableMovement();
     this.scene.cameras.main.fadeOut(500, 0, 0, 0);
@@ -174,6 +209,12 @@ export default class {
     );
   }
 
+  /**
+   * Immediately switch to a different map scene without a camera fade.
+   * @param {Character} char - The character to warp.
+   * @param {string} warpLocation - Scene key of the destination map.
+   * @param {{x:number,y:number,dir:string,layer:string}} [playerLocation] - Spawn position on the new map.
+   */
   warpPlayerToMapWithoutFade(char, warpLocation, playerLocation) {
     this.scene.registry.set('map', warpLocation);
     if (typeof playerLocation === 'undefined') {

@@ -5,6 +5,21 @@ import { Tile, Direction } from '@Objects';
 import { Vector2 } from '@Utilities';
 
 export default class extends MovableSprite {
+  /**
+   * @param {object} config - Character configuration merged with sensible defaults.
+   * @param {Phaser.Scene} config.scene - The owning GameMap scene.
+   * @param {string} config.id - Unique character identifier for GridEngine.
+   * @param {string} config.texture - Sprite sheet texture key.
+   * @param {number} config.x - Starting tile x position.
+   * @param {number} config.y - Starting tile y position.
+   * @param {boolean} [config.spin=false] - Whether this character auto-spins.
+   * @param {number} [config.spin-rate=600] - Interval in ms between auto-spin direction changes.
+   * @param {boolean} [config.move=false] - Whether this character wanders randomly.
+   * @param {boolean} [config.collides=true] - Whether GridEngine treats this character as solid.
+   * @param {string} [config.facing-direction='down'] - Initial facing direction.
+   * @param {number} [config.seen-radius=0] - Tiles in front the character can "see".
+   * @param {boolean} [config.track-player=false] - Whether to track the player in a pyramid radius.
+   */
   constructor(config) {
     config = {...{
       scene: null,
@@ -62,6 +77,10 @@ export default class extends MovableSprite {
     this.initTrackingRadius(identification);
   }
 
+  /**
+   * Returns the walking animation frame mapping for a standard 16-frame character sheet.
+   * @returns {{ up: object, down: object, left: object, right: object }}
+   */
   characterFramesDef() {
     return {
       up: { leftFoot: 13, standing: 12, rightFoot: 15 },
@@ -71,6 +90,11 @@ export default class extends MovableSprite {
     };
   }
 
+  /**
+   * Returns a static (non-animated) frame mapping where all foot positions
+   * resolve to the same standing frame — used during slides and jumps.
+   * @returns {{ up: object, down: object, left: object, right: object }}
+   */
   characterFramesStaticDef() {
     return {
       up: { leftFoot: 12, standing: 12, rightFoot: 12 },
@@ -80,10 +104,19 @@ export default class extends MovableSprite {
     };
   }
 
+  /**
+   * Delegate a state transition to this character's StateMachine.
+   * @param {string} state - State name from `this.stateDef`.
+   */
   setState(state) {
     this.stateMachine.setState(state);
   }
 
+  /**
+   * Create the debug rectangles used to visualise the character's
+   * position and its line-of-sight detection zone.
+   * @param {string} identification - Unique name prefix for the rectangles.
+   */
   initSeenRadius(identification) {
     this.seenRect = this.config.scene.add.rectangle(
       this.config.x * Tile.WIDTH, this.config.y * Tile.HEIGHT,
@@ -104,6 +137,10 @@ export default class extends MovableSprite {
     this.characterRect.setName(identification+'-character');
   }
 
+  /**
+   * Initialise the `trackingCoords` array used for player-tracking logic,
+   * if the character has `track-player` or `avoid-character` configured.
+   */
   initTrackingRadius() {
     if (typeof this.config['track-player'] === 'undefined' 
         && typeof this.config['avoid-character'] === 'undefined') { return; }
@@ -114,6 +151,10 @@ export default class extends MovableSprite {
     this.trackingCoords = [];
   }
 
+  /**
+   * State callback: called when entering the IDLE state.
+   * Resets spinning, sliding, and jumping direction trackers.
+   */
   idleOnEnter() {
     const { space } = this.config.scene.input.keyboard.createCursorKeys();
     this.spinningDir = null;
@@ -123,8 +164,13 @@ export default class extends MovableSprite {
       // space.on('down', () => { this.stateMachine.setState(this.stateDef.JUMP); });
     }
   }
+  /** State callback: called when leaving the IDLE state. */
   idleOnExit() {}
 
+  /**
+   * State callback: polls cursor keys each tick and transitions to MOVE
+   * when any directional key is held. Also refreshes the character collision rect.
+   */
   idleOnUpdate() {
     const { left, right, up, down } = this.config.scene.input.keyboard.createCursorKeys();
 
@@ -134,11 +180,21 @@ export default class extends MovableSprite {
     this.updateCharacterRect();
   }
 
+  /** State callback: per-tick logic while in the MOVE state (subclasses override). */
   moveOnUpdate() {}
+
+  /**
+   * State callback: called when leaving the MOVE state.
+   * Refreshes the character collision rect.
+   */
   moveOnExit() {
     this.updateCharacterRect();
   }
 
+  /**
+   * Sync the character's collision rectangle position to match its current
+   * rendered bounds. Applies a type-specific pixel offset for pokemon sprites.
+   */
   updateCharacterRect() {
     let character = this.config.scene.characters.get(this.config.id);
     if (!character) {
@@ -152,6 +208,12 @@ export default class extends MovableSprite {
       (character.config.type === 'pkmn' ? 32 : 8);
   }
 
+  /**
+   * Process a directional move request. If already facing that direction,
+   * moves immediately; otherwise looks first and moves only after the key
+   * has been held long enough (150 ms debounce).
+   * @param {string} dir - Direction constant (up | down | left | right).
+   */
   handleMove(dir) {
     const duration = 150;
     const keys = this.config.scene.input.keyboard.createCursorKeys();
@@ -168,54 +230,85 @@ export default class extends MovableSprite {
     }
   }
 
+  /** State callback: start the spin animation and lock the spin direction. */
   spinOnEnter() {
     this.gridengine.setWalkingAnimationMapping(this.config.id, undefined);
     this.anims.play(this.config.texture + '-spin');
     this.spinningDir = this.getFacingDirection();
   }
+  /** State callback: keep moving in the locked spin direction each tick. */
   spinOnUpdate() {
     if (!this.isSpinning()) { return; }
     this.move(this.spinningDir);
   }
+  /** State callback: restore the walking animation mapping and clear the spin direction. */
   spinOnExit() {
     this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesDef());
     this.anims.stop();
     this.spinningDir = null;
   }
+  /**
+   * Returns true when the character is in an active spin.
+   * @returns {boolean}
+   */
   isSpinning() {
     return this.spinningDir !== null;
   }
+
+  /**
+   * Returns the direction the character is currently spinning, or null.
+   * @returns {string|null}
+   */
   getSpinningDirection() {
     return this.spinningDir;
   }
+
+  /**
+   * Look in the given direction and lock it as the active spin direction.
+   * @param {string} dir - Direction constant (UP | DOWN | LEFT | RIGHT).
+   */
   setSpinDirection(dir) {
     this.look(dir);
     this.spinningDir = dir;
   }
 
+  /** State callback: freeze walk animation and lock the slide direction. */
   slideOnEnter() {
     this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesStaticDef());
     this.slidingDir = this.getFacingDirection();
   }
+  /** State callback: continue moving in the locked slide direction each tick. */
   slideOnUpdate() {
     if (!this.isSliding()) { return; }
     this.move(this.slidingDir);
   }
+  /** State callback: restore the walk animation mapping and clear the slide direction. */
   slideOnExit() {
     this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesDef());
     this.anims.stop();
     this.slidingDir = null;
   }
+  /**
+   * Returns true when the character is actively sliding on an ice tile.
+   * @returns {boolean}
+   */
   isSliding() {
     return this.slidingDir !== null;
   }
+
+  /**
+   * Returns the direction the character is currently sliding, or null.
+   * @returns {string|null}
+   */
   getSlidingDirection() {
     return this.slidingDir;
   }
 
+  /** State callback: log the start of a jump (placeholder). */
   jumpOnEnter() {
     console.log('JUMP START');
   }
+  /** State callback: tween a simple vertical arc and return to IDLE on completion. */
   jumpOnUpdate() {
     let jumpHeight = Tile.HEIGHT;
     this.config.scene.tweens.add({
@@ -229,10 +322,17 @@ export default class extends MovableSprite {
       },
     });
   }
+  /** State callback: log the end of a jump (placeholder). */
   jumpOnExit() {
     console.log('JUMP END');
   }
 
+  /**
+   * State callback: initiate a ledge-hop animation using a GridEngine offset tween.
+   * Teleports the character two tiles forward in the facing direction via GridEngine,
+   * then animates the sprite back to (0, 0) offset with an arc to create the illusion
+   * of a jump.
+   */
   jumpLedgeOnEnter() {
     const faceDir = this.getFacingDirection();
     // GridEngine returns directions in lowercase; Direction constants are uppercase.
@@ -317,23 +417,42 @@ export default class extends MovableSprite {
       },
     });
   }
+  /** State callback: no per-tick logic needed during a ledge jump. */
   jumpLedgeOnUpdate() { }
+
+  /**
+   * State callback: clean up GridEngine offsets and restore the walk animation
+   * mapping after a ledge jump completes or is interrupted.
+   */
   jumpLedgeOnExit() {
     this.jumpingDir = null;
     this.gridengine.setOffsetX(this.config.id, 0);
     this.gridengine.setOffsetY(this.config.id, 0);
     this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesDef());
   }
+  /**
+   * Returns true when the character is currently performing a ledge jump.
+   * @returns {boolean}
+   */
   isJumping() {
     return this.jumpingDir !== null;
   }
 
+  /**
+   * If `config.move` is true, begin GridEngine random wandering and then
+   * clear the flag so it only triggers once.
+   */
   addAutoMove() {
     if (this.config.move !== true) { return; }
     this.gridengine.moveRandomly(this.config.id, this.config['move-rate'], 1);
     this.config.move = false;
   }
 
+  /**
+   * Called each update tick to handle the initial facing direction on first creation
+   * and periodic random direction changes when `config.spin` is true.
+   * @param {number} delta - Time in ms since the last frame.
+   */
   addAutoSpin(delta) {
     if (this.initalCreation) {
       let lookDir = this.config['facing-direction'];
@@ -361,6 +480,10 @@ export default class extends MovableSprite {
     }
   }
 
+  /**
+   * Disable auto-spinning. Optionally re-enable it after the next textbox closes.
+   * @param {boolean} [restart=false] - If true, resume spinning on the next `textbox-disable` event.
+   */
   stopSpin(restart=false) {
     this.config.spin = false;
 
@@ -369,10 +492,15 @@ export default class extends MovableSprite {
     }
   }
 
+  /** Re-enable auto-spinning. */
   startSpin() {
     this.config.spin = true;
   }
 
+  /**
+   * Rebuild the set of tile coordinates that the player must occupy for this
+   * character to "see" them, forming four directional pyramids around the NPC.
+   */
   generateTrackingCoords() {
     let radius = this.config['track-player-radius'] || 2;
     this.trackingCoords = [];
@@ -478,6 +606,10 @@ export default class extends MovableSprite {
     }
   }
 
+  /**
+   * Check whether the player is within this character's tracking pyramid.
+   * If so, fires the `event-can-see-character` callback and turns toward the player.
+   */
   canTrackPlayer() {
     if (this.config['track-player'] === false 
       && this.config['avoid-character'] === false) { 
@@ -512,6 +644,12 @@ export default class extends MovableSprite {
     }
   }
 
+  /**
+   * Cast a line-of-sight check in the character's facing direction up to
+   * `seen-radius` tiles, stopping at collisions. If the target character's
+   * collision rect falls inside the resulting rectangle, fires the
+   * `event-can-see-character` callback.
+   */
   canSeeCharacter() {
     if (this.config['seen-radius'] === 0) { return; }
     if (

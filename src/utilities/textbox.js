@@ -6,6 +6,13 @@ const PAD_Y       = 14;   // vertical inner padding
 const DEPTH       = Number.MAX_SAFE_INTEGER - 10;
 
 class TextBox {
+  /**
+   * @param {Phaser.Scene} scene - The Phaser scene this textbox belongs to.
+   * @param {object} config - Configuration options.
+   * @param {number} [config.fixedWidth=500] - Inner text area width in pixels.
+   * @param {number} [config.fixedHeight=65] - Inner text area height in pixels.
+   * @param {number} [config.wrapWidth] - Word-wrap width; defaults to fixedWidth.
+   */
   constructor(scene, config) {
     this._scene = scene;
 
@@ -77,6 +84,11 @@ class TextBox {
 
   // ─── Public API ───────────────────────────────────────────────────────────
 
+  /**
+   * Begin displaying text, splitting it into pages and typing out the first page.
+   * Accepts a plain string or an array of strings joined with newlines.
+   * @param {string|string[]} text - The text to display.
+   */
   start(text) {
     this._cancelPending();
     const str     = Array.isArray(text) ? text.join('\n') : text;
@@ -85,6 +97,11 @@ class TextBox {
     this._typeCurrentPage();
   }
 
+  /**
+   * Show or hide the textbox and all its child objects.
+   * Hiding also cancels any in-progress typing or close timers.
+   * @param {boolean} visible - Whether the textbox should be visible.
+   */
   setVisible(visible) {
     this._setChildrenVisible(visible);
     if (!visible) {
@@ -94,6 +111,10 @@ class TextBox {
     }
   }
 
+  /**
+   * Remove all textbox game objects and detach keyboard listeners.
+   * Call this when the scene shuts down.
+   */
   destroy() {
     this._cancelPending();
     this._scene.input.keyboard.off('keydown-Z', this._keyHandler);
@@ -104,6 +125,9 @@ class TextBox {
 
   // ─── Internal ─────────────────────────────────────────────────────────────
 
+  /**
+   * Redraws the rounded-rectangle background graphic.
+   */
   _drawBg() {
     this._bg.clear();
     this._bg.fillStyle(0x000000, 1);
@@ -112,14 +136,23 @@ class TextBox {
     this._bg.strokeRoundedRect(this._bx, this._by, this._boxW, this._boxH, BORDER_R);
   }
 
+  /**
+   * Set visibility on background, text, and arrow objects.
+   * The arrow is always hidden when visibility is false.
+   * @param {boolean} v - Desired visibility state.
+   */
   _setChildrenVisible(v) {
     this._bg.setVisible(v);
     this._textObj.setVisible(v);
-    if (!v) this._arrow.setVisible(false);
+    if (!v) {
+      this._arrow.setVisible(false);
+    }
   }
 
   /**
    * Split `text` into pages of at most 2 wrapped lines each.
+   * @param {string} text - Raw text to paginate.
+   * @returns {string[]} Array of page strings, one entry per two-line page.
    */
   _paginate(text) {
     const lines = [];
@@ -138,6 +171,10 @@ class TextBox {
     return pages.length ? pages : [''];
   }
 
+  /**
+   * Begin character-by-character typing of the current page.
+   * Resets the timer and clears existing text before starting.
+   */
   _typeCurrentPage() {
     this._fullText = this._pages[this._pageIdx];
     this._charIdx  = 0;
@@ -145,7 +182,10 @@ class TextBox {
     this._arrow.setVisible(false);
     this._textObj.setText('');
 
-    if (this._timer) { this._timer.remove(); this._timer = null; }
+    if (this._timer) {
+      this._timer.remove();
+      this._timer = null;
+    }
 
     this._timer = this._scene.time.addEvent({
       delay:    CHAR_DELAY,
@@ -160,23 +200,40 @@ class TextBox {
     });
   }
 
+  /**
+   * Immediately reveal the full current page, skipping the typing animation.
+   */
   _skipTyping() {
-    if (this._timer) { this._timer.remove(); this._timer = null; }
+    if (this._timer) {
+      this._timer.remove();
+      this._timer = null;
+    }
     this._textObj.setText(this._fullText);
     this._charIdx = this._fullText.length;
     this._typing  = false;
     this._onComplete();
   }
 
+  /**
+   * Advance to the next page and begin typing it.
+   */
   _typeNextPage() {
     this._pageIdx++;
     this._typeCurrentPage();
   }
 
+  /**
+   * Returns true when the current page is the last one.
+   * @returns {boolean}
+   */
   _isLastPage() {
     return this._pageIdx >= this._pages.length - 1;
   }
 
+  /**
+   * Called when a page finishes typing. Shows the arrow indicator and,
+   * on the last page, registers a one-shot Z listener to close the textbox.
+   */
   _onComplete() {
     this._typing = false;
     this._arrow.setVisible(true);
@@ -193,8 +250,14 @@ class TextBox {
     }
   }
 
+  /**
+   * Cancel any in-flight typing timer and pending close listener.
+   */
   _cancelPending() {
-    if (this._timer)     { this._timer.remove(); this._timer = null; }
+    if (this._timer) {
+      this._timer.remove();
+      this._timer = null;
+    }
     if (this._closeOnce) {
       this._scene.input.keyboard.off('keydown-Z', this._closeOnce);
       this._closeOnce = null;

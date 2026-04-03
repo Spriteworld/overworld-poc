@@ -27,6 +27,10 @@ export default {
       state.sessionStart  = Date.now();
     },
 
+    PATCH_FLAGS(state, overrides) {
+      Object.assign(state.gameFlags, overrides);
+    },
+
     LOAD(state, saved) {
       if (saved.seed        != null) state.seed        = saved.seed;
       if (saved.playerName  != null) state.playerName  = saved.playerName;

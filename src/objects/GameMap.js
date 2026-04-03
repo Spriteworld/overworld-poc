@@ -3,6 +3,11 @@ import { Interactables, Items } from '@Objects';
 import { getValue, EventBus } from '@Utilities';
 
 export default class extends Phaser.Scene {
+  /**
+   * @param {object} config - Scene configuration.
+   * @param {string} config.mapName - Phaser scene key and tilemap key for this map.
+   * @param {object} [config.map] - Tilemap JSON asset or URL.
+   */
   constructor(config) {
     super({ key: config.mapName });
     this.config = config || {};
@@ -23,6 +28,10 @@ export default class extends Phaser.Scene {
     this.items = [];
   }
   
+  /**
+   * Instantiate all map interactable plugins and store them in `this.mapPlugins`.
+   * Called during `loadMap()` after the tilemap layers are created.
+   */
   initPlugins() {
     this.mapPlugins['debug'] = new Interactables.Debug(this);
     this.mapPlugins['sign'] = new Interactables.Sign(this);
@@ -40,6 +49,10 @@ export default class extends Phaser.Scene {
     this.mapPlugins['strengthboulder'] = new Interactables.StrengthBoulder(this);
   }
 
+  /**
+   * Phaser scene lifecycle hook — receives scene init data and resets per-scene state.
+   * @param {object} data - Data passed from the previous scene (e.g. playerLocation).
+   */
   init(data) {
     this.config = { ...this.config, ...data };
     this.registry.set('map', this.config.mapName);
@@ -53,10 +66,19 @@ export default class extends Phaser.Scene {
     this.ge_events_init = false;
   }
 
+  /**
+   * Queue the tilemap JSON for loading during the Phaser preload phase.
+   * Call this from the subclass `preload()` hook.
+   */
   preloadMap() {
     this.load.tilemapTiledJSONExternal(this.config.mapName, this.config.map);
   }
 
+  /**
+   * Create the tilemap, add all tilesets, render every layer, initialise all
+   * interactable plugins, and emit `current-scene-ready` on the EventBus.
+   * Call this from the subclass `create()` hook after assets are loaded.
+   */
   loadMap() {
     this.registry.set('player_input', true);
     var tilemap = this.make.tilemap({ key: this.config.mapName });
@@ -124,6 +146,11 @@ export default class extends Phaser.Scene {
     return null;
   }
 
+  /**
+   * Filter the Tiled `interactions` object layer for visible objects of the given type.
+   * @param {string} type - The Tiled object type string to match (e.g. `'warp'`, `'sign'`).
+   * @returns {object[]} Array of matching Tiled objects.
+   */
   findInteractions(type) {
     return this.config.tilemap.filterObjects(
       'interactions',
@@ -131,6 +158,13 @@ export default class extends Phaser.Scene {
     );
   }
 
+  /**
+   * Register a Tiled object as an interactable tile in the scene registry
+   * and optionally render a debug outline.
+   * @param {*} map - Unused; kept for API compatibility.
+   * @param {object} obj - The Tiled object with `x`, `y`, and `id` properties.
+   * @param {number} color - Debug rectangle fill colour (hex).
+   */
   interactTile(map, obj, color) {
     if (this.game.config.debug.console.gameMap) {
       console.log(['GameMap::interactTile', map, obj, color]);
@@ -145,6 +179,10 @@ export default class extends Phaser.Scene {
     }
   }
 
+  /**
+   * Remove an interactable object from the registry by its Tiled object ID.
+   * @param {number|string} id - The `id` of the Tiled object to remove.
+   */
   removeInteraction(id) {
     if (this.game.config.debug.console.gameMap) {
       console.log(['GameMap::removeInteraction', id]);
@@ -161,6 +199,13 @@ export default class extends Phaser.Scene {
     }
   }
 
+  /**
+   * Collect all tile properties from every visible layer at the given tile coordinates.
+   * Boolean properties are OR-merged so that any `true` value wins.
+   * @param {number} x - Tile x coordinate.
+   * @param {number} y - Tile y coordinate.
+   * @returns {Map<string,*>} Merged property map.
+   */
   getTileProperties(x, y) {
     x = parseInt(x);
     y = parseInt(y);
@@ -192,6 +237,11 @@ export default class extends Phaser.Scene {
     return props;
   }
 
+  /**
+   * Extract all custom properties from a single Phaser tile object into a Map.
+   * @param {Phaser.Tilemaps.Tile} tile - The tile to read properties from.
+   * @returns {Map<string,*>} Property name → value map.
+   */
   getPropertiesFromTile(tile) {
     var props = new Map();
     if (!tile || !tile.properties) {
@@ -216,6 +266,12 @@ export default class extends Phaser.Scene {
     return props;
   }
 
+  /**
+   * Look up a single named property on a tile.
+   * @param {Phaser.Tilemaps.Tile} tile - The tile to inspect.
+   * @param {string} property - The property name to find.
+   * @returns {*} The property value, or null if not found.
+   */
   getPropertyFromTile(tile, property) {
     if (!tile || !tile.properties) {
       return null;
@@ -227,6 +283,13 @@ export default class extends Phaser.Scene {
     return findProp ? findProp.value : null;
   }
 
+  /**
+   * Push a new property entry onto a tile's properties array.
+   * @param {Phaser.Tilemaps.Tile|object} tile - The tile to mutate.
+   * @param {string} property - Property name.
+   * @param {*} value - Property value.
+   * @returns {Array} The updated properties array, or an empty array if the tile is invalid.
+   */
   addPropertyToTile(tile, property, value) {
     if (!tile || !tile.properties) {
       return [];
@@ -245,6 +308,12 @@ export default class extends Phaser.Scene {
     return tile.properties;
   }
 
+  /**
+   * Return the [x, y] coordinates of every tile across all layers that has
+   * the specified property set to a truthy value.
+   * @param {string} property - The tile property name to search for.
+   * @returns {Array<[number, number]>} Array of `[tileX, tileY]` pairs.
+   */
   getTilesWithProperty(property) {
     var tiles = []
     this.config.tilemap.getTileLayerNames().forEach(layer => {
@@ -268,6 +337,12 @@ export default class extends Phaser.Scene {
     return tiles;
   }
   
+  /**
+   * Returns true if any non-player character currently occupies the given tile.
+   * @param {number} x - Tile x coordinate.
+   * @param {number} y - Tile y coordinate.
+   * @returns {boolean}
+   */
   isCharacterOnTile(x, y) {
     let isOnTile = false;
     this.characters.forEach((character) => {
@@ -288,10 +363,18 @@ export default class extends Phaser.Scene {
     return isOnTile;
   }
 
+  /**
+   * Register a character instance in the scene's character map, keyed by name.
+   * @param {import('./characters/Character').default} character - The character to register.
+   */
   addCharacter(character) {
     this.characters.set(character.name, character);
   }
 
+  /**
+   * Build GridEngine character definitions for all registered characters and
+   * items, then initialise GridEngine with them.
+   */
   createCharacters() {
     let chars = [];
     this.characters.forEach((char, key) => {
@@ -314,6 +397,13 @@ export default class extends Phaser.Scene {
     this.ge_init = true;
   }
 
+  /**
+   * Per-frame update hook. Runs all plugin `update()` callbacks, updates the
+   * player character, and triggers GridEngine event binding once on the first
+   * frame after GridEngine is initialised.
+   * @param {number} time - Current game time in ms.
+   * @param {number} delta - Time since last frame in ms.
+   */
   updateCharacters(time, delta) {
     // console.log(['GameMap::updateCharacters', this.characters]);
     Object.entries(this.mapPlugins)
@@ -339,6 +429,10 @@ export default class extends Phaser.Scene {
   }
 
   
+  /**
+   * Call the `event()` method on every plugin that exposes one.
+   * Runs once after GridEngine has been fully initialised.
+   */
   initGEEvents() {
     if (this.game.config.debug.console.gameMap) {
       console.log(['GameMap::initGEEvents']);

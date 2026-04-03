@@ -1,8 +1,15 @@
 export default class {
+  /**
+   * @param {import('@Objects/GameMap').default} scene - The map scene that owns this plugin.
+   */
   constructor(scene) {
     this.scene = scene;
   }
-  
+
+  /**
+   * Scan the tilemap for tiles with the `sw_slide` property (ice tiles) and
+   * cache their coordinates.
+   */
   init() {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::slideTile');
@@ -10,6 +17,10 @@ export default class {
     this.iceTiles = this.scene.getTilesWithProperty('sw_slide');
   }
 
+  /**
+   * Subscribe to GridEngine position-change and movement-stopped events to
+   * activate or deactivate sliding as characters move over ice tiles.
+   */
   event() {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log(['Interactables::slideTile::event', this.scene])
@@ -42,10 +53,17 @@ export default class {
     ];
   }
 
+  /** Unsubscribe all GridEngine subscriptions to prevent memory leaks. */
   destroy() {
     this._subs?.forEach(s => s.unsubscribe());
   }
 
+  /**
+   * Start or stop sliding based on whether the entered tile is an ice tile.
+   * @param {import('@Objects/characters/Character').default} char - The moving character.
+   * @param {{x:number,y:number}} exitTile - Tile the character left.
+   * @param {{x:number,y:number}} enterTile - Tile the character entered.
+   */
   handleIceTiles(char, exitTile, enterTile) {
     let hasIceTiles = this.iceTiles.length;
     if (hasIceTiles > 0) {

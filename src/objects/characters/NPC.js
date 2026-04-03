@@ -1,6 +1,11 @@
 import { Character } from '@Objects';
 
 export default class extends Character {
+  /**
+   * An overworld NPC character. Automatically registers IDLE, MOVE, BIKE, SPIN,
+   * and SLIDE states, and starts in the IDLE state.
+   * @param {object} config - Character configuration (see Character constructor).
+   */
   constructor(config) {
     config.type = 'npc';
     super(config);
@@ -45,6 +50,12 @@ export default class extends Character {
     this.setOrigin(0.5, 0.5);
   }
 
+  /**
+   * Per-frame update. Runs the state machine, line-of-sight checks, player
+   * tracking, and auto-behaviours once GridEngine is ready.
+   * @param {number} time - Current game time in ms.
+   * @param {number} delta - Time since last frame in ms.
+   */
   update(time, delta) {
     if (!this.config.scene.ge_init) { return; }
     this.stateMachine.update(time);

@@ -4,6 +4,8 @@ import Tileset from '@Tileset';
 import Scenes from '@Scenes';
 import Debug from '@Data/debug.js';
 import { loadGame } from '@Data/gameState.js';
+import { getStartScene } from '@Data/startScene.js';
+import { getStartFlags, clearStartFlags } from '@Data/startFlags.js';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -85,11 +87,13 @@ export default class extends Phaser.Scene {
   create () {
     loadGame();
 
-    // this.scene.start('Test');
-    this.scene.start('Kanto');
-    // this.scene.start('Forest');
-    // this.scene.start('VermillionGym');
-    // this.scene.start('TurffieldGym');
+    const startFlags = getStartFlags();
+    if (startFlags) {
+      Object.assign(this.game.config.gameFlags, startFlags);
+      clearStartFlags();
+    }
+
+    this.scene.start(getStartScene());
 
     if (this.game.config.debug.time) {
       this.scene.start('TimeOverlay');

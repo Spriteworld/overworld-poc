@@ -3,7 +3,7 @@ import { textBox, toast, EventBus } from '@Utilities';
 import { PauseMenu } from '@Objects';
 import { gameState, saveGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
-import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
+import { Pokedex, GAMES, GENDERS } from '@spriteworld/pokemon-data';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -14,8 +14,14 @@ export default class extends Phaser.Scene {
     this.pauseMenu = null;
   }
 
+  /** Phaser preload lifecycle hook — no assets to load for this scene. */
   preload () { }
 
+  /**
+   * Phaser create lifecycle hook.
+   * Initialises the toast, textbox, transition overlay, and pause menu,
+   * then registers all game-event listeners.
+   */
   create () {
 
     // init some events
@@ -55,11 +61,16 @@ export default class extends Phaser.Scene {
     this.handleEvents();
   }
 
+  /** Clean up the textbox and pause menu when the scene is destroyed. */
   destroy() {
     this.textbox.destroy();
     this.pauseMenu.destroy();
   }
 
+  /**
+   * Register all game-level event listeners (item pickup, toast, map enter,
+   * textbox control, battle transitions, overworld evolution, and keyboard input).
+   */
   handleEvents() {
     this.game.events.on('item-pickup', (name) => {
       store.commit('bag/PICKUP', name);
@@ -214,6 +225,49 @@ export default class extends Phaser.Scene {
       });
     });
 
+    // ─── Overworld item use (e.g. Rare Candy) → evolution ────────────────
+    this.game.events.on('overworld-item-result', ({ pid, readyToEvolve }) => {
+      if (!readyToEvolve) return;
+
+      const p = gameState.party.find(mon => mon.pid === pid);
+      if (!p) return;
+
+      if (this.pauseMenu.visible) this.pauseMenu.close();
+      this.registry.set('player_input', false);
+
+      const dex      = new Pokedex(GAMES.POKEMON_FIRE_RED);
+      const targetId = readyToEvolve;
+
+      let fromName, toName;
+      try {
+        const fromEntry = dex.getPokemonById(p.species);
+        fromName = (fromEntry.species ?? `#${p.species}`).replace(/\b\w/g, c => c.toUpperCase());
+      } catch { fromName = `#${p.species}`; }
+      try {
+        const toEntry = dex.getPokemonById(targetId);
+        toName = (toEntry.species ?? `#${targetId}`).replace(/\b\w/g, c => c.toUpperCase());
+      } catch { toName = `#${targetId}`; }
+
+      this.scene.launch('EvolutionScene', {
+        fromSpecies:    p.species,
+        toSpecies:      targetId,
+        fromName,
+        toName,
+        shiny:          p.isShiny  ?? false,
+        gender:         p.gender   ?? null,
+        tilesetBaseUrl: '',
+        canCancel:      true,
+        onComplete: (didEvolve) => {
+          if (didEvolve) {
+            store.commit('party/EVOLVE', { pid, targetSpecies: targetId });
+          } else {
+            store.commit('party/CLEAR_READY_TO_EVOLVE', pid);
+          }
+          this.registry.set('player_input', true);
+        },
+      });
+    });
+
     // ─── Pause menu keyboard ──────────────────────────────────────────────
     this.input.keyboard.on('keydown', (event) => {
       if (this.pauseMenu.visible) {
@@ -243,9 +297,15 @@ export default class extends Phaser.Scene {
     });
   }
 
+  /**
+   * Called when the player presses confirm while the pause menu is open.
+   * Delegates to the active sub-screen or routes the selected main-menu key.
+   */
   _handleMenuConfirm() {
     const option = this.pauseMenu.confirm();
-    if (!option) return; // handled internally (e.g. team screen)
+    if (!option) {
+      return; // handled internally (e.g. team screen)
+    }
     switch (option) {
       case 'pokedex':
       case 'option':

@@ -30,17 +30,18 @@ export default class PokemonSprite extends Phaser.GameObjects.Container {
                  : gender === 'female' ? '-female'
                  : '';
     this._key  = `pkmn-icon-${base}${suffix}${shiny ? '-shiny' : ''}`;
+    const tilesetBaseUrl = import.meta.env.VITE_ASSETS_URL;
     this._path = shiny
-      ? new URL('../tileset/pokemon/front/shiny/' + base + suffix + '.png', import.meta.url).href
-      : new URL('../tileset/pokemon/icons/'       + base + suffix + '.png', import.meta.url).href;
+      ? new URL(tilesetBaseUrl + '/tileset/pokemon/front/shiny/' + base + suffix + '.png', import.meta.url).href
+      : new URL(tilesetBaseUrl + '/tileset/pokemon/icons/'       + base + suffix + '.png', import.meta.url).href;
 
     // Fallback (base, no variant) used if the specific variant file is missing
     this._fallbackKey  = `pkmn-icon-${base}`;
-    this._fallbackPath = new URL('../tileset/pokemon/icons/' + base + '.png', import.meta.url).href;
+    this._fallbackPath = new URL(tilesetBaseUrl + '/tileset/pokemon/icons/' + base + '.png', import.meta.url).href;
 
     // Ultimate fallback: unknown Pokémon silhouette (species 0)
     this._unknownKey  = 'pkmn-icon-unknown';
-    this._unknownPath = new URL('../tileset/pokemon/front/0.png', import.meta.url).href;
+    this._unknownPath = new URL(tilesetBaseUrl + '/tileset/pokemon/front/0.png', import.meta.url).href;
 
     // Placeholder while loading
     this._placeholder = scene.add.graphics();

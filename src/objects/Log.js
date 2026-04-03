@@ -1,6 +1,12 @@
 import Phaser from 'phaser';
 
 export default class extends Phaser.GameObjects.Container {
+  /**
+   * @param {Phaser.Scene} scene - The scene this log belongs to.
+   * @param {number} x - Container x position in world coordinates.
+   * @param {number} y - Container y position in world coordinates.
+   * @param {Phaser.GameObjects.GameObject[]} [children] - Initial child objects.
+   */
   constructor(scene, x, y, children) {
     super(scene, x, y, children);
     this.config = {};
@@ -13,6 +19,10 @@ export default class extends Phaser.GameObjects.Container {
     scene.add.existing(this);
   }
 
+  /**
+   * Append a new text line to the log, stacking it 20px below the previous entry.
+   * @param {string} text - The text string to display.
+   */
   addItem(text) {
     console.log('Log::add', text);
 
@@ -31,6 +41,10 @@ export default class extends Phaser.GameObjects.Container {
     this.add(item);
   }
 
+  /**
+   * Remove all tracked log entries from the internal array.
+   * Note: does not destroy the underlying text objects.
+   */
   clear() {
     this.log = [];
   }

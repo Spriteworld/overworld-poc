@@ -10,6 +10,9 @@ const TABS = [
   { label: 'TMs',   key: 'tms'       },
 ];
 
+/** Item names that can be used directly on a party member from the overworld bag. */
+const OVERWORLD_USABLE = new Set(['Rare Candy']);
+
 const TAB_W    = Math.floor(SW / TABS.length);
 const TAB_Y    = SY + 16;
 const LIST_Y   = SY + 54;
@@ -21,12 +24,14 @@ export default class BagScreen {
     this.menu       = menu;
     this._tabIndex  = 0;
     this._scrollTop = 0;
+    this._cursor    = 0;
   }
 
   /** Called by PauseMenu._transitionTo — resets state on fresh open. */
   show() {
     this._tabIndex  = 0;
     this._scrollTop = 0;
+    this._cursor    = 0;
     this.build();
   }
 
@@ -64,8 +69,14 @@ export default class BagScreen {
       reg(scene.add.text(SX + 16, LIST_Y, 'Nothing here.', TEXT_STYLE_BODY));
     } else {
       visible.forEach((entry, i) => {
-        const line = `${(entry.name ?? 'Item').padEnd(18)}  x${entry.quantity ?? 1}`;
-        reg(scene.add.text(SX + 16, LIST_Y + i * ROW_H, line, TEXT_STYLE_BODY));
+        const absIdx    = this._scrollTop + i;
+        const isCursor  = absIdx === this._cursor;
+        const prefix    = isCursor ? '▶ ' : '  ';
+        const usable    = OVERWORLD_USABLE.has(entry.name ?? '');
+        const color     = usable ? '#181818' : '#666666';
+        const style     = { ...TEXT_STYLE_BODY, color };
+        const line      = `${prefix}${(entry.name ?? 'Item').padEnd(16)}  x${entry.quantity ?? 1}`;
+        reg(scene.add.text(SX + 16, LIST_Y + i * ROW_H, line, style));
       });
     }
 
@@ -77,24 +88,59 @@ export default class BagScreen {
       reg(scene.add.text(SX + SW - 24, SY + SH - 44, '▼', TEXT_STYLE_HINT));
     }
 
-    reg(scene.add.text(SX + 16, SY + SH - 22, '◀▶ switch tab   ▲▼ scroll   X  back', TEXT_STYLE_HINT));
+    const hasUsable = key === 'items' && entries.some(e => OVERWORLD_USABLE.has(e.name ?? ''));
+    const hint = hasUsable
+      ? '◀▶ switch tab   ▲▼ select   Z  use   X  back'
+      : '◀▶ switch tab   ▲▼ scroll   X  back';
+    reg(scene.add.text(SX + 16, SY + SH - 22, hint, TEXT_STYLE_HINT));
   }
 
   /** Switch to an adjacent tab (delta = ±1). */
   tabNav(delta) {
     this._tabIndex  = Math.max(0, Math.min(TABS.length - 1, this._tabIndex + delta));
     this._scrollTop = 0;
+    this._cursor    = 0;
     this.menu._clearSubTexts();
     this.build();
   }
 
-  /** Scroll the item list up/down (delta = ±1). */
+  /** Move cursor up/down (delta = ±1). Auto-scrolls to keep cursor visible. */
   nav(delta) {
     const { key } = TABS[this._tabIndex];
     const entries  = gameState.bag[key] ?? [];
-    const maxScroll = Math.max(0, entries.length - MAX_ROWS);
-    this._scrollTop = Math.max(0, Math.min(maxScroll, this._scrollTop + delta));
+    if (entries.length === 0) return;
+
+    this._cursor = Math.max(0, Math.min(entries.length - 1, this._cursor + delta));
+
+    // Auto-scroll so cursor stays in the visible window.
+    if (this._cursor < this._scrollTop) {
+      this._scrollTop = this._cursor;
+    } else if (this._cursor >= this._scrollTop + MAX_ROWS) {
+      this._scrollTop = this._cursor - MAX_ROWS + 1;
+    }
+
     this.menu._clearSubTexts();
     this.build();
+  }
+
+  /**
+   * Attempt to use the currently selected item.
+   * Only works for Items tab entries that are in OVERWORLD_USABLE.
+   */
+  confirm() {
+    const { key } = TABS[this._tabIndex];
+    if (key !== 'items') return;
+
+    const entries = gameState.bag[key] ?? [];
+    const entry   = entries[this._cursor];
+    if (!entry) return;
+
+    if (!OVERWORLD_USABLE.has(entry.name)) {
+      this.menu.scene.game.events.emit('toast', `Can't use ${entry.name} here.`);
+      return;
+    }
+
+    this.menu.pendingUseItem = entry.name;
+    this.menu._transitionTo('bag-team-pick');
   }
 }
