@@ -26,6 +26,10 @@ export default {
   // has_surf: false,
   // has_whirlpool: false,
 
+  // pokedex
+  national_dex: false,
+  follower_pokemon: false,
+
   // debug
   debug_fill_pokedex: !false,
 

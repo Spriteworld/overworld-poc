@@ -1,6 +1,21 @@
 import Phaser from 'phaser';
-import { Interactables, Items } from '@Objects';
+import { Interactables, Items, Tile } from '@Objects';
 import { getValue, EventBus } from '@Utilities';
+import Tileset from '@Tileset';
+import { MAP_REGISTRY } from '@Maps';
+
+/**
+ * Maps the tileset name (derived from the map JSON source filename) to the
+ * Vite-processed image URL and frame dimensions for lazy loading.
+ */
+const TILESET_REGISTRY = {
+  'gen3_inside':        { url: Tileset.gen3inside,    frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'gen3_outside':       { url: Tileset.gen3outside,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'rse_inside':         { url: Tileset.rse_inside,    frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'rse_outside':        { url: Tileset.rse_outside,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'kanto':              { url: Tileset.kanto_map,     frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'pallet_town_inside': { url: Tileset.pallet_inside, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+};
 
 export default class extends Phaser.Scene {
   /**
@@ -43,7 +58,7 @@ export default class extends Phaser.Scene {
     this.mapPlugins['encounter'] = new Interactables.Encounter(this);
     this.mapPlugins['npc'] = new Interactables.NPC(this);
     this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
-    this.mapPlugins['player'] = new Interactables.Player(this);
+    this.mapPlugins['player'] = new Interactables.Player(this);   // always created; .init() bails in adjacent mode
     this.mapPlugins['cuttree'] = new Interactables.CutTree(this);
     this.mapPlugins['item'] = new Interactables.Item(this);
     this.mapPlugins['strengthboulder'] = new Interactables.StrengthBoulder(this);
@@ -72,6 +87,22 @@ export default class extends Phaser.Scene {
    */
   preloadMap() {
     this.load.tilemapTiledJSONExternal(this.config.mapName, this.config.map);
+
+    const tilesets = this.config.map?.tilesets ?? [];
+    tilesets.forEach(ts => {
+      const source = ts.source ?? '';
+      const name   = source.split('/').pop().replace('.json', '');
+      if (!name || this.textures.exists(name)) return;
+      const entry = TILESET_REGISTRY[name];
+      if (entry) {
+        this.load.spritesheet(name, entry.url, {
+          frameWidth:  entry.frameWidth,
+          frameHeight: entry.frameHeight,
+        });
+      } else {
+        console.warn(`[GameMap] No registry entry for tileset '${name}' — add it to TILESET_REGISTRY in GameMap.js`);
+      }
+    });
   }
 
   /**
@@ -127,6 +158,7 @@ export default class extends Phaser.Scene {
 
     EventBus.emit('current-scene-ready', this);
     this.game.events.emit('map-enter', this.config.mapName);
+    this.preloadConnectedMaps();
 
     // Clean up all plugin event listeners when this scene shuts down.
     this.events.once('shutdown', () => {
@@ -376,6 +408,8 @@ export default class extends Phaser.Scene {
    * items, then initialise GridEngine with them.
    */
   createCharacters() {
+    if (this.ge_init) return;
+
     let chars = [];
     this.characters.forEach((char, key) => {
       chars.push(char.characterDef());
@@ -413,9 +447,6 @@ export default class extends Phaser.Scene {
     if (this.mapPlugins.player?.loadedPlayer) {
       
       this.mapPlugins['player'].player.update(time, delta);
-      // if (this.scene.get('Preload').enablePlayerOWPokemon) {
-      //   this.mapPlugins.player.playerMon.update(time, delta);
-      // }
     }
 
     // if (this.pkmn.length > 0) {
@@ -429,6 +460,60 @@ export default class extends Phaser.Scene {
   }
 
   
+  /**
+   * Proactively fetch tileset images for every map the player can warp to
+   * from the current map, so destination scenes find assets already cached.
+   * Destinations are auto-derived from warp objects in the map JSON plus any
+   * keys listed in `this.config.connections`.
+   */
+  preloadConnectedMaps() {
+    const destinations = new Set();
+
+    // Connections from warp objects (hero house, prof lab, etc.)
+    (this.config.map?.layers ?? []).forEach(layer => {
+      if (layer.type !== 'objectgroup') return;
+      (layer.objects ?? []).forEach(obj => {
+        const warpProp = (obj.properties ?? []).find(p => p.name === 'warp');
+        if (warpProp?.value) destinations.add(warpProp.value);
+      });
+    });
+
+    // Explicit connections declared in scene config
+    (this.config.connections ?? []).forEach(key => destinations.add(key));
+
+    destinations.forEach(destKey => {
+      const mapData = MAP_REGISTRY[destKey];
+      if (!mapData) return;
+
+      // Register tilemap JSON in cache (no network cost)
+      if (!this.cache.tilemap.has(destKey)) {
+        this.cache.tilemap.add(destKey, {
+          data:   mapData,
+          format: Phaser.Tilemaps.Formats.TILED_JSON,
+        });
+      }
+
+      // Queue any tileset images not yet loaded
+      (mapData.tilesets ?? []).forEach(ts => {
+        const name = (ts.source ?? '').split('/').pop().replace('.json', '');
+        if (!name || this.textures.exists(name)) return;
+        const entry = TILESET_REGISTRY[name];
+        if (entry) {
+          this.load.spritesheet(name, entry.url, {
+            frameWidth:  entry.frameWidth,
+            frameHeight: entry.frameHeight,
+          });
+        } else {
+          console.warn(`[GameMap] preloadConnectedMaps: no registry entry for tileset '${name}'`);
+        }
+      });
+    });
+
+    if (this.load.totalToLoad > 0) {
+      this.load.start();
+    }
+  }
+
   /**
    * Call the `event()` method on every plugin that exposes one.
    * Runs once after GridEngine has been fully initialised.

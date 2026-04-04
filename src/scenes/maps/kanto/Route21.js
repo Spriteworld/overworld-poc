@@ -1,11 +1,11 @@
-import { GameMap, Direction } from '@Objects';
-import { PalletTownMap } from '@Maps';
+import {GameMap} from '@Objects';
+import {Route21Map} from '@Maps';
 
 export default class extends GameMap {
   constructor() {
     super({
-      mapName: 'PalletTown',
-      map: PalletTownMap,
+      mapName: 'Route21',
+      map: Route21Map,
     });
   }
 
@@ -20,7 +20,5 @@ export default class extends GameMap {
 
   update(time, delta) {
     this.updateCharacters(time, delta);
-
-    // this.mapPlugins['player'].player.handleMove(Direction.DOWN);
   }
 }

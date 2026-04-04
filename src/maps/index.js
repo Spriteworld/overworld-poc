@@ -6,14 +6,14 @@ import VermillionGymMap from './random/vermillion_gym.json';
 import TurffieldGymMap from './random/turffield_gym.json';
 
 import KantoMap from './kanto/kanto.json';
-// import PalletTownMap from './kanto/pallet.json';
+import PalletTownMap from './kanto/pallet.json';
 import HeroHouseF1Map from './kanto/hero_house_floor1.json';
 import HeroHouseF2Map from './kanto/hero_house_floor2.json';
 import ProfessorLabMap from './kanto/prof_lab.json';
-// import Route1Map from './kanto/route1.json';
-// import Route21Map from './kanto/route21.json';
-// import ViridianCityMap from './kanto/viridian_city.json';
-// import Route22Map from './kanto/route22.json';
+import Route1Map from './kanto/route1.json';
+import Route21Map from './kanto/route21.json';
+import ViridianCityMap from './kanto/viridian_city.json';
+import Route22Map from './kanto/route22.json';
 
 // import StarterTownMap from './region/StarterTown.json';
 
@@ -23,14 +23,26 @@ export {
 
     // kanto
     KantoMap,
-    // PalletTownMap,
+    PalletTownMap,
     HeroHouseF1Map, HeroHouseF2Map,
     ProfessorLabMap,
-    // Route1Map,
-    // Route21Map,
-    // ViridianCityMap,
-    // Route22Map,
+    Route1Map,
+    Route21Map,
+    ViridianCityMap,
+    Route22Map,
 
     // region
     // StarterTownMap
+};
+
+export const MAP_REGISTRY = {
+  'Kanto':        KantoMap,
+  'PalletTown':   PalletTownMap,
+  'HeroHouseF1':  HeroHouseF1Map,
+  'HeroHouseF2':  HeroHouseF2Map,
+  'ProfessorLab': ProfessorLabMap,
+  'Route1':       Route1Map,
+  'Route21':      Route21Map,
+  'Route22':      Route22Map,
+  'ViridianCity': ViridianCityMap,
 };

@@ -8,7 +8,7 @@
  *   import { gameState } from '@Data/gameState.js'
  *   gameState.party      → store.state.party.list   (same array reference)
  *   gameState.pokedex    → store.state.pokedex.entries
- *   gameState.currentMap → store.state.player.currentMap  (writable)
+ *   gameState.currentMap → store.state.game.currentMap  (writable)
  *   etc.
  */
 import store from '../store/index.js';
@@ -19,17 +19,17 @@ export const gameState = Object.defineProperties({}, {
     enumerable: true,
   },
   currentMap:  {
-    get: () => store.state.player.currentMap,
-    set: (v) => { store.state.player.currentMap = v; },
+    get: () => store.state.game.currentMap,
+    set: (v) => { store.state.game.currentMap = v; },
     enumerable: true,
   },
-  gameFlags: { 
-    get: () => store.state.player.gameFlags, 
-    enumerable: true 
+  gameFlags: {
+    get: () => store.state.game.gameFlags,
+    enumerable: true
   },
-  party: { 
-    get: () => store.state.party.list, 
-    enumerable: true 
+  party: {
+    get: () => store.state.party.list,
+    enumerable: true
   },
   bag: { 
     get: () => store.state.bag, 
@@ -43,7 +43,7 @@ export const gameState = Object.defineProperties({}, {
 
 /** Total playtime in seconds including the current unsaved session. */
 export function getPlaytime() {
-  return store.getters['player/playtime'];
+  return store.getters['game/playtime'];
 }
 
 /** Persist current state to localStorage. */

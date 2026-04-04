@@ -6,8 +6,6 @@ export default class extends GameMap {
     super({
       mapName: 'HeroHouseF1',
       map: HeroHouseF1Map,
-      active: false,
-      visible: false,
       inside: true
     });
   }

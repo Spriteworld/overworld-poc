@@ -182,28 +182,29 @@ export default class {
    * @param {{x:number,y:number,dir:string,layer:string}} playerLocation - Spawn position on the new map.
    */
   warpPlayerToMap(char, warpLocation, playerLocation) {
+    // Same map — just teleport in place
+    if (this.scene.config.mapName === warpLocation && playerLocation) {
+      char.disableMovement();
+      this.scene.cameras.main.fadeOut(500, 0, 0, 0);
+      this.scene.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+        this.warpPlayerInMap(char, playerLocation);
+        this.scene.cameras.main.fadeIn(500, 0, 0, 0);
+        char.enableMovement();
+      });
+      return;
+    }
+
+    // Normal fade transition to a cold-start scene
     char.disableMovement();
     this.scene.cameras.main.fadeOut(500, 0, 0, 0);
     this.scene.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
-      (cam, effect) => {
-        // this.scene.scene.events.emit('toast', warpLocation);
-        // same map, we dont need to move scene
-        if (this.scene.registry.get('map') === warpLocation && playerLocation) {
-          this.warpPlayerInMap(char, playerLocation);
-          this.scene.cameras.main.fadeIn(500, 0, 0, 0);
-          char.enableMovement();
-          return;
-        }
-
-        // new map!
+      () => {
         this.scene.registry.set('map', warpLocation);
         if (typeof playerLocation === 'undefined') {
           this.scene.scene.start(warpLocation);
-        }else {
-          this.scene.scene.start(warpLocation, {
-            playerLocation: playerLocation
-          });
+        } else {
+          this.scene.scene.start(warpLocation, { playerLocation });
         }
       }
     );

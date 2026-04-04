@@ -91,11 +91,11 @@ import { setStartScene } from '@/data/startScene.js';
 import { setStartFlags, clearStartFlags } from '@/data/startFlags.js';
 import MAPS from './maps.js';
 
+const allMaps = MAPS.flatMap(g => g.maps);
+
 // Build a reactive copy of every map's state so toggles are independent.
 const liveState = reactive(
-  Object.fromEntries(
-    MAPS.flatMap(g => g.maps).map(m => [m.scene, { ...m.state }])
-  )
+  Object.fromEntries(allMaps.map(m => [m.scene, { ...m.state }]))
 );
 
 function formatKey(key) {
@@ -108,18 +108,47 @@ function launch(map) {
   setStartFlags(liveState[map.scene]);
   setStartScene(map.scene);
   active.value = map;
+  window.location.hash = map.scene;
 }
 
 function close() {
   active.value = null;
   clearStartFlags();
   setStartScene('Kanto');
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+}
+
+function onHashChange() {
+  const scene = window.location.hash.slice(1);
+  if (!scene) {
+    if (active.value) close();
+    return;
+  }
+  if (active.value?.scene === scene) return;
+  const map = allMaps.find(m => m.scene === scene);
+  if (map) {
+    setStartFlags(liveState[map.scene]);
+    setStartScene(map.scene);
+    active.value = map;
+  }
 }
 
 function onKeyDown(e) {
   if (e.key === 'Escape' && active.value) close();
 }
 
-onMounted(() => window.addEventListener('keydown', onKeyDown));
-onUnmounted(() => window.removeEventListener('keydown', onKeyDown));
+onMounted(() => {
+  window.addEventListener('keydown', onKeyDown);
+  window.addEventListener('hashchange', onHashChange);
+  const scene = window.location.hash.slice(1);
+  if (scene) {
+    const map = allMaps.find(m => m.scene === scene);
+    if (map) launch(map);
+  }
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKeyDown);
+  window.removeEventListener('hashchange', onHashChange);
+});
 </script>

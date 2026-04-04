@@ -7,8 +7,6 @@ export default class extends GameMap {
     super({
       mapName: 'Kanto',
       map: KantoMap,
-      active: false,
-      visible: false,
     });
 
     this.rect = [];

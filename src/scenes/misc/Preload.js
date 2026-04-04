@@ -43,26 +43,6 @@ export default class extends Phaser.Scene {
     this.load.on('complete', () => progress.destroy());
 
     this.load.image('blank', Tileset.blank);
-    this.load.spritesheet('kanto', Tileset.kanto_map, {
-      frameWidth: Tile.WIDTH,
-      frameHeight: Tile.HEIGHT,
-    });
-    this.load.spritesheet('gen3_inside', Tileset.gen3inside, {
-      frameWidth: Tile.WIDTH,
-      frameHeight: Tile.HEIGHT,
-    });
-    this.load.spritesheet('gen3_outside', Tileset.gen3outside, {
-      frameWidth: Tile.WIDTH,
-      frameHeight: Tile.HEIGHT,
-    });
-    this.load.spritesheet('rse_inside', Tileset.rse_inside, {
-      frameWidth: Tile.WIDTH,
-      frameHeight: Tile.HEIGHT,
-    });
-    this.load.spritesheet('rse_outside', Tileset.rse_outside, {
-      frameWidth: Tile.WIDTH,
-      frameHeight: Tile.HEIGHT,
-    });
     this.load.spritesheet('red', Tileset.red, {
       frameWidth: Tile.WIDTH,
       frameHeight: 40

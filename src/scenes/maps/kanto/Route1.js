@@ -8,6 +8,7 @@ export default class extends GameMap {
       map: Route1Map,
       active: false,
       visible: false,
+      inside: true
     });
   }
 

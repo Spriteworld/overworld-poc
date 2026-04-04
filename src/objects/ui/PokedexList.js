@@ -30,10 +30,25 @@ export default class PokedexList {
     if (idx >= this.scroll + this.visible) this.scroll = idx - this.visible + 1;
   }
 
+  /**
+   * Build or rebuild the entry list based on the current national_dex flag.
+   * Returns true if the list was (re)built.
+   */
+  _buildEntries() {
+    const hasNational = !!gameState.gameFlags?.national_dex;
+    if (this.entries && this._wasNational === hasNational) return false;
+    const all = new Pokedex(null).getNationalDex(3);
+    this.entries      = hasNational ? all : all.filter(e => e.nat_dex_id <= 151);
+    this._wasNational = hasNational;
+    return true;
+  }
+
   /** Draw the list at (x, y) into the given scene, registering objects via reg(). */
   draw(scene, reg, x, y) {
-    if (!this.entries) {
-      this.entries = new Pokedex(null).getNationalDex(3);
+    const rebuilt = this._buildEntries();
+    if (rebuilt) {
+      // Clamp cursor to new list length
+      this.cursor = Math.max(1, Math.min(this.entries.length, this.cursor));
     }
 
     const { width, itemH, visible, cursor, scroll } = this;

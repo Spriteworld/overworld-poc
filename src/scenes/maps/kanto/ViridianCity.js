@@ -6,8 +6,6 @@ export default class extends GameMap {
     super({
       mapName: 'ViridianCity',
       map: ViridianCityMap,
-      active: false,
-      visible: false,
     });
   }
 

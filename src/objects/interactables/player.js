@@ -1,5 +1,6 @@
 import { Tile, Player } from '@Objects';
 import { EventBus, getPropertyValue } from '@Utilities';
+import { gameState } from '@Data/gameState.js';
 
 export default class {
   constructor(scene) {
@@ -71,32 +72,38 @@ export default class {
       cam4.setFollowOffset(-this.player.width, -this.player.height);
     }
 
-    // if (this.scene.get('Preload').enablePlayerOWPokemon) {
-    //   this.hasPlayerMon = true;
-    //   this.playerMon = this.scene.addMonToScene('025', x +1, y, {
-    //     id: 'playerMon',
-    //     follow: this.player.config.id,
-    //     collides: false,
-    //     move: false,
-    //     spin: false,
-    //   });
-    // }
+    if (this.scene.game.config.gameFlags.follower_pokemon) {
+      const lead = gameState.party[0];
+      if (lead) {
+        const speciesId = String(lead.species);
+        this.hasPlayerMon = true;
+        this.playerMon = this.scene.mapPlugins.pokemon.addToScene(
+          'playerMon',
+          speciesId,
+          { x, y },
+          { id: 'playerMon', collides: false, move: false, spin: false }
+        );
+      }
+    }
 
   }
 
   update(time, delta) {
     if (this.loadedPlayer) {
-      // console.log(['sceneMap::update::player', this.scene])
       this.player.update(time, delta);
     }
-    // if (this.scene.get('Preload').enablePlayerOWPokemon) {
-    //   this.playerMon.update();
-    // }    
+    if (this.hasPlayerMon && this.playerMon) {
+      this.playerMon.update(time, delta);
+    }
   }
 
   event() {
     if (this.scene.game.config.debug.console.interactableShout) {
-      console.log(['Interactables::player::event', this.scene])
+      console.log(['Interactables::player::event', this.scene]);
+    }
+
+    if (this.hasPlayerMon) {
+      this.scene.gridEngine.follow('playerMon', 'player', 1, true);
     }
 
     let layerTransitions = this.scene.findInteractions('layerTransition');
