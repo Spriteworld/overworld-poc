@@ -8817,7 +8817,7 @@
             {
               "name": "text",
               "type": "string",
-              "value": "Hi!\nI work at a POK\ufffdMON MART.\nIt's part of a convenient chain selling all sorts of items.\nPlease, visit us in VIRIDIAN CITY.\nI know, I'll give you a sample. Here you go!"
+              "value": "Hi!\nI work at a POK�MON MART.\nIt's part of a convenient chain selling all sorts of items.\nPlease, visit us in VIRIDIAN CITY.\nI know, I'll give you a sample. Here you go!"
             },
             {
               "name": "text-onComplete",
@@ -8831,6 +8831,11 @@
               "name": "texture",
               "type": "string",
               "value": "ace_trainer"
+            },
+            {
+              "name": "text-given",
+              "type": "string",
+              "value": "Did you enjoy that POTION sample?\nPlease visit us in VIRIDIAN CITY!"
             }
           ],
           "rotation": 0,

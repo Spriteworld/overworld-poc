@@ -31,6 +31,7 @@ export default defineConfig({
     phaserHmrPlugin(),
   ],
   resolve: {
+    dedupe: ['phaser'],
     alias: {
       '@': resolve(__dirname, 'src'),
       '@Data': resolve(__dirname, 'src/data/'),
@@ -38,7 +39,7 @@ export default defineConfig({
       '@Objects': resolve(__dirname, 'src/objects/'),
       '@Tileset': resolve(__dirname, 'src/tileset/'),
       '@Scenes': resolve(__dirname, 'src/scenes/'),
-      '@Utilities': resolve(__dirname, 'src/utilities/')
+      '@Utilities': resolve(__dirname, 'src/utilities/'),
     }
   },
   server: {
@@ -58,10 +59,9 @@ export default defineConfig({
         test: resolve(__dirname, 'test.html'),
       },
       output: {
-        manualChunks: () => 'app',
-        entryFileNames: `assets/[name]-[hash].js`,
-        // chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name]-[hash].[ext]`
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
       }
     }
   },

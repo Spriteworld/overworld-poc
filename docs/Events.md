@@ -45,7 +45,9 @@ These are emitted on `this.game.events` / `scene.game.events` so all running sce
 | Event | Emitter | Listener | Description |
 |-------|---------|----------|-------------|
 | `battle-start` | `encounter.js` | `OverworldUI` | Trigger a wild encounter. Payload: full battle data object (see Architecture.md). |
-| `battle-complete` | `BattleScene2` state machine | `OverworldUI` | Battle ended. Payload: `{ result: 'won' \| 'lost' \| 'run' }`. |
+| `battle-complete` | `BattleScene2` state machine | `OverworldUI` | Battle ended. Payload varies by result — see below. |
+| `map-enter` | `GameMap.loadMap()` | `OverworldUI` | A map scene finished loading. Payload: `mapName` string. `OverworldUI` shows it as a toast. |
+| `overworld-item-result` | `BagTeamPickScreen` | `OverworldUI` | An overworld item use triggered an evolution. Payload: `{ pid: string, readyToEvolve: number }` where `readyToEvolve` is the target species `nat_dex_id`. |
 
 ### battle-start payload
 
@@ -70,10 +72,35 @@ The player team is a deep clone of the current party — changes inside the batt
 
 ### battle-complete payload
 
+Result varies by how the battle ended:
+
+**Won / Lost / Run:**
 ```js
 { result: 'won' | 'lost' | 'run' }
 ```
+Emitted by `BattleWon`, `BattleLost`, and `BattleEnd` states.
 
-Emitted by `BattleWon`, `BattleLost`, and `BattleEnd` states inside `@spriteworld/battle`.
+**Caught:**
+```js
+{
+  result: 'caught',
+  caughtPokemon: {
+    pid, species, level, nature, gender, ability,
+    ivs, evs, moves, currentHp, exp, status, pokerus, isShiny,
+  },
+  team: PokemonConfig[],   // serialised snapshot of the full player team post-battle
+}
+```
+Emitted by the `PokemonCaught` state after the battle logger flushes.
 
-On receipt, `OverworldUI` reads `BattleScene2.config.player.team.pokemon` directly from the live scene to obtain updated HP and PP, then commits `party/SYNC_AFTER_BATTLE` before starting the fade-out transition.
+On receipt, `OverworldUI` reads `BattleScene2.config.player.team.pokemon` directly from the live scene to obtain updated HP and PP, then commits `party/SYNC_AFTER_BATTLE` before starting the fade-out transition. For `result: 'caught'` it additionally commits `pokedex/CATCH` for the captured species.
+
+### overworld-item-result payload
+
+```js
+{ pid: string, readyToEvolve: number }
+```
+
+`pid` identifies the party Pokémon; `readyToEvolve` is the target species `nat_dex_id`.
+
+On receipt, `OverworldUI` closes the pause menu, disables player input, and launches `EvolutionScene` with `canCancel: true`. When the scene completes it commits `party/EVOLVE` (on confirm) or `party/CLEAR_READY_TO_EVOLVE` (on cancel), then re-enables player input.

@@ -188,6 +188,14 @@ export default class extends Character {
     let interactableTiles = this.scene.registry.get('interactions');
     if (interactableTiles.length === 0) { return; }
     let tile = interactableTiles.find((tile) => {
+      // For movable characters (NPCs, overworld Pokémon) use their live
+      // GridEngine position so interaction follows them as they walk around.
+      const charId = tile.obj.id;
+      if (this.scene.characters.has(charId) && this.scene.gridEngine.hasCharacter(charId)) {
+        const pos = this.scene.gridEngine.getPosition(charId);
+        return pos.x === facingTile.x && pos.y === facingTile.y;
+      }
+      // Static interactables: compare stored coords (may be pixels or tiles).
       return (
         tile.x / Tile.WIDTH === facingTile.x &&
         tile.y / Tile.HEIGHT === facingTile.y

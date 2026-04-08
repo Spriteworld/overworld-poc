@@ -116,6 +116,7 @@ export default class {
     this._sub = this.scene.gridEngine.positionChangeStarted().subscribe(({ charId, enterTile }) => {
       if (charId !== 'player') { return; }
 
+      if (this.scene.game.config.debug.noEncounters) { return; }
       const tile = this.encounterTiles.find(
         t => t.x === enterTile.x && t.y === enterTile.y
       );

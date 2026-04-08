@@ -669,6 +669,7 @@ export default class extends MovableSprite {
    * `event-can-see-character` callback.
    */
   canSeeCharacter() {
+    if (this.scene.game.config.debug.noTrainerSight) { return; }
     if (this.config['seen-radius'] === 0) { return; }
     if (
       this.config['seen-character'] === null 

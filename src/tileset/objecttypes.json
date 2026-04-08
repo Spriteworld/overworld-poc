@@ -221,6 +221,29 @@
         ]
     },
     {
+        "color": "#ff00c8ff",
+        "drawFill": true,
+        "id": 9,
+        "members": [
+            {
+                "name": "item",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "item-qty",
+                "type": "int",
+                "value": 1
+            }
+        ],
+        "name": "item",
+        "type": "class",
+        "useAs": [
+            "object",
+            "tile"
+        ]
+    },
+    {
         "color": "#ffff00ff",
         "drawFill": true,
         "id": 7,

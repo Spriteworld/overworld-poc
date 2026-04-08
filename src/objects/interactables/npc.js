@@ -1,6 +1,7 @@
 import { Tile, NPC } from '@Objects';
 import { getPropertyValue, remapProps, Vector2 } from '@Utilities';
 import Tileset from '@Tileset';
+import store from '../../store/index.js';
 
 export default class {
   constructor(scene) {
@@ -114,8 +115,17 @@ export default class {
     this._onInteract = (tile) => {
       if (tile.obj.type !== 'npc') { return; }
 
-      let text = this.scene.getPropertyFromTile(tile.obj, 'text');
+      const npcName = tile.obj.name || tile.obj.id;
+      const gaveFlag = 'npc_gave_' + npcName;
+      const gaveAlready = !!store.state.game.gameFlags[gaveFlag];
+
+      // Use text-given on repeat interactions if provided, otherwise fall back to text.
+      const textGiven = this.scene.getPropertyFromTile(tile.obj, 'text-given');
+      const text = (gaveAlready && textGiven)
+        ? textGiven
+        : this.scene.getPropertyFromTile(tile.obj, 'text');
       if (!text) { return; }
+
       let player = this.scene.characters.get('player');
       let char = this.scene.characters.get(tile.obj.id);
       char.look(player.getOppositeFacingDirection());
@@ -129,9 +139,10 @@ export default class {
       );
 
       const onComplete = this.scene.getPropertyFromTile(tile.obj, 'text-onComplete');
-      if (onComplete) {
+      if (onComplete?.item && !gaveAlready) {
         this.scene.game.events.once('textbox-disable', () => {
-          this.scene.game.events.emit('text-onComplete', onComplete, tile.obj);
+          this.scene.game.events.emit('item-pickup', onComplete.item);
+          store.commit('game/PATCH_FLAGS', { [gaveFlag]: true });
         });
       }
     };

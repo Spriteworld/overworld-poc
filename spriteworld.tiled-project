@@ -10,6 +10,26 @@
     ],
     "propertyTypes": [
         {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 10,
+            "members": [
+            ],
+            "name": "cutTree",
+            "type": "class",
+            "useAs": [
+                "property",
+                "map",
+                "layer",
+                "object",
+                "tile",
+                "tileset",
+                "wangcolor",
+                "wangset",
+                "project"
+            ]
+        },
+        {
             "color": "#ffffa0a0",
             "drawFill": true,
             "id": 1,
@@ -25,6 +45,31 @@
             "useAs": [
                 "object",
                 "tile"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 11,
+            "members": [
+                {
+                    "name": "item",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "item",
+            "type": "class",
+            "useAs": [
+                "property",
+                "map",
+                "layer",
+                "object",
+                "tile",
+                "tileset",
+                "wangcolor",
+                "wangset",
+                "project"
             ]
         },
         {

@@ -72,8 +72,15 @@ export default class extends Phaser.Scene {
    * textbox control, battle transitions, overworld evolution, and keyboard input).
    */
   handleEvents() {
-    this.game.events.on('item-pickup', (name) => {
-      store.commit('bag/PICKUP', name);
+    this.game.events.on('item-pickup', (payload) => {
+      const name = typeof payload === 'string' ? payload : payload.name;
+      const qty  = typeof payload === 'object'  ? payload.qty : null;
+      store.commit('bag/PICKUP', { name, qty: qty ?? 1 });
+      const display = name.replace(/\b\w/g, c => c.toUpperCase());
+      const msg = qty != null
+        ? `You found ${qty} x\n${display}!`
+        : `You received\na ${display}!`;
+      this.game.events.emit('textbox-changedata', msg);
     });
 
     this.game.events.on('toast', (value) => {

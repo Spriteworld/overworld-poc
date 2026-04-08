@@ -6,6 +6,8 @@ export default {
   nighttimeLightsOnly: true,
   inspector: false,
   stateMachine: false,
+  noEncounters: false,
+  noTrainerSight: false,
   tests: {
     timeOverlay: false,
     outlineColliders: false,

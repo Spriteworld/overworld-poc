@@ -37,6 +37,7 @@ export default class {
 
       let item = this.scene.getPropertyFromTile(tile.obj, 'item');
       if (!item) { return; }
+      const qty = this.scene.getPropertyFromTile(tile.obj, 'item-qty') ?? 1;
 
       // Remove immediately so a second Z-press (to dismiss the textbox)
       // doesn't re-trigger interact-with-obj for the same tile.
@@ -47,14 +48,8 @@ export default class {
         store.commit('overworld/COLLECT_ITEM', tile.obj.overworldKey);
       }
 
-      this.scene.game.events.emit(
-        'textbox-changedata',
-        `You found a ${item}!`,
-        tile.obj
-      );
+      this.scene.game.events.emit('item-pickup', { name: item, qty });
       this.scene.game.events.once('textbox-disable', () => {
-        this.scene.game.events.emit('item-pickup', item);
-
         let char = this.scene.characters.get(tile.obj.id);
         if (typeof char === 'undefined') { return; }
         char.remove();

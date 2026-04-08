@@ -6,16 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:live": "vite build --mode live",
     "preview": "vite preview",
     "test": "jest"
   },
   "dependencies": {
     "@spriteworld/battle": "../battle",
     "@spriteworld/pokemon-data": "../data",
+    "@tailwindcss/vite": "^4.2.2",
     "grid-engine": "^2.48.2",
     "phaser-animated-tiles-phaser3.5": "^2.0.5",
     "phaser-tiled-json-external-loader": "^0.1.1",
-    "phaser3-rex-plugins": "^1.80.19",
+    "phaser3-rex-plugins": "^1.80.20",
+    "tailwindcss": "^4.2.2",
     "vue": "3.5.13",
     "vuex": "^4.1.0"
   },

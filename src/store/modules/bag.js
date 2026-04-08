@@ -8,15 +8,17 @@ export default {
   }),
 
   mutations: {
-    PICKUP(state, name) {
+    PICKUP(state, payload) {
+      const name = typeof payload === 'string' ? payload : payload.name;
+      const qty  = typeof payload === 'string' ? 1 : (payload.qty ?? 1);
       const isBall = /ball$/i.test(name);
       const isTm   = /^(TM|HM)\d/i.test(name);
       const list   = isBall ? state.pokeballs : isTm ? state.tms : state.items;
       const entry  = list.find(e => e.name === name);
       if (entry) {
-        entry.quantity++;
+        entry.quantity += qty;
       } else {
-        list.push({ name, quantity: 1 });
+        list.push({ name, quantity: qty });
       }
     },
 
