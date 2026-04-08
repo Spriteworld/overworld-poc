@@ -1,18 +1,35 @@
+import { Items, Tile } from '@Objects';
+import { getPropertyValue } from '@Utilities';
+import store from '../../store/index.js';
+
 export default class {
   constructor(scene) {
-    this.scene = scene;  
+    this.scene = scene;
   }
 
   init() {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::item');
     }
-    
+    const collected = store.state.overworld.collectedItems;
+    const itemObjs = this.scene.findInteractions('item');
+    itemObjs.forEach(obj => {
+      if (collected.includes(obj.name)) return;
+      const itemName = getPropertyValue(obj.properties, 'item');
+      if (!itemName) return;
+      new Items.Pokeball({
+        scene: this.scene,
+        x: obj.x / Tile.WIDTH,
+        y: obj.y / Tile.HEIGHT,
+        item: itemName,
+        overworldKey: obj.name,
+      });
+    });
   }
 
   event() {
     if (this.scene.game.config.debug.console.interactableShout) {
-      console.log(['Interactables::sign::event', this.scene]);
+      console.log(['Interactables::item::event', this.scene]);
     }
 
     this._onInteract = (tile) => {
@@ -24,6 +41,11 @@ export default class {
       // Remove immediately so a second Z-press (to dismiss the textbox)
       // doesn't re-trigger interact-with-obj for the same tile.
       this.scene.removeInteraction(tile.obj.id);
+
+      // Mark collected so it won't reappear after reload.
+      if (tile.obj.overworldKey) {
+        store.commit('overworld/COLLECT_ITEM', tile.obj.overworldKey);
+      }
 
       this.scene.game.events.emit(
         'textbox-changedata',

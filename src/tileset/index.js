@@ -1,11 +1,14 @@
 import blank from '@Tileset/blank.png';
 
+import animated_grass from '@Tileset/animated_grass.png';
+
 import gen3inside from '@Tileset/gen3_inside.png';
 import gen3inside_json from '@Tileset/gen3_inside.json';
 import gen3outside from '@Tileset/gen3_outside.png';
 import gen3outside_json from '@Tileset/gen3_outside.json';
 
 import kanto_map from '@Tileset/maps/kanto.png';
+import kanto_inside from '@Tileset/maps/kanto_inside.png';
 import pallet_inside from '@Tileset/maps/pallet_town_inside.png';
 
 import rse_inside from '@Tileset/rse_inside.png';
@@ -17,7 +20,7 @@ import * as ow_pokemon_dimensions from '@Tileset/overworld/pokemon/files.json';
 import * as ow_pokemon_shiny_dimensions from '@Tileset/overworld/pokemon_shiny/files.json';
 import * as bs_normal_dimensions from '@Tileset/battlescene/normal/files.json';
 
-import red from '@Tileset/characters/red.png';
+import red from '@Tileset/characters/sprites/red.png';
 
 import trainers from '@Tileset/characters';
 
@@ -50,7 +53,9 @@ Object.values(pokemon_shinyGlob).map((key) => {
 
 export default {
   blank,
+  animated_grass,
   kanto_map,
+  kanto_inside,
   pallet_inside,
   gen3inside,
   gen3inside_json,

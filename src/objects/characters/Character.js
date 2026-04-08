@@ -446,6 +446,7 @@ export default class extends MovableSprite {
     if (this.config.move !== true) { return; }
     this.gridengine.moveRandomly(this.config.id, this.config['move-rate'], 1);
     this.config.move = false;
+    this._autoMoving = true;
   }
 
   /**
@@ -495,6 +496,23 @@ export default class extends MovableSprite {
   /** Re-enable auto-spinning. */
   startSpin() {
     this.config.spin = true;
+  }
+
+  /**
+   * Stop random wandering. Optionally resume it after the next textbox closes.
+   * Only restarts if the character was previously set up to auto-move.
+   * @param {boolean} [restart=false]
+   */
+  stopMove(restart = false) {
+    this.gridengine.stopMovement(this.config.id);
+    if (restart && this._autoMoving) {
+      this.scene.game.events.once('textbox-disable', this.startMove, this);
+    }
+  }
+
+  /** Resume random wandering. */
+  startMove() {
+    this.gridengine.moveRandomly(this.config.id, this.config['move-rate'], 1);
   }
 
   /**

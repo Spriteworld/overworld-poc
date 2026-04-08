@@ -14,6 +14,7 @@ const TILESET_REGISTRY = {
   'rse_inside':         { url: Tileset.rse_inside,    frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'rse_outside':        { url: Tileset.rse_outside,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'kanto':              { url: Tileset.kanto_map,     frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'kanto_inside':       { url: Tileset.kanto_inside,  frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'pallet_town_inside': { url: Tileset.pallet_inside, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
 };
 
@@ -48,6 +49,7 @@ export default class extends Phaser.Scene {
    * Called during `loadMap()` after the tilemap layers are created.
    */
   initPlugins() {
+    this.mapPlugins['computer'] = new Interactables.Computer(this);
     this.mapPlugins['debug'] = new Interactables.Debug(this);
     this.mapPlugins['sign'] = new Interactables.Sign(this);
     this.mapPlugins['warp'] = new Interactables.Warp(this);
@@ -56,6 +58,7 @@ export default class extends Phaser.Scene {
     this.mapPlugins['light'] = new Interactables.Light(this);
     this.mapPlugins['ledge'] = new Interactables.Ledge(this);
     this.mapPlugins['encounter'] = new Interactables.Encounter(this);
+    this.mapPlugins['grass'] = new Interactables.Grass(this);
     this.mapPlugins['npc'] = new Interactables.NPC(this);
     this.mapPlugins['pokemon'] = new Interactables.Pokemon(this);
     this.mapPlugins['player'] = new Interactables.Player(this);   // always created; .init() bails in adjacent mode
@@ -91,7 +94,8 @@ export default class extends Phaser.Scene {
     const tilesets = this.config.map?.tilesets ?? [];
     tilesets.forEach(ts => {
       const source = ts.source ?? '';
-      const name   = source.split('/').pop().replace('.json', '');
+      // Derive name from source path (external tileset) or ts.name (embedded tileset).
+      const name = source ? source.split('/').pop().replace('.json', '') : (ts.name ?? '');
       if (!name || this.textures.exists(name)) return;
       const entry = TILESET_REGISTRY[name];
       if (entry) {

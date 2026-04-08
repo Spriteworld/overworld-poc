@@ -31,6 +31,7 @@ export default class {
         {
           id: npc.name,
           scene: this.scene,
+          properties: npc.properties,
           ...remapProps(npc.properties)
         }
       );
@@ -40,6 +41,7 @@ export default class {
   addToScene(name, texture, coords, config) {
     let npcDef = {...{
       id: 'npc_'+name,
+      type: 'npc',
       texture: texture,
       x: coords.x,
       y: coords.y,
@@ -118,12 +120,20 @@ export default class {
       let char = this.scene.characters.get(tile.obj.id);
       char.look(player.getOppositeFacingDirection());
       char.stopSpin(true);
+      char.stopMove(true);
 
       this.scene.game.events.emit(
         'textbox-changedata',
         text,
         tile.obj
       );
+
+      const onComplete = this.scene.getPropertyFromTile(tile.obj, 'text-onComplete');
+      if (onComplete) {
+        this.scene.game.events.once('textbox-disable', () => {
+          this.scene.game.events.emit('text-onComplete', onComplete, tile.obj);
+        });
+      }
     };
     this.scene.game.events.on('interact-with-obj', this._onInteract);
   }

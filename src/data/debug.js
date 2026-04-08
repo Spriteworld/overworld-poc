@@ -1,6 +1,7 @@
 export default {
   objects: false,
   grid: false,
+  clickToMove: false,
   time: true,
   nighttimeLightsOnly: true,
   inspector: false,

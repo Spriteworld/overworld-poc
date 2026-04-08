@@ -23,6 +23,11 @@ export const gameState = Object.defineProperties({}, {
     set: (v) => { store.state.game.currentMap = v; },
     enumerable: true,
   },
+  playerTile: {
+    get: () => store.state.game.playerTile,
+    set: (v) => { store.commit('game/SET_PLAYER_TILE', v); },
+    enumerable: true,
+  },
   gameFlags: {
     get: () => store.state.game.gameFlags,
     enumerable: true

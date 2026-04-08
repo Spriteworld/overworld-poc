@@ -23,6 +23,52 @@ export default class {
     if (this.scene.game.config.debug.tests.outlineColliders === true) {
       this.#identifyColliders();
     }
+
+    // Register click-to-move listener unconditionally so the flag can be
+    // toggled from the debug menu without requiring a map reload.
+    this.scene.input.on('pointerdown', this.#onPointerDown, this);
+    this.scene.events.once('shutdown', () => {
+      this.scene.input.off('pointerdown', this.#onPointerDown, this);
+    });
+  }
+
+  #onPointerDown(pointer) {
+    if (!this.scene.game.config.debug.clickToMove) return;
+    // Phaser's displayScale is a uniform (height-based) scale, which is wrong
+    // when the canvas is stretched asymmetrically via CSS. Also, object-fit:contain
+    // adds letterbox bars that must be subtracted before scaling.
+    const canvas     = this.scene.game.canvas;
+    const rect       = canvas.getBoundingClientRect();
+    const event      = pointer.event;
+    const gameAspect = canvas.width / canvas.height;
+    const boxAspect  = rect.width   / rect.height;
+
+    // Compute the actual rendered content area within the element box.
+    let contentW, contentH, offsetX, offsetY;
+    if (gameAspect > boxAspect) {
+      // Width-constrained: letterbox bars on top and bottom.
+      contentW = rect.width;
+      contentH = rect.width / gameAspect;
+      offsetX  = 0;
+      offsetY  = (rect.height - contentH) / 2;
+    } else {
+      // Height-constrained: pillarbox bars on left and right.
+      contentH = rect.height;
+      contentW = rect.height * gameAspect;
+      offsetX  = (rect.width - contentW) / 2;
+      offsetY  = 0;
+    }
+
+    const clickX = event.clientX - rect.left - offsetX;
+    const clickY = event.clientY - rect.top  - offsetY;
+    if (clickX < 0 || clickY < 0 || clickX > contentW || clickY > contentH) return;
+
+    const gameX = (clickX / contentW) * canvas.width;
+    const gameY = (clickY / contentH) * canvas.height;
+    const world = this.scene.cameras.main.getWorldPoint(gameX, gameY);
+    const tileX = Math.floor(world.x / Tile.WIDTH);
+    const tileY = Math.floor(world.y / Tile.HEIGHT);
+    this.scene.gridEngine.setPosition('player', { x: tileX, y: tileY });
   }
 
   showGrid() {

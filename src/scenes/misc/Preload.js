@@ -4,6 +4,7 @@ import Tileset from '@Tileset';
 import Scenes from '@Scenes';
 import Debug from '@Data/debug.js';
 import { loadGame } from '@Data/gameState.js';
+import store from '../../store/index.js';
 import { getStartScene } from '@Data/startScene.js';
 import { getStartFlags, clearStartFlags } from '@Data/startFlags.js';
 
@@ -73,7 +74,11 @@ export default class extends Phaser.Scene {
       clearStartFlags();
     }
 
-    this.scene.start(getStartScene());
+    const savedTile = store.state.game.playerTile;
+    const playerLocation = (savedTile && (savedTile.x || savedTile.y))
+      ? { x: savedTile.x, y: savedTile.y, charLayer: savedTile.charLayer }
+      : {};
+    this.scene.start(getStartScene(), { playerLocation });
 
     if (this.game.config.debug.time) {
       this.scene.start('TimeOverlay');

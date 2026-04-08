@@ -1,3 +1,5 @@
+import { Items, Tile } from '@Objects';
+
 export default class {
   constructor(scene) {
     this.scene = scene;
@@ -7,6 +9,14 @@ export default class {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::cutTree');
     }
+    const trees = this.scene.findInteractions('cutTree');
+    trees.forEach(obj => {
+      new Items.CutTree({
+        scene: this.scene,
+        x: obj.x / Tile.WIDTH,
+        y: obj.y / Tile.HEIGHT,
+      });
+    });
   }
 
   event() {

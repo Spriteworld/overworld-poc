@@ -7,6 +7,7 @@ export default {
     seed:         Math.floor(Math.random() * 0x100000000) >>> 0,
     playerName:   'Red',
     currentMap:   'Test',
+    playerTile:   { x: 0, y: 0, charLayer: 'ground' },
     gameFlags:    { ...defaultFlags },
     playtime:     0,           // accumulated seconds from previous sessions
     sessionStart: Date.now(),
@@ -22,6 +23,10 @@ export default {
       state.currentMap = map;
     },
 
+    SET_PLAYER_TILE(state, tile) {
+      state.playerTile = tile;
+    },
+
     FLUSH_PLAYTIME(state) {
       state.playtime     += (Date.now() - state.sessionStart) / 1000;
       state.sessionStart  = Date.now();
@@ -35,6 +40,7 @@ export default {
       if (saved.seed        != null) state.seed        = saved.seed;
       if (saved.playerName  != null) state.playerName  = saved.playerName;
       if (saved.currentMap  != null) state.currentMap  = saved.currentMap;
+      if (saved.playerTile  != null) state.playerTile  = saved.playerTile;
       if (saved.gameFlags   != null) state.gameFlags   = saved.gameFlags;
       if (saved.playtime    != null) state.playtime    = saved.playtime;
       state.sessionStart = Date.now();

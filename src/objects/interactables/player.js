@@ -19,8 +19,25 @@ export default class {
       console.log('Interactables::player');
     }
 
-    if (Object.keys(this.scene.config?.playerLocation).length != 0) {
-      this.addPlayerToScene(this.scene.config.playerLocation.x, this.scene.config.playerLocation.y);
+    // Warp-location name supplied — find the matching warpLocation object on this map
+    if (this.scene.config?.warpLocationName) {
+      const locations = this.scene.findInteractions('warpLocation');
+      const obj = locations.find(l => l.name === this.scene.config.warpLocationName);
+      if (obj) {
+        this.addPlayerToScene(
+          parseInt(obj.x / Tile.WIDTH),
+          parseInt(obj.y / Tile.HEIGHT),
+          getPropertyValue(obj.properties ?? [], 'layer', undefined)
+        );
+        return;
+      }
+      console.warn(`Interactables::player — warpLocation "${this.scene.config.warpLocationName}" not found, falling back to playerSpawn`);
+    }
+
+    // Legacy: raw coordinate object (used by Preload scene save-game restore)
+    if (Object.keys(this.scene.config?.playerLocation ?? {}).length !== 0) {
+      const loc = this.scene.config.playerLocation;
+      this.addPlayerToScene(loc.x, loc.y, loc.charLayer);
       return;
     }
 
@@ -35,7 +52,7 @@ export default class {
     this.addPlayerToScene(spawn[0].x / Tile.WIDTH, spawn[0].y / Tile.HEIGHT);
   }
 
-  addPlayerToScene(x, y) {
+  addPlayerToScene(x, y, charLayer) {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::player::addPlayerToScene', x, y);
     }
@@ -46,6 +63,7 @@ export default class {
       x: x,
       y: y,
       scene: this.scene,
+      ...(charLayer ? { 'char-layer': charLayer } : {}),
     });
     this.scene.registry.set('player', this.player);
     this.scene.cameras.main.startFollow(this.player, true, 1);

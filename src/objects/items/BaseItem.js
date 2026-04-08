@@ -1,5 +1,6 @@
 import MovableSprite from '@Objects/characters/MovableSprite';
 import { Tile } from '@Objects';
+import gen3ToKanto from '@Maps/kanto/gen3_to_kanto.json';
 
 export default class BaseItem extends MovableSprite {
   /**
@@ -16,13 +17,17 @@ export default class BaseItem extends MovableSprite {
    * @param {string} config.type - Interactable type string (e.g. `'cut-tree'`).
    */
   constructor(config) {
-    config.texture = 'gen3_outside';
-    config.frame = config.tileId;
+    // tileId is a gen3_outside frame (0-based). Convert to kanto frame via GID map.
+    const gen3Gid = config.tileId + 1;
+    const kantoGid = gen3ToKanto[gen3Gid];
+    config.texture = 'kanto';
+    config.frame = kantoGid != null ? kantoGid - 1 : config.tileId;
     super(config);
     
     this.setOrigin(0);
     this.x = config.x * Tile.WIDTH;
     this.y = config.y * Tile.HEIGHT;
+    this.setDepth(1);
 
     config.id = this.constructor.name + (Math.random() + 1).toString(36).substring(7);
     this.setName(config.id);

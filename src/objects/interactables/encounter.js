@@ -113,7 +113,7 @@ export default class {
   event() {
     if (this.encounterTiles.length === 0) { return; }
 
-    this._sub = this.scene.gridEngine.positionChangeFinished().subscribe(({ charId, enterTile }) => {
+    this._sub = this.scene.gridEngine.positionChangeStarted().subscribe(({ charId, enterTile }) => {
       if (charId !== 'player') { return; }
 
       const tile = this.encounterTiles.find(

@@ -1,3 +1,4 @@
+import Computer from '@Objects/interactables/computer.js';
 import Debug from '@Objects/interactables/debug.js';
 import Player from '@Objects/interactables/player.js';
 import NPC from '@Objects/interactables/npc.js';
@@ -9,11 +10,13 @@ import SpinTile from '@Objects/interactables/spintile.js';
 import Light from '@Objects/interactables/light.js';
 import Ledge from '@Objects/interactables/ledge.js';
 import Encounter from '@Objects/interactables/encounter.js';
+import Grass from '@Objects/interactables/grass.js';
 import CutTree from '@Objects/interactables/cuttree.js';
 import Item from '@Objects/interactables/item.js';
 import StrengthBoulder from '@Objects/interactables/strengthboulder.js';
 
 export default {
+  Computer,
   Debug,
   Player,
   NPC,
@@ -25,6 +28,7 @@ export default {
   Light,
   Ledge,
   Encounter,
+  Grass,
   CutTree,
   Item,
   StrengthBoulder,

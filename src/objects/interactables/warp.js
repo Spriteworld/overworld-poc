@@ -39,14 +39,14 @@ export default class {
       for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
           let objCopy = JSON.parse(JSON.stringify(obj));
-          
-          let targetXIdx = objCopy.properties.findIndex(w => w.name === 'warp-x');
-          objCopy.properties[targetXIdx].value = obj.properties[targetXIdx].value + x;
           objCopy.x = objCopy.x + (x * Tile.WIDTH);
+          objCopy.y = objCopy.y + (y * Tile.HEIGHT);
+
+          let targetXIdx = objCopy.properties.findIndex(w => w.name === 'warp-x');
+          if (targetXIdx !== -1) objCopy.properties[targetXIdx].value = obj.properties[targetXIdx].value + x;
 
           let targetYIdx = objCopy.properties.findIndex(w => w.name === 'warp-y');
-          objCopy.properties[targetYIdx].value = obj.properties[targetYIdx].value + y;
-          objCopy.y = objCopy.y + (y * Tile.HEIGHT);
+          if (targetYIdx !== -1) objCopy.properties[targetYIdx].value = obj.properties[targetYIdx].value + y;
 
           this.addWarp(objCopy);
         }
@@ -60,11 +60,6 @@ export default class {
    * @param {object} obj - A Tiled object with warp-x and warp-y properties.
    */
   addWarp(obj) {
-    let warpxIdx = obj.properties.findIndex(w => w.name === 'warp-x');
-    let warpyIdx = obj.properties.findIndex(w => w.name === 'warp-y');
-    if (this.scene.game.config.debug.console.interactableShout) {
-      console.log(['Interactables::warp::addWarp', parseInt(obj.x), parseInt(obj.y), obj.properties[warpxIdx].value, obj.properties[warpyIdx].value]);
-    }
     this.scene.registry.get('warps').push({
       name: obj.id,
       x: parseInt(obj.x / Tile.WIDTH),
@@ -72,17 +67,12 @@ export default class {
       obj: obj
     });
     if (this.scene.game.config.debug.console.interactableShout) {
-      let rect = this.scene.add.rectangle(
-        obj.x * Tile.WIDTH, obj.y * Tile.HEIGHT,
-        Tile.WIDTH, Tile.HEIGHT,
-        0x000000, 0.5
-      ).setOrigin(0,0);
-
-      /** @type {Interactables.Debug} */
-      this.scene.mapPlugins['debug'].debugObject(rect, [
-        obj.properties[warpxIdx].value,
-        obj.properties[warpyIdx].value,
-      ].join(','));
+      const props = obj.properties ?? [];
+      const warpxProp = props.find(w => w.name === 'warp-x');
+      const warpyProp = props.find(w => w.name === 'warp-y');
+      const warpProp  = props.find(w => w.name === 'warp');
+      console.log(['Interactables::warp::addWarp', parseInt(obj.x), parseInt(obj.y),
+        warpxProp?.value ?? warpProp?.value, warpyProp?.value]);
     }
   }
 
@@ -113,6 +103,28 @@ export default class {
   }
 
   /**
+   * Resolve a warpLocation object by name to a playerLocation coordinate set.
+   * Searches the current scene's interactions for a `warpLocation` object
+   * whose name matches the given string.
+   * @param {string} name - The warpLocation object name.
+   * @returns {{x:number,y:number,dir:string,charLayer:string}|null}
+   */
+  resolveWarpLocation(name) {
+    const locations = this.scene.findInteractions('warpLocation');
+    const obj = locations.find(l => l.name === name);
+    if (!obj) {
+      console.warn(`Interactables::warp — warpLocation "${name}" not found on this map`);
+      return null;
+    }
+    return {
+      x: parseInt(obj.x / Tile.WIDTH),
+      y: parseInt(obj.y / Tile.HEIGHT),
+      dir: getPropertyValue(obj.properties ?? [], 'warp-dir', Direction.DOWN),
+      charLayer: getPropertyValue(obj.properties ?? [], 'layer', 'ground'),
+    };
+  }
+
+  /**
    * Check whether a character has stepped onto a warp tile and, if so,
    * initiate the appropriate warp action.
    * @param {Character} char - The character that moved.
@@ -125,28 +137,25 @@ export default class {
     let warp = this.warps.find(p => p.x === enterTile.x && p.y === enterTile.y);
     if (typeof warp === 'undefined') { return; }
 
-    let warpProps = warp.obj.properties;
-    let warpLocation = getPropertyValue(warpProps, 'warp', null);
-    if (warpLocation === null || warpLocation === ''){ return; }
-    let playerLocation = {
-      x: getPropertyValue(warpProps, 'warp-x', 0),
-      y: getPropertyValue(warpProps, 'warp-y', 0),
-      dir: getPropertyValue(warpProps, 'warp-dir', Direction.DOWN),
-      charLayer: getPropertyValue(warpProps, 'layer', 'ground')
-    };
+    let warpProps      = warp.obj.properties;
+    let warpTarget     = getPropertyValue(warpProps, 'warp', null);
+    let warpLocationName = getPropertyValue(warpProps, 'warp-location', null);
+    if (warpTarget === null || warpTarget === '') { return; }
 
     if (this.scene.game.config.debug.console.interactableShout) {
-      console.log(['Interactables::warp::handleWarps', 'char is trying to warp', char.name, 'to', warpLocation]);
+      console.log(['Interactables::warp::handleWarps', 'char is trying to warp', char.name, 'to', warpTarget, 'location', warpLocationName]);
     }
+
     if (char.config.type !== 'player') {
-      if (this.scene.registry.get('map') === warpLocation) {
-        this.warpPlayerInMap(char, playerLocation);
+      if (this.scene.registry.get('map') === warpTarget) {
+        const loc = this.resolveWarpLocation(warpLocationName);
+        if (loc) { this.warpPlayerInMap(char, loc); }
       }
       char.visible = false;
       return;
     }
 
-    this.warpPlayerToMap(char, warpLocation, playerLocation);
+    this.warpPlayerToMap(char, warpTarget, warpLocationName);
   }
 
   /**
@@ -176,36 +185,34 @@ export default class {
 
   /**
    * Fade out the camera then switch to a different map scene, placing the
-   * character at the given location on arrival.
+   * character at the named warpLocation on arrival.
    * @param {Character} char - The character to warp.
-   * @param {string} warpLocation - Scene key of the destination map.
-   * @param {{x:number,y:number,dir:string,layer:string}} playerLocation - Spawn position on the new map.
+   * @param {string} warpTarget - Scene key of the destination map, or '_this_'.
+   * @param {string} warpLocationName - Name of the warpLocation object on the destination map.
    */
-  warpPlayerToMap(char, warpLocation, playerLocation) {
-    // Same map — just teleport in place
-    if (this.scene.config.mapName === warpLocation && playerLocation) {
+  warpPlayerToMap(char, warpTarget, warpLocationName) {
+    // Same map — resolve the warpLocation on this scene and teleport in place
+    if (this.scene.config.mapName === warpTarget || warpTarget === '_this_') {
+      const loc = this.resolveWarpLocation(warpLocationName);
+      if (!loc) { return; }
       char.disableMovement();
       this.scene.cameras.main.fadeOut(500, 0, 0, 0);
       this.scene.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-        this.warpPlayerInMap(char, playerLocation);
+        this.warpPlayerInMap(char, loc);
         this.scene.cameras.main.fadeIn(500, 0, 0, 0);
         char.enableMovement();
       });
       return;
     }
 
-    // Normal fade transition to a cold-start scene
+    // Cross-map — pass the warpLocation name so the destination scene can resolve it
     char.disableMovement();
     this.scene.cameras.main.fadeOut(500, 0, 0, 0);
     this.scene.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
-        this.scene.registry.set('map', warpLocation);
-        if (typeof playerLocation === 'undefined') {
-          this.scene.scene.start(warpLocation);
-        } else {
-          this.scene.scene.start(warpLocation, { playerLocation });
-        }
+        this.scene.registry.set('map', warpTarget);
+        this.scene.scene.start(warpTarget, { warpLocationName });
       }
     );
   }
@@ -213,17 +220,17 @@ export default class {
   /**
    * Immediately switch to a different map scene without a camera fade.
    * @param {Character} char - The character to warp.
-   * @param {string} warpLocation - Scene key of the destination map.
-   * @param {{x:number,y:number,dir:string,layer:string}} [playerLocation] - Spawn position on the new map.
+   * @param {string} warpTarget - Scene key of the destination map.
+   * @param {string} [warpLocationName] - Name of the warpLocation object on the destination map.
    */
-  warpPlayerToMapWithoutFade(char, warpLocation, playerLocation) {
-    this.scene.registry.set('map', warpLocation);
-    if (typeof playerLocation === 'undefined') {
-      this.scene.scene.start(warpLocation);
-    }else {
-      this.scene.scene.start(warpLocation, {
-        playerLocation: playerLocation
-      });
+  warpPlayerToMapWithoutFade(char, warpTarget, locationData) {
+    this.scene.registry.set('map', warpTarget);
+    let startData;
+    if (typeof locationData === 'string') {
+      startData = { warpLocationName: locationData };
+    } else if (locationData) {
+      startData = { playerLocation: locationData };
     }
+    this.scene.scene.start(warpTarget, startData);
   }
 }

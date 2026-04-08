@@ -81,6 +81,8 @@ export default class extends Phaser.Scene {
     });
 
     this.game.events.on('map-enter', (mapName) => {
+      // KantoWorld uses location-zone detection instead of scene-name toasts.
+      if (mapName === 'KantoWorld') return;
       const display = mapName
         .replace(/([a-z])([A-Z])/g, '$1 $2')
         .replace(/([A-Za-z])(\d)/g, '$1 $2');
@@ -96,6 +98,11 @@ export default class extends Phaser.Scene {
       this.textbox.start(value);
       this.textbox.setVisible(true);
       EventBus.emit('player-move-disable');
+    });
+
+    this.game.events.on('computer-open', ({ type }) => {
+      EventBus.emit('player-move-disable');
+      this.game.events.emit('computer-ui-open', { type });
     });
 
     this.game.events.on('battle-start', (data) => {
@@ -118,17 +125,16 @@ export default class extends Phaser.Scene {
           this.scene.sleep(mapName);
           this.scene.launch('BattleScene2', data);
 
-          // launch() defers the start to the next frame, where BattleScene2
-          // lands on top of the stack. Wait for it to start before bringing
-          // OverworldUI (and its white overlay) back on top, then fade out.
-          this.scene.get('BattleScene2').events.once('start', () => {
-            this.scene.bringToTop('OverworldUI');
-            this.tweens.add({
-              targets: this.transitionRect,
-              alpha: 0,
-              duration: 300,
-              delay: 100,
-            });
+          // The white overlay (alpha 1) hides everything while BattleScene2
+          // initialises on the next frame. Bring OverworldUI back on top now
+          // so the overlay stays visible, then fade it out. The 100ms delay
+          // gives BattleScene2 enough time to start before it becomes visible.
+          this.scene.bringToTop('OverworldUI');
+          this.tweens.add({
+            targets: this.transitionRect,
+            alpha: 0,
+            duration: 300,
+            delay: 100,
           });
 
           this.game.events.once('battle-complete', () => {
@@ -138,7 +144,7 @@ export default class extends Phaser.Scene {
               const team = pokemon.map(p => ({
                 pid:                 p.pid,
                 currentHp:           p.currentHp,
-                exp:                 p.exp ?? 0,
+                exp:                 p.exp ?? null,
                 level:               p.level,
                 readyToEvolve:       p.readyToEvolve       ?? null,
                 pendingMovesToLearn: p.pendingMovesToLearn  ?? [],
@@ -185,7 +191,7 @@ export default class extends Phaser.Scene {
                   const updatedTeam = (pokemon ?? []).map(mon => ({
                     pid:                 mon.pid,
                     currentHp:           mon.currentHp,
-                    exp:                 mon.exp ?? 0,
+                    exp:                 mon.exp ?? null,
                     level:               mon.level,
                     readyToEvolve:       mon.readyToEvolve       ?? null,
                     pendingMovesToLearn: mon.pendingMovesToLearn  ?? [],

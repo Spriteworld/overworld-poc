@@ -1,13 +1,14 @@
 import Scenes from '@Scenes';
+import { WORLD_FILE, WORLD_MAP_KEYS } from '@Maps';
 import {
   SX, SY, SW, SH,
   TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT,
 } from './layout.js';
 
 const SKIP_SCENES = ['Preload', 'Base', 'OverworldUI', 'TimeOverlay'];
+const TILE_PX = 32;
 
-// Re-add 'WARP' to enable the warp tab.
-const TABS = ['DEBUG', 'FLAGS'];
+const TABS = ['WARP', 'DEBUG', 'FLAGS'];
 
 const TAB_W    = Math.floor(SW / TABS.length);
 const TAB_Y    = SY + 16;
@@ -19,8 +20,8 @@ const MAX_ROWS = Math.floor((SH - LIST_Y - 28) / ROW_H);
 /**
  * Debug screen for the pause menu.
  *
- * Tabs (WARP currently hidden — add to TABS array to re-enable):
- *   WARP  — teleport to any registered scene
+ * Tabs:
+ *   WARP  — teleport to any zone in kanto.world (dynamic list)
  *   DEBUG — toggle game.config.debug booleans; reloads the map in-place
  *   FLAGS — toggle game.config.gameFlags booleans; reloads the map in-place
  *
@@ -61,9 +62,15 @@ export default class DebugScreen {
   }
 
   _warpItems() {
-    return Object.keys(Scenes)
-      .filter(n => !SKIP_SCENES.includes(n))
-      .map(name => ({ type: 'warp', label: name }));
+    const maps = WORLD_FILE.maps;
+    const minX  = Math.min(...maps.map(m => m.x));
+    const minY  = Math.min(...maps.map(m => m.y));
+    return maps.map(entry => {
+      const label = WORLD_MAP_KEYS[entry.fileName] ?? entry.fileName;
+      const tileX = Math.floor((entry.x - minX) / TILE_PX + (entry.width  / TILE_PX) / 2);
+      const tileY = Math.floor((entry.y - minY) / TILE_PX + (entry.height / TILE_PX) / 2);
+      return { type: 'warp-world', label, tileX, tileY };
+    });
   }
 
   _debugItems() {
@@ -130,7 +137,7 @@ export default class DebugScreen {
         const pfx      = selected ? '►' : ' ';
         const color    = selected ? '#f8e030' : '#181818';
 
-        if (item.type === 'warp') {
+        if (item.type === 'warp' || item.type === 'warp-world') {
           reg(scene.add.text(SX + 16, y, pfx + item.label, { ...TEXT_STYLE_BODY, color }));
         } else {
           const val      = this._read(item);
@@ -204,6 +211,33 @@ export default class DebugScreen {
   confirm() {
     if (!this._items.length) return;
     const item = this._items[this._cursor];
+
+    if (item.type === 'warp-world') {
+      const mapName  = this._scene.registry.get('map');
+      const mapScene = this._scene.scene.get(mapName);
+      if (!mapScene) return;
+      const char = mapScene.characters.get('player');
+      const loc = { x: item.tileX, y: item.tileY, charLayer: 'ground' };
+
+      if (mapName === 'KantoWorld') {
+        // Teleport within the merged world with a camera fade.
+        char.disableMovement();
+        mapScene.cameras.main.fadeOut(500, 0, 0, 0);
+        mapScene.cameras.main.once('camerafadeoutcomplete', () => {
+          mapScene.gridEngine.setPosition(char.name, { x: loc.x, y: loc.y }, loc.charLayer);
+          char.look('down');
+          mapScene.cameras.main.fadeIn(500, 0, 0, 0);
+          char.enableMovement();
+        });
+      } else {
+        // Start KantoWorld and place the player at the target zone.
+        mapScene.scene.start('KantoWorld', { playerLocation: loc });
+      }
+
+      this._menu.close();
+      this._scene.registry.set('player_input', true);
+      return;
+    }
 
     if (item.type === 'warp') {
       const mapName  = this._scene.registry.get('map');
