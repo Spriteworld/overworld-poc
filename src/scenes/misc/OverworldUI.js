@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { textBox, toast, EventBus } from '@Utilities';
+import { textBox, toast, EventBus, createInputManager, getInputManager, Action } from '@Utilities';
 import { PauseMenu } from '@Objects';
 import { gameState, saveGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
@@ -39,6 +39,9 @@ export default class extends Phaser.Scene {
 
     // toast notification
     this.toast = toast(this, 10, 10, {});
+
+    // Input manager — created before textbox so textbox can register with it
+    createInputManager(this);
 
     // textbox
     if (this.textbox === null) {
@@ -324,36 +327,32 @@ export default class extends Phaser.Scene {
       });
     });
 
-    // ─── Pause menu keyboard ──────────────────────────────────────────────
-    this.input.keyboard.on('keydown', (event) => {
+    // ─── Input manager ────────────────────────────────────────────────────
+    const im = getInputManager();
+
+    im.on(Action.UP,    () => { if (this.pauseMenu.visible) this.pauseMenu.moveUp(); });
+    im.on(Action.DOWN,  () => { if (this.pauseMenu.visible) this.pauseMenu.moveDown(); });
+    im.on(Action.LEFT,  () => { if (this.pauseMenu.visible) this.pauseMenu.moveLeft(); });
+    im.on(Action.RIGHT, () => { if (this.pauseMenu.visible) this.pauseMenu.moveRight(); });
+    im.on(Action.CONFIRM, () => {
+      if (this.pauseMenu.visible) this._handleMenuConfirm();
+    });
+    im.on(Action.CANCEL, () => {
       if (this.pauseMenu.visible) {
-        switch (event.code) {
-          case 'ArrowUp':    this.pauseMenu.moveUp();    break;
-          case 'ArrowDown':  this.pauseMenu.moveDown();  break;
-          case 'ArrowLeft':  this.pauseMenu.moveLeft();  break;
-          case 'ArrowRight': this.pauseMenu.moveRight(); break;
-          case 'KeyZ':
-          case 'Enter':
-            if (!event.repeat) this._handleMenuConfirm();
-            break;
-          case 'KeyX':
-          case 'Escape':
-            if (!event.repeat) {
-              const closed = this.pauseMenu.back();
-              if (closed) this.registry.set('player_input', true);
-            }
-            break;
-        }
-      } else if (event.code === 'Enter' && !event.repeat) {
-        if (this.registry.get('player_input') !== false) {
-          this.registry.set('player_input', false);
-          this.pauseMenu.open();
-        }
-      } else if (event.code === 'Backspace' && !event.repeat) {
-        const registered = store.state.bag.registeredItem;
-        if (registered && this.registry.get('player_input') !== false) {
-          this.game.events.emit('use-key-item', registered);
-        }
+        const closed = this.pauseMenu.back();
+        if (closed) this.registry.set('player_input', true);
+      }
+    });
+    im.on(Action.MENU, () => {
+      if (!this.pauseMenu.visible && this.registry.get('player_input') !== false) {
+        this.registry.set('player_input', false);
+        this.pauseMenu.open();
+      }
+    });
+    im.on(Action.USE_ITEM, () => {
+      const registered = store.state.bag.registeredItem;
+      if (registered && this.registry.get('player_input') !== false) {
+        this.game.events.emit('use-key-item', registered);
       }
     });
   }

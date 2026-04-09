@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import StateMachine from '@Objects/StateMachine';
 import MovableSprite from '@Objects/characters/MovableSprite';
 import { Tile, Direction } from '@Objects';
-import { Vector2, getPropertyValue } from '@Utilities';
+import { Vector2, getPropertyValue, getInputManager, Action } from '@Utilities';
 
 export default class extends MovableSprite {
   /**
@@ -172,13 +172,9 @@ export default class extends MovableSprite {
    * Resets spinning, sliding, and jumping direction trackers.
    */
   idleOnEnter() {
-    const { space } = this.config.scene.input.keyboard.createCursorKeys();
     this.spinningDir = null;
     this.slidingDir = null;
     this.jumpingDir = null;
-    if (this.config.type === 'player') {
-      // space.on('down', () => { this.stateMachine.setState(this.stateDef.JUMP); });
-    }
   }
   /** State callback: called when leaving the IDLE state. */
   idleOnExit() {}
@@ -188,9 +184,8 @@ export default class extends MovableSprite {
    * when any directional key is held. Also refreshes the character collision rect.
    */
   idleOnUpdate() {
-    const { left, right, up, down } = this.config.scene.input.keyboard.createCursorKeys();
-
-    if (left.isDown || right.isDown || up.isDown || down.isDown) {
+    const im = getInputManager();
+    if (im && (im.isDown(Action.LEFT) || im.isDown(Action.RIGHT) || im.isDown(Action.UP) || im.isDown(Action.DOWN))) {
       this.stateMachine.setState(this.stateDef.MOVE);
     }
     this.updateCharacterRect();
@@ -232,17 +227,14 @@ export default class extends MovableSprite {
    */
   handleMove(dir) {
     const duration = 150;
-    const keys = this.config.scene.input.keyboard.createCursorKeys();
-
+    // Action values ('up','down','left','right') match the lowercased Direction constants.
     dir = dir.toLowerCase();
     if (this.getFacingDirection() === dir) {
-      // console.log('Character::handleMove..', dir);
       this.move(dir);
     } else {
-      // console.log('Character::handleMove', dir);
-      keys[dir].getDuration() >= duration
-        ? this.move(dir)
-        : this.look(dir);
+      const im = getInputManager();
+      const held = im ? im.getDuration(dir) : 0;
+      held >= duration ? this.move(dir) : this.look(dir);
     }
   }
 

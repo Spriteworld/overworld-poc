@@ -6,20 +6,20 @@
     <!-- D-Pad -->
     <div style="display: grid; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); gap: 2px;">
       <div></div>
-      <button class="dpad-btn rounded-t-lg" v-on="handlers('ArrowUp')">▲</button>
+      <button class="dpad-btn rounded-t-lg" v-on="handlers(Action.UP)">▲</button>
       <div></div>
-      <button class="dpad-btn rounded-l-lg" v-on="handlers('ArrowLeft')">◀</button>
+      <button class="dpad-btn rounded-l-lg" v-on="handlers(Action.LEFT)">◀</button>
       <div class="dpad-center"></div>
-      <button class="dpad-btn rounded-r-lg" v-on="handlers('ArrowRight')">▶</button>
+      <button class="dpad-btn rounded-r-lg" v-on="handlers(Action.RIGHT)">▶</button>
       <div></div>
-      <button class="dpad-btn rounded-b-lg" v-on="handlers('ArrowDown')">▼</button>
+      <button class="dpad-btn rounded-b-lg" v-on="handlers(Action.DOWN)">▼</button>
       <div></div>
     </div>
 
     <!-- Select / Start -->
     <div class="flex flex-col gap-3 items-center">
       <button class="sys-btn">SEL</button>
-      <button class="sys-btn" v-on="handlers('Enter')">STA</button>
+      <button class="sys-btn" v-on="handlers(Action.MENU)">STA</button>
     </div>
 
     <!-- B / A -->
@@ -27,51 +27,34 @@
       <button
         class="action-btn"
         style="position: absolute; width: 48px; height: 48px; bottom: 0; left: 0; font-size: 1rem;"
-        v-on="handlers('x')"
+        v-on="handlers(Action.CANCEL)"
       >B</button>
       <button
         class="action-btn"
         style="position: absolute; width: 56px; height: 56px; top: 0; right: 0; font-size: 1.125rem;"
-        v-on="handlers('z')"
+        v-on="handlers(Action.CONFIRM)"
       >A</button>
     </div>
   </div>
 </template>
 
 <script>
-const KEY_CODES = {
-  ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40,
-  z: 90, x: 88, Enter: 13,
-};
-
-const KEY_CODE_STR = {
-  ArrowLeft: 'ArrowLeft', ArrowRight: 'ArrowRight',
-  ArrowUp: 'ArrowUp', ArrowDown: 'ArrowDown',
-  z: 'KeyZ', x: 'KeyX', Enter: 'Enter',
-  w: 'ArrowUp', a: 'ArrowLeft', s: 'ArrowDown', d: 'ArrowRight',
-};
+import { Action, getInputManager } from '../utilities/InputManager.js';
 
 export default {
   name: 'MobileControls',
+  data() {
+    return { Action };
+  },
   methods: {
-    press(key) {
-      window.dispatchEvent(new KeyboardEvent('keydown', {
-        key, code: KEY_CODE_STR[key], keyCode: KEY_CODES[key], bubbles: true, cancelable: true,
-      }));
-    },
-    release(key) {
-      window.dispatchEvent(new KeyboardEvent('keyup', {
-        key, code: KEY_CODE_STR[key], keyCode: KEY_CODES[key], bubbles: true,
-      }));
-    },
-    handlers(key) {
+    handlers(action) {
       return {
-        touchstart: (e) => { e.preventDefault(); this.press(key); },
-        touchend:   (e) => { e.preventDefault(); this.release(key); },
-        touchcancel:(e) => { e.preventDefault(); this.release(key); },
-        mousedown:  ()  => this.press(key),
-        mouseup:    ()  => this.release(key),
-        mouseleave: ()  => this.release(key),
+        touchstart:  (e) => { e.preventDefault(); getInputManager()?.press(action); },
+        touchend:    (e) => { e.preventDefault(); getInputManager()?.release(action); },
+        touchcancel: (e) => { e.preventDefault(); getInputManager()?.release(action); },
+        mousedown:   ()  => getInputManager()?.press(action),
+        mouseup:     ()  => getInputManager()?.release(action),
+        mouseleave:  ()  => getInputManager()?.release(action),
       };
     },
   },

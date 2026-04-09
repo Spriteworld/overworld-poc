@@ -1,5 +1,5 @@
 import { Character, Tile, Direction } from '@Objects';
-import { EventBus } from '@Utilities';
+import { EventBus, getInputManager, Action } from '@Utilities';
 
 export default class extends Character {
   /**
@@ -109,52 +109,43 @@ export default class extends Character {
   }
 
   /**
-   * Override: also checks for the Z key to trigger interaction with facing objects.
+   * Override: also checks for the confirm button to trigger interaction with facing objects.
    */
   idleOnUpdate() {
     Character.prototype.idleOnUpdate.call(this);
     if (this.config.scene.registry.get('player_input') === false) {
       return;
     }
-    const Z = this.config.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
-    Z.emitOnRepeat = false;
-
-    if (Z.isDown) {
-      // this.stateMachine.setState(this.stateDf.IDLE);
+    const im = getInputManager();
+    if (im?.isDown(Action.CONFIRM) && im.getDuration(Action.CONFIRM) < 80) {
       this.handleInteractables();
     }
   }
 
   /**
-   * Override: reads directional keys and the run/bike modifier keys to move
+   * Override: reads directional inputs and the run modifier to move
    * the player each tick, adjusting GridEngine speed accordingly.
    */
   moveOnUpdate() {
     if (this.config.scene.registry.get('player_input') === false) {
       return;
     }
-    const keys = this.config.scene.input.keyboard.createCursorKeys();
-    const X = this.config.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
-    const C = this.config.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
+    const im = getInputManager();
 
     let moveSpeed = 4;
-    if (this.config.scene.game.config.gameFlags.has_running_shoes && X.isDown) { moveSpeed = 8; }
+    if (this.config.scene.game.config.gameFlags.has_running_shoes && im?.isDown(Action.RUN)) {
+      moveSpeed = 8;
+    }
 
     this.gridengine.setSpeed(this.config.id, moveSpeed);
-    // console.log({
-    //   left: keys.left.isDown,
-    //   right: keys.right.isDown,
-    //   up: keys.up.isDown,
-    //   down: keys.down.isDown,
-    // })
 
-    if (keys.left.isDown) {
+    if (im?.isDown(Action.LEFT)) {
       this.handleMove(Direction.LEFT);
-    } else if (keys.right.isDown) {
+    } else if (im?.isDown(Action.RIGHT)) {
       this.handleMove(Direction.RIGHT);
-    } else if (keys.up.isDown) {
+    } else if (im?.isDown(Action.UP)) {
       this.handleMove(Direction.UP);
-    } else if (keys.down.isDown) {
+    } else if (im?.isDown(Action.DOWN)) {
       this.handleMove(Direction.DOWN);
     } else {
       this.stateMachine.setState(this.stateDef.IDLE);
@@ -178,23 +169,25 @@ export default class extends Character {
 
   /**
    * Per-tick update while in the BIKE state. Moves at bike speed; stays in BIKE
-   * when no keys are pressed (unlike MOVE, which returns to IDLE on key release).
+   * when no inputs are held (unlike MOVE, which returns to IDLE on release).
    */
   bikeOnUpdate() {
     if (this.config.scene.registry.get('player_input') === false) {
       return;
     }
-    const keys = this.config.scene.input.keyboard.createCursorKeys();
+    const im = getInputManager();
 
     this.gridengine.setSpeed(this.config.id, 20);
 
-    if (keys.left.isDown) {
+    if (im?.isDown(Action.CONFIRM) && im.getDuration(Action.CONFIRM) < 80) {
+      this.handleInteractables();
+    } else if (im?.isDown(Action.LEFT)) {
       this.handleMove(Direction.LEFT);
-    } else if (keys.right.isDown) {
+    } else if (im?.isDown(Action.RIGHT)) {
       this.handleMove(Direction.RIGHT);
-    } else if (keys.up.isDown) {
+    } else if (im?.isDown(Action.UP)) {
       this.handleMove(Direction.UP);
-    } else if (keys.down.isDown) {
+    } else if (im?.isDown(Action.DOWN)) {
       this.handleMove(Direction.DOWN);
     }
     EventBus.emit('player-move-complete', this);

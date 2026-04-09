@@ -2366,7 +2366,7 @@
                         {
                          "name":"text",
                          "type":"string",
-                         "value":"{user}'s House"
+                         "value":"{player}'s House"
                         }],
                  "rotation":0,
                  "type":"sign",
@@ -2384,7 +2384,7 @@
                         {
                          "name":"text",
                          "type":"string",
-                         "value":"Rival[b]House[\/b]"
+                         "value":"{rival}'s House"
                         }],
                  "rotation":0,
                  "type":"sign",
@@ -2402,7 +2402,7 @@
                         {
                          "name":"text",
                          "type":"string",
-                         "value":"TRAINERS TIPS\nPress START to open the MENU"
+                         "value":"TRAINERS TIPS\nPress {KEYBIND.MENU} to open the MENU"
                         }],
                  "rotation":0,
                  "type":"sign",
@@ -2438,7 +2438,7 @@
                         {
                          "name":"text",
                          "type":"string",
-                         "value":"OAK POK\ufffdMON RESEARCH LAB"
+                         "value":"OAK POK{e}MON RESEARCH LAB"
                         }],
                  "rotation":0,
                  "type":"sign",

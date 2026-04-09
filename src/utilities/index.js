@@ -4,6 +4,7 @@ import { toast } from './toast.js';
 import { random_rgba } from './random_rgba.js';
 import { getPropertyValue, getValue, remapProps, generateTileCoords, Vector2 } from './tiles.js';
 import { EventBus } from './EventBus.js';
+import InputManager, { Action, createInputManager, getInputManager } from './InputManager.js';
 
 export {
   debugDraw,
@@ -16,4 +17,8 @@ export {
   generateTileCoords,
   Vector2,
   EventBus,
+  InputManager,
+  Action,
+  createInputManager,
+  getInputManager,
 };

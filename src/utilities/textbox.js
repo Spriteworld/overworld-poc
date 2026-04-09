@@ -1,3 +1,6 @@
+import { getInputManager, getKeybindLabel } from './InputManager.js';
+import store from '../store/index.js';
+
 const CHAR_DELAY  = 30;   // ms per character
 const CLOSE_DELAY = 500;  // ms after Z before textbox-disable fires
 const BORDER_R    = 20;   // border radius
@@ -68,7 +71,7 @@ class TextBox {
     this._timer       = null;
     this._closeOnce   = null; // pending once('keydown-Z') for close
 
-    // Keyboard: skip or advance
+    // Input: skip or advance (driven by InputManager so mobile controls work too)
     this._keyHandler = () => {
       if (this._typing) {
         this._skipTyping();
@@ -76,7 +79,7 @@ class TextBox {
         this._typeNextPage();
       }
     };
-    scene.input.keyboard.on('keydown-Z', this._keyHandler);
+    getInputManager()?.on('confirm', this._keyHandler);
 
     // Hidden by default
     this._setChildrenVisible(false);
@@ -91,7 +94,13 @@ class TextBox {
    */
   start(text) {
     this._cancelPending();
-    const str     = Array.isArray(text) ? text.join('\n') : text;
+    const raw = Array.isArray(text) ? text.join('\n') : text;
+    const str = raw
+      .replace(/\{e\}/gi, 'é')
+      .replace(/\{E\}/gi, 'É')
+      .replace(/\{player\}/gi, store.state.game.playerName)
+      .replace(/\{rival\}/gi, store.state.game.rivalName)
+      .replace(/\{KEYBIND\.([^}]+)\}/gi, (_, action) => getKeybindLabel(action.toLowerCase()));
     this._pages   = this._paginate(str);
     this._pageIdx = 0;
     this._typeCurrentPage();
@@ -117,7 +126,7 @@ class TextBox {
    */
   destroy() {
     this._cancelPending();
-    this._scene.input.keyboard.off('keydown-Z', this._keyHandler);
+    getInputManager()?.off('confirm', this._keyHandler);
     this._bg.destroy();
     this._textObj.destroy();
     this._arrow.destroy();
@@ -246,7 +255,7 @@ class TextBox {
           this._scene.game.events.emit('textbox-disable');
         });
       };
-      this._scene.input.keyboard.once('keydown-Z', this._closeOnce);
+      getInputManager()?.once('confirm', this._closeOnce);
     }
   }
 
@@ -259,7 +268,7 @@ class TextBox {
       this._timer = null;
     }
     if (this._closeOnce) {
-      this._scene.input.keyboard.off('keydown-Z', this._closeOnce);
+      getInputManager()?.off('confirm', this._closeOnce);
       this._closeOnce = null;
     }
   }

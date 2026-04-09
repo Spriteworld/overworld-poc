@@ -6,6 +6,7 @@ export default {
   state: () => ({
     seed:         Math.floor(Math.random() * 0x100000000) >>> 0,
     playerName:   'Red',
+    rivalName:    'Blue',
     playerSprite: 'red',
     onBike:        false,
     playerFacing:  'down',
