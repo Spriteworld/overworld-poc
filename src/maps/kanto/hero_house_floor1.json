@@ -614,6 +614,40 @@
           "width": 32,
           "x": 128,
           "y": 288
+        },
+        {
+          "height": 32,
+          "id": 5,
+          "name": "Mom",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "text",
+              "type": "string",
+              "value": "Oh! You should rest!"
+            },
+            {
+              "name": "text-onComplete",
+              "type": "string",
+              "value": "heal:true"
+            },
+            {
+              "name": "texture",
+              "type": "string",
+              "value": "ace_trainer"
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 32,
+          "x": 256,
+          "y": 160
         }
       ],
       "opacity": 1,

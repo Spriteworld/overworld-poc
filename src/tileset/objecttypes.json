@@ -104,11 +104,6 @@
                 "value": ""
             },
             {
-                "name": "seen-radius",
-                "type": "int",
-                "value": 0
-            },
-            {
                 "name": "spin",
                 "type": "bool",
                 "value": false
@@ -117,6 +112,21 @@
                 "name": "spin-rate",
                 "type": "int",
                 "value": 500
+            },
+            {
+                "name": "text",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "text-given",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "text-onComplete",
+                "type": "string",
+                "value": ""
             },
             {
                 "name": "texture",
@@ -237,6 +247,49 @@
             }
         ],
         "name": "item",
+        "type": "class",
+        "useAs": [
+            "object",
+            "tile"
+        ]
+    },
+    {
+        "color": "#ffff8800",
+        "drawFill": true,
+        "id": 10,
+        "members": [
+            {
+                "name": "facing-direction",
+                "type": "string",
+                "value": "down"
+            },
+            {
+                "name": "text",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "text-defeated",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "trainer-name",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "trainer-pokemon",
+                "type": "string",
+                "value": "[]"
+            },
+            {
+                "name": "texture",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "trainer",
         "type": "class",
         "useAs": [
             "object",

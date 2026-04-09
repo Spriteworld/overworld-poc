@@ -102,7 +102,7 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
    * @returns {void}
    */
   moveTo(coords, config) {
-    return this.gridengine.moveTo(this.config.id, coords.x, coords.y, config);
+    return this.gridengine.moveTo(this.config.id, coords, config);
   }
 
   /**

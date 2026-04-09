@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
-import { Interactables, Items, Tile } from '@Objects';
+import Interactables from '@Objects/interactables/index.js';
+import Items from '@Objects/items/index.js';
+import * as Tile from '@Objects/Tile.js';
 import { getValue, EventBus } from '@Utilities';
+import { gameState } from '@Data/gameState.js';
 import Tileset from '@Tileset';
 import { MAP_REGISTRY } from '@Maps';
 
@@ -17,6 +20,36 @@ const TILESET_REGISTRY = {
   'kanto_inside':       { url: Tileset.kanto_inside,  frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'pallet_town_inside': { url: Tileset.pallet_inside, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
 };
+
+/**
+ * Maps tileset source name to its bundled JSON data.
+ * Used to inline external tileset references before passing to Phaser.
+ */
+const TILESET_JSON_REGISTRY = {
+  'gen3_inside':   Tileset.gen3inside_json,
+  'gen3_outside':  Tileset.gen3outside_json,
+  'rse_inside':    Tileset.rse_inside_json,
+  'rse_outside':   Tileset.rse_outside_json,
+  'kanto_inside':  Tileset.kanto_inside_json,
+};
+
+/**
+ * Resolves external tileset references in a Tiled map JSON object,
+ * returning a new map object with all tilesets inlined.
+ */
+function resolveExternalTilesets(mapData) {
+  if (!mapData?.tilesets?.some(ts => ts.source)) return mapData;
+  return {
+    ...mapData,
+    tilesets: mapData.tilesets.map(ts => {
+      if (!ts.source) return ts;
+      const name = ts.source.split('/').pop().replace('.json', '');
+      const json  = TILESET_JSON_REGISTRY[name];
+      if (!json) return ts;
+      return { ...ts, ...json, firstgid: ts.firstgid, source: undefined };
+    }),
+  };
+}
 
 export default class extends Phaser.Scene {
   /**
@@ -65,6 +98,7 @@ export default class extends Phaser.Scene {
     this.mapPlugins['cuttree'] = new Interactables.CutTree(this);
     this.mapPlugins['item'] = new Interactables.Item(this);
     this.mapPlugins['strengthboulder'] = new Interactables.StrengthBoulder(this);
+    this.mapPlugins['trainer'] = new Interactables.Trainer(this);
   }
 
   /**
@@ -89,7 +123,10 @@ export default class extends Phaser.Scene {
    * Call this from the subclass `preload()` hook.
    */
   preloadMap() {
-    this.load.tilemapTiledJSONExternal(this.config.mapName, this.config.map);
+    this.cache.tilemap.add(this.config.mapName, {
+      data:   resolveExternalTilesets(this.config.map),
+      format: Phaser.Tilemaps.Formats.TILED_JSON,
+    });
 
     const tilesets = this.config.map?.tilesets ?? [];
     tilesets.forEach(ts => {
@@ -118,20 +155,14 @@ export default class extends Phaser.Scene {
     this.registry.set('player_input', true);
     var tilemap = this.make.tilemap({ key: this.config.mapName });
     this.config.tilemap = tilemap;
-    if (this.game.config.debug.console.gameMap) {
-      console.log(['GameMap::loadMap', this.config.mapName]);
-      console.log(['GameMap::loadMap::tilesets', tilemap.tilesets]);
-      console.log(['GameMap::loadMap::layers', tilemap.layers]);
-    }
-    
+
     // all the tilesets!
     let tilesets = [];
     tilemap.tilesets.forEach((tileset) => {
-      tilesets.push(tilemap.addTilesetImage(tileset.name));
+      const ts = tilemap.addTilesetImage(tileset.name);
+      if (!ts) console.warn('[GameMap] addTilesetImage failed for', tileset.name, '— texture exists:', this.textures.exists(tileset.name));
+      tilesets.push(ts);
     });
-    if (this.game.config.debug.console.gameMap) {
-      console.log(['GameMap::loadMap::tilesets', tilesets]);
-    }
     
     // load all the layers!
     tilemap.layers
@@ -150,6 +181,18 @@ export default class extends Phaser.Scene {
 
     // init the animated tiles
     this.animatedTiles.init(tilemap);
+
+    // The phaser-animated-tiles plugin uses findIndex to set currentFrame; if the
+    // animated tile's own ID is not among its animation frames, findIndex returns -1
+    // (e.g. gen3_outside tile 7662 starts on frame 7694).  frames[-1] is undefined
+    // and crashes on the first animation tick.  Clamp any -1 result to frame 0.
+    const mapAnimDataArr = this.animatedTiles.animatedTiles;
+    if (mapAnimDataArr.length > 0) {
+      mapAnimDataArr[mapAnimDataArr.length - 1].animatedTiles.forEach(tile => {
+        if (tile.currentFrame < 0) { tile.currentFrame = 0; }
+      });
+    }
+
     this.initPlugins();
 
     // loop and init the plugins
@@ -492,7 +535,7 @@ export default class extends Phaser.Scene {
       // Register tilemap JSON in cache (no network cost)
       if (!this.cache.tilemap.has(destKey)) {
         this.cache.tilemap.add(destKey, {
-          data:   mapData,
+          data:   resolveExternalTilesets(mapData),
           format: Phaser.Tilemaps.Formats.TILED_JSON,
         });
       }
@@ -529,6 +572,28 @@ export default class extends Phaser.Scene {
     Object.entries(this.mapPlugins)
         .filter(([_, plugin]) => typeof plugin.event === 'function')
         .map(([_, plugin]) => plugin.event());
+
+    // Seed the store with the player's initial position on this map.
+    const spawn = this.gridEngine.getPosition('player');
+    gameState.playerTile = {
+      x: spawn.x,
+      y: spawn.y,
+      charLayer: this.gridEngine.getCharLayer('player'),
+    };
+
+    // Keep playerTile current as the player moves.
+    this._playerTileSub = this.gridEngine
+      .positionChangeStarted()
+      .subscribe(({ charId, enterTile }) => {
+        if (charId !== 'player') return;
+        gameState.playerTile = {
+          x: enterTile.x,
+          y: enterTile.y,
+          charLayer: this.gridEngine.getCharLayer('player'),
+        };
+      });
+
+    this.events.once('shutdown', () => this._playerTileSub?.unsubscribe());
   }
 
 }

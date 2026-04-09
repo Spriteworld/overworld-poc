@@ -2672,11 +2672,6 @@
                          "value":""
                         }, 
                         {
-                         "name":"seen-radius",
-                         "type":"int",
-                         "value":5
-                        }, 
-                        {
                          "name":"spin",
                          "type":"bool",
                          "value":false
@@ -2693,12 +2688,8 @@
                         }, 
                         {
                          "name":"text-onComplete",
-                         "propertytype":"item",
-                         "type":"class",
-                         "value":
-                            {
-                             "item":"potion"
-                            }
+                         "type":"string",
+                         "value":"item:potion"
                         }, 
                         {
                          "name":"texture",
@@ -3203,6 +3194,74 @@
                  "width":64,
                  "x":2336,
                  "y":5408
+                }, 
+                {
+                 "height":32,
+                 "id":79,
+                 "name":"testTrainer",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"battle-texture",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"facing-direction",
+                         "type":"string",
+                         "value":"right"
+                        }, 
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"ace_trainer"
+                        }, 
+                        {
+                         "name":"seen-radius",
+                         "type":"int",
+                         "value":4
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"Oh a trainer!"
+                        }, 
+                        {
+                         "name":"text-defeated",
+                         "type":"string",
+                         "value":"Oh, a trainer..."
+                        }, 
+                        {
+                         "name":"texture",
+                         "type":"string",
+                         "value":"ace_trainer"
+                        }, 
+                        {
+                         "name":"track-player",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"track-player-radius",
+                         "type":"string",
+                         "value":"4"
+                        }, 
+                        {
+                         "name":"trainer-name",
+                         "type":"string",
+                         "value":"B"
+                        }, 
+                        {
+                         "name":"trainer-pokemon",
+                         "type":"string",
+                         "value":"[{\"species\": 25, \"level\": 6}, {\"species\": 25, \"level\": 6}]"
+                        }],
+                 "rotation":0,
+                 "type":"trainer",
+                 "visible":true,
+                 "width":32,
+                 "x":2240,
+                 "y":5760
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -3630,7 +3689,7 @@
          "y":0
         }],
  "nextlayerid":19,
- "nextobjectid":79,
+ "nextobjectid":80,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",

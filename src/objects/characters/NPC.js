@@ -1,4 +1,4 @@
-import { Character } from '@Objects';
+import Character from '@Objects/characters/Character.js';
 
 export default class extends Character {
   /**

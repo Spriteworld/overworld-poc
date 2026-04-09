@@ -8,7 +8,8 @@
     "build": "vite build",
     "build:live": "vite build --mode live",
     "preview": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "maps:update": "python3 src/maps/kanto/update_kanto.py && python3 src/maps/kanto/update_kanto_insides.py"
   },
   "dependencies": {
     "@spriteworld/battle": "../battle",

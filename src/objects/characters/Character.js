@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import StateMachine from '@Objects/StateMachine';
 import MovableSprite from '@Objects/characters/MovableSprite';
 import { Tile, Direction } from '@Objects';
-import { Vector2 } from '@Utilities';
+import { Vector2, getPropertyValue } from '@Utilities';
 
 export default class extends MovableSprite {
   /**
@@ -28,7 +28,7 @@ export default class extends MovableSprite {
       'spin-rate': 600,
       move: false,
       'move-rate': 600,
-      'move-radius': 1,
+      'move-radius': 0,
       follow: false,
       collides: true,
       'facing-direction': Direction.DOWN,
@@ -38,7 +38,7 @@ export default class extends MovableSprite {
       'can-run': true,
       'ignore-warp': false,
       'track-player': false,
-      'track-player-radius': 2,
+      'track-player-radius': 0,
     }, ...config};
     super(config);
     this.config = config;
@@ -70,6 +70,8 @@ export default class extends MovableSprite {
     this.initalCreation = true;
     this.spinRate = parseInt(this.config['spin-rate']);
     
+    this._baseMovementState = this.stateDef.IDLE;
+
     this.config.scene.add.existing(this);
     this.config.scene.addCharacter(this);
 
@@ -82,6 +84,20 @@ export default class extends MovableSprite {
    * @returns {{ up: object, down: object, left: object, right: object }}
    */
   characterFramesDef() {
+    return {
+      up: { leftFoot: 13, standing: 12, rightFoot: 15 },
+      down: { leftFoot: 1, standing: 0, rightFoot: 3 },
+      left: { leftFoot: 7, standing: 4, rightFoot: 5 },
+      right: { leftFoot: 9, standing: 8, rightFoot: 11 },
+    };
+  }
+
+  /**
+   * Returns the frame mapping for the bike spritesheet. Same 16-frame layout
+   * as the walking sheet; pedal positions replace left/right foot frames.
+   * @returns {{ up: object, down: object, left: object, right: object }}
+   */
+  characterFramesBikeDef() {
     return {
       up: { leftFoot: 13, standing: 12, rightFoot: 15 },
       down: { leftFoot: 1, standing: 0, rightFoot: 3 },
@@ -304,6 +320,30 @@ export default class extends MovableSprite {
     return this.slidingDir;
   }
 
+  /** State callback: swap to the bike texture and frame mapping when entering the BIKE state. */
+  bikeOnEnter() {
+    this._baseMovementState = this.stateDef.BIKE;
+    const bikeTexture = this.config.texture + '_bike';
+    if (this.config.scene.textures.exists(bikeTexture)) {
+      this.setTexture(bikeTexture);
+    }
+    this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesBikeDef());
+  }
+  /** State callback: restore the base texture and frame mapping when leaving the BIKE state. */
+  bikeOnExit() {
+    this._baseMovementState = this.stateDef.IDLE;
+    this.setTexture(this.config.texture);
+    this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesDef());
+  }
+
+  /**
+   * Transition back to whichever base movement state is active (IDLE or BIKE).
+   * Use this instead of hardcoding setState(IDLE) after ledge jumps and slides.
+   */
+  _returnToBaseMovement() {
+    this.stateMachine.setState(this._baseMovementState);
+  }
+
   /** State callback: log the start of a jump (placeholder). */
   jumpOnEnter() {
     console.log('JUMP START');
@@ -318,7 +358,7 @@ export default class extends MovableSprite {
       ease: 'linear',
       duration: 320,
       complete: () => {
-        this.stateMachine.setState(this.stateDef.IDLE);
+        this._returnToBaseMovement();
       },
     });
   }
@@ -334,6 +374,16 @@ export default class extends MovableSprite {
    * of a jump.
    */
   jumpLedgeOnEnter() {
+    // bikeOnExit() runs before this and resets _baseMovementState to IDLE.
+    // Restore it so _returnToBaseMovement() returns to BIKE after the jump.
+    if (this.stateMachine.previousState?.name === this.stateDef.BIKE) {
+      this._baseMovementState = this.stateDef.BIKE;
+      const bikeTexture = this.config.texture + '_bike';
+      if (this.config.scene.textures.exists(bikeTexture)) {
+        this.setTexture(bikeTexture);
+      }
+    }
+
     const faceDir = this.getFacingDirection();
     // GridEngine returns directions in lowercase; Direction constants are uppercase.
     const faceDirUpper = faceDir.toUpperCase();
@@ -409,9 +459,11 @@ export default class extends MovableSprite {
             this.jumpingDir = null;
             this.gridengine.setWalkingAnimationMapping(
               this.config.id,
-              this.characterFramesDef()
+              this._baseMovementState === this.stateDef.BIKE
+                ? this.characterFramesBikeDef()
+                : this.characterFramesDef()
             );
-            this.stateMachine.setState(this.stateDef.IDLE);
+            this._returnToBaseMovement();
           },
         });
       },
@@ -428,7 +480,12 @@ export default class extends MovableSprite {
     this.jumpingDir = null;
     this.gridengine.setOffsetX(this.config.id, 0);
     this.gridengine.setOffsetY(this.config.id, 0);
-    this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesDef());
+    this.gridengine.setWalkingAnimationMapping(
+      this.config.id,
+      this._baseMovementState === this.stateDef.BIKE
+        ? this.characterFramesBikeDef()
+        : this.characterFramesDef()
+    );
   }
   /**
    * Returns true when the character is currently performing a ledge jump.
@@ -486,9 +543,10 @@ export default class extends MovableSprite {
    * @param {boolean} [restart=false] - If true, resume spinning on the next `textbox-disable` event.
    */
   stopSpin(restart=false) {
+    const wasSpin = this.config.spin;
     this.config.spin = false;
 
-    if (restart) {
+    if (restart && wasSpin) {
       this.scene.game.events.once('textbox-disable', this.startSpin, this);
     }
   }
@@ -520,7 +578,7 @@ export default class extends MovableSprite {
    * character to "see" them, forming four directional pyramids around the NPC.
    */
   generateTrackingCoords() {
-    let radius = this.config['track-player-radius'] || 2;
+    let radius = this.config['track-player-radius'];
     this.trackingCoords = [];
     let npcBounds = this.getBounds();
     let pyramidCount = [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29];
@@ -629,11 +687,11 @@ export default class extends MovableSprite {
    * If so, fires the `event-can-see-character` callback and turns toward the player.
    */
   canTrackPlayer() {
-    if (this.config['track-player'] === false 
-      && this.config['avoid-character'] === false) { 
-      return; 
+    if (this.config['track-player'] !== true
+      && this.config['avoid-character'] === false) {
+      return;
     }
-    let radius = this.config['track-player-radius'] || 2;
+    let radius = this.config['track-player-radius'];
 
     let player = this.config.scene.mapPlugins['player'].player;
     let playerPos = player.getPosition();
@@ -643,41 +701,34 @@ export default class extends MovableSprite {
       this.generateTrackingCoords();
     }
 
+    const facingDir = this.getFacingDirection().toUpperCase();
     let coord = Object
       .values(this.trackingCoords)
       .find((coord) => {
-        if (coord.x === parseInt(playerPos.x) && coord.y === parseInt(playerPos.y)) {
-          return true;
-        }
+        return coord.x === parseInt(playerPos.x)
+          && coord.y === parseInt(playerPos.y);
       })
     ;
 
     if (coord) {
-      console.log(['Character::canTrackPlayer', this.config.id +' can track the player!', coord.dir]);
-      if (typeof this.config['event-can-see-character'] === 'function') {
-        console.log(['Character::canTrackPlayer', this.config.id, 'event-can-see-character', coord.dir]);
-        this.config['event-can-see-character'](this.config.id, coord.dir);
+      if (typeof this.config['event-can-track-character'] === 'function') {
+        this.config['event-can-track-character'](this.config.id, coord.dir);
+      } else {
+        this.look(coord.dir.toLowerCase());
       }
-      this.look(coord.dir);
     }
   }
 
   /**
-   * Cast a line-of-sight check in the character's facing direction up to
-   * `seen-radius` tiles, stopping at collisions. If the target character's
-   * collision rect falls inside the resulting rectangle, fires the
-   * `event-can-see-character` callback.
+   * Cast a line-of-sight check up to `seen-radius` tiles, stopping at collisions.
+   * If `facing-direction` was explicitly set in properties, only checks the current
+   * facing direction. Otherwise checks all four directions.
+   * Fires `event-can-see-character` if the target falls within the sight rectangle.
    */
   canSeeCharacter() {
     if (this.scene.game.config.debug.noTrainerSight) { return; }
-    if (this.config['seen-radius'] === 0) { return; }
-    if (
-      this.config['seen-character'] === null 
-        || this.config['seen-character'] === undefined 
-        || this.config['seen-character'].length === 0
-    ) { 
-      return; 
-    }
+    if ((this.config['seen-radius'] ?? 0) === 0) { return; }
+    if (this.config['seen-character'] === null || this.config['seen-character']?.length === 0) { return; }
 
     if (!this.gridengine.hasCharacter(this.config['seen-character'])) {
       if (this.scene.game.config.debug.tests.rectOutlines) {
@@ -686,101 +737,90 @@ export default class extends MovableSprite {
       return;
     }
 
-    let character = this.config.scene.characters.get(this.config['seen-character']);
-    if (typeof character === 'undefined') {
+    const character = this.config.scene.characters.get(this.config['seen-character']);
+    if (!character) {
       if (this.scene.game.config.debug.tests.rectOutlines) {
-        console.log(character, this.config['seen-character'], 'gamemap doesnt has character');
+        console.log(this.config['seen-character'], 'gamemap doesnt has character');
       }
       return;
     }
 
-    let npcBounds = this.getBounds();
-    let faceDir = this.getPosInFacingDirection();
-    let tile;
+    const facingLocked = getPropertyValue(this.config.properties, 'facing-direction') != null;
+    const directions = facingLocked
+      ? [this.getFacingDirection()]
+      : [Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN];
 
-    // find tiles we need to check
-    // check for collision objects
-    let count = this.config['seen-radius'];
-    for (let i=0; i<this.config['seen-radius']; i++) {
-      switch(this.getFacingDirection().toUpperCase()) {
-        case Direction.LEFT:
-          tile = Vector2(faceDir.x-i, faceDir.y);
-        break;
-        case Direction.RIGHT:
-          tile = Vector2(faceDir.x+i, faceDir.y);
-        break;
-        case Direction.UP:
-          tile = Vector2(faceDir.x, faceDir.y-i);
-        break;
-        case Direction.DOWN:
-          tile = Vector2(faceDir.x, faceDir.y+i);
-        break;
-      }
-
-      var check = [
-        this.config.scene.isCharacterOnTile(tile.x, tile.y),
-        this.gridengine.isBlocked(tile),
-      ].includes(true);
-
-      if (check) {
-        count = i;
+    let isInside = false;
+    for (const dir of directions) {
+      if (this._sightCheckDir(dir, character)) {
+        isInside = true;
         break;
       }
     }
 
-    // count not being the same as the seen-radius
-    // means we hit something with a collision on it
-    // so just see everything upto that point
-    let seenRadiusOverride = count !== this.config['seen-radius']
-      ? count
-      : this.config['seen-radius']
-    ;
-
-    // 32 here is the tile size
-    let seenRadiusInTiles = seenRadiusOverride * Tile.WIDTH;
-
-    // calc the actual seen box
-    switch(this.getFacingDirection()) {
-      case Direction.LEFT:
-        this.seenRect.x = ((faceDir.x+1) * Tile.WIDTH) - seenRadiusInTiles;
-        this.seenRect.y = npcBounds.y + (this.config.type === 'pkmn' ? 30 : 8);
-        this.seenRect.width = seenRadiusInTiles;
-        this.seenRect.height = Tile.HEIGHT;
-      break;
-
-      case Direction.RIGHT:
-        this.seenRect.x = faceDir.x * Tile.WIDTH;
-        this.seenRect.y = npcBounds.y + (this.config.type === 'pkmn' ? 30 : 8);
-        this.seenRect.width = seenRadiusInTiles;
-        this.seenRect.height = Tile.HEIGHT;
-      break;
-
-      case Direction.UP:
-        this.seenRect.x = npcBounds.x + (this.config.type === 'pkmn' ? 15 : 0);
-        this.seenRect.y = ((faceDir.y+1) * Tile.HEIGHT) - seenRadiusInTiles;
-        this.seenRect.width = Tile.WIDTH;
-        this.seenRect.height = seenRadiusInTiles;
-      break;
-
-      case Direction.DOWN:
-        this.seenRect.x = npcBounds.x + (this.config.type === 'pkmn' ? 15 : 0);
-        this.seenRect.y = faceDir.y * Tile.HEIGHT;
-        this.seenRect.width = Tile.WIDTH;
-        this.seenRect.height = seenRadiusInTiles;
-      break;
-    }
-
-    let isInside = Phaser.Geom.Rectangle.ContainsPoint(this.seenRect, character.characterRect);
-    if (isInside) {
-      console.log(['Character::canSeeCharacter', this.config.id +' can see '+character.config.id+'!']);
-      if (typeof this.config['event-can-see-character'] === 'function') {
-        console.log(['Character::canSeeCharacter', this.config.id, 'event-can-see-character', coord.dir]);
-        this.config['event-can-see-character'](this.config.id, coord.dir);
-      }
+    if (isInside && typeof this.config['event-can-see-character'] === 'function') {
+      this.config['event-can-see-character'](this.config.id);
     }
     this.seenRect.fillColor = isInside
       ? this.rectColor.selected
       : this.rectColor.normal;
+  }
+
+  /**
+   * Check sight in a single direction. Updates `seenRect` to the computed
+   * rectangle and returns whether the target character is inside it.
+   */
+  _sightCheckDir(dir, character) {
+    dir = dir.toUpperCase();
+    const npcBounds  = this.getBounds();
+    const faceDir    = this.getPosInDirection(dir);
+    const radius     = this.config['seen-radius'];
+    const isPkmn     = this.config.type === 'pkmn';
+
+    let count = radius;
+    for (let i = 0; i < radius; i++) {
+      let tile;
+      switch (dir.toUpperCase()) {
+        case Direction.LEFT:  tile = Vector2(faceDir.x - i, faceDir.y); break;
+        case Direction.RIGHT: tile = Vector2(faceDir.x + i, faceDir.y); break;
+        case Direction.UP:    tile = Vector2(faceDir.x, faceDir.y - i); break;
+        case Direction.DOWN:  tile = Vector2(faceDir.x, faceDir.y + i); break;
+      }
+      const blocked = this.config.scene.isCharacterOnTile(tile.x, tile.y)
+                   || this.gridengine.isBlocked(tile);
+      if (blocked) { count = i; break; }
+    }
+
+    const seenRadiusInTiles = count * Tile.WIDTH;
+
+    switch (dir) {
+      case Direction.LEFT:
+        this.seenRect.x      = ((faceDir.x + 1) * Tile.WIDTH) - seenRadiusInTiles;
+        this.seenRect.y      = npcBounds.y + (isPkmn ? 30 : 8);
+        this.seenRect.width  = seenRadiusInTiles;
+        this.seenRect.height = Tile.HEIGHT;
+        break;
+      case Direction.RIGHT:
+        this.seenRect.x      = faceDir.x * Tile.WIDTH;
+        this.seenRect.y      = npcBounds.y + (isPkmn ? 30 : 8);
+        this.seenRect.width  = seenRadiusInTiles;
+        this.seenRect.height = Tile.HEIGHT;
+        break;
+      case Direction.UP:
+        this.seenRect.x      = npcBounds.x + (isPkmn ? 15 : 0);
+        this.seenRect.y      = ((faceDir.y + 1) * Tile.HEIGHT) - seenRadiusInTiles;
+        this.seenRect.width  = Tile.WIDTH;
+        this.seenRect.height = seenRadiusInTiles;
+        break;
+      case Direction.DOWN:
+        this.seenRect.x      = npcBounds.x + (isPkmn ? 15 : 0);
+        this.seenRect.y      = faceDir.y * Tile.HEIGHT;
+        this.seenRect.width  = Tile.WIDTH;
+        this.seenRect.height = seenRadiusInTiles;
+        break;
+    }
+
+    return Phaser.Geom.Rectangle.ContainsPoint(this.seenRect, character.characterRect);
   }
 
 }

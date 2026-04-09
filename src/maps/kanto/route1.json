@@ -2149,15 +2149,6 @@
       "y": 0
     },
     {
-      "height": 41,
-      "id": 9,
-      "name": "subground",
-      "opacity": 1,
-      "type": "tilelayer",
-      "visible": true,
-      "width": 52,
-      "x": 0,
-      "y": 0,
       "data": [
         0,
         0,
@@ -4291,7 +4282,16 @@
         0,
         0,
         0
-      ]
+      ],
+      "height": 41,
+      "id": 9,
+      "name": "subground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 52,
+      "x": 0,
+      "y": 0
     },
     {
       "data": [
@@ -8800,11 +8800,6 @@
               "value": ""
             },
             {
-              "name": "seen-radius",
-              "type": "int",
-              "value": 5
-            },
-            {
               "name": "spin",
               "type": "bool",
               "value": false
@@ -8817,25 +8812,17 @@
             {
               "name": "text",
               "type": "string",
-              "value": "Hi!\nI work at a POK�MON MART.\nIt's part of a convenient chain selling all sorts of items.\nPlease, visit us in VIRIDIAN CITY.\nI know, I'll give you a sample. Here you go!"
+              "value": "Hi!\nI work at a POK\ufffdMON MART.\nIt's part of a convenient chain selling all sorts of items.\nPlease, visit us in VIRIDIAN CITY.\nI know, I'll give you a sample. Here you go!"
             },
             {
               "name": "text-onComplete",
-              "propertytype": "item",
-              "type": "class",
-              "value": {
-                "item": "potion"
-              }
+              "type": "string",
+              "value": "item:potion"
             },
             {
               "name": "texture",
               "type": "string",
               "value": "ace_trainer"
-            },
-            {
-              "name": "text-given",
-              "type": "string",
-              "value": "Did you enjoy that POTION sample?\nPlease visit us in VIRIDIAN CITY!"
             }
           ],
           "rotation": 0,

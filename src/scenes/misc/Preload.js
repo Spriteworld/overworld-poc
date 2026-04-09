@@ -45,9 +45,23 @@ export default class extends Phaser.Scene {
 
     this.load.image('blank', Tileset.blank);
     this.load.spritesheet('red', Tileset.red, {
-      frameWidth: Tile.WIDTH,
-      frameHeight: 40
+      frameWidth: 32,
+      frameHeight: 48
     });
+    this.load.spritesheet('red_bike', Tileset.trainers.red_bike, {
+      frameWidth: 48,
+      frameHeight: 48
+    });
+    this.load.spritesheet('leaf', Tileset.trainers.leaf, {
+      frameWidth: 32,
+      frameHeight: 48
+    });
+    this.load.spritesheet('leaf_bike', Tileset.trainers.leaf_bike, {
+      frameWidth: 48,
+      frameHeight: 48
+    });
+    this.load.spritesheet('animated_grass', Tileset.animated_grass, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
+    this.load.spritesheet('animation', Tileset.animation_sheet, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
 
     this.preloadTrainers();
     this.preloadPokemon();
@@ -74,11 +88,19 @@ export default class extends Phaser.Scene {
       clearStartFlags();
     }
 
+    if (this.game.config.gameFlags.has_bike) {
+      const hasBicycle = store.state.bag.keyItems.some(e => e.name === 'Bicycle');
+      if (!hasBicycle) {
+        store.commit('bag/PICKUP', { name: 'Bicycle', qty: 1 });
+      }
+    }
+
     const savedTile = store.state.game.playerTile;
     const playerLocation = (savedTile && (savedTile.x || savedTile.y))
       ? { x: savedTile.x, y: savedTile.y, charLayer: savedTile.charLayer }
       : {};
-    this.scene.start(getStartScene(), { playerLocation });
+    const startScene = store.state.game.currentMap || getStartScene();
+    this.scene.start(startScene, { playerLocation });
 
     if (this.game.config.debug.time) {
       this.scene.start('TimeOverlay');

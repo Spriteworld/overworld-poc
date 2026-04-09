@@ -18,14 +18,7 @@
             "name": "cutTree",
             "type": "class",
             "useAs": [
-                "property",
                 "map",
-                "layer",
-                "object",
-                "tile",
-                "tileset",
-                "wangcolor",
-                "wangset",
                 "project"
             ]
         },
@@ -43,8 +36,7 @@
             "name": "encounters",
             "type": "class",
             "useAs": [
-                "object",
-                "tile"
+                "map"
             ]
         },
         {
@@ -63,12 +55,6 @@
             "useAs": [
                 "property",
                 "map",
-                "layer",
-                "object",
-                "tile",
-                "tileset",
-                "wangcolor",
-                "wangset",
                 "project"
             ]
         },
@@ -91,8 +77,7 @@
             "name": "layerTransition",
             "type": "class",
             "useAs": [
-                "object",
-                "tile"
+                "layer"
             ]
         },
         {
@@ -124,8 +109,7 @@
             "name": "light",
             "type": "class",
             "useAs": [
-                "object",
-                "tile"
+                "object"
             ]
         },
         {
@@ -174,6 +158,21 @@
                     "value": 500
                 },
                 {
+                    "name": "text",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "text-given",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "text-onComplete",
+                    "type": "string",
+                    "value": ""
+                },
+                {
                     "name": "texture",
                     "type": "string",
                     "value": ""
@@ -182,8 +181,7 @@
             "name": "npc",
             "type": "class",
             "useAs": [
-                "object",
-                "tile"
+                "object"
             ]
         },
         {
@@ -235,8 +233,7 @@
             "name": "pkmn",
             "type": "class",
             "useAs": [
-                "object",
-                "tile"
+                "object"
             ]
         },
         {
@@ -253,8 +250,7 @@
             "name": "playerSpawn",
             "type": "class",
             "useAs": [
-                "object",
-                "tile"
+                "object"
             ]
         },
         {
@@ -271,8 +267,64 @@
             "name": "sign",
             "type": "class",
             "useAs": [
-                "object",
-                "tile"
+                "object"
+            ]
+        },
+        {
+            "color": "#ffff8800",
+            "drawFill": true,
+            "id": 12,
+            "members": [
+                {
+                    "name": "facing-direction",
+                    "type": "string",
+                    "value": "down"
+                },
+                {
+                    "name": "seen-radius",
+                    "type": "int",
+                    "value": 5
+                },
+                {
+                    "name": "text",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "text-defeated",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "texture",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "track-player",
+                    "type": "bool",
+                    "value": true
+                },
+                {
+                    "name": "track-player-radius",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "trainer-name",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "trainer-pokemon",
+                    "type": "string",
+                    "value": "[]"
+                }
+            ],
+            "name": "trainer",
+            "type": "class",
+            "useAs": [
+                "object"
             ]
         },
         {
@@ -309,8 +361,7 @@
             "name": "warp",
             "type": "class",
             "useAs": [
-                "object",
-                "tile"
+                "object"
             ]
         }
     ]

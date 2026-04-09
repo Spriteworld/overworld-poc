@@ -36,6 +36,9 @@ export default class KantoWorld extends GameMap {
     if (!this.textures.exists('animated_grass')) {
       this.load.spritesheet('animated_grass', Tileset.animated_grass, { frameWidth: 32, frameHeight: 32 });
     }
+    if (!this.textures.exists('animation')) {
+      this.load.spritesheet('animation', Tileset.animation_sheet, { frameWidth: 32, frameHeight: 32 });
+    }
   }
 
   create() {
@@ -84,20 +87,7 @@ export default class KantoWorld extends GameMap {
       .subscribe(({ charId, enterTile }) => {
         if (charId !== 'player') return;
         this._checkLocation(enterTile);
-        gameState.playerTile = {
-          x: enterTile.x,
-          y: enterTile.y,
-          charLayer: this.gridEngine.getCharLayer('player'),
-        };
       });
-
-    // Seed the store with the initial spawn position.
-    const spawn = this.gridEngine.getPosition('player');
-    gameState.playerTile = {
-      x: spawn.x,
-      y: spawn.y,
-      charLayer: this.gridEngine.getCharLayer('player'),
-    };
 
     this.events.once('shutdown', () => this._locationSub?.unsubscribe());
   }

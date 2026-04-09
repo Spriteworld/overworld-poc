@@ -64,6 +64,18 @@ export default {
       if (p) p.readyToEvolve = null;
     },
 
+    /**
+     * Restore all party Pokémon to full HP and PP (white-out / Pokémon Center heal).
+     * Setting currentHp to null causes BattlePokemon to re-derive max HP on next battle.
+     */
+    RESTORE_ALL(state) {
+      state.list.forEach(p => {
+        if (!p) return;
+        p.currentHp = null;
+        p.moves.forEach(m => { if (m.pp) m.pp.current = m.pp.max; });
+      });
+    },
+
     SYNC_AFTER_BATTLE(state, team) {
       team.forEach(snapshot => {
         const entry = state.list.find(p => p.pid === snapshot.pid);

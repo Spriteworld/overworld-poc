@@ -11,7 +11,9 @@ import PokedexScreen     from './menus/PokedexScreen.js';
 import BagScreen         from './menus/BagScreen.js';
 import BagTeamPickScreen from './menus/BagTeamPickScreen.js';
 import UserScreen        from './menus/UserScreen.js';
+import OptionScreen      from './menus/OptionScreen.js';
 import DebugScreen       from './menus/DebugScreen.js';
+
 
 const MENU_DEPTH = Number.MAX_SAFE_INTEGER - 100;
 
@@ -49,6 +51,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     this.bagScreen         = new BagScreen(this);
     this.bagTeamPickScreen = new BagTeamPickScreen(this);
     this.userScreen        = new UserScreen(this);
+    this.optionScreen      = new OptionScreen(this);
     this.debugScreen       = new DebugScreen(this);
 
     /** Set by BagScreen.confirm() before transitioning to bag-team-pick. */
@@ -200,6 +203,9 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       case 'user':
         this.userScreen.build();
         break;
+      case 'option':
+        this.optionScreen.show();
+        break;
       case 'debug':
         this.debugScreen.build();
         break;
@@ -233,11 +239,12 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     this.setVisible(true);
   }
 
-  /** Close the pause menu and hide all display objects. */
+  /** Close the pause menu, hide all display objects, and re-enable player input. */
   close() {
     this._clearSubTexts();
     this._currentScreen = null;
     this.setVisible(false);
+    this.scene.registry.set('player_input', true);
   }
 
   /** Navigate up in the current screen or main menu. */
@@ -249,6 +256,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       case 'pokedex':     this.pokedexScreen.nav(-1);     return;
       case 'bag':         this.bagScreen.nav(-1);             return;
       case 'bag-team-pick': this.bagTeamPickScreen.nav(-1);  return;
+      case 'option':      this.optionScreen.nav(-1);         return;
       case 'debug':       this.debugScreen.nav(-1);          return;
       case null: break;
       default: return;
@@ -267,6 +275,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       case 'pokedex':     this.pokedexScreen.nav(1);     return;
       case 'bag':         this.bagScreen.nav(1);              return;
       case 'bag-team-pick': this.bagTeamPickScreen.nav(1);   return;
+      case 'option':      this.optionScreen.nav(1);          return;
       case 'debug':       this.debugScreen.nav(1);           return;
       case null: break;
       default: return;
@@ -289,6 +298,9 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     if (this._currentScreen === 'bag') {
       this.bagScreen.tabNav(-1);
     }
+    if (this._currentScreen === 'option') {
+      this.optionScreen.cycle(-1);
+    }
     if (this._currentScreen === 'debug') {
       this.debugScreen.tabNav(-1);
     }
@@ -308,6 +320,9 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     if (this._currentScreen === 'bag') {
       this.bagScreen.tabNav(1);
     }
+    if (this._currentScreen === 'option') {
+      this.optionScreen.cycle(1);
+    }
     if (this._currentScreen === 'debug') {
       this.debugScreen.tabNav(1);
     }
@@ -323,6 +338,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       case 'team-submenu':   this.teamScreen.subMenuConfirm();   return null;
       case 'bag':            this.bagScreen.confirm();           return null;
       case 'bag-team-pick':  this.bagTeamPickScreen.confirm();   return null;
+      case 'option':         this.optionScreen.confirm();        return null;
       case 'debug':          this.debugScreen.confirm();         return null;
       case null:             return this._activeItems()[this._selectedIndex].key;
       default:             return null;
@@ -347,6 +363,9 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
         this.teamScreen.subMenuSlot = null;
         this._transitionTo('team');
         return false;
+      case 'bag':
+        if (this.bagScreen.back()) return false; // consumed by submenu
+        break;
       case 'bag-team-pick':
         this.pendingUseItem = null;
         this._transitionTo('bag');

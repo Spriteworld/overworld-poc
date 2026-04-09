@@ -62,15 +62,21 @@ export default class DebugScreen {
   }
 
   _warpItems() {
+    const extra = [
+      { type: 'warp', label: 'Test' },
+    ];
+
     const maps = WORLD_FILE.maps;
     const minX  = Math.min(...maps.map(m => m.x));
     const minY  = Math.min(...maps.map(m => m.y));
-    return maps.map(entry => {
+    const world = maps.map(entry => {
       const label = WORLD_MAP_KEYS[entry.fileName] ?? entry.fileName;
       const tileX = Math.floor((entry.x - minX) / TILE_PX + (entry.width  / TILE_PX) / 2);
       const tileY = Math.floor((entry.y - minY) / TILE_PX + (entry.height / TILE_PX) / 2);
       return { type: 'warp-world', label, tileX, tileY };
     });
+
+    return [...extra, ...world];
   }
 
   _debugItems() {

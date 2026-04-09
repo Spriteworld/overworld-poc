@@ -5,6 +5,7 @@ import { getValue } from '@Utilities';
 export default class {
   constructor(scene) {
     this.scene = scene;
+    this._coordsText = null;
   }
 
   init() {
@@ -22,6 +23,18 @@ export default class {
 
     if (this.scene.game.config.debug.tests.outlineColliders === true) {
       this.#identifyColliders();
+    }
+
+    if (this.scene.game.config.debug.playerCoords === true) {
+      const cam = this.scene.cameras.main;
+      this._coordsText = this.scene.add.text(
+        cam.width - 6, cam.height - 6,
+        '',
+        { fontFamily: 'monospace', fontSize: '11px', color: '#ffffff', backgroundColor: '#00000088', padding: { x: 4, y: 2 } }
+      )
+        .setOrigin(1, 1)
+        .setScrollFactor(0)
+        .setDepth(9999999);
     }
 
     // Register click-to-move listener unconditionally so the flag can be
@@ -167,6 +180,12 @@ export default class {
       Phaser.Display.Align.In.TopCenter(text, this.scene.add.zone(obj.x-5, obj.y-15, obj.width+10, obj.height+10).setOrigin(0,0)),
     ]);
     debugObj.setDepth(9999999);
+  }
+
+  update() {
+    if (!this._coordsText) return;
+    const pos = this.scene.gridEngine.getPosition('player');
+    this._coordsText.setText(`${pos.x}, ${pos.y}`);
   }
 
   #identifyColliders() {

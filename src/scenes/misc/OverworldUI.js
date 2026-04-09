@@ -3,6 +3,7 @@ import { textBox, toast, EventBus } from '@Utilities';
 import { PauseMenu } from '@Objects';
 import { gameState, saveGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
+import { KEY_ITEMS } from '../../store/modules/bag.js';
 import { Pokedex, GAMES, GENDERS } from '@spriteworld/pokemon-data';
 
 export default class extends Phaser.Scene {
@@ -73,11 +74,12 @@ export default class extends Phaser.Scene {
    */
   handleEvents() {
     this.game.events.on('item-pickup', (payload) => {
-      const name = typeof payload === 'string' ? payload : payload.name;
-      const qty  = typeof payload === 'object'  ? payload.qty : null;
-      store.commit('bag/PICKUP', { name, qty: qty ?? 1 });
+      const name   = typeof payload === 'string' ? payload : payload.name;
+      const qty    = typeof payload === 'object'  ? payload.qty : null;
+      const isKey  = KEY_ITEMS.has(name);
+      store.commit('bag/PICKUP', { name, qty: isKey ? null : (qty ?? 1) });
       const display = name.replace(/\b\w/g, c => c.toUpperCase());
-      const msg = qty != null
+      const msg = (!isKey && qty != null)
         ? `You found ${qty} x\n${display}!`
         : `You received\na ${display}!`;
       this.game.events.emit('textbox-changedata', msg);
@@ -144,7 +146,7 @@ export default class extends Phaser.Scene {
             delay: 100,
           });
 
-          this.game.events.once('battle-complete', () => {
+          this.game.events.once('battle-complete', ({ result } = {}) => {
             const battleScene = this.scene.get('BattleScene2');
             const pokemon = battleScene?.config?.player?.team?.pokemon;
             if (pokemon) {
@@ -218,7 +220,15 @@ export default class extends Phaser.Scene {
                   duration: 250,
                   onComplete: () => {
                     this.scene.stop('BattleScene2');
-                    this.scene.wake(mapName);
+                    if (result === 'lost') {
+                      // White-out: restore party and warp to last heal location.
+                      store.commit('party/RESTORE_ALL');
+                      const healLoc = store.state.game.healLocation ?? { map: 'KantoWorld', x: 74, y: 278, charLayer: 'ground' };
+                      this.scene.stop(mapName);
+                      this.scene.start(healLoc.map, { playerLocation: { x: healLoc.x, y: healLoc.y, charLayer: healLoc.charLayer } });
+                    } else {
+                      this.scene.wake(mapName);
+                    }
                     this.tweens.add({
                       targets: this.transitionRect,
                       alpha: 0,
@@ -236,6 +246,39 @@ export default class extends Phaser.Scene {
           });
         },
       });
+    });
+
+    // ─── Key item self-use (e.g. Bicycle) ────────────────────────────────
+    this.game.events.on('use-key-item', (itemName) => {
+      if (itemName !== 'Bicycle') return;
+      const mapName  = this.registry.get('map');
+      const mapScene = mapName ? this.scene.get(mapName) : null;
+      const player   = mapScene?.mapPlugins?.player?.player;
+      if (!player) return;
+      if (mapScene?.config?.inside) return;
+
+      const inBike = player.stateMachine.currentState?.name === player.stateDef.BIKE;
+      const nextState = inBike ? player.stateDef.IDLE : player.stateDef.BIKE;
+      player.stateMachine.setState(nextState);
+      store.commit('game/SET_ON_BIKE', !inBike);
+    });
+
+    // ─── Player sprite change (Options screen) ────────────────────────────
+    this.game.events.on('player-sprite-change', (sprite) => {
+      const mapName  = this.registry.get('map');
+      const mapScene = mapName ? this.scene.get(mapName) : null;
+      const player   = mapScene?.mapPlugins?.player?.player;
+      if (!player) return;
+
+      const inBike = player.stateMachine.currentState?.name === player.stateDef.BIKE;
+      player.config.texture = sprite;
+      if (inBike) {
+        const bikeTexture = sprite + '_bike';
+        if (mapScene.textures.exists(bikeTexture)) player.setTexture(bikeTexture);
+      } else {
+        player.setTexture(sprite);
+        player.gridengine.setWalkingAnimationMapping(player.config.id, player.characterFramesDef());
+      }
     });
 
     // ─── Overworld item use (e.g. Rare Candy) → evolution ────────────────
@@ -306,6 +349,11 @@ export default class extends Phaser.Scene {
           this.registry.set('player_input', false);
           this.pauseMenu.open();
         }
+      } else if (event.code === 'Backspace' && !event.repeat) {
+        const registered = store.state.bag.registeredItem;
+        if (registered && this.registry.get('player_input') !== false) {
+          this.game.events.emit('use-key-item', registered);
+        }
       }
     });
   }
@@ -330,13 +378,20 @@ export default class extends Phaser.Scene {
       case 'user':
         this.pauseMenu.showSubScreen(option);
         break;
-      case 'save':
+      case 'save': {
         gameState.currentMap = this.registry.get('map') ?? gameState.currentMap;
+        const _mapName  = this.registry.get('map');
+        const _mapScene = _mapName ? this.scene.get(_mapName) : null;
+        const _player   = _mapScene?.mapPlugins?.player?.player;
+        if (_player) {
+          store.commit('game/SET_PLAYER_FACING', _player.getFacingDirection());
+        }
         saveGame();
         this.toast.showMessage('Progress saved!');
         this.pauseMenu.close();
         this.registry.set('player_input', true);
         break;
+      }
       case 'close':
         this.pauseMenu.close();
         this.registry.set('player_input', true);

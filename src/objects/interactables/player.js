@@ -1,6 +1,7 @@
 import { Tile, Player } from '@Objects';
 import { EventBus, getPropertyValue } from '@Utilities';
 import { gameState } from '@Data/gameState.js';
+import store from '../../store/index.js';
 
 export default class {
   constructor(scene) {
@@ -59,7 +60,7 @@ export default class {
     this.loadedPlayer = true;
     this.player = new Player({
       id: 'player',
-      texture: 'red',
+      texture: store.state.game.playerSprite ?? 'red',
       x: x,
       y: y,
       scene: this.scene,
@@ -118,6 +119,21 @@ export default class {
   event() {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log(['Interactables::player::event', this.scene]);
+    }
+
+    const savedFacing = store.state.game.playerFacing;
+    if (savedFacing && this.player) {
+      this.player.look(savedFacing);
+      // Re-apply animation mapping after turnTowards so the idle frame
+      // for the restored direction is drawn immediately.
+      const frameDef = store.state.game.onBike
+        ? this.player.characterFramesBikeDef()
+        : this.player.characterFramesDef();
+      this.player.gridengine.setWalkingAnimationMapping(this.player.config.id, frameDef);
+    }
+
+    if (store.state.game.onBike && this.player?.stateMachine) {
+      this.player.stateMachine.setState(this.player.stateDef.BIKE);
     }
 
     if (this.hasPlayerMon) {

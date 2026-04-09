@@ -27,7 +27,7 @@ export default class {
     npcs.forEach((npc) => {
       this.addToScene(
         npc.name,
-        getPropertyValue(npc.properties, 'texture'),
+        getPropertyValue(npc.properties, 'overworld-sprite'),
         Vector2(npc.x / Tile.WIDTH, npc.y / Tile.HEIGHT),
         {
           id: npc.name,
@@ -40,14 +40,18 @@ export default class {
   }
 
   addToScene(name, texture, coords, config) {
-    let npcDef = {...{
+    let npcDef = {
       id: 'npc_'+name,
       type: 'npc',
       texture: texture,
       x: coords.x,
       y: coords.y,
-      scene: this.scene
-    }, ...config };
+      scene: this.scene,
+      collides: { enabled: true },
+      ...config,
+      'seen-character': '',
+      'seen-radius': 0,
+    };
 
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::npc::addToScene', name, texture, coords.x, coords.y);
@@ -66,9 +70,14 @@ export default class {
         this.scene.gridEngine.addCharacter(npcObj.characterDef());
       }
     } else {
-      const path = Tileset.trainers[texture];
+      const path = texture ? Tileset.trainers[texture] : null;
       if (!path) {
-        console.error('Interactables::npc: missing sprite for trainer', texture);
+        if (texture) console.warn('Interactables::npc: no sprite path for texture', texture);
+        // Fall back to placeholder so GridEngine can still manage this character.
+        npcObj.setTexture('red');
+        if (this.scene.ge_init) {
+          this.scene.gridEngine.addCharacter(npcObj.characterDef());
+        }
         return npcObj;
       }
 
@@ -139,10 +148,25 @@ export default class {
       );
 
       const onComplete = this.scene.getPropertyFromTile(tile.obj, 'text-onComplete');
-      if (onComplete?.item && !gaveAlready) {
+      const [action, data] = onComplete.split(':');
+      if (action === 'item' && !gaveAlready) {
         this.scene.game.events.once('textbox-disable', () => {
-          this.scene.game.events.emit('item-pickup', onComplete.item);
+          this.scene.game.events.emit('item-pickup', data);
           store.commit('game/PATCH_FLAGS', { [gaveFlag]: true });
+        });
+      }
+
+      if (action === 'heal') {
+        this.scene.game.events.once('textbox-disable', () => {
+          store.commit('party/RESTORE_ALL');
+          const player = this.scene.characters.get('player');
+          const pos = player?.getPosition() ?? { x: 0, y: 0 };
+          store.commit('game/SET_HEAL_LOCATION', {
+            map:       this.scene.scene.key,
+            x:         pos.x,
+            y:         pos.y,
+            charLayer: player?.getCharLayer?.() ?? 'ground',
+          });
         });
       }
     };

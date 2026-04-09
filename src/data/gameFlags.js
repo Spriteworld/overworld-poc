@@ -2,8 +2,8 @@ export default {
   // pallet
   has_pokemon: false,
   has_pokedex: false,
-  has_running_shoes: false,
-  has_bike: false,
+  has_running_shoes: true,
+  has_bike: true,
 
   // veridian
   got_oaks_parcel: false,

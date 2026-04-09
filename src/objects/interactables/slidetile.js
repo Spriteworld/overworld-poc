@@ -47,7 +47,7 @@ export default class {
           if (char.isDumbCharacter()) { return; }
 
           if (char.slidingDir !== null) {
-            char.stateMachine.setState(char.stateDef.IDLE);
+            char._returnToBaseMovement();
           }
         }),
     ];
@@ -74,7 +74,7 @@ export default class {
         char.stateMachine.setState(char.stateDef.SLIDE);
       }
       if (!isIceTile && char.isSliding()) {
-        char.stateMachine.setState(char.stateDef.IDLE);
+        char._returnToBaseMovement();
       }
     }
   }

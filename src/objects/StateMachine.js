@@ -78,7 +78,7 @@ export default class StateMachine {
     }
 
     this.isChangingState = true;
-    if (this.context.scene.game.config.debug.stateMachine) {
+    if (this.context.scene?.game?.config?.debug?.stateMachine) {
       console.log(`[StateMachine (${this.id})] change from ${this.currentState?.name ?? 'none'} to ${name}`);
     }
 

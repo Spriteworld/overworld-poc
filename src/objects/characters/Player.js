@@ -25,7 +25,7 @@ export default class extends Character {
       })
       .addState(this.stateDef.BIKE, {
         onEnter: this.bikeOnEnter,
-        onUpdate: this.moveOnUpdate,
+        onUpdate: this.bikeOnUpdate,
         onExit: this.bikeOnExit,
       })
       .addState(this.stateDef.SPIN, {
@@ -139,7 +139,6 @@ export default class extends Character {
 
     let moveSpeed = 4;
     if (this.config.scene.game.config.gameFlags.has_running_shoes && X.isDown) { moveSpeed = 8; }
-    if (this.config.scene.game.config.gameFlags.has_bike && C.isDown) { moveSpeed = 20; }
 
     this.gridengine.setSpeed(this.config.id, moveSpeed);
     // console.log({
@@ -159,6 +158,44 @@ export default class extends Character {
       this.handleMove(Direction.DOWN);
     } else {
       this.stateMachine.setState(this.stateDef.IDLE);
+    }
+    EventBus.emit('player-move-complete', this);
+  }
+
+  /** Override: swap texture/mapping and shift camera x by -0.5 tiles. */
+  bikeOnEnter() {
+    Character.prototype.bikeOnEnter.call(this);
+    const cam = this.config.scene.cameras.main;
+    cam.setFollowOffset((cam.followOffset.x - Tile.WIDTH / 2) + 8, cam.followOffset.y);
+  }
+
+  /** Override: restore texture/mapping and undo the camera x shift. */
+  bikeOnExit() {
+    Character.prototype.bikeOnExit.call(this);
+    const cam = this.config.scene.cameras.main;
+    cam.setFollowOffset((cam.followOffset.x + Tile.WIDTH / 2) - 8, cam.followOffset.y);
+  }
+
+  /**
+   * Per-tick update while in the BIKE state. Moves at bike speed; stays in BIKE
+   * when no keys are pressed (unlike MOVE, which returns to IDLE on key release).
+   */
+  bikeOnUpdate() {
+    if (this.config.scene.registry.get('player_input') === false) {
+      return;
+    }
+    const keys = this.config.scene.input.keyboard.createCursorKeys();
+
+    this.gridengine.setSpeed(this.config.id, 20);
+
+    if (keys.left.isDown) {
+      this.handleMove(Direction.LEFT);
+    } else if (keys.right.isDown) {
+      this.handleMove(Direction.RIGHT);
+    } else if (keys.up.isDown) {
+      this.handleMove(Direction.UP);
+    } else if (keys.down.isDown) {
+      this.handleMove(Direction.DOWN);
     }
     EventBus.emit('player-move-complete', this);
   }

@@ -3,15 +3,15 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "src/maps/kanto/kanto.json",
+    "activeFile": "src/maps/random/test.json",
     "expandedProjectPaths": [
-        "src/maps",
         "src/maps/random",
-        "src/maps/kanto",
-        "src/tileset",
-        "src",
+        "src/maps/spriteworld",
         "src/tileset/maps",
-        "src/maps/spriteworld"
+        "src/tileset",
+        "src/maps/kanto",
+        "src",
+        "src/maps"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -20,9 +20,13 @@
             "scaleInEditor": 1
         },
         "//dev/www/linky/spriteworld-claude/character/src/tileset/animated_grass.json": {
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "//dev/www/linky/spriteworld-claude/character/src/tileset/gen3_outside.json": {
+            "scaleInDock": 1
+        },
+        "//dev/www/linky/spriteworld-claude/character/src/tileset/rse_outside.json": {
             "scaleInDock": 1
         },
         "//dev/www/spriteworld.dev.xlink.cybershade.org/character-claude/src/tileset/gen3_inside.json": {
@@ -84,8 +88,8 @@
             "scale": 1,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 2661,
-                "y": 5402.5
+                "x": 2788,
+                "y": 8801.5
             }
         },
         "src/maps/kanto/kanto_inside.json": {
@@ -94,10 +98,10 @@
                 3
             ],
             "scale": 1.5,
-            "selectedLayer": 6,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 1376,
-                "y": 1120.3333333333335
+                "x": 495.33333333333326,
+                "y": 833.6666666666666
             }
         },
         "src/maps/kanto/pallet.json": {
@@ -138,10 +142,10 @@
                 7
             ],
             "scale": 0.5,
-            "selectedLayer": 3,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 679,
-                "y": 545
+                "x": 720,
+                "y": 943
             }
         },
         "src/maps/kanto/route15.json": {
@@ -167,8 +171,8 @@
             "scale": 1.5,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 939.3333333333333,
-                "y": 2084.333333333333
+                "x": 707.3333333333333,
+                "y": 2153
             }
         },
         "src/maps/kanto/route21.json": {
@@ -279,6 +283,14 @@
                 "y": -2564
             }
         },
+        "src/maps/kanto/viridian_forest.json": {
+            "scale": 0.8206473214285713,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 863.952128382973,
+                "y": 1120.4569563443495
+            }
+        },
         "src/maps/kanto/world.json": {
             "expandedObjectLayers": [
                 7
@@ -346,13 +358,14 @@
             "scale": 1,
             "selectedLayer": 9,
             "viewCenter": {
-                "x": 1007.5,
-                "y": 142.5
+                "x": 304,
+                "y": 1424.5
             }
         },
         "src/maps/random/test.json#rse_outside": {
             "dynamicWrapping": false,
-            "scaleInDock": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "src/maps/random/turffield_gym.json": {
             "expandedObjectLayers": [
@@ -386,7 +399,7 @@
             "scaleInEditor": 2
         },
         "src/tileset/gen3_outside.json": {
-            "scaleInDock": 1.5,
+            "scaleInDock": 2,
             "scaleInEditor": 1.5
         },
         "src/tileset/maps/kanto.json": {
@@ -426,25 +439,26 @@
     "map.width": 100,
     "mapScene.enableWorlds": true,
     "openFiles": [
+        "src/maps/random/test.json",
         "src/maps/kanto/kanto.json"
     ],
     "project": "spriteworld.tiled-project",
-    "property.type": "item",
+    "property.type": "string",
     "recentFiles": [
+        "src/maps/kanto/hero_house_floor2.json",
+        "src/maps/kanto/route1.json",
+        "src/maps/kanto/kanto_inside.json",
+        "src/maps/random/test.json",
+        "src/maps/kanto/kanto.json",
+        "src/maps/kanto/route2.json",
+        "src/maps/kanto/viridian_forest.json",
         "src/tileset/gen3_outside.json",
         "//dev/www/linky/spriteworld-claude/character/src/tileset/animated_grass.json",
         "src/maps/kanto/animated_grass.json",
-        "src/maps/kanto/route2.json",
         "src/maps/kanto/route3.json",
-        "src/maps/kanto/prof_lab.json",
-        "src/maps/kanto/kanto.json",
-        "src/maps/kanto/cerulean_city.json",
-        "src/maps/kanto/pallet.json",
-        "src/maps/kanto/route18.json",
-        "src/maps/kanto/route24.json",
-        "src/maps/kanto/viridian_city.json"
+        "src/maps/kanto/prof_lab.json"
     ],
     "resizeMap.removeObjects": false,
-    "tileset.lastUsedFilter": "JSON tileset files (*.tsj *.json)",
+    "tileset.lastUsedFilter": "All Files (*)",
     "tileset.lastUsedFormat": "json"
 }

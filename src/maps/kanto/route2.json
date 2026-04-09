@@ -19702,6 +19702,75 @@
           "width": 64,
           "x": 672,
           "y": 1792
+        },
+        {
+          "height": 32,
+          "id": 9,
+          "name": "testTrainer",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "battle-texture",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "ace_trainer"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 4
+            },
+            {
+              "name": "text",
+              "type": "string",
+              "value": "Oh a trainer!"
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Oh, a trainer..."
+            },
+            {
+              "name": "texture",
+              "type": "string",
+              "value": "ace_trainer"
+            },
+            {
+              "name": "track-player",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "track-player-radius",
+              "type": "string",
+              "value": "4"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "B"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "string",
+              "value": "[{\"species\": 25, \"level\": 6}, {\"species\": 25, \"level\": 6}]"
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 576,
+          "y": 2144
         }
       ],
       "opacity": 1,

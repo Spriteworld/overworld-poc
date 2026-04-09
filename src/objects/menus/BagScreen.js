@@ -1,3 +1,4 @@
+import store from '../../store/index.js';
 import { gameState } from '@Data/gameState.js';
 import {
   SX, SY, SW, SH,
@@ -5,13 +6,17 @@ import {
 } from './layout.js';
 
 const TABS = [
-  { label: 'Items', key: 'items'     },
-  { label: 'Balls', key: 'pokeballs' },
-  { label: 'TMs',   key: 'tms'       },
+  { label: 'Items',  key: 'items'     },
+  { label: 'Balls',  key: 'pokeballs' },
+  { label: 'TMs',    key: 'tms'       },
+  { label: 'Key',    key: 'keyItems'  },
 ];
 
-/** Item names that can be used directly on a party member from the overworld bag. */
+/** Item names (non-key) usable on a party member from the overworld bag. */
 const OVERWORLD_USABLE = new Set(['Rare Candy']);
+
+/** Submenu options shown when selecting a key item. */
+const KEY_ITEM_OPTIONS = ['Use', 'Register', 'Cancel'];
 
 const TAB_W    = Math.floor(SW / TABS.length);
 const TAB_Y    = SY + 16;
@@ -21,10 +26,13 @@ const MAX_ROWS = Math.floor((SH - LIST_Y - 28) / ROW_H);
 
 export default class BagScreen {
   constructor(menu) {
-    this.menu       = menu;
-    this._tabIndex  = 0;
-    this._scrollTop = 0;
-    this._cursor    = 0;
+    this.menu          = menu;
+    this._tabIndex     = 0;
+    this._scrollTop    = 0;
+    this._cursor       = 0;
+    this._subMenu      = false; // submenu open for key item
+    this._subCursor    = 0;
+    this._subItem      = null;
   }
 
   /** Called by PauseMenu._transitionTo — resets state on fresh open. */
@@ -32,13 +40,16 @@ export default class BagScreen {
     this._tabIndex  = 0;
     this._scrollTop = 0;
     this._cursor    = 0;
+    this._subMenu   = false;
     this.build();
   }
 
   build() {
     const { scene, reg } = this.menu;
     const { key } = TABS[this._tabIndex];
-    const entries = gameState.bag[key] ?? [];
+    const isKeyTab = key === 'keyItems';
+    const entries  = gameState.bag[key] ?? [];
+    const registered = gameState.bag.registeredItem;
 
     // Title
     reg(scene.add.text(SX + 16, SY + 4, 'BAG', TEXT_STYLE_BOLD));
@@ -69,14 +80,24 @@ export default class BagScreen {
       reg(scene.add.text(SX + 16, LIST_Y, 'Nothing here.', TEXT_STYLE_BODY));
     } else {
       visible.forEach((entry, i) => {
-        const absIdx    = this._scrollTop + i;
-        const isCursor  = absIdx === this._cursor;
-        const prefix    = isCursor ? '▶ ' : '  ';
-        const usable    = OVERWORLD_USABLE.has(entry.name ?? '');
-        const color     = usable ? '#181818' : '#666666';
-        const style     = { ...TEXT_STYLE_BODY, color };
-        const line      = `${prefix}${(entry.name ?? 'Item').padEnd(16)}  x${entry.quantity ?? 1}`;
-        reg(scene.add.text(SX + 16, LIST_Y + i * ROW_H, line, style));
+        const absIdx   = this._scrollTop + i;
+        const isCursor = absIdx === this._cursor;
+        const prefix   = isCursor ? '▶ ' : '  ';
+        const isReg    = isKeyTab && entry.name === registered;
+        const suffix   = isReg ? ' ★' : '';
+
+        let line;
+        if (isKeyTab) {
+          line = `${prefix}${(entry.name ?? 'Item') + suffix}`;
+        } else {
+          const usable = OVERWORLD_USABLE.has(entry.name ?? '');
+          const color  = usable ? '#181818' : '#666666';
+          const style  = { ...TEXT_STYLE_BODY, color };
+          line = `${prefix}${(entry.name ?? 'Item').padEnd(16)}  x${entry.quantity ?? 1}`;
+          reg(scene.add.text(SX + 16, LIST_Y + i * ROW_H, line, style));
+          return;
+        }
+        reg(scene.add.text(SX + 16, LIST_Y + i * ROW_H, line, TEXT_STYLE_BODY));
       });
     }
 
@@ -88,31 +109,65 @@ export default class BagScreen {
       reg(scene.add.text(SX + SW - 24, SY + SH - 44, '▼', TEXT_STYLE_HINT));
     }
 
-    const hasUsable = key === 'items' && entries.some(e => OVERWORLD_USABLE.has(e.name ?? ''));
-    const hint = hasUsable
-      ? '◀▶ switch tab   ▲▼ select   Z  use   X  back'
-      : '◀▶ switch tab   ▲▼ scroll   X  back';
+    // Hint bar
+    const hint = isKeyTab
+      ? '◀▶ switch tab   ▲▼ select   Z  options   X  back'
+      : (key === 'items' && entries.some(e => OVERWORLD_USABLE.has(e.name ?? '')))
+        ? '◀▶ switch tab   ▲▼ select   Z  use   X  back'
+        : '◀▶ switch tab   ▲▼ scroll   X  back';
     reg(scene.add.text(SX + 16, SY + SH - 22, hint, TEXT_STYLE_HINT));
+
+    // Submenu overlay
+    if (this._subMenu) {
+      this._buildSubMenu(reg, scene);
+    }
+  }
+
+  _buildSubMenu(reg, scene) {
+    const MX = SX + SW - 110;
+    const MY = LIST_Y + this._cursor * ROW_H - this._scrollTop * ROW_H;
+    const MW = 100;
+    const MH = KEY_ITEM_OPTIONS.length * ROW_H + 12;
+
+    const bg = scene.add.graphics();
+    bg.fillStyle(0xf8f8e8, 1);
+    bg.lineStyle(2, 0x181818);
+    bg.fillRect(MX, MY, MW, MH);
+    bg.strokeRect(MX, MY, MW, MH);
+    reg(bg);
+
+    KEY_ITEM_OPTIONS.forEach((label, i) => {
+      const isCursor = i === this._subCursor;
+      const text = `${isCursor ? '▶ ' : '  '}${label}`;
+      reg(scene.add.text(MX + 8, MY + 6 + i * ROW_H, text, TEXT_STYLE_BODY));
+    });
   }
 
   /** Switch to an adjacent tab (delta = ±1). */
   tabNav(delta) {
-    this._tabIndex  = Math.max(0, Math.min(TABS.length - 1, this._tabIndex + delta));
+    if (this._subMenu) return;
+    this._tabIndex  = (this._tabIndex + delta + TABS.length) % TABS.length;
     this._scrollTop = 0;
     this._cursor    = 0;
     this.menu._clearSubTexts();
     this.build();
   }
 
-  /** Move cursor up/down (delta = ±1). Auto-scrolls to keep cursor visible. */
+  /** Move cursor up/down (delta = ±1). Routes to submenu when open. */
   nav(delta) {
+    if (this._subMenu) {
+      this._subCursor = (this._subCursor + delta + KEY_ITEM_OPTIONS.length) % KEY_ITEM_OPTIONS.length;
+      this.menu._clearSubTexts();
+      this.build();
+      return;
+    }
+
     const { key } = TABS[this._tabIndex];
     const entries  = gameState.bag[key] ?? [];
     if (entries.length === 0) return;
 
     this._cursor = Math.max(0, Math.min(entries.length - 1, this._cursor + delta));
 
-    // Auto-scroll so cursor stays in the visible window.
     if (this._cursor < this._scrollTop) {
       this._scrollTop = this._cursor;
     } else if (this._cursor >= this._scrollTop + MAX_ROWS) {
@@ -123,14 +178,51 @@ export default class BagScreen {
     this.build();
   }
 
-  /**
-   * Attempt to use the currently selected item.
-   * Only works for Items tab entries that are in OVERWORLD_USABLE.
-   */
+  /** Confirm selection — opens submenu for key items or uses regular items. */
   confirm() {
     const { key } = TABS[this._tabIndex];
-    if (key !== 'items') return;
 
+    // ── Submenu active: execute the selected option ──
+    if (this._subMenu) {
+      const option = KEY_ITEM_OPTIONS[this._subCursor];
+      if (option === 'Use') {
+        this._subMenu = false;
+        this.menu.scene.game.events.emit('use-key-item', this._subItem);
+        this.menu.close();
+      } else if (option === 'Register') {
+        store.commit('bag/REGISTER_ITEM', this._subItem);
+        const registered = gameState.bag.registeredItem;
+        const msg = registered
+          ? `${this._subItem} registered to Backspace!`
+          : `${this._subItem} unregistered.`;
+        this.menu.scene.game.events.emit('toast', msg);
+        this._subMenu = false;
+        this.menu._clearSubTexts();
+        this.build();
+      } else {
+        // Cancel
+        this._subMenu = false;
+        this.menu._clearSubTexts();
+        this.build();
+      }
+      return;
+    }
+
+    // ── Key Items tab: open submenu ──
+    if (key === 'keyItems') {
+      const entries = gameState.bag[key] ?? [];
+      const entry   = entries[this._cursor];
+      if (!entry) return;
+      this._subMenu   = true;
+      this._subCursor = 0;
+      this._subItem   = entry.name;
+      this.menu._clearSubTexts();
+      this.build();
+      return;
+    }
+
+    // ── Regular items ──
+    if (key !== 'items') return;
     const entries = gameState.bag[key] ?? [];
     const entry   = entries[this._cursor];
     if (!entry) return;
@@ -142,5 +234,16 @@ export default class BagScreen {
 
     this.menu.pendingUseItem = entry.name;
     this.menu._transitionTo('bag-team-pick');
+  }
+
+  /** Close submenu on back; otherwise propagate to parent. Returns true if consumed. */
+  back() {
+    if (this._subMenu) {
+      this._subMenu = false;
+      this.menu._clearSubTexts();
+      this.build();
+      return true;
+    }
+    return false;
   }
 }

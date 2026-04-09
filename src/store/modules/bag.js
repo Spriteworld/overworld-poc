@@ -1,16 +1,29 @@
+/** Item names that are treated as key items: no quantity, cannot be used up. */
+export const KEY_ITEMS = new Set(['Bicycle']);
+
 export default {
   namespaced: true,
 
   state: () => ({
-    items:     [{ name: 'Rare Candy', quantity: 1 }],
-    pokeballs: [],
-    tms:       [],
+    items:          [],
+    pokeballs:      [],
+    tms:            [],
+    keyItems:       [],
+    registeredItem: null,
   }),
 
   mutations: {
     PICKUP(state, payload) {
       const name = typeof payload === 'string' ? payload : payload.name;
       const qty  = typeof payload === 'string' ? 1 : (payload.qty ?? 1);
+
+      if (KEY_ITEMS.has(name)) {
+        if (!state.keyItems.some(e => e.name === name)) {
+          state.keyItems.push({ name });
+        }
+        return;
+      }
+
       const isBall = /ball$/i.test(name);
       const isTm   = /^(TM|HM)\d/i.test(name);
       const list   = isBall ? state.pokeballs : isTm ? state.tms : state.items;
@@ -34,19 +47,36 @@ export default {
       state.tms.push(tm);
     },
 
+    REGISTER_ITEM(state, name) {
+      state.registeredItem = (state.registeredItem === name) ? null : name;
+    },
+
     LOAD(state, saved) {
       if (saved.bag) {
-        if (Array.isArray(saved.bag.items))     state.items     = saved.bag.items;
-        if (Array.isArray(saved.bag.pokeballs)) state.pokeballs = saved.bag.pokeballs;
-        if (Array.isArray(saved.bag.tms))       state.tms       = saved.bag.tms;
+        if (Array.isArray(saved.bag.items)) {
+          state.items = saved.bag.items;
+        }
+        if (Array.isArray(saved.bag.pokeballs)) {
+          state.pokeballs = saved.bag.pokeballs;
+        }
+        if (Array.isArray(saved.bag.tms)) {
+          state.tms = saved.bag.tms;
+        }
+        if (Array.isArray(saved.bag.keyItems)) {
+          state.keyItems = saved.bag.keyItems;
+        }
+        if (saved.bag.registeredItem !== undefined) {
+          state.registeredItem = saved.bag.registeredItem;
+        }
       }
     },
 
     /**
      * Decrement the quantity of a named item from the items list.
-     * Removes the entry when it reaches zero.
+     * Removes the entry when it reaches zero. Key items are ignored.
      */
     USE_ITEM(state, itemName) {
+      if (KEY_ITEMS.has(itemName)) return;
       const idx = state.items.findIndex(e => e.name === itemName);
       if (idx === -1) return;
       state.items[idx].quantity--;
