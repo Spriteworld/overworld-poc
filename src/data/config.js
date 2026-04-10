@@ -13,6 +13,9 @@ const config = {
   height: 600,
   pixelArt: true,
   disableContextMenu: true,
+  input: {
+    gamepad: true,
+  },
   fps: {
     target: 30,
     forceSetTimeOut: true,

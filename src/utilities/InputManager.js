@@ -36,6 +36,25 @@ export const Action = Object.freeze({
   USE_ITEM: 'use_item',
 });
 
+/**
+ * Standard gamepad button index → action(s).
+ * Follows the standard mapping (Xbox / PS layout):
+ *   0=A/Cross  1=B/Circle  2=X/Square  3=Y/Triangle
+ *   8=Select   9=Start
+ *   12=D-Up  13=D-Down  14=D-Left  15=D-Right
+ */
+const GAMEPAD_BUTTON_BINDINGS = {
+  0:  [Action.CONFIRM],
+  1:  [Action.CANCEL, Action.RUN],
+  9:  [Action.MENU],
+  12: [Action.UP],
+  13: [Action.DOWN],
+  14: [Action.LEFT],
+  15: [Action.RIGHT],
+};
+
+const AXIS_THRESHOLD = 0.5;
+
 /** Default keyboard → action mapping. One key may trigger multiple actions. */
 const DEFAULT_BINDINGS = {
   ArrowUp:   [Action.UP],
@@ -62,11 +81,28 @@ class InputManager {
     this._pressedAt = new Map();
     this._listeners = new Map();
     this._once      = new Map();
+    this._inputMode = 'keyboard'; // 'keyboard' | 'controller'
 
     this._onKeyDown = this._onKeyDown.bind(this);
     this._onKeyUp   = this._onKeyUp.bind(this);
     scene.input.keyboard.on('keydown', this._onKeyDown);
     scene.input.keyboard.on('keyup',   this._onKeyUp);
+
+    // Gamepad support
+    this._axisActions = new Set(); // actions currently held via analog stick
+    if (scene.input.gamepad) {
+      this._onPadDown      = this._onPadDown.bind(this);
+      this._onPadUp        = this._onPadUp.bind(this);
+      this._onSceneUpdate  = this._onSceneUpdate.bind(this);
+      this._padConnected       = false;
+      this._onPadConnected     = this._onPadConnected.bind(this);
+      this._onPadDisconnected  = this._onPadDisconnected.bind(this);
+      scene.input.gamepad.on('connected',    this._onPadConnected);
+      scene.input.gamepad.on('disconnected', this._onPadDisconnected);
+      scene.input.gamepad.on('down', this._onPadDown);
+      scene.input.gamepad.on('up',   this._onPadUp);
+      scene.events.on('update', this._onSceneUpdate);
+    }
   }
 
   // ─── Mobile / programmatic ─────────────────────────────────────────────────
@@ -152,16 +188,25 @@ class InputManager {
   destroy() {
     this._scene.input.keyboard.off('keydown', this._onKeyDown);
     this._scene.input.keyboard.off('keyup',   this._onKeyUp);
+    if (this._scene.input.gamepad) {
+      this._scene.input.gamepad.off('connected',    this._onPadConnected);
+      this._scene.input.gamepad.off('disconnected', this._onPadDisconnected);
+      this._scene.input.gamepad.off('down', this._onPadDown);
+      this._scene.input.gamepad.off('up',   this._onPadUp);
+      this._scene.events.off('update', this._onSceneUpdate);
+    }
     this._listeners.clear();
     this._once.clear();
     this._held.clear();
     this._pressedAt.clear();
+    this._axisActions?.clear();
   }
 
   // ─── Internal ──────────────────────────────────────────────────────────────
 
   _onKeyDown(event) {
     if (event.repeat) return;
+    this._inputMode = 'keyboard';
     const actions = this._bindings[event.code] ?? [];
     for (const action of actions) {
       if (!this._held.has(action)) {
@@ -188,6 +233,60 @@ class InputManager {
       pending.forEach(cb => cb());
     }
   }
+
+  _onPadConnected(pad) {
+    this._padConnected = true;
+    const name = pad.id?.split('(')[0].trim() || 'Controller';
+    this._scene.game.events.emit('toast', `${name} connected`);
+  }
+
+  _onPadDisconnected() {
+    this._padConnected = false;
+  }
+
+  _onPadDown(pad, button) {
+    this._inputMode = 'controller';
+    const actions = GAMEPAD_BUTTON_BINDINGS[button.index] ?? [];
+    for (const action of actions) {
+      this.press(action);
+    }
+  }
+
+  _onPadUp(pad, button) {
+    const actions = GAMEPAD_BUTTON_BINDINGS[button.index] ?? [];
+    for (const action of actions) {
+      this.release(action);
+    }
+  }
+
+  /**
+   * Polls the left analog stick each frame and synthesises press/release
+   * events when axes cross the dead-zone threshold.
+   */
+  _onSceneUpdate() {
+    const gp = this._scene.input.gamepad?.getPad(0);
+    if (!gp) return;
+
+    const axisX = gp.axes[0]?.getValue() ?? 0;
+    const axisY = gp.axes[1]?.getValue() ?? 0;
+
+    this._pollAxis(axisX < -AXIS_THRESHOLD, Action.LEFT);
+    this._pollAxis(axisX >  AXIS_THRESHOLD, Action.RIGHT);
+    this._pollAxis(axisY < -AXIS_THRESHOLD, Action.UP);
+    this._pollAxis(axisY >  AXIS_THRESHOLD, Action.DOWN);
+  }
+
+  _pollAxis(active, action) {
+    const wasActive = this._axisActions.has(action);
+    if (active && !wasActive) {
+      this._inputMode = 'controller';
+      this._axisActions.add(action);
+      this.press(action);
+    } else if (!active && wasActive) {
+      this._axisActions.delete(action);
+      this.release(action);
+    }
+  }
 }
 
 // ─── Keybind labels ────────────────────────────────────────────────────────
@@ -210,7 +309,6 @@ function buildActionLabels(bindings) {
   for (const [code, actions] of Object.entries(bindings)) {
     for (const action of actions) {
       if (!(action in map)) {
-        // Convert e.g. "KeyZ" → "Z", "Digit1" → "1", else use CODE_LABELS or raw code
         const label = CODE_LABELS[code]
           ?? (code.startsWith('Key')   ? code.slice(3)   : null)
           ?? (code.startsWith('Digit') ? code.slice(5)   : null)
@@ -224,13 +322,28 @@ function buildActionLabels(bindings) {
 
 const _defaultActionLabels = buildActionLabels(DEFAULT_BINDINGS);
 
+/** Action → controller button label (standard Xbox/PS layout). */
+const GAMEPAD_ACTION_LABELS = {
+  [Action.CONFIRM]:  'A',
+  [Action.CANCEL]:   'B',
+  [Action.RUN]:      'B',
+  [Action.MENU]:     'Start',
+  [Action.UP]:       '↑',
+  [Action.DOWN]:     '↓',
+  [Action.LEFT]:     '←',
+  [Action.RIGHT]:    '→',
+};
+
 /**
- * Returns the primary keyboard label for an action (e.g. 'confirm' → 'Z').
- * Falls back to the action name if no binding exists.
+ * Returns the label for an action based on the current input device.
+ * Shows controller button names when a pad is connected, keyboard keys otherwise.
  * @param {string} action - One of the Action constants.
  * @returns {string}
  */
 export function getKeybindLabel(action) {
+  if (_instance?._inputMode === 'controller') {
+    return GAMEPAD_ACTION_LABELS[action] ?? _defaultActionLabels[action] ?? action;
+  }
   return _defaultActionLabels[action] ?? action;
 }
 

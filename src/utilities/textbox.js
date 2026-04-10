@@ -80,6 +80,7 @@ class TextBox {
       }
     };
     getInputManager()?.on('confirm', this._keyHandler);
+    getInputManager()?.on('cancel',  this._keyHandler);
 
     // Hidden by default
     this._setChildrenVisible(false);
@@ -127,6 +128,7 @@ class TextBox {
   destroy() {
     this._cancelPending();
     getInputManager()?.off('confirm', this._keyHandler);
+    getInputManager()?.off('cancel',  this._keyHandler);
     this._bg.destroy();
     this._textObj.destroy();
     this._arrow.destroy();
@@ -248,14 +250,19 @@ class TextBox {
     this._arrow.setVisible(true);
 
     if (this._isLastPage()) {
-      // Register a one-shot close listener
+      // Register a one-shot close listener on both confirm and cancel
       this._closeOnce = () => {
+        const im = getInputManager();
+        im?.off('confirm', this._closeOnce);
+        im?.off('cancel',  this._closeOnce);
         this._closeOnce = null;
         this._scene.time.delayedCall(CLOSE_DELAY, () => {
           this._scene.game.events.emit('textbox-disable');
         });
       };
-      getInputManager()?.once('confirm', this._closeOnce);
+      const im = getInputManager();
+      im?.on('confirm', this._closeOnce);
+      im?.on('cancel',  this._closeOnce);
     }
   }
 
@@ -268,7 +275,9 @@ class TextBox {
       this._timer = null;
     }
     if (this._closeOnce) {
-      getInputManager()?.off('confirm', this._closeOnce);
+      const im = getInputManager();
+      im?.off('confirm', this._closeOnce);
+      im?.off('cancel',  this._closeOnce);
       this._closeOnce = null;
     }
   }
