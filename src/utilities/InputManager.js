@@ -225,7 +225,8 @@ class InputManager {
   }
 
   _emit(action) {
-    this._listeners.get(action)?.forEach(cb => cb());
+    const cbs = this._listeners.get(action);
+    if (cbs?.size) [...cbs].forEach(cb => cb());
     const once = this._once.get(action);
     if (once?.size) {
       const pending = [...once];

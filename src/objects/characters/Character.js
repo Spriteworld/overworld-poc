@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 import StateMachine from '@Objects/StateMachine';
 import MovableSprite from '@Objects/characters/MovableSprite';
-import { Tile, Direction } from '@Objects';
+import * as Tile from '../Tile.js';
+import * as Direction from '../Direction.js';
 import { Vector2, getPropertyValue, getInputManager, Action } from '@Utilities';
 
 export default class extends MovableSprite {
@@ -76,7 +77,7 @@ export default class extends MovableSprite {
     this.config.scene.addCharacter(this);
 
     this.initSeenRadius(identification);
-    this.initTrackingRadius(identification);
+    this.trackingCoords = [];
   }
 
   /**
@@ -151,20 +152,6 @@ export default class extends MovableSprite {
     this.seenRect.setName(identification+'-seen');
     this.characterRect.setOrigin(0, 0);
     this.characterRect.setName(identification+'-character');
-  }
-
-  /**
-   * Initialise the `trackingCoords` array used for player-tracking logic,
-   * if the character has `track-player` or `avoid-character` configured.
-   */
-  initTrackingRadius() {
-    if (typeof this.config['track-player'] === 'undefined' 
-        && typeof this.config['avoid-character'] === 'undefined') { return; }
-        
-    if (this.config['track-player'] === false
-        && this.config['avoid-character'] === false) { return; }
-
-    this.trackingCoords = [];
   }
 
   /**
@@ -567,9 +554,19 @@ export default class extends MovableSprite {
 
   /**
    * Rebuild the set of tile coordinates that the player must occupy for this
-   * character to "see" them, forming four directional pyramids around the NPC.
+   * character to "track" them, forming four directional pyramids around the NPC.
    */
   generateTrackingCoords() {
+    if (typeof this.config['track-player'] === 'undefined' 
+      && typeof this.config['avoid-character'] === 'undefined') { return; }
+        
+    if (this.config['track-player'] === false) {
+      return;
+    }
+    if (this.config['avoid-character'] === false) { 
+      return; 
+    }
+
     let radius = this.config['track-player-radius'];
     this.trackingCoords = [];
     let npcBounds = this.getBounds();

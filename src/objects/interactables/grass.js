@@ -6,6 +6,20 @@ const TEXTURE_KEY = 'animated_grass';
 const FRAME_COUNT = 8;
 const FRAME_RATE  = 10; // 100 ms per frame
 
+/** Ray-casting point-in-polygon test (pixel space). */
+function pointInPolygon(px, py, polygon) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x, yi = polygon[i].y;
+    const xj = polygon[j].x, yj = polygon[j].y;
+    if (((yi > py) !== (yj > py)) &&
+        (px < (xj - xi) * (py - yi) / (yj - yi) + xi)) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
 export default class {
   constructor(scene) {
     this.scene      = scene;
@@ -17,7 +31,26 @@ export default class {
     if (zones.length === 0) return;
 
     zones.forEach(obj => {
-      if (typeof obj.polygon !== 'undefined') return;
+      if (typeof obj.polygon !== 'undefined') {
+        // Polygon — test tile centres against the shape boundary.
+        const abs = obj.polygon.map(pt => ({ x: obj.x + pt.x, y: obj.y + pt.y }));
+        const minTx = Math.floor(Math.min(...abs.map(p => p.x)) / Tile.WIDTH);
+        const maxTx = Math.floor(Math.max(...abs.map(p => p.x)) / Tile.WIDTH);
+        const minTy = Math.floor(Math.min(...abs.map(p => p.y)) / Tile.HEIGHT);
+        const maxTy = Math.floor(Math.max(...abs.map(p => p.y)) / Tile.HEIGHT);
+        for (let tx = minTx; tx <= maxTx; tx++) {
+          for (let ty = minTy; ty <= maxTy; ty++) {
+            const cx = tx * Tile.WIDTH  + Tile.WIDTH  / 2;
+            const cy = ty * Tile.HEIGHT + Tile.HEIGHT / 2;
+            if (pointInPolygon(cx, cy, abs)) {
+              this.grassTiles.push({ x: tx, y: ty });
+            }
+          }
+        }
+        return;
+      }
+
+      // Rectangle
       const cols = Math.floor(obj.width  / Tile.WIDTH);
       const rows = Math.floor(obj.height / Tile.HEIGHT);
       for (let dx = 0; dx < cols; dx++) {

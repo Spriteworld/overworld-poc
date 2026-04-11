@@ -91,7 +91,6 @@ export const WORLD_MAP_KEYS = {
   'route23.json':        'Route23',
   'route24.json':        'Route24',
   'route25.json':        'Route25',
-  'viridian_forest.json': 'ViridianForest',
 };
 
 export {
@@ -126,6 +125,14 @@ export {
     // region
     // StarterTownMap
 };
+
+/** Scene keys for kanto inside / non-world maps, shown in the debug warp list. */
+export const INSIDE_MAP_SCENE_KEYS = [
+  'HeroHouseF1',
+  'HeroHouseF2',
+  'ProfessorLab',
+  'ViridianForest',
+];
 
 export const MAP_REGISTRY = {
   'Kanto':        KantoMap,

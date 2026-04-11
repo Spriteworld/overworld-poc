@@ -67,8 +67,8 @@
             "fileName": "cerulean_city.json",
             "x": 6144,
             "y": -5792,
-            "width": 1792,
-            "height": 1472
+            "width": 1536,
+            "height": 1280
         },
         {
             "fileName": "route24.json",
@@ -85,11 +85,18 @@
             "height": 1472
         },
         {
+            "fileName": "route9.json",
+            "x": 7680,
+            "y": -5792,
+            "width": 1792,
+            "height": 1472
+        },
+        {
             "fileName": "route5.json",
             "x": 6144,
-            "y": -4320,
-            "width": 1792,
-            "height": 640
+            "y": -4512,
+            "width": 1536,
+            "height": 1440
         },
         {
             "fileName": "saffron_city.json",
@@ -125,13 +132,6 @@
             "y": -3680,
             "width": 1280,
             "height": 1280
-        },
-        {
-            "fileName": "route9.json",
-            "x": 7936,
-            "y": -5792,
-            "width": 1792,
-            "height": 1472
         },
         {
             "fileName": "route11.json",

@@ -10,7 +10,21 @@
     ],
     "propertyTypes": [
         {
-            "color": "#ffa0a0a4",
+            "id": 20,
+            "name": "ai-list",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "wild",
+                "trainer",
+                "gym_leader",
+                "elite_4",
+                "champion"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "color": "#ff00aa00",
             "drawFill": true,
             "id": 10,
             "members": [
@@ -20,6 +34,49 @@
             "useAs": [
                 "map",
                 "project"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 19,
+            "members": [
+                {
+                    "name": "isShiny",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "level-random",
+                    "type": "list",
+                    "value": [
+                    ]
+                },
+                {
+                    "name": "level-range-max",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "level-range-min",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "level-single",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "species",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "encounter-pokemon",
+            "type": "class",
+            "useAs": [
+                "property"
             ]
         },
         {
@@ -36,11 +93,305 @@
             "name": "encounters",
             "type": "class",
             "useAs": [
-                "map"
+                "object"
             ]
         },
         {
             "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 18,
+            "members": [
+                {
+                    "name": "good-rod",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "grass",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "headbutt",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "old-rod",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "rock-smash",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "super-rod",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "surf",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        },
+                        {
+                            "propertyType": "encounter-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                }
+            ],
+            "name": "encounterTable",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "id": 21,
+            "name": "facing-direction",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "up",
+                "down",
+                "left"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "color": "#ffaa0000",
             "drawFill": true,
             "id": 11,
             "members": [
@@ -110,6 +461,30 @@
             "type": "class",
             "useAs": [
                 "object"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 17,
+            "members": [
+                {
+                    "name": "encounter-rate",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "encounter-table",
+                    "propertyType": "encounterTable",
+                    "type": "class",
+                    "value": {
+                    }
+                }
+            ],
+            "name": "map-settings",
+            "type": "class",
+            "useAs": [
+                "property"
             ]
         },
         {
@@ -276,9 +651,20 @@
             "id": 12,
             "members": [
                 {
-                    "name": "facing-direction",
+                    "name": "battle-texture",
                     "type": "string",
-                    "value": "down"
+                    "value": ""
+                },
+                {
+                    "name": "facing-direction",
+                    "propertyType": "facing-direction",
+                    "type": "string",
+                    "value": "up"
+                },
+                {
+                    "name": "overworld-texture",
+                    "type": "string",
+                    "value": ""
                 },
                 {
                     "name": "seen-radius",
@@ -286,17 +672,22 @@
                     "value": 5
                 },
                 {
-                    "name": "text",
-                    "type": "string",
-                    "value": ""
-                },
-                {
                     "name": "text-defeated",
                     "type": "string",
                     "value": ""
                 },
                 {
-                    "name": "texture",
+                    "name": "text-intro",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "text-mid-fight",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "text-post-defeat",
                     "type": "string",
                     "value": ""
                 },
@@ -317,14 +708,76 @@
                 },
                 {
                     "name": "trainer-pokemon",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "trainer-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "use-ai",
+                    "propertyType": "ai-list",
                     "type": "string",
-                    "value": "[]"
+                    "value": "trainer"
                 }
             ],
             "name": "trainer",
             "type": "class",
             "useAs": [
                 "object"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 16,
+            "members": [
+                {
+                    "name": "item",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "level",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "move1",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "move2",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "move3",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "move4",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "species",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "trainer-pokemon",
+            "type": "class",
+            "useAs": [
+                "property",
+                "object",
+                "project"
             ]
         },
         {
@@ -362,6 +815,24 @@
             "type": "class",
             "useAs": [
                 "object"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 14,
+            "members": [
+                {
+                    "name": "warp-dir",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "warpLocation",
+            "type": "class",
+            "useAs": [
+                "object",
+                "project"
             ]
         }
     ]

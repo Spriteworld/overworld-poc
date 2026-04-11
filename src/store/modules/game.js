@@ -17,6 +17,7 @@ export default {
     sessionStart: Date.now(),
     money:        3000,
     healLocation: null,        // { map, x, y, charLayer } — set when player heals at a Pokémon Center
+    textSpeed:    'normal',    // 'normal' | 'fast' | 'instant'
   }),
 
   getters: {
@@ -40,6 +41,9 @@ export default {
 
     SET_PLAYER_SPRITE(state, sprite) {
       state.playerSprite = sprite;
+    },
+    SET_TEXT_SPEED(state, speed) {
+      state.textSpeed = speed;
     },
 
     SET_ON_BIKE(state, value) {
@@ -74,6 +78,7 @@ export default {
       if (saved.playtime     != null) state.playtime     = saved.playtime;
       if (saved.money        != null) state.money        = saved.money;
       if (saved.healLocation != null) state.healLocation = saved.healLocation;
+      if (saved.textSpeed    != null) state.textSpeed    = saved.textSpeed;
       state.sessionStart = Date.now();
     },
   },

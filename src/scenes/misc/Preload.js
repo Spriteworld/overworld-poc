@@ -6,6 +6,7 @@ import Debug from '@Data/debug.js';
 import { loadGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
 import { getStartScene } from '@Data/startScene.js';
+import { getGameDef } from '@Data/gameDef.js';
 import { getStartFlags, clearStartFlags } from '@Data/startFlags.js';
 
 export default class extends Phaser.Scene {
@@ -99,7 +100,7 @@ export default class extends Phaser.Scene {
     const playerLocation = (savedTile && (savedTile.x || savedTile.y))
       ? { x: savedTile.x, y: savedTile.y, charLayer: savedTile.charLayer }
       : {};
-    const startScene = store.state.game.currentMap || getStartScene();
+    const startScene = store.state.game.currentMap || getStartScene() || getGameDef().overworldScene;
     this.scene.start(startScene, { playerLocation });
 
     if (this.game.config.debug.time) {

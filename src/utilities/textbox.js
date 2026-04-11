@@ -1,7 +1,7 @@
 import { getInputManager, getKeybindLabel } from './InputManager.js';
 import store from '../store/index.js';
 
-const CHAR_DELAY  = 30;   // ms per character
+const CHAR_DELAY  = { normal: 30, fast: 10, instant: 0 }; // ms per character per speed
 const CLOSE_DELAY = 500;  // ms after Z before textbox-disable fires
 const BORDER_R    = 20;   // border radius
 const PAD_X       = 16;   // horizontal inner padding
@@ -198,8 +198,17 @@ class TextBox {
       this._timer = null;
     }
 
+    const speed = store.state.game.textSpeed ?? 'normal';
+    const delay = CHAR_DELAY[speed] ?? CHAR_DELAY.normal;
+
+    if (delay === 0) {
+      // Instant — reveal the whole page immediately.
+      this._skipTyping();
+      return;
+    }
+
     this._timer = this._scene.time.addEvent({
-      delay:    CHAR_DELAY,
+      delay,
       repeat:   this._fullText.length - 1,
       callback: () => {
         this._charIdx++;

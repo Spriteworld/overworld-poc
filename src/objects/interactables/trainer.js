@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import * as Tile from '@Objects/Tile.js';
-import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves, Items } from '@spriteworld/pokemon-data';
+import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves, Items, FRLG_LEARNSETS } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
 import { getPropertyValue, remapProps, Vector2 } from '@Utilities';
+import { getGameDef } from '@Data/gameDef.js';
 import Tileset from '@Tileset';
 import Trainer from '@Objects/characters/Trainer.js';
 import store from '../../store/index.js';
@@ -45,6 +46,57 @@ function buildMovePool() {
   );
 }
 
+let _pokedex = null;
+function getPokedex() {
+  if (!_pokedex) _pokedex = new Pokedex(GAMES.POKEMON_FIRE_RED);
+  return _pokedex;
+}
+
+/**
+ * Resolves a species value to a nat_dex_id.
+ * Accepts a numeric nat_dex_id directly, or a species name string (e.g. 'pikachu').
+ * Returns the species name alongside the id so callers can use it for learnset lookup.
+ * @param {number|string} species
+ * @returns {{ id: number|null, name: string|null }}
+ */
+function resolveSpecies(species) {
+  if (typeof species === 'number') {
+    const entry = Object.values(getPokedex().pokedex).find(p => p.nat_dex_id === species);
+    return { id: species, name: entry?.name ?? null };
+  }
+  if (typeof species === 'string') {
+    const lower = species.toLowerCase();
+    const entry = Object.values(getPokedex().pokedex).find(
+      p => p.name?.toLowerCase() === lower
+    );
+    return { id: entry?.nat_dex_id ?? null, name: entry?.name ?? species };
+  }
+  return { id: null, name: null };
+}
+
+/**
+ * Builds up to four moves for a Pokémon using its FRLG level-up learnset,
+ * taking the most recently learned moves at or below `level`.
+ * Falls back to random moves from `fallbackPool` when no learnset exists.
+ * @param {string}   speciesName
+ * @param {number}   level
+ * @param {object[]} fallbackPool
+ * @returns {{ name: string, pp: { max: number, current: number } }[]}
+ */
+function buildMovesFromLearnset(speciesName, level, fallbackPool) {
+  const learnset = FRLG_LEARNSETS[speciesName.toUpperCase()];
+  if (!learnset?.length) {
+    return pickUnique(fallbackPool, 4).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }));
+  }
+  const learnable = learnset.filter(([lvl]) => lvl <= level);
+  const selected  = learnable.slice(-4);
+  const ppByName  = Object.fromEntries(fallbackPool.map(m => [m.name, m.pp]));
+  return selected.map(([, name]) => {
+    const pp = ppByName[name] ?? 5;
+    return { name, pp: { max: pp, current: pp } };
+  });
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 const EXCLAIM_ANIM_KEY  = 'trainer-spotted';
@@ -52,9 +104,6 @@ const EXCLAIM_FRAMES    = { start: 13, end: 16 };
 const EXCLAIM_FRAME_RATE = 10;
 // Delay (ms) before the trainer starts walking after the exclamation plays.
 const EXCLAIM_DURATION  = 700;
-// Delay (ms) after battle-complete before the defeat text is shown.
-// Must be longer than OverworldUI's 2000ms wait + 250ms fade-out + 300ms fade-in.
-const DEFEAT_TEXT_DELAY = 2700;
 
 export default class {
   constructor(scene) {
@@ -94,7 +143,7 @@ export default class {
    * the scene's interaction system.
    */
   _addToScene(obj, entry, isDefeated) {
-    const texture  = getPropertyValue(obj.properties, 'overworld-sprite');
+    const texture  = getPropertyValue(obj.properties, 'overworld-texture');
     const x        = obj.x / Tile.WIDTH;
     const y        = obj.y / Tile.HEIGHT;
 
@@ -184,7 +233,7 @@ export default class {
       const isDefeated = !!store.state.game.gameFlags[entry.defeatedFlag];
 
       if (isDefeated) {
-        const text = this.scene.getPropertyFromTile(entry.obj, 'text-defeated');
+        const text = this.scene.getPropertyFromTile(entry.obj, 'text-post-defeat');
         if (!text) return;
         const player = this.scene.characters.get('player');
         entry.char.look(player.getOppositeFacingDirection());
@@ -192,11 +241,8 @@ export default class {
         return;
       }
 
-      // Undefeated trainer — if the auto-spot sequence is already running, ignore.
-      if (entry.char._spotted) return;
-
-      entry.char._spotted = true;
-      this._initiateConfrontation(entry);
+      // Undefeated trainer — trigger the full spot sequence (exclaim + intro text → walk → battle).
+      this._onSpotPlayer(entry.char.config.id);
     };
     this.scene.game.events.on('interact-with-obj', this._onInteract);
   }
@@ -225,7 +271,7 @@ export default class {
     const exclaim = this._showExclamation(entry.char);
 
     // Show the trainer's dialogue alongside the exclamation; walk when dismissed.
-    const text = this.scene.getPropertyFromTile(entry.obj, 'text');
+    const text = this.scene.getPropertyFromTile(entry.obj, 'text-intro');
     if (text) {
       this.scene.game.events.emit('textbox-changedata', text);
       this.scene.game.events.once('textbox-disable', () => {
@@ -289,18 +335,19 @@ export default class {
   _startBattle(entry) {
     const battleData = this._buildTrainerBattle(entry.obj);
     this.scene.game.events.emit('battle-start', battleData);
-    this.scene.game.events.once('battle-complete', ({ result, prizeMoney }) => {
-      this._onBattleComplete(entry, result, prizeMoney);
+    this.scene.game.events.once('battle-complete', ({ result }) => {
+      this._onBattleComplete(entry, result);
     });
   }
 
   _buildTrainerBattle(obj) {
     const team            = this._parseTrainerTeam(obj);
-    const overworldSprite = getPropertyValue(obj.properties, 'overworld-sprite');
-    const battleSprite    = getPropertyValue(obj.properties, 'battle-sprite') ?? overworldSprite;
+    const overworldSprite = getPropertyValue(obj.properties, 'overworld-texture');
+    const battleSprite    = getPropertyValue(obj.properties, 'battle-texture') ?? overworldSprite;
     return {
       tilesetBaseUrl: '/',
-      field:  { weather: null, terrain: 'normal' },
+      expRate:        getGameDef().expRate,
+      field:          { weather: null, terrain: 'normal' },
       player: {
         name:      'Red',
         team:      gameState.party.map(p => ({
@@ -316,11 +363,9 @@ export default class {
         name:                  this.scene.getPropertyFromTile(obj, 'trainer-name') || obj.name,
         team,
         prizeMoney:            this._calcPrizeMoney(obj, team),
-        trainerSprite:         overworldSprite ?? null,
-        trainerSpriteUrl:      overworldSprite ? (Tileset.trainers[overworldSprite] ?? null) : null,
         trainerBattleSprite:   battleSprite ?? null,
-        trainerBattleSpriteUrl: battleSprite ? (Tileset.trainerBattleSprites[battleSprite] ?? Tileset.trainers[battleSprite] ?? null) : null,
         midFightText:          getPropertyValue(obj.properties, 'text-mid-fight') ?? null,
+        postDefeatText:        getPropertyValue(obj.properties, 'text-post-defeat') ?? null,
       },
     };
   }
@@ -343,7 +388,16 @@ export default class {
   _parseTrainerTeam(obj) {
     const raw = this.scene.getPropertyFromTile(obj, 'trainer-pokemon');
     let specs;
-    try { specs = JSON.parse(raw || '[]'); } catch { return []; }
+
+    if (Array.isArray(raw)) {
+      // New Tiled list format: each entry is { propertytype, type, value: { species, level, move1-4, item } }
+      specs = raw
+        .slice(0, 6)
+        .map(entry => entry.value ?? entry)
+        .filter(v => v.species);
+    } else {
+      try { specs = JSON.parse(raw || '[]'); } catch { return []; }
+    }
 
     const movePool = buildMovePool();
     return specs.map(spec => {
@@ -353,37 +407,65 @@ export default class {
         nature:  pick(NATURE_LIST).name,
         gender:  pick([GENDERS.MALE, GENDERS.FEMALE]),
         ability: { name: 'none' },
-        moves:   pickUnique(movePool, 4).map(m => ({
-          name: m.name,
-          pp:   { max: m.pp, current: m.pp },
-        })),
         ivs:     Object.fromEntries(STAT_KEYS.map(s => [s, 31])),
         evs:     Object.fromEntries(STAT_KEYS.map(s => [s, 0])),
       };
-      return { ...defaults, ...spec };
+      const resolved = { ...defaults, ...spec };
+
+      // Resolve species → nat_dex_id, keeping the name for learnset lookup.
+      const { id: speciesId, name: speciesName } = resolved.species != null
+        ? resolveSpecies(resolved.species)
+        : { id: null, name: null };
+      if (speciesId != null) resolved.species = speciesId;
+
+      // Collect move1–move4 string fields (new Tiled format).
+      const moveNames = [spec.move1, spec.move2, spec.move3, spec.move4]
+        .filter(m => typeof m === 'string' && m.trim() !== '');
+
+      if (moveNames.length > 0) {
+        const ppByName = Object.fromEntries(movePool.map(m => [m.name.toLowerCase(), m.pp]));
+        resolved.moves = moveNames.map(name => {
+          const pp = ppByName[name.toLowerCase()] ?? 5;
+          return { name, pp: { max: pp, current: pp } };
+        });
+      } else if (spec.moves?.length) {
+        // Legacy JSON format: moves array of strings or objects.
+        const ppByName = Object.fromEntries(movePool.map(m => [m.name.toLowerCase(), m.pp]));
+        resolved.moves = spec.moves.slice(0, 4).map(m => {
+          if (typeof m === 'string') {
+            const pp = ppByName[m.toLowerCase()] ?? 5;
+            return { name: m, pp: { max: pp, current: pp } };
+          }
+          return m;
+        });
+      } else {
+        // Default moves: respect the learnsets game-def setting.
+        const useRandom = getGameDef().learnsets === 'random' || speciesName == null;
+        resolved.moves = useRandom
+          ? pickUnique(movePool, 4).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }))
+          : buildMovesFromLearnset(speciesName, resolved.level ?? 1, movePool);
+      }
+
+      // Hold item: `item` field from Tiled (empty string = no item).
+      if (spec.item && typeof spec.item === 'string' && spec.item.trim() !== '') {
+        resolved.heldItem = spec.item.trim();
+      }
+
+      // Remove raw Tiled move/item fields from the resolved config.
+      delete resolved.move1;
+      delete resolved.move2;
+      delete resolved.move3;
+      delete resolved.move4;
+      delete resolved.item;
+
+      return resolved;
     });
   }
 
-  _onBattleComplete(entry, result, prizeMoney) {
+  _onBattleComplete(entry, result) {
     if (result !== 'won') return;
 
     store.commit('game/PATCH_FLAGS', { [entry.defeatedFlag]: true });
-    if (prizeMoney > 0) { store.commit('game/ADD_MONEY', prizeMoney); }
     entry.char.setDefeated();
-
-    const defeatedText = this.scene.getPropertyFromTile(entry.obj, 'text-defeated');
-    this.scene.time.delayedCall(DEFEAT_TEXT_DELAY, () => {
-      if (prizeMoney > 0) {
-        const moneyMsg = `You got $${prizeMoney} for winning!`;
-        this.scene.game.events.emit('textbox-changedata', moneyMsg);
-        if (defeatedText) {
-          this.scene.game.events.once('textbox-disable', () => {
-            this.scene.game.events.emit('textbox-changedata', defeatedText);
-          });
-        }
-      } else if (defeatedText) {
-        this.scene.game.events.emit('textbox-changedata', defeatedText);
-      }
-    });
   }
 }

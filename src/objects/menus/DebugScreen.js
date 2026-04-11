@@ -1,5 +1,5 @@
 import Scenes from '@Scenes';
-import { WORLD_FILE, WORLD_MAP_KEYS } from '@Maps';
+import { WORLD_FILE, WORLD_MAP_KEYS, INSIDE_MAP_SCENE_KEYS } from '@Maps';
 import {
   SX, SY, SW, SH,
   TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT,
@@ -76,7 +76,9 @@ export default class DebugScreen {
       return { type: 'warp-world', label, tileX, tileY };
     });
 
-    return [...extra, ...world];
+    const inside = INSIDE_MAP_SCENE_KEYS.map(key => ({ type: 'warp', label: key }));
+
+    return [...extra, ...world, ...inside];
   }
 
   _debugItems() {
@@ -259,7 +261,7 @@ export default class DebugScreen {
     this._write(item, !this._read(item));
     this._persist(item);
     this._reloadMap();
-    this._render();
+    this._menu.close();
   }
 
   _reloadMap() {

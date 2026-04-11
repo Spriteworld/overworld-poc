@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { Tile, Interactables, GameMap, Direction } from '@Objects';
 import { getPropertyValue } from '@Utilities';
+import store from '../../store/index.js';
 
 export default class {
   /**
@@ -24,6 +25,7 @@ export default class {
 
     let warps = this.scene.findInteractions('warp');
     if (warps.length === 0) { return; }
+    console.log(`[Warp] found ${warps.length} warp objects on this map`, warps);
 
     // empty the warps, and reset them to the current maps warps
     this.scene.registry.set('warps', []);
@@ -111,9 +113,10 @@ export default class {
    */
   resolveWarpLocation(name) {
     const locations = this.scene.findInteractions('warpLocation');
+    console.log('[Warp] resolveWarpLocation', JSON.stringify(name), '— available:', locations.map(l => l.name));
     const obj = locations.find(l => l.name === name);
     if (!obj) {
-      console.warn(`Interactables::warp — warpLocation "${name}" not found on this map`);
+      console.warn(`[Warp] warpLocation "${name}" not found on this map`);
       return null;
     }
     return {
@@ -132,18 +135,23 @@ export default class {
    * @param {{x:number,y:number}} enterTile - The tile the character entered.
    */
   handleWarps(char, exitTile, enterTile) {
+    // console.log('[Warp] positionChange', char.name, 'exit', exitTile, 'enter', enterTile);
     if (this.warps.length === 0) { return; }
 
     let warp = this.warps.find(p => p.x === enterTile.x && p.y === enterTile.y);
-    if (typeof warp === 'undefined') { return; }
+    if (typeof warp === 'undefined') {
+      // console.log('[Warp] no warp at', enterTile, '— registered warps:', this.warps.map(w => `(${w.x},${w.y})`));
+      return;
+    }
 
-    let warpProps      = warp.obj.properties;
-    let warpTarget     = getPropertyValue(warpProps, 'warp', null);
+    let warpProps        = warp.obj.properties;
+    let warpTarget       = getPropertyValue(warpProps, 'warp', null);
     let warpLocationName = getPropertyValue(warpProps, 'warp-location', null);
-    if (warpTarget === null || warpTarget === '') { return; }
+    console.log('[Warp] matched warp tile → target:', warpTarget, '| location:', warpLocationName, '| props:', warpProps);
 
-    if (this.scene.game.config.debug.console.interactableShout) {
-      console.log(['Interactables::warp::handleWarps', 'char is trying to warp', char.name, 'to', warpTarget, 'location', warpLocationName]);
+    if (warpTarget === null || warpTarget === '') {
+      console.warn('[Warp] warp tile has no target scene (warp property missing or empty)');
+      return;
     }
 
     if (char.config.type !== 'player') {
@@ -169,9 +177,9 @@ export default class {
       y: playerLocation.y
     };
 
-    // move the player
+    // move the player, preserving their current facing direction
     this.scene.gridEngine.setPosition(char.name, pos, playerLocation.layer);
-    char.look(playerLocation.dir);
+    char.look(char.getFacingDirection());
 
     if (this.scene.mapPlugins['player'].hasPlayerMon) {
       // get the pokemon to be in the right spot
@@ -191,9 +199,13 @@ export default class {
    * @param {string} warpLocationName - Name of the warpLocation object on the destination map.
    */
   warpPlayerToMap(char, warpTarget, warpLocationName) {
+    console.log('[Warp] warpPlayerToMap — from:', this.scene.config.mapName, '→', warpTarget, '| location:', warpLocationName);
+
     // Same map — resolve the warpLocation on this scene and teleport in place
     if (this.scene.config.mapName === warpTarget || warpTarget === '_this_') {
+      console.log('[Warp] same-map teleport');
       const loc = this.resolveWarpLocation(warpLocationName);
+      console.log('[Warp] resolved location:', loc);
       if (!loc) { return; }
       char.disableMovement();
       this.scene.cameras.main.fadeOut(500, 0, 0, 0);
@@ -206,6 +218,15 @@ export default class {
     }
 
     // Cross-map — pass the warpLocation name so the destination scene can resolve it
+    const destScene = this.scene.scene.get(warpTarget);
+    console.log('[Warp] cross-map — destScene:', destScene?.constructor?.name ?? warpTarget, '| inside:', destScene?.config?.inside ?? 'unknown');
+    if (destScene?.config?.inside) {
+      this._dismountBike(char);
+    }
+
+    // Persist current facing so the destination scene can restore it
+    store.commit('game/SET_PLAYER_FACING', char.getFacingDirection());
+
     char.disableMovement();
     this.scene.cameras.main.fadeOut(500, 0, 0, 0);
     this.scene.cameras.main.once(
@@ -223,6 +244,16 @@ export default class {
    * @param {string} warpTarget - Scene key of the destination map.
    * @param {string} [warpLocationName] - Name of the warpLocation object on the destination map.
    */
+  /**
+   * If the character is on the bike, transition them back to IDLE and update the store.
+   * @param {Character} char
+   */
+  _dismountBike(char) {
+    if (char.stateMachine.currentState?.name !== char.stateDef.BIKE) return;
+    char.stateMachine.setState(char.stateDef.IDLE);
+    store.commit('game/SET_ON_BIKE', false);
+  }
+
   warpPlayerToMapWithoutFade(char, warpTarget, locationData) {
     this.scene.registry.set('map', warpTarget);
     let startData;

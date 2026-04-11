@@ -3,8 +3,8 @@
 Sync individual interior map JSON files from kanto_inside.json.
 
 kanto_inside.json is edited in Tiled using two source tilesets:
-  - gen3_inside.png   (firstgid=1)
-  - pallet_town_inside.png  (firstgid=3681)
+  - gen3_inside.png    (firstgid=1)
+  - gen3_outside.png   (firstgid=3948)
 
 This script converts those combined source GIDs → kanto_inside GIDs when
 writing individual map files (which use a single kanto_inside tileset).
@@ -24,7 +24,7 @@ What this script does
    - Merges interaction objects (matched by name) from kanto_inside.json's
      "interactions" objectgroup.
 3. Rebuilds kanto_inside.png from scratch every run using the full src_to_inside
-   mapping, sourcing pixels from gen3_inside.png and pallet_town_inside.png.
+   mapping, sourcing pixels from gen3_inside.png and gen3_outside.png.
 4. Writes the updated kanto_inside tileset JSON (tile properties synced from
    source tilesets for any GID newly added).
 5. For any map not already registered in the JS source files, creates a
@@ -41,8 +41,10 @@ SRC_DIR     = MAPS_DIR.parent.parent  # src/
 
 INSIDE_TILESET = {'firstgid': 1, 'source': '../../tileset/maps/kanto_inside.json'}
 
-# GID boundary: source GIDs below this are from gen3_inside, at or above from pallet_town_inside.
-PALLET_FIRSTGID = 3681
+# Firstgids are read dynamically from kanto_inside.json in main() and stored here.
+# Hardcoding is avoided because Tiled renumbers tilesets when one is removed.
+GEN3_INSIDE_FIRSTGID   = None  # set in main()
+GEN3_OUTSIDE_FIRSTGID  = None  # set in main()
 
 # Explicit overrides for map names whose filename doesn't follow the default
 # snake_case convention.
@@ -205,29 +207,36 @@ def src_gid_to_tile_id(src_gid):
     """
     Convert a combined kanto_inside.json GID to a 0-based tile ID and
     identify which source tileset it belongs to.
-    Returns ('gen3_inside', tile_id) or ('pallet_town_inside', tile_id).
+    Returns ('gen3_inside', tile_id) or ('gen3_outside', tile_id).
     """
-    if src_gid < PALLET_FIRSTGID:
-        return 'gen3_inside', src_gid - 1
-    return 'pallet_town_inside', src_gid - PALLET_FIRSTGID
+    if src_gid < GEN3_OUTSIDE_FIRSTGID:
+        return 'gen3_inside', src_gid - GEN3_INSIDE_FIRSTGID
+    return 'gen3_outside', src_gid - GEN3_OUTSIDE_FIRSTGID
 
 
 def ensure_inside_tile(inside_ts_json, inside_gid, src_gid, props_indices):
     """
-    Ensure inside tileset JSON has a tile entry for inside_gid.
-    Copies properties from the appropriate source tileset if missing.
+    Ensure inside tileset JSON has a tile entry for inside_gid with up-to-date
+    properties synced from the source tileset.
     Returns True if inside_ts_json was modified.
     """
     tile_id  = inside_gid - 1
     tiles    = inside_ts_json.setdefault('tiles', [])
-    existing = next((t for t in tiles if t['id'] == tile_id), None)
-    if existing:
-        return False
 
     src_name, src_tid = src_gid_to_tile_id(src_gid)
     props = props_indices.get(src_name, {}).get(src_tid, [])
-    tiles.append({'id': tile_id, 'properties': props})
-    return True
+
+    existing = next((t for t in tiles if t['id'] == tile_id), None)
+    if existing is None:
+        tiles.append({'id': tile_id, 'properties': props})
+        return True
+
+    # Sync properties even if the entry already exists
+    if existing.get('properties') != props:
+        existing['properties'] = props
+        return True
+
+    return False
 
 
 def remap_data(data, src_to_inside, inside_to_src,
@@ -291,10 +300,10 @@ def update_inside_png(src_to_inside, inside_ts_json, inside_ts_path):
 
     inside_png = inside_ts_path.parent / inside_ts_json['image']
 
-    gen3_img   = Image.open(TILESET_DIR / 'gen3_inside.png').convert('RGBA')
-    pallet_img = Image.open(TILESET_DIR / 'maps' / 'pallet_town_inside.png').convert('RGBA')
-    gen3_cols   = 8   # gen3_inside has 8 columns
-    pallet_cols = 8   # pallet_town_inside has 8 columns
+    gen3_inside_img   = Image.open(TILESET_DIR / 'gen3_inside.png').convert('RGBA')
+    gen3_outside_img  = Image.open(TILESET_DIR / 'gen3_outside.png').convert('RGBA')
+    gen3_inside_cols  = 8    # gen3_inside has 8 columns
+    gen3_outside_cols = 16   # gen3_outside has 16 columns
 
     max_inside_tid = max(src_to_inside.values()) - 1  # 0-based
     rows           = (max_inside_tid // cols) + 1
@@ -303,11 +312,11 @@ def update_inside_png(src_to_inside, inside_ts_json, inside_ts_path):
     for src_gid, inside_gid in src_to_inside.items():
         src_name, src_tid = src_gid_to_tile_id(src_gid)
         if src_name == 'gen3_inside':
-            src_img  = gen3_img
-            src_cols = gen3_cols
+            src_img  = gen3_inside_img
+            src_cols = gen3_inside_cols
         else:
-            src_img  = pallet_img
-            src_cols = pallet_cols
+            src_img  = gen3_outside_img
+            src_cols = gen3_outside_cols
 
         inside_tid = inside_gid - 1
         src_x  = (src_tid    % src_cols)  * tw
@@ -324,7 +333,7 @@ def update_inside_png(src_to_inside, inside_ts_json, inside_ts_path):
     inside_ts_json['imageheight'] = rows * th
     inside_ts_json['tilecount']   = cols * rows
 
-    print(f'  rebuilt kanto_inside.png ({len(src_to_inside)} tile(s), {cols}×{rows} grid)')
+    print(f'  rebuilt kanto_inside.png ({len(src_to_inside)} tiles, {cols}×{rows} grid)')
     return True
 
 
@@ -493,9 +502,29 @@ def ensure_scenes_index(scene_key):
 # ── Main ────────────────────────────────────────────────────────────────────
 
 def main():
+    global GEN3_INSIDE_FIRSTGID, GEN3_OUTSIDE_FIRSTGID
+
     # ── Load source files ─────────────────────────────────────────────────
     with open(MAPS_DIR / 'kanto_inside.json') as f:
         master = json.load(f)
+
+    # Read actual firstgids from the master file — Tiled renumbers these
+    # whenever a tileset is added or removed, so hardcoding is fragile.
+    ts_map = {}
+    for ts in master.get('tilesets', []):
+        src = ts.get('source', '')
+        if 'gen3_inside' in src and 'gen3_outside' not in src:
+            ts_map['gen3_inside'] = ts['firstgid']
+        elif 'gen3_outside' in src:
+            ts_map['gen3_outside'] = ts['firstgid']
+
+    if 'gen3_inside' not in ts_map or 'gen3_outside' not in ts_map:
+        print('ERROR: kanto_inside.json must contain gen3_inside and gen3_outside tilesets')
+        return
+
+    GEN3_INSIDE_FIRSTGID  = ts_map['gen3_inside']
+    GEN3_OUTSIDE_FIRSTGID = ts_map['gen3_outside']
+    print(f'Tilesets: gen3_inside firstgid={GEN3_INSIDE_FIRSTGID}, gen3_outside firstgid={GEN3_OUTSIDE_FIRSTGID}')
 
     master_w = master['width']
     master_h = master['height']
@@ -545,12 +574,12 @@ def main():
 
     with open(TILESET_DIR / 'gen3_inside.json') as f:
         gen3_ts_json = json.load(f)
-    with open(TILESET_DIR / 'maps' / 'pallet_town_inside.json') as f:
-        pallet_ts_json = json.load(f)
+    with open(TILESET_DIR / 'gen3_outside.json') as f:
+        gen3_outside_ts_json = json.load(f)
 
     props_indices = {
-        'gen3_inside':       build_props_index(gen3_ts_json),
-        'pallet_town_inside': build_props_index(pallet_ts_json),
+        'gen3_inside':   build_props_index(gen3_ts_json),
+        'gen3_outside':  build_props_index(gen3_outside_ts_json),
     }
 
     new_mappings      = {}   # src_gid -> newly assigned inside_gid
@@ -586,7 +615,6 @@ def main():
         # kanto_inside        → tiles already in kanto_inside space; skip tile sync
         # (new map / skeleton) → always pull from master (is_new_map == True)
         existing_ts_src = (route.get('tilesets') or [{}])[0].get('source', '')
-        uses_pallet = 'pallet_town_inside' in existing_ts_src
         uses_kanto_inside = 'kanto_inside' in existing_ts_src
 
         # Always point at kanto_inside tileset
@@ -603,91 +631,41 @@ def main():
                 layer['height'] = dst_h
                 layer['data']   = [0] * (dst_w * dst_h)
 
-        # Determine tile-layer strategy based on what tileset the map was using.
-        if is_new_map:
-            # ── NEW MAP: pull tile layers from master kanto_inside.json ──────
-            existing_names = {l['name'] for l in route['layers'] if l['type'] == 'tilelayer'}
-            inter_idx = next(
-                (i for i, l in enumerate(route['layers']) if l['type'] == 'objectgroup'),
-                len(route['layers'])
+        # Sync tile layers from master kanto_inside.json.
+        # For new maps, only layers with non-zero tile data are added.
+        # For existing maps, all master layers are synced (existing updated, new added).
+        print('  syncing tile layers from master kanto_inside.json')
+        existing_layers = {l['name']: l for l in route['layers'] if l['type'] == 'tilelayer'}
+        inter_idx = next(
+            (i for i, l in enumerate(route['layers']) if l['type'] == 'objectgroup'),
+            len(route['layers'])
+        )
+        max_lid = max((l.get('id') or 0 for l in route['layers']), default=0)
+        for kname, klayer in master_tilelayers.items():
+            raw = extract_region(
+                klayer['data'], master_w, master_h,
+                ox, oy, dst_w, dst_h
             )
-            max_lid = max((l.get('id') or 0 for l in route['layers']), default=0)
-            for kname, klayer in master_tilelayers.items():
-                if kname in existing_names:
-                    continue
-                raw = extract_region(
-                    klayer['data'], master_w, master_h,
-                    ox, oy, dst_w, dst_h
-                )
-                if not any(raw):
-                    continue
-                converted, modified = remap_data(
-                    raw, src_to_inside, inside_to_src,
-                    inside_ts_json, props_indices, gid_map_raw, new_mappings
-                )
-                if modified:
-                    inside_ts_modified = True
-                non_zero = sum(1 for t in converted if t != 0)
-                if non_zero == 0:
-                    continue
+            converted, modified = remap_data(
+                raw, src_to_inside, inside_to_src,
+                inside_ts_json, props_indices, gid_map_raw, new_mappings
+            )
+            if modified:
+                inside_ts_modified = True
+            non_zero = sum(1 for t in converted if t != 0)
+            if kname in existing_layers:
+                existing_layers[kname]['data']   = converted
+                existing_layers[kname]['width']  = dst_w
+                existing_layers[kname]['height'] = dst_h
+                print(f'  updated layer "{kname}" from master ({non_zero} non-zero tiles)')
+            elif non_zero > 0:
                 max_lid += 1
                 new_layer = make_layer(kname, dst_w, dst_h, LAYER_CHAR.get(kname))
                 new_layer['id']   = max_lid
                 new_layer['data'] = converted
                 route['layers'].insert(inter_idx, new_layer)
                 inter_idx += 1
-                existing_names.add(kname)
                 print(f'  added layer "{kname}" from master ({non_zero} non-zero tiles)')
-
-        elif uses_pallet:
-            # ── EXISTING PALLET MAP: migrate GIDs to kanto_inside in-place ──
-            # pallet_town_inside GID X -> combined src GID (3680 + X)
-            # combined src GID -> kanto_inside GID via inside_gid_map
-            print('  migrating pallet_town_inside GIDs -> kanto_inside GIDs')
-            remove_layers = set()
-            for layer in route['layers']:
-                if layer['type'] != 'tilelayer':
-                    continue
-                migrated = []
-                for pallet_gid in layer['data']:
-                    if pallet_gid == 0:
-                        migrated.append(0)
-                        continue
-                    src_gid = PALLET_FIRSTGID - 1 + pallet_gid
-                    igid = src_to_inside.get(src_gid)
-                    if igid is None:
-                        if src_gid in new_mappings:
-                            igid = new_mappings[src_gid]
-                        else:
-                            max_inside = max(inside_to_src.keys(), default=0)
-                            max_inside += 1
-                            igid = max_inside
-                            new_mappings[src_gid]                      = igid
-                            src_to_inside[src_gid]                     = igid
-                            inside_to_src[igid]                        = src_gid
-                            gid_map_raw['src_to_inside'][str(src_gid)] = igid
-                            gid_map_raw['inside_to_src'][str(igid)]    = src_gid
-                    if ensure_inside_tile(inside_ts_json, igid, src_gid, props_indices):
-                        inside_ts_modified = True
-                    migrated.append(igid)
-                non_zero = sum(1 for t in migrated if t != 0)
-                if non_zero == 0:
-                    remove_layers.add(layer['name'])
-                    print(f'  removed layer "{layer["name"]}" (empty after migration)')
-                else:
-                    layer['data']  = migrated
-                    layer['width'] = dst_w
-                    layer['height'] = dst_h
-                    print(f'  migrated layer "{layer["name"]}" ({non_zero} non-zero tiles)')
-            if remove_layers:
-                route['layers'] = [
-                    l for l in route['layers']
-                    if not (l['type'] == 'tilelayer' and l['name'] in remove_layers)
-                ]
-
-        else:
-            # ── EXISTING KANTO_INSIDE MAP: tiles already correct, leave them ─
-            print('  skipping tile sync (already uses kanto_inside tileset)')
 
         # Interaction objects — merge from master's interactions objectgroup
         inter = next(
@@ -722,6 +700,8 @@ def main():
             max_oid += 1
             inter['objects'].append({**obj_src, 'x': local_x, 'y': local_y, 'id': max_oid})
             print(f'  added obj "{obj_src["name"]}"')
+
+        route['nextobjectid'] = max_oid + 1
 
         sort_layers(route['layers'])
         sync_layer_properties(route['layers'])

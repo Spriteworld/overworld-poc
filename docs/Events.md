@@ -22,7 +22,7 @@ Two event channels are used in this project:
 | `player-move-enable` | any → Phaser | Re-enable player movement (e.g. after textbox closes). |
 | `player-move-disable` | any → Phaser | Disable player movement (e.g. when textbox opens). |
 | `interact-with-obj` | Phaser → any | Player pressed interact (Z) on an object. Payload: object data. |
-| `item-pickup` | Phaser → Vue | Player picked up an item. Payload: item data. |
+| `item-pickup` | Phaser → any | Item picked up after dialog closes. Payload: `string` (item name) or `{ name, qty }` (NPC gift). `OverworldUI` commits the bag mutation on receipt. |
 
 ### Textbox
 
@@ -54,6 +54,7 @@ These are emitted on `this.game.events` / `scene.game.events` so all running sce
 ```js
 {
   tilesetBaseUrl: string,           // base URL of the pokemon tileset directory (trailing slash)
+  textSpeed: string,                // 'normal' | 'fast' | 'instant' — mirrors store.state.game.textSpeed
   field:  { weather: string | null, terrain: string },
   player: {
     name: string,

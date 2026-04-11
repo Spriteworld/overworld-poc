@@ -81,6 +81,7 @@ export default {
         const entry = state.list.find(p => p.pid === snapshot.pid);
         if (!entry) return;
         entry.currentHp = snapshot.currentHp;
+        if (snapshot.species                      != null) entry.species             = snapshot.species;
         if (snapshot.exp                          != null) entry.exp                 = snapshot.exp;
         if (snapshot.level                        != null) entry.level               = snapshot.level;
         if (snapshot.readyToEvolve                != null) entry.readyToEvolve       = snapshot.readyToEvolve;

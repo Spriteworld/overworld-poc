@@ -652,7 +652,8 @@ def main():
         l['name']: l for l in kanto['layers'] if l['type'] == 'tilelayer'
     }
     kanto_inter = next(
-        (l for l in kanto['layers'] if l['type'] == 'objectgroup'), None
+        (l for l in kanto['layers']
+         if l['type'] == 'objectgroup' and l['name'] == 'interactions'), None
     )
     kanto_objs = kanto_inter['objects'] if kanto_inter else []
 
@@ -842,6 +843,8 @@ def main():
             max_id += 1
             inter['objects'].append({**obj, 'x': local_x, 'y': local_y, 'id': max_id})
             print(f'  added obj "{obj["name"]}"')
+
+        route['nextobjectid'] = max_id + 1
 
         sort_layers(route['layers'])
 

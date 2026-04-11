@@ -25,7 +25,6 @@ import * as bs_normal_dimensions from '@Tileset/battlescene/normal/files.json';
 import red from '@Tileset/characters/sprites/red.png';
 
 import trainers from '@Tileset/characters';
-import trainerBattleSprites from '@Tileset/characters/trainer';
 
 let loadPokemonSprites = [
   1,2,3,4,5,6,7,8,9,22,25,83,179,180,197,'197s','025s'
@@ -73,7 +72,6 @@ export default {
 
   red,
   trainers,
-  trainerBattleSprites,
 
   ow_pokemon_dimensions,
   ow_pokemon_shiny_dimensions,

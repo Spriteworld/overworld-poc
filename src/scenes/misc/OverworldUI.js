@@ -77,15 +77,10 @@ export default class extends Phaser.Scene {
    */
   handleEvents() {
     this.game.events.on('item-pickup', (payload) => {
-      const name   = typeof payload === 'string' ? payload : payload.name;
-      const qty    = typeof payload === 'object'  ? payload.qty : null;
-      const isKey  = KEY_ITEMS.has(name);
+      const name = typeof payload === 'string' ? payload : payload.name;
+      const qty  = typeof payload === 'object'  ? payload.qty : null;
+      const isKey = KEY_ITEMS.has(name);
       store.commit('bag/PICKUP', { name, qty: isKey ? null : (qty ?? 1) });
-      const display = name.replace(/\b\w/g, c => c.toUpperCase());
-      const msg = (!isKey && qty != null)
-        ? `You found ${qty} x\n${display}!`
-        : `You received\na ${display}!`;
-      this.game.events.emit('textbox-changedata', msg);
     });
 
     this.game.events.on('toast', (value) => {
@@ -149,12 +144,14 @@ export default class extends Phaser.Scene {
             delay: 100,
           });
 
-          this.game.events.once('battle-complete', ({ result } = {}) => {
+          this.game.events.once('battle-complete', ({ result, prizeMoney } = {}) => {
+            if (prizeMoney > 0) { store.commit('game/ADD_MONEY', prizeMoney); }
             const battleScene = this.scene.get('BattleScene2');
             const pokemon = battleScene?.config?.player?.team?.pokemon;
             if (pokemon) {
               const team = pokemon.map(p => ({
                 pid:                 p.pid,
+                species:             p.pokemon?.nat_dex_id ?? null,
                 currentHp:           p.currentHp,
                 exp:                 p.exp ?? null,
                 level:               p.level,
@@ -197,11 +194,15 @@ export default class extends Phaser.Scene {
                 tilesetBaseUrl,
                 canCancel:      false,
                 onComplete: (didEvolve) => {
-                  if (didEvolve) p.evolve(targetId);
+                  if (didEvolve) {
+                    p.evolve(targetId);
+                    store.commit('party/EVOLVE', { pid: p.pid, targetSpecies: targetId });
+                  }
                   p.readyToEvolve = null;
                   // Re-sync the party after each evolution
                   const updatedTeam = (pokemon ?? []).map(mon => ({
                     pid:                 mon.pid,
+                    species:             mon.pokemon?.nat_dex_id ?? null,
                     currentHp:           mon.currentHp,
                     exp:                 mon.exp ?? null,
                     level:               mon.level,
@@ -335,15 +336,24 @@ export default class extends Phaser.Scene {
     im.on(Action.LEFT,  () => { if (this.pauseMenu.visible) this.pauseMenu.moveLeft(); });
     im.on(Action.RIGHT, () => { if (this.pauseMenu.visible) this.pauseMenu.moveRight(); });
     im.on(Action.CONFIRM, () => {
-      if (this.pauseMenu.visible) this._handleMenuConfirm();
+      if (this.pauseMenu.visible) {
+        // Suppress MENU action that may fire in the same keydown event (Enter = CONFIRM + MENU)
+        this._suppressMenuOpen = true;
+        this._handleMenuConfirm();
+      }
     });
     im.on(Action.CANCEL, () => {
       if (this.pauseMenu.visible) {
+        this._suppressMenuOpen = true;
         const closed = this.pauseMenu.back();
         if (closed) this.registry.set('player_input', true);
       }
     });
     im.on(Action.MENU, () => {
+      if (this._suppressMenuOpen) {
+        this._suppressMenuOpen = false;
+        return;
+      }
       if (!this.pauseMenu.visible && this.registry.get('player_input') !== false) {
         this.registry.set('player_input', false);
         this.pauseMenu.open();

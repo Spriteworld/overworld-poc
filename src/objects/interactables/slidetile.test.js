@@ -15,13 +15,15 @@ function makeScene(iceTiles = []) {
 }
 
 function makeChar({ sliding = false } = {}) {
-  return {
+  const char = {
     isDumbCharacter: jest.fn(() => false),
     isSliding:       jest.fn(() => sliding),
     slidingDir:      sliding ? 'down' : null,
     stateMachine:    { setState: jest.fn() },
     stateDef:        { SLIDE: 'slide', IDLE: 'idle' },
   };
+  char._returnToBaseMovement = () => char.stateMachine.setState(char.stateDef.IDLE);
+  return char;
 }
 
 function makeSlide(iceTiles = []) {

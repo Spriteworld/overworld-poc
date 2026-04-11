@@ -3,7 +3,7 @@
   "height": 46,
   "infinite": false,
   "nextlayerid": 6,
-  "nextobjectid": 1,
+  "nextobjectid": 4,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.12.1",
@@ -5727,7 +5727,65 @@
       "draworder": "topdown",
       "id": 5,
       "name": "interactions",
-      "objects": [],
+      "objects": [
+        {
+          "height": 416,
+          "id": 1,
+          "name": "Grass1Route24",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "table-id",
+              "type": "string",
+              "value": "ROUTE_24"
+            }
+          ],
+          "rotation": 0,
+          "type": "encounters",
+          "visible": true,
+          "width": 96,
+          "x": 480,
+          "y": 800
+        },
+        {
+          "height": 64,
+          "id": 2,
+          "name": "Grass2Route24",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "table-id",
+              "type": "string",
+              "value": "ROUTE_24"
+            }
+          ],
+          "rotation": 0,
+          "type": "encounters",
+          "visible": true,
+          "width": 256,
+          "x": 1152,
+          "y": 288
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "TM24",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "item",
+              "type": "string",
+              "value": "TM24"
+            }
+          ],
+          "rotation": 0,
+          "type": "item",
+          "visible": true,
+          "width": 32,
+          "x": 736,
+          "y": 320
+        }
+      ],
       "opacity": 1,
       "type": "objectgroup",
       "visible": true,

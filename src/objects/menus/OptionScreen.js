@@ -7,8 +7,12 @@ import {
 const SPRITES = ['red', 'leaf'];
 const SPRITE_LABELS = { red: 'Male (Red)', leaf: 'Female (Leaf)' };
 
+const TEXT_SPEEDS = ['normal', 'fast', 'instant'];
+const TEXT_SPEED_LABELS = { normal: 'Normal', fast: 'Fast', instant: 'Instant' };
+
 const OPTIONS = [
-  { key: 'character', label: 'Character' },
+  { key: 'character',  label: 'Character'  },
+  { key: 'textSpeed',  label: 'Text Speed' },
 ];
 
 const ROW_H   = 28;
@@ -52,6 +56,9 @@ export default class OptionScreen {
     if (key === 'character') {
       return SPRITE_LABELS[store.state.game.playerSprite] ?? store.state.game.playerSprite;
     }
+    if (key === 'textSpeed') {
+      return TEXT_SPEED_LABELS[store.state.game.textSpeed] ?? store.state.game.textSpeed;
+    }
     return '';
   }
 
@@ -69,6 +76,10 @@ export default class OptionScreen {
       const next = SPRITES[(idx + delta + SPRITES.length) % SPRITES.length];
       store.commit('game/SET_PLAYER_SPRITE', next);
       this.menu.scene.game.events.emit('player-sprite-change', next);
+    } else if (key === 'textSpeed') {
+      const idx  = TEXT_SPEEDS.indexOf(store.state.game.textSpeed);
+      const next = TEXT_SPEEDS[(idx + delta + TEXT_SPEEDS.length) % TEXT_SPEEDS.length];
+      store.commit('game/SET_TEXT_SPEED', next);
     }
     this.menu._clearSubTexts();
     this.build();

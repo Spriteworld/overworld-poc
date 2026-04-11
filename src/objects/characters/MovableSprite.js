@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Direction } from '@Objects';
+import * as Direction from '../Direction.js';
 import { Vector2 } from '@Utilities';
 
 export default class MovableSprite extends Phaser.GameObjects.Sprite {
