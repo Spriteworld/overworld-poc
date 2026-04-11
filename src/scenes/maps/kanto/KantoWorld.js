@@ -92,40 +92,6 @@ export default class KantoWorld extends GameMap {
     this.events.once('shutdown', () => this._locationSub?.unsubscribe());
   }
 
-  encounterTable() {
-    return {
-      ROUTE_1: [
-        { pokemon: 'pidgey', level: [2, 5], rarity: 0.5 },
-        { pokemon: 'rattata', level: [2, 4], rarity: 0.5 },
-      ],
-      ROUTE_2: [
-        { pokemon: 'pidgey', level: [2, 5], rarity: 0.45 },
-        { pokemon: 'rattata', level: [2, 5], rarity: 0.45 },
-        { pokemon: 'caterpie', level: [4, 5], rarity: 0.05 },
-        { pokemon: 'weedle', level: [4, 5], rarity: 0.05 },
-      ],
-      ROUTE_3: [
-        { pokemon: 'pidgey', level: [6, 7], rarity: 0.30 },
-        { pokemon: 'spearow', level: [6, 8], rarity: 0.35 },
-        { pokemon: 'nidoran_m', level: [6, 7], rarity: 0.14 },
-        { pokemon: 'jigglypuff', level: [3, 7], rarity: 0.10 },
-        { pokemon: 'mankey', level: [7, 7], rarity: 0.10 },
-        { pokemon: 'nidoran_f', level: [6, 6], rarity: 0.1 },
-      ],
-      ROUTE_4: [
-        { pokemon: 'rattata', level: [8, 12], rarity: 0.35 },
-        { pokemon: 'spearow', level: [8, 12], rarity: 0.35 },
-        { pokemon: 'ekans', level: [6, 12], rarity: 0.25 },
-        { pokemon: 'mankey', level: [10, 12], rarity: 0.5 },
-      ],
-      OLD_ROD: [
-        { pokemon: 'magikarp', level: [5, 10], rarity: 1.0 },
-      ],
-      HEADBUTT: [],
-      ROCKS: [],
-    };
-  }
-
   /**
    * Test whether the given tile falls inside a different location zone than
    * the current one and, if so, fire a toast with the new location name.

@@ -37,7 +37,7 @@ export default class {
 
       let item = this.scene.getPropertyFromTile(tile.obj, 'item');
       if (!item) { return; }
-      const qty = this.scene.getPropertyFromTile(tile.obj, 'item-qty') ?? 1;
+      const qty = this.scene.getPropertyFromTile(tile.obj, 'quantity') ?? 1;
 
       // Remove immediately so a second Z-press (to dismiss the textbox)
       // doesn't re-trigger interact-with-obj for the same tile.

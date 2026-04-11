@@ -83,13 +83,14 @@
         },
         "src/maps/kanto/kanto.json": {
             "expandedObjectLayers": [
-                12
+                12,
+                13
             ],
-            "scale": 1.5,
+            "scale": 0.33,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 2684,
-                "y": 6091.666666666666
+                "x": 3739.3939393939395,
+                "y": 7098.484848484848
             }
         },
         "src/maps/kanto/kanto_inside.json": {
@@ -100,8 +101,8 @@
             "scale": 1,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 1743,
-                "y": 1088.5
+                "x": 1586,
+                "y": 1124.5
             }
         },
         "src/maps/kanto/pallet.json": {
@@ -168,8 +169,8 @@
             "scale": 1.5,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 905.6666666666666,
-                "y": 1344.3333333333333
+                "x": 969.3333333333333,
+                "y": 1521
             }
         },
         "src/maps/kanto/route21.json": {
@@ -211,7 +212,7 @@
             "scale": 0.7176185344827586,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 2265.8277648472113,
+                "x": 2265.827764847211,
                 "y": 984.5063443201443
             }
         },
@@ -395,8 +396,8 @@
             "scale": 0.42423437499999994,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1599.351773415344,
-                "y": 1599.3517734153438
+                "x": 1598.1731796250601,
+                "y": 1599.3517734153443
             }
         },
         "src/tileset/gen3_inside.json": {
@@ -451,20 +452,20 @@
         "src/maps/kanto/route5.json"
     ],
     "project": "spriteworld.tiled-project",
-    "property.type": "facing-direction",
+    "property.type": "list",
     "recentFiles": [
-        "src/maps/kanto/route5.json",
-        "src/maps/kanto/route2.json",
-        "src/maps/kanto/kanto_inside.json",
+        "src/maps/spriteworld/spriteworld.json",
         "src/maps/kanto/kanto.json",
         "src/tileset/gen3_outside.json",
-        "src/maps/kanto/viridian_forest.json",
+        "src/maps/kanto/route2.json",
+        "src/maps/kanto/route5.json",
         "src/maps/kanto/route1.json",
+        "src/maps/kanto/route3.json",
         "src/maps/kanto/prof_lab.json",
+        "src/maps/kanto/kanto_inside.json",
+        "src/maps/kanto/viridian_forest.json",
         "src/maps/kanto/hero_house_floor2.json",
-        "src/maps/kanto/hero_house_floor1.json",
-        "src/tileset/maps/kanto_inside.json",
-        "src/tileset/gen3_inside.json"
+        "src/maps/kanto/hero_house_floor1.json"
     ],
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFilter": "All Files (*)",

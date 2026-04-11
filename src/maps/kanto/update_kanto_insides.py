@@ -23,11 +23,17 @@ What this script does
      inside_gid_map.json so subsequent runs keep the assignment stable.
    - Merges interaction objects (matched by name) from kanto_inside.json's
      "interactions" objectgroup.
-3. Rebuilds kanto_inside.png from scratch every run using the full src_to_inside
+3. Ensures all overworld item/obstacle tiles (Pokeball, CutTree, Bush,
+   StrengthBoulder) from gen3_outside are present in kanto_inside so that
+   BaseItem subclasses work correctly in interior maps.
+4. Writes gen3_to_kanto_inside.json — a gen3_outside tileId+1 → kanto_inside
+   GID mapping that mirrors gen3_to_kanto.json, allowing BaseItem to resolve
+   the correct frame when running inside a kanto_inside map.
+5. Rebuilds kanto_inside.png from scratch every run using the full src_to_inside
    mapping, sourcing pixels from gen3_inside.png and gen3_outside.png.
-4. Writes the updated kanto_inside tileset JSON (tile properties synced from
+6. Writes the updated kanto_inside tileset JSON (tile properties synced from
    source tilesets for any GID newly added).
-5. For any map not already registered in the JS source files, creates a
+7. For any map not already registered in the JS source files, creates a
    Phaser scene file and updates src/maps/index.js and src/scenes/index.js.
 """
 
@@ -45,6 +51,16 @@ INSIDE_TILESET = {'firstgid': 1, 'source': '../../tileset/maps/kanto_inside.json
 # Hardcoding is avoided because Tiled renumbers tilesets when one is removed.
 GEN3_INSIDE_FIRSTGID   = None  # set in main()
 GEN3_OUTSIDE_FIRSTGID  = None  # set in main()
+
+# gen3_outside tile IDs (0-based) that must always be present in kanto_inside
+# so that BaseItem subclasses (Pokeball, CutTree, Bush, StrengthBoulder) render
+# correctly in interior maps.  Mirrors the tileId constants in each subclass.
+ITEM_TILE_IDS = [
+    17,   # CutTree
+    18,   # Bush
+    35,   # StrengthBoulder
+    53,   # Pokeball
+]
 
 # Explicit overrides for map names whose filename doesn't follow the default
 # snake_case convention.
@@ -715,6 +731,39 @@ def main():
         ensure_scene_file(scene_key)
         ensure_maps_index(scene_key, fname)
         ensure_scenes_index(scene_key)
+
+    # ── Ensure item/obstacle tiles from gen3_outside are in kanto_inside ────
+    # BaseItem subclasses (Pokeball, CutTree, etc.) use specific gen3_outside
+    # tile IDs.  Guarantee they have a kanto_inside GID even when they are not
+    # placed in any tilelayer of kanto_inside.json.
+    print('\nEnsuring item tiles are in kanto_inside...')
+    for tile_id in ITEM_TILE_IDS:
+        src_gid = GEN3_OUTSIDE_FIRSTGID + tile_id
+        if src_gid not in src_to_inside:
+            max_inside = max(inside_to_src.keys(), default=0) + 1
+            src_to_inside[src_gid]                        = max_inside
+            inside_to_src[max_inside]                     = src_gid
+            gid_map_raw['src_to_inside'][str(src_gid)]    = max_inside
+            gid_map_raw['inside_to_src'][str(max_inside)] = src_gid
+            new_mappings[src_gid]                         = max_inside
+            print(f'  reserved inside GID {max_inside} for item tile {tile_id} (gen3_outside)')
+        if ensure_inside_tile(inside_ts_json, src_to_inside[src_gid], src_gid, props_indices):
+            inside_ts_modified = True
+
+    # ── Write gen3_to_kanto_inside.json ──────────────────────────────────
+    # Maps gen3_outside tileId+1 (= BaseItem gen3Gid) → kanto_inside GID.
+    # Mirrors the format of gen3_to_kanto.json so BaseItem can use an identical
+    # lookup pattern when rendering on a kanto_inside map.
+    gen3_to_inside = {}
+    for tile_id in ITEM_TILE_IDS:
+        src_gid = GEN3_OUTSIDE_FIRSTGID + tile_id
+        igid = src_to_inside.get(src_gid)
+        if igid is not None:
+            gen3_to_inside[str(tile_id + 1)] = igid
+    gen3_inside_map_path = MAPS_DIR / 'gen3_to_kanto_inside.json'
+    with open(gen3_inside_map_path, 'w') as f:
+        json.dump(gen3_to_inside, f, indent=2)
+    print(f'Updated gen3_to_kanto_inside.json ({len(gen3_to_inside)} entries)')
 
     # ── Persist GID map ───────────────────────────────────────────────────
     if new_mappings:

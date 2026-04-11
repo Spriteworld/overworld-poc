@@ -3,7 +3,7 @@
   "height": 76,
   "infinite": false,
   "nextlayerid": 6,
-  "nextobjectid": 22,
+  "nextobjectid": 31,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.12.1",
@@ -7149,6 +7149,9 @@
         0,
         0,
         0,
+        354,
+        355,
+        356,
         0,
         0,
         0,
@@ -7218,6 +7221,9 @@
         0,
         0,
         0,
+        357,
+        358,
+        359,
         0,
         0,
         0,
@@ -7287,6 +7293,9 @@
         0,
         0,
         0,
+        357,
+        358,
+        359,
         0,
         0,
         0,
@@ -7356,6 +7365,9 @@
         0,
         0,
         0,
+        357,
+        358,
+        359,
         0,
         0,
         0,
@@ -7425,6 +7437,9 @@
         0,
         0,
         0,
+        357,
+        358,
+        359,
         0,
         0,
         0,
@@ -7494,6 +7509,9 @@
         0,
         0,
         0,
+        357,
+        358,
+        359,
         0,
         0,
         0,
@@ -7563,27 +7581,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        357,
+        358,
+        359,
         0,
         0,
         0,
@@ -7653,9 +7653,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        357,
+        358,
+        359,
         0,
         0,
         0,
@@ -7725,9 +7725,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        357,
+        358,
+        359,
         0,
         0,
         0,
@@ -7797,9 +7797,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        357,
+        358,
+        359,
         0,
         0,
         353,
@@ -7869,9 +7869,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        357,
+        358,
+        359,
         0,
         0,
         0,
@@ -7941,11 +7941,11 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        357,
+        358,
+        369,
+        355,
+        356,
         0,
         0,
         0,
@@ -8013,11 +8013,11 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        366,
+        361,
+        361,
+        361,
+        367,
         0,
         0,
         0,
@@ -18118,9 +18118,6 @@
         0,
         0,
         0,
-        354,
-        355,
-        356,
         0,
         0,
         0,
@@ -18190,9 +18187,12 @@
         0,
         0,
         0,
-        357,
-        358,
-        359,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -18262,9 +18262,9 @@
         0,
         0,
         0,
-        357,
-        358,
-        359,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -18334,9 +18334,6 @@
         429,
         0,
         0,
-        357,
-        358,
-        359,
         0,
         0,
         0,
@@ -18406,9 +18403,6 @@
         0,
         0,
         0,
-        357,
-        358,
-        359,
         0,
         0,
         0,
@@ -18478,9 +18472,6 @@
         0,
         0,
         0,
-        357,
-        358,
-        359,
         0,
         0,
         0,
@@ -18550,9 +18541,18 @@
         0,
         0,
         0,
-        357,
-        358,
-        359,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -18622,9 +18622,9 @@
         0,
         0,
         0,
-        357,
-        358,
-        359,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -18694,9 +18694,9 @@
         0,
         0,
         0,
-        357,
-        358,
-        359,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -18766,9 +18766,6 @@
         0,
         0,
         0,
-        357,
-        358,
-        359,
         0,
         0,
         0,
@@ -18838,9 +18835,6 @@
         0,
         0,
         0,
-        357,
-        358,
-        359,
         0,
         0,
         0,
@@ -18910,11 +18904,6 @@
         0,
         0,
         0,
-        357,
-        358,
-        369,
-        355,
-        356,
         0,
         0,
         0,
@@ -18982,11 +18971,22 @@
         0,
         0,
         0,
-        366,
-        361,
-        361,
-        361,
-        367,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -22126,13 +22126,13 @@
         {
           "height": 32,
           "id": 8,
-          "name": "Route1Sign",
+          "name": "WeakenMonsBeforeCaptureSign",
           "opacity": 1,
           "properties": [
             {
               "name": "text",
               "type": "string",
-              "value": "Route 1\n"
+              "value": "TRAINER TIPS\nWeaken POK{e}MON before attempting catpure!\nWhen healthy, they map escape!\n"
             }
           ],
           "rotation": 0,
@@ -22675,11 +22675,6 @@
                     "level": 6,
                     "species": "caterpie"
                   }
-                },
-                {
-                  "propertytype": "trainer-pokemon",
-                  "type": "class",
-                  "value": {}
                 }
               ]
             }
@@ -22720,17 +22715,17 @@
             {
               "name": "text-defeated",
               "type": "string",
-              "value": "No! CATERPIE can't hack it!"
+              "value": "Huh?\nI ran out of POK{e}MON!"
             },
             {
               "name": "text-intro",
               "type": "string",
-              "value": "Hey! You have POK{e}MON!\nCome on!\nLet's battle 'em!"
+              "value": "Yo!\nYou can't jam out if you're a\nPOK{e}MON TRAINER!"
             },
             {
               "name": "text-post-defeat",
               "type": "string",
-              "value": "Ssh! You'll scare the bugs away.\nAnother time, okay?"
+              "value": "That totally stinks! Im going to \ncatch some stronger ones!"
             },
             {
               "name": "track-player",
@@ -22900,17 +22895,17 @@
             {
               "name": "text-defeated",
               "type": "string",
-              "value": "No! CATERPIE can't hack it!"
+              "value": "Oh!\nI lost!"
             },
             {
               "name": "text-intro",
               "type": "string",
-              "value": "Hey! You have POK{e}MON!\nCome on!\nLet's battle 'em!"
+              "value": "Did you know that POK{e}MON evolve?"
             },
             {
               "name": "text-post-defeat",
               "type": "string",
-              "value": "Ssh! You'll scare the bugs away.\nAnother time, okay?"
+              "value": "BUG POK{e}MON evolve quickly.\nThey're a lot of fun!"
             },
             {
               "name": "track-player",
@@ -22994,17 +22989,17 @@
             {
               "name": "text-defeated",
               "type": "string",
-              "value": "No! CATERPIE can't hack it!"
+              "value": "I give!\nYou're good at this!"
             },
             {
               "name": "text-intro",
               "type": "string",
-              "value": "Hey! You have POK{e}MON!\nCome on!\nLet's battle 'em!"
+              "value": "Hey, wait up!\nWhat's the hurry? Why the rush?"
             },
             {
               "name": "text-post-defeat",
               "type": "string",
-              "value": "Ssh! You'll scare the bugs away.\nAnother time, okay?"
+              "value": "Sometimes, you can find stuff on the ground.\nI'm looking for the stuff I dropped.\nCan you help me?"
             },
             {
               "name": "track-player",
@@ -23042,6 +23037,209 @@
           "width": 32,
           "x": 512,
           "y": 896
+        },
+        {
+          "height": 32,
+          "id": 22,
+          "name": "VFPotion",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "item",
+              "type": "string",
+              "value": "potion"
+            }
+          ],
+          "rotation": 0,
+          "type": "item",
+          "visible": true,
+          "width": 32,
+          "x": 960,
+          "y": 1280
+        },
+        {
+          "height": 32,
+          "id": 23,
+          "name": "VFPokeBall",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "item",
+              "type": "string",
+              "value": "pokeball"
+            }
+          ],
+          "rotation": 0,
+          "type": "item",
+          "visible": true,
+          "width": 32,
+          "x": 448,
+          "y": 1504
+        },
+        {
+          "height": 32,
+          "id": 24,
+          "name": "VFHiddenPotion",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "hidden",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "item",
+              "type": "string",
+              "value": "potion"
+            }
+          ],
+          "rotation": 0,
+          "type": "item",
+          "visible": true,
+          "width": 32,
+          "x": 384,
+          "y": 896
+        },
+        {
+          "height": 32,
+          "id": 25,
+          "name": "VFAntidote",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "item",
+              "type": "string",
+              "value": "antidote"
+            }
+          ],
+          "rotation": 0,
+          "type": "item",
+          "visible": true,
+          "width": 32,
+          "x": 1568,
+          "y": 864
+        },
+        {
+          "height": 32,
+          "id": 26,
+          "name": "VFAntidoteNPC",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "propertytype": "facing-direction",
+              "type": "string",
+              "value": "up"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "forester"
+            },
+            {
+              "name": "text",
+              "type": "string",
+              "value": "For poison, use ANTIDOTE!\nGet it at POK{e}MON MARTS!"
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 32,
+          "x": 1216,
+          "y": 2048
+        },
+        {
+          "height": 32,
+          "id": 27,
+          "name": "LeavingViridianForestSign",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "text",
+              "type": "string",
+              "value": "LEAVING VIRIDIAN FOREST\nPEWTER CITY AHEAD"
+            }
+          ],
+          "rotation": 0,
+          "type": "sign",
+          "visible": true,
+          "width": 32,
+          "x": 480,
+          "y": 576
+        },
+        {
+          "height": 32,
+          "id": 28,
+          "name": "VFPokeballsNPC",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "propertytype": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "forester"
+            },
+            {
+              "name": "text",
+              "type": "string",
+              "value": "I was throwing POK{e} BALLS to \ncatch POK{e}MON, and I ran out.\nThat's why you can never have too\nmany POK{e} BALLS."
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 32,
+          "x": 1728,
+          "y": 2048
+        },
+        {
+          "height": 32,
+          "id": 29,
+          "name": "VFPotion",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "item",
+              "type": "string",
+              "value": "potion"
+            }
+          ],
+          "rotation": 0,
+          "type": "item",
+          "visible": true,
+          "width": 32,
+          "x": 1856,
+          "y": 2112
+        },
+        {
+          "height": 32,
+          "id": 30,
+          "name": "VFHiddenAntidote",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "hidden",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "item",
+              "type": "string",
+              "value": "antidote"
+            }
+          ],
+          "rotation": 0,
+          "type": "item",
+          "visible": true,
+          "width": 32,
+          "x": 1184,
+          "y": 1984
         }
       ],
       "opacity": 1,
@@ -28535,6 +28733,90 @@
       "x": 0,
       "y": 0,
       "properties": []
+    }
+  ],
+  "properties": [
+    {
+      "name": "map-settings",
+      "propertytype": "map-settings",
+      "type": "class",
+      "value": {
+        "encounter-rate": 20,
+        "encounter-table": {
+          "grass": [
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "species": "caterpie",
+                "rarity": 45,
+                "level-range-min": 3,
+                "level-range-max": 5
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "species": "weedle",
+                "rarity": 45,
+                "level-range-min": 3,
+                "level-range-max": 5
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "species": "metapod",
+                "rarity": 10,
+                "level-range-min": 4,
+                "level-range-max": 6
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "species": "kakuna",
+                "rarity": 10,
+                "level-range-min": 4,
+                "level-range-max": 6
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "species": "pidgey",
+                "rarity": 24,
+                "level-range-min": 3,
+                "level-range-max": 5
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "species": "pikachu",
+                "rarity": 10,
+                "level-range-min": 3,
+                "level-range-max": 5
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "species": "pidgeotto",
+                "rarity": 1,
+                "level-range-min": 9,
+                "level-range-max": 9
+              }
+            }
+          ]
+        }
+      }
     }
   ]
 }

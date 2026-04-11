@@ -128,17 +128,17 @@ function buildMovesFromLearnset(speciesName, level, fallbackPool) {
  * Each time the player steps onto an encounter tile, a 10 % roll is made.
  * On success, a full battle config is emitted via the 'battle-start' event.
  *
- * Encounter table entries use the shape:
- *   { pokemon: string, rarity: number, level: number[] }
+ * Encounter tables are defined as a `map-settings` Tiled map property.  The
+ * `encounter-table` sub-property is an `encounterTable` class whose fields
+ * (`grass`, `surf`, `good-rod`, etc.) are lists of `encounter-pokemon` entries:
+ *   { species: string, rarity: int, level-range-min: int, level-range-max: int }
  *
- * The level array supports three forms:
- *   [N]           – fixed level N
- *   [min, max]    – random level in [min, max]
- *   [a, b, c, …]  – one of the listed values chosen at random
+ * Each encounter zone object carries a `table-id` property that names which
+ * sub-table to use (e.g. `grass`, `surf`).
  *
  * Respects the active game definition (see src/data/gameDef.js):
  *   availablePokemon  – filters the species pool for fallbacks and random tables
- *   encounterTables   – 'vanilla' uses the map's encounterTable(); 'random' generates seeded tables
+ *   encounterTables   – 'vanilla' uses the map's encounter-table; 'random' generates seeded tables
  *   learnsets         – 'vanilla' uses FRLG learnset; 'random' picks 4 random moves
  *   expRate           – passed through to the battle config
  *   gameMode          – 'nuzlocke' records first-catch-per-zone flags
@@ -154,9 +154,34 @@ export default class {
     if (this.scene.game.config.debug.console.interactableShout) {
     }
 
-    const mapProps = this.scene.config?.tilemap?.properties ?? [];
-    const ratePct = getPropertyValue(mapProps, 'encounter-rate', ENCOUNTER_RATE * 100);
+    const mapProps    = this.scene.config?.tilemap?.properties ?? [];
+    const mapSettings = getPropertyValue(mapProps, 'map-settings') ?? {};
+    const ratePct     = mapSettings['encounter-rate']
+      || getPropertyValue(mapProps, 'encounter-rate', ENCOUNTER_RATE * 100);
     this._encounterRate = ratePct / 100;
+
+    // Collect encounter table fragments: top-level map-settings first, then
+    // each location object in the 'maps' layer that carries its own map-settings.
+    const tableFragments = [];
+    if (mapSettings['encounter-table']) {
+      tableFragments.push(mapSettings['encounter-table']);
+    }
+    try {
+      const locationObjs = this.scene.config.tilemap.filterObjects(
+        'maps', obj => obj.type === 'location'
+      ) ?? [];
+      for (const obj of locationObjs) {
+        const objSettings = getPropertyValue(obj.properties ?? [], 'map-settings');
+        if (objSettings?.['encounter-table']) {
+          tableFragments.push(objSettings['encounter-table']);
+        }
+      }
+    } catch { /* 'maps' layer may not exist on this map */ }
+
+    const merged = Object.assign({}, ...tableFragments);
+    this._encounterTable = this._parseEncounterTable(
+      Object.keys(merged).length ? merged : null
+    );
 
     const encounterZones = this.scene.findInteractions('encounters');
     if (encounterZones.length === 0) { return; }
@@ -232,6 +257,28 @@ export default class {
   }
 
   /**
+   * Normalises a raw `encounterTable` class value from Tiled map-settings into
+   * a keyed object of entry arrays ready for `pickWeighted`.
+   * Each Tiled list entry is unwrapped from its `{ propertytype, type, value }`
+   * wrapper and filtered to only those with a non-empty `species` field.
+   *
+   * @param {object|null} raw - The `encounter-table` value from map-settings.
+   * @returns {Record<string, object[]>|null}
+   */
+  _parseEncounterTable(raw) {
+    if (!raw || typeof raw !== 'object') { return null; }
+    const result = {};
+    for (const [key, list] of Object.entries(raw)) {
+      if (!Array.isArray(list) || list.length === 0) { continue; }
+      const entries = list
+        .map(e => e.value ?? e)
+        .filter(e => e.species);
+      if (entries.length > 0) { result[key] = entries; }
+    }
+    return Object.keys(result).length > 0 ? result : null;
+  }
+
+  /**
    * Constructs a battle config object for a wild encounter.
    *
    * Species selection respects the game definition:
@@ -271,24 +318,18 @@ export default class {
       levelMin = WILD_LEVEL_MIN;
       levelMax = WILD_LEVEL_MAX;
     } else {
-      // Vanilla: use the map scene's encounter table.
-      const tables  = tableId ? this.scene.encounterTable() : null;
-      const entries = tables?.[tableId];
+      // Vanilla: use the map's encounter-table from map-settings.
+      const entries = tableId ? this._encounterTable?.[tableId] : null;
       if (entries?.length > 0) {
         const picked = pickWeighted(entries);
-        const name   = picked.pokemon.toLowerCase();
+        const name   = picked.species?.toLowerCase();
         entry        = allSpec.find(p => p.species?.toLowerCase() === name);
         if (entry == null) {
           console.warn(`Encounter::buildWildBattle::noEntryFound for '${name}'`);
           entry = pick(pool);
         }
-        if (picked.level.length > 2) {
-          const lvl = pick(picked.level);
-          levelMin = levelMax = lvl;
-        } else {
-          levelMin = picked.level[0];
-          levelMax = picked.level.length > 1 ? picked.level[1] : picked.level[0];
-        }
+        levelMin = picked['level-range-min'] ?? WILD_LEVEL_MIN;
+        levelMax = picked['level-range-max'] ?? levelMin;
       } else {
         entry    = pick(pool);
         levelMin = WILD_LEVEL_MIN;

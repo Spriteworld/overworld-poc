@@ -260,8 +260,7 @@ export default class DebugScreen {
 
     this._write(item, !this._read(item));
     this._persist(item);
-    this._reloadMap();
-    this._menu.close();
+    this._render();
   }
 
   _reloadMap() {

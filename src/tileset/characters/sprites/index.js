@@ -6,6 +6,7 @@ import brock from './brock.png';
 import drake from './drake.png';
 import erika from './erika.png';
 import fisherman from './fisherman.png';
+import forester from './forester.png';
 import gary from './gary.png';
 import gentleman from './gentleman.png';
 import giovanni from './giovanni.png';
@@ -61,6 +62,7 @@ export default {
   bird_keeper,
   black_belt,
   fisherman,
+  forester,
   gary,
   gentleman,
   poke_kid,

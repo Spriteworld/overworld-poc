@@ -39,7 +39,7 @@ export default {
 
   /**
    * Encounter table source.
-   *   'vanilla' — use the map scene's encounterTable() definition
+   *   'vanilla' — use the map's encounter-table from Tiled map-settings property
    *   'random'  — seeded-random table generated from availablePokemon pool
    */
   encounterTables:  'vanilla',

@@ -217,14 +217,6 @@ export default class extends Phaser.Scene {
 
   /**
    * Returns an encounter table for the given table ID, or null to use defaults.
-   * Override in individual map scenes to define wild Pokémon pools.
-   *
-   * @returns {Record<string, Array<{pokemon: string, level: [number,number], rarity: number}>> | null}
-   */
-  encounterTable() {
-    return null;
-  }
-
   /**
    * Filter the Tiled `interactions` object layer for visible objects of the given type.
    * @param {string} type - The Tiled object type string to match (e.g. `'warp'`, `'sign'`).

@@ -65,7 +65,20 @@ jest.mock('@spriteworld/pokemon-data', () => {
 });
 
 import Encounter from './encounter.js';
-import { defaultParty } from '@Data/party.js';
+import store from '../../store/index.js';
+
+// ─── Test party fixture (used in place of a real defaultParty) ────────────────
+
+const TEST_PARTY = [
+  {
+    game: 'firered', pid: 1, species: 1, level: 15,
+    nature: 'hardy', gender: 'male',
+    ability: { name: 'Overgrow' },
+    moves: [{ name: 'tackle', pp: { max: 35, current: 35 } }],
+    ivs:  { hp: 31, attack: 31, defense: 31, special_attack: 31, special_defense: 31, speed: 31 },
+    evs:  { hp: 0,  attack: 0,  defense: 0,  special_attack: 0,  special_defense: 0,  speed: 0  },
+  },
+];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -74,14 +87,15 @@ function makeEncounter() {
 }
 
 /**
- * Creates an Encounter whose scene exposes a mock encounterTable() method.
+ * Creates an Encounter with a pre-parsed encounter table injected directly,
+ * bypassing init() — entries use the Tiled encounter-pokemon shape:
+ *   { species, rarity, 'level-range-min', 'level-range-max' }
  * @param {object} tables - Map of tableId → encounter entry array.
  */
 function makeEncounterWithTable(tables) {
-  return new Encounter({
-    game: { config: { debug: { console: { interactableShout: false } } } },
-    encounterTable: () => tables,
-  });
+  const enc = new Encounter({ game: { config: { debug: { console: { interactableShout: false } } } } });
+  enc._encounterTable = tables;
+  return enc;
 }
 
 afterEach(() => {
@@ -90,13 +104,86 @@ afterEach(() => {
 
 // ─── Encounter rate from map properties ──────────────────────────────────────
 
-function makeInitScene(properties = []) {
+function makeInitScene(properties = [], locationObjects = []) {
   return {
     game: { config: { debug: { console: { interactableShout: false } } } },
     findInteractions: jest.fn(() => []),
-    config: { tilemap: { properties } },
+    config: {
+      tilemap: {
+        properties,
+        filterObjects: jest.fn((layer, fn) =>
+          layer === 'maps' ? locationObjects.filter(fn) : []
+        ),
+      },
+    },
   };
 }
+
+describe('encounter table from maps-layer location objects', () => {
+  test('merges encounter tables from location objects into _encounterTable', () => {
+    const locationObjects = [
+      {
+        type: 'location',
+        name: 'Route1',
+        properties: [{
+          name: 'map-settings', type: 'class',
+          value: {
+            'encounter-table': {
+              ROUTE_1: [
+                { propertytype: 'encounter-pokemon', type: 'class',
+                  value: { species: 'pidgey', rarity: 50, 'level-range-min': 2, 'level-range-max': 5 } },
+              ],
+            },
+          },
+        }],
+      },
+      {
+        type: 'location',
+        name: 'Route2',
+        properties: [{
+          name: 'map-settings', type: 'class',
+          value: {
+            'encounter-table': {
+              ROUTE_2: [
+                { propertytype: 'encounter-pokemon', type: 'class',
+                  value: { species: 'rattata', rarity: 50, 'level-range-min': 3, 'level-range-max': 5 } },
+              ],
+            },
+          },
+        }],
+      },
+    ];
+    const enc = new Encounter(makeInitScene([], locationObjects));
+    enc.init();
+    expect(enc._encounterTable).toHaveProperty('ROUTE_1');
+    expect(enc._encounterTable).toHaveProperty('ROUTE_2');
+    expect(enc._encounterTable.ROUTE_1[0].species).toBe('pidgey');
+    expect(enc._encounterTable.ROUTE_2[0].species).toBe('rattata');
+  });
+
+  test('top-level encounter-table and location-object tables are merged', () => {
+    const enc = new Encounter(makeInitScene(
+      [{ name: 'map-settings', type: 'class', value: {
+        'encounter-table': {
+          ZONE_A: [{ propertytype: 'encounter-pokemon', type: 'class',
+            value: { species: 'bulbasaur', rarity: 10, 'level-range-min': 5, 'level-range-max': 5 } }],
+        },
+      }}],
+      [{
+        type: 'location', name: 'Area',
+        properties: [{ name: 'map-settings', type: 'class', value: {
+          'encounter-table': {
+            ZONE_B: [{ propertytype: 'encounter-pokemon', type: 'class',
+              value: { species: 'charmander', rarity: 10, 'level-range-min': 5, 'level-range-max': 5 } }],
+          },
+        }}],
+      }],
+    ));
+    enc.init();
+    expect(enc._encounterTable).toHaveProperty('ZONE_A');
+    expect(enc._encounterTable).toHaveProperty('ZONE_B');
+  });
+});
 
 describe('encounter rate from map properties', () => {
   test('defaults to 10% when no encounter-rate map property is set', () => {
@@ -112,46 +199,63 @@ describe('encounter rate from map properties', () => {
     enc.init();
     expect(enc._encounterRate).toBe(0.25);
   });
+
+  test('reads encounter-rate from map-settings when present', () => {
+    const enc = new Encounter(makeInitScene([
+      { name: 'map-settings', type: 'class', value: { 'encounter-rate': 15 } },
+    ]));
+    enc.init();
+    expect(enc._encounterRate).toBe(0.15);
+  });
 });
 
 // ─── Deep-clone guard ─────────────────────────────────────────────────────────
 
 describe('encounter _buildWildBattle party isolation', () => {
-  test('returned player.team is a different array from defaultParty', () => {
+  beforeEach(() => {
+    store.state.party.list = TEST_PARTY.map(p => ({
+      ...p,
+      moves: p.moves.map(m => ({ ...m, pp: { ...m.pp } })),
+      ivs: { ...p.ivs },
+      evs: { ...p.evs },
+    }));
+  });
+
+  test('returned player.team is a different array from the store party', () => {
     const battle = makeEncounter()._buildWildBattle();
-    expect(battle.player.team).not.toBe(defaultParty);
+    expect(battle.player.team).not.toBe(store.state.party.list);
   });
 
   test('returned pokemon config objects are copies, not the originals', () => {
     const battle = makeEncounter()._buildWildBattle();
-    expect(battle.player.team[0]).not.toBe(defaultParty[0]);
+    expect(battle.player.team[0]).not.toBe(store.state.party.list[0]);
   });
 
-  test('returned pp objects are copies — mutating them does not affect defaultParty', () => {
+  test('returned pp objects are copies — mutating them does not affect the store party', () => {
     const battle = makeEncounter()._buildWildBattle();
-    const originalCurrent = defaultParty[0].moves[0].pp.current;
+    const originalCurrent = store.state.party.list[0].moves[0].pp.current;
 
     battle.player.team[0].moves[0].pp.current = 0;
 
-    expect(defaultParty[0].moves[0].pp.current).toBe(originalCurrent);
+    expect(store.state.party.list[0].moves[0].pp.current).toBe(originalCurrent);
   });
 
-  test('returned ivs are copies — mutating them does not affect defaultParty', () => {
+  test('returned ivs are copies — mutating them does not affect the store party', () => {
     const battle = makeEncounter()._buildWildBattle();
-    const originalHP = defaultParty[0].ivs.hp;
+    const originalHP = store.state.party.list[0].ivs.hp;
 
     battle.player.team[0].ivs.hp = 0;
 
-    expect(defaultParty[0].ivs.hp).toBe(originalHP);
+    expect(store.state.party.list[0].ivs.hp).toBe(originalHP);
   });
 
-  test('returned evs are copies — mutating them does not affect defaultParty', () => {
+  test('returned evs are copies — mutating them does not affect the store party', () => {
     const battle = makeEncounter()._buildWildBattle();
-    const originalHP = defaultParty[0].evs.hp;
+    const originalHP = store.state.party.list[0].evs.hp;
 
     battle.player.team[0].evs.hp = 99;
 
-    expect(defaultParty[0].evs.hp).toBe(originalHP);
+    expect(store.state.party.list[0].evs.hp).toBe(originalHP);
   });
 
   test('multiple battles each get independent copies', () => {
@@ -162,7 +266,7 @@ describe('encounter _buildWildBattle party isolation', () => {
     battle1.player.team[0].moves[0].pp.current = 0;
 
     expect(battle2.player.team[0].moves[0].pp.current).toBe(
-      defaultParty[0].moves[0].pp.current
+      store.state.party.list[0].moves[0].pp.current
     );
   });
 });
@@ -219,37 +323,26 @@ describe('_buildWildBattle battle config', () => {
   });
 });
 
-// ─── Encounter table level arrays ─────────────────────────────────────────────
+// ─── Encounter table level ranges ─────────────────────────────────────────────
 
-describe('encounter table level arrays', () => {
-  test('single-entry level [N] always produces exactly level N', () => {
+describe('encounter table level ranges', () => {
+  test('equal min/max always produces exactly that level', () => {
     const enc = makeEncounterWithTable({
-      zone: [{ pokemon: 'bulbasaur', rarity: 1, level: [5] }],
+      zone: [{ species: 'bulbasaur', rarity: 1, 'level-range-min': 5, 'level-range-max': 5 }],
     });
     for (let i = 0; i < 20; i++) {
       expect(enc._buildWildBattle({ tableId: 'zone' }).enemy.team[0].level).toBe(5);
     }
   });
 
-  test('two-entry level [min, max] produces a level within [min, max]', () => {
+  test('min/max range produces a level within [min, max]', () => {
     const enc = makeEncounterWithTable({
-      zone: [{ pokemon: 'bulbasaur', rarity: 1, level: [3, 8] }],
+      zone: [{ species: 'bulbasaur', rarity: 1, 'level-range-min': 3, 'level-range-max': 8 }],
     });
     for (let i = 0; i < 30; i++) {
       const level = enc._buildWildBattle({ tableId: 'zone' }).enemy.team[0].level;
       expect(level).toBeGreaterThanOrEqual(3);
       expect(level).toBeLessThanOrEqual(8);
-    }
-  });
-
-  test('multi-entry level [a, b, c, ...] always picks one of the listed values exactly', () => {
-    const allowed = new Set([5, 10, 15, 20]);
-    const enc = makeEncounterWithTable({
-      zone: [{ pokemon: 'bulbasaur', rarity: 1, level: [5, 10, 15, 20] }],
-    });
-    for (let i = 0; i < 50; i++) {
-      const level = enc._buildWildBattle({ tableId: 'zone' }).enemy.team[0].level;
-      expect(allowed.has(level)).toBe(true);
     }
   });
 });
@@ -261,7 +354,7 @@ describe('buildMovesFromLearnset', () => {
     // Bulbasaur learnset: tackle@1, growl@3, vine whip@7, synthesis@13
     // At level 10: tackle, growl, vine whip learnable; synthesis is not yet
     const enc = makeEncounterWithTable({
-      zone: [{ pokemon: 'bulbasaur', rarity: 1, level: [10] }],
+      zone: [{ species: 'bulbasaur', rarity: 1, 'level-range-min': 10, 'level-range-max': 10 }],
     });
     const moves = enc._buildWildBattle({ tableId: 'zone' }).enemy.team[0].moves.map(m => m.name);
     expect(moves).toContain('vine whip');
@@ -272,7 +365,7 @@ describe('buildMovesFromLearnset', () => {
     // At level 15 all 4 Bulbasaur learnset moves are available; synthesis (level 13)
     // is the most recent and must be included
     const enc = makeEncounterWithTable({
-      zone: [{ pokemon: 'bulbasaur', rarity: 1, level: [15] }],
+      zone: [{ species: 'bulbasaur', rarity: 1, 'level-range-min': 15, 'level-range-max': 15 }],
     });
     const moves = enc._buildWildBattle({ tableId: 'zone' }).enemy.team[0].moves.map(m => m.name);
     expect(moves).toContain('synthesis');
@@ -281,7 +374,7 @@ describe('buildMovesFromLearnset', () => {
   test('correctly assigns pp values from the move pool', () => {
     // vine whip has pp: 10 in the mock pool
     const enc = makeEncounterWithTable({
-      zone: [{ pokemon: 'bulbasaur', rarity: 1, level: [10] }],
+      zone: [{ species: 'bulbasaur', rarity: 1, 'level-range-min': 10, 'level-range-max': 10 }],
     });
     const moves = enc._buildWildBattle({ tableId: 'zone' }).enemy.team[0].moves;
     const vineWhip = moves.find(m => m.name === 'vine whip');
@@ -292,7 +385,7 @@ describe('buildMovesFromLearnset', () => {
   test('returns fewer than 4 moves when the learnset has fewer than 4 learnable entries', () => {
     // Charmander learnset has only 2 entries; at level 5 both are learnable
     const enc = makeEncounterWithTable({
-      zone: [{ pokemon: 'charmander', rarity: 1, level: [5] }],
+      zone: [{ species: 'charmander', rarity: 1, 'level-range-min': 5, 'level-range-max': 5 }],
     });
     const moves = enc._buildWildBattle({ tableId: 'zone' }).enemy.team[0].moves;
     expect(moves.length).toBeLessThanOrEqual(2);
@@ -301,7 +394,7 @@ describe('buildMovesFromLearnset', () => {
   test('falls back to 4 random pool moves when no learnset entry exists', () => {
     // Squirtle has no FRLG_LEARNSETS entry
     const enc = makeEncounterWithTable({
-      zone: [{ pokemon: 'squirtle', rarity: 1, level: [10] }],
+      zone: [{ species: 'squirtle', rarity: 1, 'level-range-min': 10, 'level-range-max': 10 }],
     });
     const moves = enc._buildWildBattle({ tableId: 'zone' }).enemy.team[0].moves;
     expect(moves).toHaveLength(4);

@@ -7,7 +7,7 @@ import kanto from './kanto.js';
  */
 export default {
   ...kanto,
-  id:       'nuzlocke',
-  name:     'Kanto Nuzlocke',
+  id: 'nuzlocke',
+  name: 'Kanto Nuzlocke',
   gameMode: 'nuzlocke',
 };

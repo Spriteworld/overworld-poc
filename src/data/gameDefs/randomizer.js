@@ -6,9 +6,9 @@ import kanto from './kanto.js';
  */
 export default {
   ...kanto,
-  id:             'randomizer',
-  name:           'Kanto Randomizer',
-  gameMode:       'map_randomizer',
+  id: 'randomizer',
+  name: 'Kanto Randomizer',
+  gameMode: 'map_randomizer',
   encounterTables: 'random',
-  learnsets:      'random',
+  learnsets: 'random',
 };
