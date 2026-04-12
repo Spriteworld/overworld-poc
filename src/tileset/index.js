@@ -8,10 +8,12 @@ import gen3inside_json from '@Tileset/gen3_inside.json';
 import gen3outside from '@Tileset/gen3_outside.png';
 import gen3outside_json from '@Tileset/gen3_outside.json';
 
-import kanto_map from '@Tileset/maps/kanto.png';
-import kanto_inside from '@Tileset/maps/kanto_inside.png';
-import kanto_inside_json from '@Tileset/maps/kanto_inside.json';
-import pallet_inside from '@Tileset/maps/pallet_town_inside.png';
+import kanto_common       from '@Tileset/maps/kanto_common.png';
+import kanto_common_json   from '@Tileset/maps/kanto_common.json';
+import kanto_outside      from '@Tileset/maps/kanto_outside.png';
+import kanto_outside_json  from '@Tileset/maps/kanto_outside.json';
+import kanto_inside       from '@Tileset/maps/kanto_inside.png';
+import kanto_inside_json  from '@Tileset/maps/kanto_inside.json';
 
 import rse_inside from '@Tileset/rse_inside.png';
 import rse_inside_json from '@Tileset/rse_inside.json';
@@ -57,10 +59,12 @@ export default {
   blank,
   animated_grass,
   animation_sheet,
-  kanto_map,
+  kanto_common,
+  kanto_common_json,
+  kanto_outside,
+  kanto_outside_json,
   kanto_inside,
   kanto_inside_json,
-  pallet_inside,
   gen3inside,
   gen3inside_json,
   gen3outside,

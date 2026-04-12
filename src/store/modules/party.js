@@ -14,6 +14,7 @@ export default {
 
   state: () => ({
     list: cloneParty(defaultParty),
+    box:  [], // Pokémon moved off the party; flat array, no slot management yet
   }),
 
   mutations: {
@@ -74,6 +75,60 @@ export default {
         p.currentHp = null;
         p.moves.forEach(m => { if (m.pp) m.pp.current = m.pp.max; });
       });
+    },
+
+    /**
+     * Add a gift Pokémon to the party (up to 6 members).
+     * Called by ScriptRunner's `give_pokemon` command.
+     * Does nothing if the party is already full.
+     */
+    ADD_POKEMON(state, { natDexId, level, nickname, shiny }) {
+      if (state.list.length >= 6) return;
+      const STAT_KEYS = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
+      const NATURES   = ['Hardy','Lonely','Brave','Adamant','Naughty','Bold','Docile',
+                         'Relaxed','Impish','Lax','Timid','Hasty','Serious','Jolly',
+                         'Naive','Modest','Mild','Quiet','Bashful','Rash','Calm',
+                         'Gentle','Sassy','Careful','Quirky'];
+      state.list.push({
+        pid:       Date.now() + Math.floor(Math.random() * 1000),
+        species:   natDexId,
+        level:     level    ?? 5,
+        nickname:  nickname ?? null,
+        shiny:     shiny    ?? false,
+        nature:    NATURES[Math.floor(Math.random() * NATURES.length)],
+        gender:    Math.random() < 0.5 ? 'male' : 'female',
+        ability:   { name: 'none' },
+        moves:     [],
+        ivs:       Object.fromEntries(STAT_KEYS.map(s => [s, 31])),
+        evs:       Object.fromEntries(STAT_KEYS.map(s => [s, 0])),
+        currentHp: null,
+      });
+    },
+
+    /**
+     * Move a party Pokémon to the box by party slot index (0-5).
+     * Called by ScriptRunner's `move_to_box` command.
+     */
+    MOVE_TO_BOX(state, { slot }) {
+      if (slot < 0 || slot >= state.list.length) return;
+      const [mon] = state.list.splice(slot, 1);
+      state.box.push(mon);
+    },
+
+    /**
+     * Apply the result of the teach-move interactive UI.
+     * Adds or replaces a move on the party Pokémon identified by pid.
+     * replaceIdx = -1 means append (only called when < 4 moves).
+     */
+    REPLACE_MOVE(state, { pid, move, pp, replaceIdx }) {
+      const mon = state.list.find(m => m.pid === pid);
+      if (!mon) return;
+      const newMove = { name: move, pp: { max: pp, current: pp } };
+      if (replaceIdx >= 0) {
+        mon.moves[replaceIdx] = newMove;
+      } else {
+        mon.moves.push(newMove);
+      }
     },
 
     SYNC_AFTER_BATTLE(state, team) {

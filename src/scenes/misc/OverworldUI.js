@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { textBox, toast, EventBus, createInputManager, getInputManager, Action } from '@Utilities';
+import ChoicePrompt from '@Utilities/ChoicePrompt.js';
 import { PauseMenu } from '@Objects';
 import { gameState, saveGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
@@ -325,6 +326,62 @@ export default class extends Phaser.Scene {
           }
           this.registry.set('player_input', true);
         },
+      });
+    });
+
+    // ─── Script teach-move interactive flow ───────────────────────────────
+    this.game.events.on('overworld-teach-move', ({ pid, move, pp }) => {
+      const mon = store.state.party.list.find(m => m.pid === pid);
+      if (!mon) { this.game.events.emit('overworld-teach-move-complete'); return; }
+
+      let monName = 'Pokémon';
+      try {
+        const entry = new Pokedex(GAMES.POKEMON_FIRE_RED).getPokemonById(mon.species);
+        monName = (entry?.species ?? monName).replace(/\b\w/g, c => c.toUpperCase());
+      } catch { /* keep default */ }
+
+      if (this.pauseMenu.visible) this.pauseMenu.close();
+      this.registry.set('player_input', false);
+
+      const finish = () => {
+        this.registry.set('player_input', true);
+        this.game.events.emit('overworld-teach-move-complete');
+      };
+
+      this.game.events.emit('textbox-changedata', `${monName} wants to learn ${move}!`);
+      this.game.events.once('textbox-disable', () => {
+
+        if (mon.moves.length < 4) {
+          store.commit('party/REPLACE_MOVE', { pid, move, pp, replaceIdx: -1 });
+          this.game.events.emit('textbox-changedata', `${monName} learned ${move}!`);
+          this.game.events.once('textbox-disable', finish);
+          return;
+        }
+
+        this.game.events.emit('textbox-changedata',
+          `But ${monName} already knows four moves!\nShould a move be forgotten and replaced with ${move}?`);
+        this.game.events.once('textbox-disable', () => {
+          new ChoicePrompt(this, ['YES', 'NO'], (yn) => {
+            if (yn !== 0) {
+              this.game.events.emit('textbox-changedata', `${move} was not learned.`);
+              this.game.events.once('textbox-disable', finish);
+              return;
+            }
+            const moveNames = mon.moves.map(m => m.name).concat(['CANCEL']);
+            new ChoicePrompt(this, moveNames, (choice) => {
+              if (choice === moveNames.length - 1) {
+                this.game.events.emit('textbox-changedata', `${move} was not learned.`);
+                this.game.events.once('textbox-disable', finish);
+                return;
+              }
+              const forgotten = mon.moves[choice].name;
+              store.commit('party/REPLACE_MOVE', { pid, move, pp, replaceIdx: choice });
+              this.game.events.emit('textbox-changedata',
+                `1, 2, and... Poof!\n${monName} forgot ${forgotten}.\n\nAnd...\n${monName} learned ${move}!`);
+              this.game.events.once('textbox-disable', finish);
+            });
+          });
+        });
       });
     });
 

@@ -4,6 +4,7 @@ import Items from '@Objects/items/index.js';
 import * as Tile from '@Objects/Tile.js';
 import { getValue, EventBus } from '@Utilities';
 import { gameState } from '@Data/gameState.js';
+import store from '../store/index.js';
 import Tileset from '@Tileset';
 import { MAP_REGISTRY } from '@Maps';
 
@@ -16,9 +17,9 @@ const TILESET_REGISTRY = {
   'gen3_outside':       { url: Tileset.gen3outside,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'rse_inside':         { url: Tileset.rse_inside,    frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'rse_outside':        { url: Tileset.rse_outside,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'kanto':              { url: Tileset.kanto_map,     frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'kanto_common':       { url: Tileset.kanto_common,  frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'kanto_outside':      { url: Tileset.kanto_outside, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'kanto_inside':       { url: Tileset.kanto_inside,  frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'pallet_town_inside': { url: Tileset.pallet_inside, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
 };
 
 /**
@@ -30,7 +31,9 @@ const TILESET_JSON_REGISTRY = {
   'gen3_outside':  Tileset.gen3outside_json,
   'rse_inside':    Tileset.rse_inside_json,
   'rse_outside':   Tileset.rse_outside_json,
-  'kanto_inside':  Tileset.kanto_inside_json,
+  'kanto_common':   Tileset.kanto_common_json,
+  'kanto_outside':  Tileset.kanto_outside_json,
+  'kanto_inside':   Tileset.kanto_inside_json,
 };
 
 /**
@@ -99,6 +102,7 @@ export default class extends Phaser.Scene {
     this.mapPlugins['item'] = new Interactables.Item(this);
     this.mapPlugins['strengthboulder'] = new Interactables.StrengthBoulder(this);
     this.mapPlugins['trainer'] = new Interactables.Trainer(this);
+    this.mapPlugins['script']  = new Interactables.Script(this);
   }
 
   /**
@@ -583,6 +587,14 @@ export default class extends Phaser.Scene {
           y: enterTile.y,
           charLayer: this.gridEngine.getCharLayer('player'),
         };
+        if (!this.config?.inside) {
+          store.commit('game/SET_LAST_OUTDOOR_LOCATION', {
+            map:       this.config.mapName,
+            x:         enterTile.x,
+            y:         enterTile.y,
+            charLayer: this.gridEngine.getCharLayer('player'),
+          });
+        }
       });
 
     this.events.once('shutdown', () => this._playerTileSub?.unsubscribe());

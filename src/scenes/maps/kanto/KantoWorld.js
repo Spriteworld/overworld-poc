@@ -1,7 +1,8 @@
 import { GameMap, Tile } from '@Objects';
 import { MAP_REGISTRY, KantoMap, WORLD_FILE, WORLD_MAP_KEYS } from '@Maps';
 import { gameState } from '@Data/gameState.js';
-import kantoTilesetJson from '@Tileset/maps/kanto.json';
+import kantoCommonJson from '@Tileset/maps/kanto_common.json';
+import kantoOutsideJson from '@Tileset/maps/kanto_outside.json';
 import gen3outsideTilesetJson from '@Tileset/gen3_outside.json';
 import Tileset from '@Tileset';
 
@@ -18,7 +19,8 @@ const KANTO_OFFSET_Y = 7616;
  * tilemap so Phaser can parse tile properties without fetching external files.
  */
 const TILESET_BY_SOURCE = {
-  '../../tileset/maps/kanto.json':  kantoTilesetJson,
+  '../../tileset/maps/kanto_common.json':  kantoCommonJson,
+  '../../tileset/maps/kanto_outside.json': kantoOutsideJson,
   '../../tileset/gen3_outside.json': gen3outsideTilesetJson,
 };
 

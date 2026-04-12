@@ -14,16 +14,25 @@ export default class {
     const collected = store.state.overworld.collectedItems;
     const itemObjs = this.scene.findInteractions('item');
     itemObjs.forEach(obj => {
-      if (collected.includes(obj.name)) return;
+      if (collected.includes(obj.name)){ 
+        return;
+      }
+
       const itemName = getPropertyValue(obj.properties, 'item');
-      if (!itemName) return;
-      new Items.Pokeball({
+      if (!itemName){
+        return;
+      }
+
+      let item = new Items.Pokeball({
         scene: this.scene,
         x: obj.x / Tile.WIDTH,
         y: obj.y / Tile.HEIGHT,
         item: itemName,
         overworldKey: obj.name,
       });
+      if (getPropertyValue(obj.properties, 'hidden')) {
+        item.setVisible(false);
+      }
     });
   }
 

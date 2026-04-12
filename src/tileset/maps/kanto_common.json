@@ -1,12 +1,12 @@
 {
- "columns": 8,
- "image": "kanto_inside.png",
- "imageheight": 512,
- "imagewidth": 256,
+ "columns": 16,
+ "image": "kanto_common.png",
+ "imageheight": 192,
+ "imagewidth": 512,
  "margin": 0,
- "name": "kanto_inside",
+ "name": "kanto_common",
  "spacing": 0,
- "tilecount": 128,
+ "tilecount": 96,
  "tiledversion": "1.12.1",
  "tileheight": 32,
  "tilewidth": 32,
@@ -17,7 +17,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -37,7 +37,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -47,7 +47,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -57,17 +57,12 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 5,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
      "value": false
+    },
+    {
+     "name": "type",
+     "type": "int",
+     "value": 1
     }
    ]
   },
@@ -87,7 +82,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -97,7 +92,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -107,17 +102,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 10,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -127,7 +112,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -137,7 +122,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -147,7 +132,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -162,7 +147,7 @@
    ]
   },
   {
-   "id": 15,
+   "id": 16,
    "properties": [
     {
      "name": "ge_collide",
@@ -172,22 +157,12 @@
    ]
   },
   {
-   "id": 16,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
    "id": 17,
    "properties": [
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -197,7 +172,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -207,7 +182,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -217,7 +192,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -227,7 +202,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -237,7 +212,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -247,7 +222,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -257,7 +232,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -267,7 +242,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -277,7 +252,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -297,7 +272,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -337,7 +312,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -347,7 +322,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -417,7 +392,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -427,7 +402,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -467,7 +442,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -477,7 +452,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -497,7 +472,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -507,7 +482,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -567,7 +542,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -577,7 +552,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -587,7 +562,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -647,7 +622,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -657,7 +632,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -687,7 +662,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -697,7 +672,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -737,7 +712,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -747,7 +722,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -767,7 +742,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -797,7 +772,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -852,477 +827,7 @@
    ]
   },
   {
-   "id": 84,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 85,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_down",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_up",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 86,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 87,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_down",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_up",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
    "id": 88,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 89,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 90,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 91,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 92,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 93,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 94,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 95,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 96,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 97,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 98,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 99,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 100,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 101,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 102,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 103,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 104,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 105,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 106,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 107,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 108,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 109,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 110,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 111,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 112,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 113,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 114,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 115,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 116,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 117,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 118,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 119,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 120,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 121,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 122,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 123,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 124,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
-  },
-  {
-   "id": 125,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 126,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 127,
    "properties": [
     {
      "name": "ge_collide",

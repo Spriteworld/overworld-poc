@@ -6,6 +6,7 @@ export default class extends GameMap {
     super({
       mapName: 'ViridianForest',
       map: ViridianForestMap,
+      inside: true,
       active: false,
       visible: false,
     });

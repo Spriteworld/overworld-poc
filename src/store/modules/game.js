@@ -16,7 +16,8 @@ export default {
     playtime:     0,           // accumulated seconds from previous sessions
     sessionStart: Date.now(),
     money:        3000,
-    healLocation: null,        // { map, x, y, charLayer } — set when player heals at a Pokémon Center
+    healLocation:        null,  // { map, x, y, charLayer } — set when player heals at a Pokémon Center
+    lastOutdoorLocation: null, // { map, x, y, charLayer } — updated on every step on outdoor maps
     textSpeed:    'normal',    // 'normal' | 'fast' | 'instant'
   }),
 
@@ -64,6 +65,10 @@ export default {
 
     SET_HEAL_LOCATION(state, location) {
       state.healLocation = location; // { map, x, y, charLayer }
+    },
+
+    SET_LAST_OUTDOOR_LOCATION(state, location) {
+      state.lastOutdoorLocation = location; // { map, x, y, charLayer }
     },
 
     LOAD(state, saved) {

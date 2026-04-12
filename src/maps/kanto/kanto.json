@@ -3509,6 +3509,48 @@
                  "width":64,
                  "x":2752,
                  "y":5248
+                }, 
+                {
+                 "height":32,
+                 "id":94,
+                 "name":"",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"script",
+                         "type":"list",
+                         "value":[
+                                {
+                                 "propertytype":"cmd-disable_input",
+                                 "type":"class",
+                                 "value":
+                                    {
+
+                                    }
+                                }, 
+                                {
+                                 "propertytype":"cmd-show_exclamation",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "target":"player"
+                                    }
+                                }, 
+                                {
+                                 "propertytype":"cmd-text",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "text":"OAK: Hey Wait! Dont go out!"
+                                    }
+                                }]
+                        }],
+                 "rotation":0,
+                 "type":"trigger",
+                 "visible":true,
+                 "width":64,
+                 "x":2560,
+                 "y":8928
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -4185,7 +4227,7 @@
          "y":0
         }],
  "nextlayerid":19,
- "nextobjectid":94,
+ "nextobjectid":95,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",

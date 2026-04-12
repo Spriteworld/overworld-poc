@@ -6,6 +6,7 @@ export default class extends GameMap {
     super({
       mapName: 'ProfLab',
       map: ProfLabMap,
+      inside: true,
       active: false,
       visible: false,
     });

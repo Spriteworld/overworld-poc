@@ -15,6 +15,7 @@ import CutTree from '@Objects/interactables/cuttree.js';
 import Item from '@Objects/interactables/item.js';
 import StrengthBoulder from '@Objects/interactables/strengthboulder.js';
 import Trainer from '@Objects/interactables/trainer.js';
+import Script from '@Objects/interactables/script.js';
 
 export default {
   Computer,
@@ -34,4 +35,5 @@ export default {
   Item,
   StrengthBoulder,
   Trainer,
+  Script,
 }

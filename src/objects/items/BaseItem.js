@@ -1,6 +1,6 @@
 import MovableSprite from '@Objects/characters/MovableSprite';
 import { Tile } from '@Objects';
-import gen3ToKanto from '@Maps/kanto/gen3_to_kanto.json';
+import gen3ToKantoCommon from '@Maps/kanto/gen3_to_kanto_common.json';
 
 export default class BaseItem extends MovableSprite {
   /**
@@ -17,11 +17,12 @@ export default class BaseItem extends MovableSprite {
    * @param {string} config.type - Interactable type string (e.g. `'cut-tree'`).
    */
   constructor(config) {
-    // tileId is a gen3_outside frame (0-based). Convert to kanto frame via GID map.
-    const gen3Gid = config.tileId + 1;
-    const kantoGid = gen3ToKanto[gen3Gid];
-    config.texture = 'kanto';
-    config.frame = kantoGid != null ? kantoGid - 1 : config.tileId;
+    // tileId is a gen3_outside frame (0-based). ITEM_TILE_IDS are always in
+    // kanto_common, so both outdoor and indoor scenes use the same texture/frame.
+    const gen3Gid  = config.tileId + 1;
+    const kantoGid = gen3ToKantoCommon[gen3Gid];
+    config.texture = 'kanto_common';
+    config.frame   = kantoGid != null ? kantoGid - 1 : config.tileId;
     super(config);
     
     this.setOrigin(0);
