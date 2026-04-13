@@ -786,7 +786,7 @@
         {
           "height": 32,
           "id": 5,
-          "name": "Mom",
+          "name": "PalletMom",
           "opacity": 1,
           "properties": [
             {
@@ -795,19 +795,50 @@
               "value": "left"
             },
             {
-              "name": "text",
-              "type": "string",
-              "value": "Oh! You should rest!"
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-if_flag",
+                  "type": "class",
+                  "value": {
+                    "else": [
+                      {
+                        "propertytype": "cmd-text",
+                        "type": "class",
+                        "value": {
+                          "text": "Oh {player}, Prof. Oak was looking for you!"
+                        }
+                      }
+                    ],
+                    "key": "has_pokemon",
+                    "then": [
+                      {
+                        "propertytype": "cmd-text",
+                        "type": "class",
+                        "value": {
+                          "text": "Oh! You should rest!"
+                        }
+                      },
+                      {
+                        "propertytype": "cmd-heal_party",
+                        "type": "class",
+                        "value": {}
+                      }
+                    ]
+                  }
+                }
+              ]
             },
             {
-              "name": "text-onComplete",
-              "type": "string",
-              "value": "heal:true"
+              "name": "script-repeatable",
+              "type": "bool",
+              "value": true
             },
             {
               "name": "texture",
               "type": "string",
-              "value": "ace_trainer"
+              "value": "mom"
             }
           ],
           "rotation": 0,

@@ -2,6 +2,7 @@ import Debug from '@Data/debug.js';
 import { Tile, PkmnOverworld } from '@Objects';
 import { getValue, getPropertyValue, remapProps, Vector2 } from '@Utilities';
 import Tileset from '@Tileset';
+import ScriptRunner from '../../utilities/ScriptRunner.js';
 
 export default class {
   constructor(scene) {
@@ -159,6 +160,26 @@ export default class {
         text,
         tile.obj
       );
+
+      const script = this.scene.getPropertyFromTile(tile.obj, 'script');
+      if (script) {
+        let commands;
+        if (Array.isArray(script)) {
+          commands = script;
+        } else {
+          try {
+            commands = JSON.parse(script);
+          } catch (e) {
+            console.warn(`[Interactables::pokemon] Invalid script JSON for "${tile.obj.name}":`, e.message);
+            return;
+          }
+        }
+        if (Array.isArray(commands)) {
+          this.scene.game.events.once('textbox-disable', () => {
+            new ScriptRunner(this.scene, [...commands]).run();
+          });
+        }
+      }
     };
     this.scene.game.events.on('interact-with-obj', this._onInteract);
   }

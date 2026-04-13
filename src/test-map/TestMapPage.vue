@@ -87,7 +87,7 @@
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import PhaserGame from '@/PhaserGame.vue';
 import MobileControls from '@/components/MobileControls.vue';
-import { setStartScene } from '@/data/startScene.js';
+import { setStartScene, clearStartScene } from '@/data/startScene.js';
 import { setStartFlags, clearStartFlags } from '@/data/startFlags.js';
 import MAPS from './maps.js';
 
@@ -114,7 +114,7 @@ function launch(map) {
 function close() {
   active.value = null;
   clearStartFlags();
-  setStartScene('Kanto');
+  clearStartScene();
   history.replaceState(null, '', window.location.pathname + window.location.search);
 }
 

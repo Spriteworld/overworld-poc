@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import ScriptRunner from '@Utilities/ScriptRunner.js';
 import Interactables from '@Objects/interactables/index.js';
 import Items from '@Objects/items/index.js';
 import * as Tile from '@Objects/Tile.js';
@@ -598,6 +599,12 @@ export default class extends Phaser.Scene {
       });
 
     this.events.once('shutdown', () => this._playerTileSub?.unsubscribe());
+
+    if (this.config._pendingScript?.length) {
+      const queue = [...this.config._pendingScript];
+      delete this.config._pendingScript;
+      new ScriptRunner(this, queue).run();
+    }
   }
 
 }

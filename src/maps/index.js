@@ -1,6 +1,8 @@
 import TestMap from './random/test.json';
 import SkylandMap from './random/skyland.json';
 import BaseMap from './random/base.json';
+
+import SpriteworldMap from './spriteworld/spriteworld.json';
 import ForestMap from './random/forest.json';
 import VermillionGymMap from './random/vermillion_gym.json';
 import TurffieldGymMap from './random/turffield_gym.json';
@@ -95,6 +97,7 @@ export const WORLD_MAP_KEYS = {
 
 export {
     TestMap,SkylandMap,BaseMap,ForestMap,
+    SpriteworldMap,
     VermillionGymMap, TurffieldGymMap,
 
     // kanto
@@ -135,6 +138,7 @@ export const INSIDE_MAP_SCENE_KEYS = [
 ];
 
 export const MAP_REGISTRY = {
+  'Spriteworld':  SpriteworldMap,
   'Kanto':        KantoMap,
   'PalletTown':   PalletTownMap,
   'HeroHouseF1':  HeroHouseF1Map,

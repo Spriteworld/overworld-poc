@@ -1606,8 +1606,8 @@
                  "type":"playerSpawn",
                  "visible":true,
                  "width":32,
-                 "x":992,
-                 "y":960
+                 "x":160,
+                 "y":1376
                 }, 
                 {
                  "height":32,
@@ -2240,8 +2240,8 @@
                  "type":"trainer",
                  "visible":true,
                  "width":32,
-                 "x":288,
-                 "y":1408
+                 "x":64,
+                 "y":896
                 }, 
                 {
                  "height":32,
@@ -2735,6 +2735,190 @@
                  "width":32,
                  "x":672,
                  "y":1184
+                }, 
+                {
+                 "height":32,
+                 "id":186,
+                 "name":"oak",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"movement-behavior",
+                         "type":"string",
+                         "value":"match-movement"
+                        }, 
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"professor_oak"
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":224,
+                 "y":1376
+                }, 
+                {
+                 "height":32,
+                 "id":187,
+                 "name":"gary",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"movement-behavior",
+                         "type":"string",
+                         "value":"match-movement"
+                        }, 
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"gary"
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":288,
+                 "y":1376
+                }, 
+                {
+                 "height":32,
+                 "id":188,
+                 "name":"ace",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"movement-behavior",
+                         "type":"string",
+                         "value":"match-movement"
+                        }, 
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"ace_trainer"
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":352,
+                 "y":1376
+                }, 
+                {
+                 "height":32,
+                 "id":189,
+                 "name":"bird_keeper",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"movement-behavior",
+                         "type":"string",
+                         "value":"match-movement"
+                        }, 
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"bird_keeper"
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":160,
+                 "y":1472
+                }, 
+                {
+                 "height":32,
+                 "id":190,
+                 "name":"black_belt",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"movement-behavior",
+                         "type":"string",
+                         "value":"match-movement"
+                        }, 
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"black_belt"
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":224,
+                 "y":1472
+                }, 
+                {
+                 "height":32,
+                 "id":191,
+                 "name":"fisherman",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"movement-behavior",
+                         "type":"string",
+                         "value":"match-movement"
+                        }, 
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"fisherman"
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":288,
+                 "y":1472
+                }, 
+                {
+                 "height":32,
+                 "id":192,
+                 "name":"forester",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"movement-behavior",
+                         "type":"string",
+                         "value":"match-movement"
+                        }, 
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"forester"
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":352,
+                 "y":1472
+                }, 
+                {
+                 "height":32,
+                 "id":193,
+                 "name":"leaf",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"movement-behavior",
+                         "type":"string",
+                         "value":"match-movement"
+                        }, 
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"leaf"
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":416,
+                 "y":1376
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -2743,7 +2927,7 @@
          "y":0
         }],
  "nextlayerid":20,
- "nextobjectid":186,
+ "nextobjectid":194,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",

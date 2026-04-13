@@ -16,6 +16,7 @@ import leaf from './leaf.png';
 import leaf_bike from './leaf_bike.png';
 import leaf_run from './leaf_run.png';
 import leaf_surf from './leaf_surf.png';
+import mom from './mom.png';
 import misty from './misty.png';
 import pheobe from './pheobe.png';
 import poke_kid from './poke_kid.png';
@@ -56,6 +57,7 @@ export default {
 
   // npc
   professor_oak,
+  mom,
 
   // trainers
   ace_trainer,

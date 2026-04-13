@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Tile, Interactables, GameMap, Direction } from '@Objects';
-import { getPropertyValue } from '@Utilities';
+import { getPropertyValue, checkOnlyIf } from '@Utilities';
 import store from '../../store/index.js';
 
 export default class {
@@ -153,6 +153,8 @@ export default class {
       console.warn('[Warp] warp tile has no target scene (warp property missing or empty)');
       return;
     }
+
+    if (!checkOnlyIf(getPropertyValue(warpProps, 'only_if'), store.state.game.gameFlags)) return;
 
     if (char.config.type !== 'player') {
       if (this.scene.registry.get('map') === warpTarget) {

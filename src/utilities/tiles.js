@@ -41,10 +41,30 @@ function Vector2(x, y) {
   return new Phaser.Math.Vector2(parseInt(x), parseInt(y));
 }
 
+/**
+ * Evaluate an `only_if` class property against a gameFlags map.
+ * Returns true (allow) when the condition passes or is not set.
+ *
+ * only_if shape: { type: 'flag'|'variable', comparison: 'eq'|'neq', value: string[] }
+ *   type='flag',  comparison='eq'  → all named flags must be truthy
+ *   type='flag',  comparison='neq' → all named flags must be falsy
+ */
+function checkOnlyIf(onlyIf, gameFlags) {
+  if (!onlyIf || !Array.isArray(onlyIf.value) || !onlyIf.value.length) return true;
+  if (onlyIf.type === 'flag' || !onlyIf.type) {
+    return onlyIf.value.every(name => {
+      const val = !!gameFlags[name];
+      return onlyIf.comparison === 'neq' ? !val : val;
+    });
+  }
+  return true; // unknown type → allow
+}
+
 export {
   getPropertyValue,
   getValue,
   remapProps,
   generateTileCoords,
-  Vector2
+  Vector2,
+  checkOnlyIf
 };

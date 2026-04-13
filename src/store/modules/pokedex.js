@@ -41,5 +41,9 @@ export default {
         Object.assign(state.entries, saved.pokedex);
       }
     },
+
+    RESET(state) {
+      state.entries = defaultEntries();
+    },
   },
 };

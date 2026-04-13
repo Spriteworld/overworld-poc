@@ -1,5 +1,6 @@
 import store from '../../store/index.js';
 import ScriptRunner from '../../utilities/ScriptRunner.js';
+import { checkOnlyIf } from '@Utilities';
 
 /**
  * Script interactable plugin.
@@ -27,19 +28,24 @@ export default class Script {
       console.log('Interactables::script');
     }
 
-    const objs = this.scene.findInteractions('scriptable');
+    const objs = this.scene.findInteractions('trigger');
     if (!objs.length) return;
 
     for (const obj of objs) {
-      const scriptText = this.scene.getPropertyFromTile(obj, 'script');
-      if (!scriptText) continue;
+      const script = this.scene.getPropertyFromTile(obj, 'script');
+      if (!script) continue;
 
+      // script is a Tiled list property (array), but accept a JSON string too.
       let commands;
-      try {
-        commands = JSON.parse(scriptText);
-      } catch (e) {
-        console.warn(`[Script] Invalid JSON for object "${obj.name}":`, e.message);
-        continue;
+      if (Array.isArray(script)) {
+        commands = script;
+      } else {
+        try {
+          commands = JSON.parse(script);
+        } catch (e) {
+          console.warn(`[Script] Invalid JSON for object "${obj.name}":`, e.message);
+          continue;
+        }
       }
       if (!Array.isArray(commands)) {
         console.warn(`[Script] Script for object "${obj.name}" must be a JSON array.`);
@@ -48,18 +54,19 @@ export default class Script {
 
       const once    = !!this.scene.getPropertyFromTile(obj, 'once');
       const trigger = this.scene.getPropertyFromTile(obj, 'trigger') ?? 'interact';
+      const onlyIf  = this.scene.getPropertyFromTile(obj, 'only_if') ?? null;
 
       // Register as interactive tile (visible debug outline uses purple).
       this.scene.interactTile(this.scene.game.config.tilemap, obj, 0x9040d0);
 
-      this._entries.push({ obj, commands, once, trigger });
+      this._entries.push({ obj, commands, once, trigger, onlyIf });
     }
   }
 
   event() {
     // ── Interact trigger ────────────────────────────────────────────────────
     this._onInteract = (tile) => {
-      if (tile.obj.type !== 'scriptable') return;
+      if (tile.obj.type !== 'trigger') return;
       const entry = this._entries.find(e => e.obj === tile.obj && e.trigger === 'interact');
       if (!entry) return;
       this._run(entry);
@@ -71,12 +78,15 @@ export default class Script {
     if (enterEntries.length && this.scene.gridEngine) {
       this._enterSub = this.scene.gridEngine
         .positionChangeFinished()
-        .subscribe(({ charId, toPosition }) => {
+        .subscribe(({ charId, enterTile }) => {
           if (charId !== 'player') return;
           for (const entry of enterEntries) {
             const tx = Math.floor(entry.obj.x / 32);
             const ty = Math.floor(entry.obj.y / 32);
-            if (toPosition.x === tx && toPosition.y === ty) {
+            const tw = Math.max(1, Math.floor((entry.obj.width  ?? 32) / 32));
+            const th = Math.max(1, Math.floor((entry.obj.height ?? 32) / 32));
+            if (enterTile.x >= tx && enterTile.x < tx + tw &&
+                enterTile.y >= ty && enterTile.y < ty + th) {
               this._run(entry);
             }
           }
@@ -96,6 +106,7 @@ export default class Script {
   // ─── Private ──────────────────────────────────────────────────────────────
 
   _run(entry) {
+    if (!checkOnlyIf(entry.onlyIf, store.state.game.gameFlags)) return;
     if (entry.once) {
       const flag = `script_done_${entry.obj.name}`;
       if (store.state.game.gameFlags[flag]) return;

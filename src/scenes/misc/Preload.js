@@ -63,9 +63,10 @@ export default class extends Phaser.Scene {
     });
     this.load.spritesheet('animated_grass', Tileset.animated_grass, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
     this.load.spritesheet('animation', Tileset.animation_sheet, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
+    this.load.spritesheet('gen3_inside', Tileset.gen3inside, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
+    this.load.spritesheet('gen3_outside', Tileset.gen3outside, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
 
     this.preloadTrainers();
-    this.preloadPokemon();
 
     Object.keys(Scenes)
       .filter(scene => scene !== 'Preload')
@@ -81,13 +82,15 @@ export default class extends Phaser.Scene {
   }
 
   create () {
-    loadGame();
+    this.createTrainerAnimations();
 
     const startFlags = getStartFlags();
     if (startFlags) {
       Object.assign(this.game.config.gameFlags, startFlags);
       clearStartFlags();
     }
+
+    loadGame();
 
     if (this.game.config.gameFlags.has_bike) {
       const hasBicycle = store.state.bag.keyItems.some(e => e.name === 'Bicycle');
@@ -96,22 +99,36 @@ export default class extends Phaser.Scene {
       }
     }
 
-    const savedTile = store.state.game.playerTile;
-    const playerLocation = (savedTile && (savedTile.x || savedTile.y))
-      ? { x: savedTile.x, y: savedTile.y, charLayer: savedTile.charLayer }
-      : {};
-    const startScene = store.state.game.currentMap || getStartScene() || getGameDef().overworldScene;
-    this.scene.start(startScene, { playerLocation });
+    const loadMap = import.meta.env.VITE_LOAD_MAP || '';
+    const skipIntro = loadMap || getStartScene() || import.meta.env.VITE_SKIP_INTRO === 'true';
 
-    if (this.game.config.debug.time) {
-      this.scene.start('TimeOverlay');
-      this.scene.bringToTop('TimeOverlay');
+    if (loadMap !== '') {
+      console.log('Loading map from env variable:', loadMap);
+      this.scene.start(loadMap);
+      this.scene.start('OverworldUI');
+      this.scene.bringToTop('OverworldUI');
+      return;
     }
 
-    this.scene.start('OverworldUI');
-    this.scene.bringToTop('OverworldUI');
-    this.createTrainerAnimations();
-    this.preloadPokemonAnimations();
+
+    if (skipIntro) {
+      const savedTile = store.state.game.playerTile;
+      const playerLocation = (savedTile && (savedTile.x || savedTile.y))
+        ? { x: savedTile.x, y: savedTile.y, charLayer: savedTile.charLayer }
+        : {};
+      const startScene = loadMap || getStartScene() || store.state.game.currentMap || getGameDef().overworldScene;
+      this.scene.start(startScene, { playerLocation });
+
+      if (this.game.config.debug.time) {
+        this.scene.start('TimeOverlay');
+        this.scene.bringToTop('TimeOverlay');
+      }
+
+      this.scene.start('OverworldUI');
+      this.scene.bringToTop('OverworldUI');
+    } else {
+      this.scene.start('NintendoLogo');
+    }
   }
 
   preloadTrainers() {
@@ -123,10 +140,10 @@ export default class extends Phaser.Scene {
     }
     Object.keys(Tileset.trainers)
       .forEach((name) => {
-        // console.log(name.toLowerCase(), Tileset.trainers[name]);
+        console.log(name.toLowerCase(), Tileset.trainers[name]);
         this.load.spritesheet(name.toLowerCase(), Tileset.trainers[name], {
           frameWidth: Tile.WIDTH,
-          frameHeight: 42
+          frameHeight: 48
         });
       });
   }
@@ -147,72 +164,5 @@ export default class extends Phaser.Scene {
         repeat: -1
       });
     });
-  }
-
-  preloadPokemon() {
-    if (!this.enableOWPokemon) {
-      return;
-    }
-    if (this.game.config.debug.console.preload) {
-      console.log('Preload::preloadPokemon');
-    }
-
-    Object.keys(Tileset.pokemon)
-      .forEach(name => {
-        let pkmn_dimensions = Tileset.ow_pokemon_dimensions.default[name];
-        if (pkmn_dimensions === undefined) {
-          console.error('Missing dimensions for', name, Tileset.pokemon[name]);
-          return;
-        }
-        this.load.spritesheet(name, Tileset.pokemon[name], {
-          frameWidth: pkmn_dimensions.width / 4,
-          frameHeight: pkmn_dimensions.height / 4
-        });
-      })
-    ;
-
-    Object.keys(Tileset.pokemon_shiny)
-      .forEach(name => {       
-        let pkmn_dimensions = Tileset.ow_pokemon_shiny_dimensions.default[name];
-        if (pkmn_dimensions === undefined) {
-          console.error('Missing dimensions for', name, Tileset.pokemon_shiny[name]);
-          return;
-        }
-        this.load.spritesheet(name, Tileset.pokemon_shiny[name], {
-          frameWidth: pkmn_dimensions.width / 4,
-          frameHeight: pkmn_dimensions.height / 4
-        });
-      })
-    ;
-  }
-
-  preloadPokemonAnimations() {
-    if (!this.enableOWPokemon) {
-      return;
-    }
-    if (this.game.config.debug.console.preload) {
-      console.log('Preload::loadPokemonAnimations');
-    }
-
-    Object.keys(Tileset.pokemon)
-      .forEach(name => {
-        this.anims.create({
-          key: name+'-spin',
-          frames: this.anims.generateFrameNumbers(name, { frames: [0, 4, 12, 8] }),
-          frameRate: 7,
-          repeat: -1
-        });
-      })
-    ;
-    Object.keys(Tileset.pokemon_shiny)
-      .forEach(name => {
-        this.anims.create({
-          key: name+'-spin',
-          frames: this.anims.generateFrameNumbers(name, { frames: [0, 4, 12, 8] }),
-          frameRate: 7,
-          repeat: -1
-        });
-      })
-    ;
   }
 }

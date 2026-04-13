@@ -131,6 +131,11 @@ export default {
       }
     },
 
+    RESET(state) {
+      state.list = cloneParty(defaultParty);
+      state.box  = [];
+    },
+
     SYNC_AFTER_BATTLE(state, team) {
       team.forEach(snapshot => {
         const entry = state.list.find(p => p.pid === snapshot.pid);

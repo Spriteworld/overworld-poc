@@ -24,6 +24,931 @@
             "valuesAsFlags": false
         },
         {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 35,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "disable_input"
+                }
+            ],
+            "name": "cmd-disable_input",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 34,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "enable_input"
+                }
+            ],
+            "name": "cmd-enable_input",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ff806000",
+            "drawFill": true,
+            "id": 58,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "escape_rope"
+                }
+            ],
+            "name": "cmd-escape_rope",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ff40a0ff",
+            "drawFill": true,
+            "id": 82,
+            "members": [
+                {
+                    "name": "character1",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "character2",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "face_char"
+                }
+            ],
+            "name": "cmd-face_char",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 31,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "set_flag"
+                },
+                {
+                    "name": "key",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "value",
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "name": "cmd-flag",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 29,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "give_item"
+                },
+                {
+                    "name": "item",
+                    "propertyType": "item",
+                    "type": "class",
+                    "value": {
+                    }
+                },
+                {
+                    "name": "qty",
+                    "type": "int",
+                    "value": 1
+                }
+            ],
+            "name": "cmd-give_item",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 33,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "give_pokemon"
+                },
+                {
+                    "name": "nickname",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "pokemon",
+                    "propertyType": "encounter-pokemon",
+                    "type": "class",
+                    "value": {
+                    }
+                }
+            ],
+            "name": "cmd-give_pokemon",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 41,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "heal_party"
+                }
+            ],
+            "name": "cmd-heal_party",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 32,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "if_flag"
+                },
+                {
+                    "name": "else",
+                    "type": "list",
+                    "value": [
+                    ]
+                },
+                {
+                    "name": "key",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "then",
+                    "type": "list",
+                    "value": [
+                    ]
+                }
+            ],
+            "name": "cmd-if_flag",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ff004080",
+            "drawFill": true,
+            "id": 54,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "if_party_count"
+                },
+                {
+                    "name": "count",
+                    "type": "int",
+                    "value": 1
+                },
+                {
+                    "name": "else",
+                    "type": "list",
+                    "value": [
+                    ]
+                },
+                {
+                    "name": "op",
+                    "propertyType": "compare-op",
+                    "type": "string",
+                    "value": "eq"
+                },
+                {
+                    "name": "then",
+                    "type": "list",
+                    "value": [
+                    ]
+                }
+            ],
+            "name": "cmd-if_party_count",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 40,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "if_var"
+                },
+                {
+                    "name": "else",
+                    "type": "list",
+                    "value": [
+                    ]
+                },
+                {
+                    "name": "key",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "then",
+                    "type": "list",
+                    "value": [
+                    ]
+                },
+                {
+                    "name": "value",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "cmd-if_var",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffff4000",
+            "drawFill": true,
+            "id": 45,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "knockback"
+                },
+                {
+                    "name": "direction",
+                    "propertyType": "knockback-direction",
+                    "type": "string",
+                    "value": "away_from_player"
+                },
+                {
+                    "name": "source",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "target",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "tiles",
+                    "type": "int",
+                    "value": 1
+                }
+            ],
+            "name": "cmd-knockback",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 37,
+            "members": [
+                {
+                    "name": "anchor",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "move_npc"
+                },
+                {
+                    "name": "name",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "x",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "y",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "cmd-move_npc",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 36,
+            "members": [
+                {
+                    "name": "anchor",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "move_player"
+                },
+                {
+                    "name": "x",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "y",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "cmd-move_player",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ff804000",
+            "drawFill": true,
+            "id": 53,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "move_to_box"
+                },
+                {
+                    "name": "slot",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "cmd-move_to_box",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 69,
+            "members": [
+                {
+                    "name": "character1",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "character2",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "type": "string",
+                    "value": "movement-behavior"
+                },
+                {
+                    "name": "value",
+                    "propertyType": "movement-behavior",
+                    "type": "string",
+                    "value": "none"
+                }
+            ],
+            "name": "cmd-movement-behavior",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 30,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "remove_item"
+                },
+                {
+                    "name": "item",
+                    "propertyType": "item",
+                    "type": "class",
+                    "value": {
+                    }
+                },
+                {
+                    "name": "qty",
+                    "type": "int",
+                    "value": 1
+                }
+            ],
+            "name": "cmd-remove_item",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 70,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "set_flag"
+                },
+                {
+                    "name": "key",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "value",
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "name": "cmd-set_flag",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 39,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "set_var"
+                },
+                {
+                    "name": "key",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "value",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "cmd-set_var",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffff8000",
+            "drawFill": true,
+            "id": 44,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "show_exclamation"
+                },
+                {
+                    "name": "target",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "cmd-show_exclamation",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ff0080ff",
+            "drawFill": true,
+            "id": 47,
+            "members": [
+                {
+                    "name": "anchor",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "spawn_npc"
+                },
+                {
+                    "name": "facing",
+                    "propertyType": "facing-direction",
+                    "type": "string",
+                    "value": "down"
+                },
+                {
+                    "name": "name",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "texture",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "x",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "y",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "cmd-spawn_npc",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ff0040c0",
+            "drawFill": true,
+            "id": 55,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "teach_move"
+                },
+                {
+                    "name": "move",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "pp",
+                    "type": "int",
+                    "value": 30
+                },
+                {
+                    "name": "slot",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "cmd-teach_move",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ff00a0ff",
+            "drawFill": true,
+            "id": 57,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "teleport_to_pokecenter"
+                }
+            ],
+            "name": "cmd-teleport_to_pokecenter",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 27,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "text"
+                },
+                {
+                    "name": "text",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "cmd-text",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 38,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "wait_input"
+                }
+            ],
+            "name": "cmd-wait_input",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ff00c0ff",
+            "drawFill": true,
+            "id": 59,
+            "members": [
+                {
+                    "name": "character1",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "character2",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "walk_to_char"
+                },
+                {
+                    "name": "side",
+                    "propertyType": "facing-direction",
+                    "type": "string",
+                    "value": "down"
+                }
+            ],
+            "name": "cmd-walk_to_char",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ff00aaff",
+            "drawFill": true,
+            "id": 83,
+            "members": [
+                {
+                    "name": "anchor",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "character",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "warp_npc"
+                },
+                {
+                    "name": "x",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "y",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "cmd-warp_npc",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ff00c080",
+            "drawFill": true,
+            "id": 56,
+            "members": [
+                {
+                    "name": "anchor",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "warp_player"
+                },
+                {
+                    "name": "layer",
+                    "type": "string",
+                    "value": "ground"
+                },
+                {
+                    "name": "map",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "x",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "y",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "cmd-warp_player",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 28,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "yes_no"
+                },
+                {
+                    "name": "else",
+                    "type": "list",
+                    "value": [
+                    ]
+                },
+                {
+                    "name": "text",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "yes",
+                    "type": "list",
+                    "value": [
+                    ]
+                }
+            ],
+            "name": "cmd-yes_no",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "id": 25,
+            "name": "command-list",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "text",
+                "yes_no",
+                "give_item",
+                "remove_item",
+                "set_flag",
+                "if_flag",
+                "give_pokemon",
+                "enable_input",
+                "disable_input",
+                "move_player",
+                "move_npc",
+                "wait_input",
+                "set_var",
+                "if_var",
+                "heal_party",
+                "show_exclamation",
+                "knockback",
+                "spawn_npc",
+                "move_to_box",
+                "if_party_count",
+                "teach_move",
+                "warp_player",
+                "teleport_to_pokecenter",
+                "escape_rope",
+                "walk_to_char",
+                "movement_behavior",
+                "face_char",
+                "warp_npc",
+                "warp_continue"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "id": 52,
+            "name": "compare-op",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "lt",
+                "lte",
+                "eq",
+                "gte",
+                "gt",
+                "in",
+                "neq",
+                "nin"
+            ],
+            "valuesAsFlags": false
+        },
+        {
             "color": "#ff00aa00",
             "drawFill": true,
             "id": 10,
@@ -169,6 +1094,17 @@
             "valuesAsFlags": false
         },
         {
+            "id": 87,
+            "name": "if-list",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "flag",
+                "variable"
+            ],
+            "valuesAsFlags": false
+        },
+        {
             "color": "#ffaa0000",
             "drawFill": true,
             "id": 11,
@@ -184,6 +1120,13 @@
                     "value": ""
                 },
                 {
+                    "name": "only_if",
+                    "propertyType": "only-if",
+                    "type": "class",
+                    "value": {
+                    }
+                },
+                {
                     "name": "quantity",
                     "type": "int",
                     "value": 1
@@ -196,6 +1139,21 @@
                 "object",
                 "project"
             ]
+        },
+        {
+            "id": 43,
+            "name": "knockback-direction",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "up",
+                "down",
+                "left",
+                "right",
+                "away_from_player",
+                "away_from_npc"
+            ],
+            "valuesAsFlags": false
         },
         {
             "color": "#ffff7f14",
@@ -252,6 +1210,24 @@
             ]
         },
         {
+            "color": "#ff40d0a0",
+            "drawFill": true,
+            "id": 42,
+            "members": [
+                {
+                    "name": "facing-direction",
+                    "propertyType": "facing-direction",
+                    "type": "string",
+                    "value": "down"
+                }
+            ],
+            "name": "location-anchor",
+            "type": "class",
+            "useAs": [
+                "object"
+            ]
+        },
+        {
             "color": "#ffa0a0a4",
             "drawFill": true,
             "id": 17,
@@ -290,6 +1266,18 @@
             ]
         },
         {
+            "id": 60,
+            "name": "movement-behavior",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "none",
+                "match-movement",
+                "mirror-move"
+            ],
+            "valuesAsFlags": false
+        },
+        {
             "color": "#ffff5500",
             "drawFill": true,
             "id": 3,
@@ -299,6 +1287,11 @@
                     "propertyType": "facing-direction",
                     "type": "string",
                     "value": "down"
+                },
+                {
+                    "name": "mirror-target",
+                    "type": "string",
+                    "value": ""
                 },
                 {
                     "name": "move",
@@ -316,9 +1309,28 @@
                     "value": 500
                 },
                 {
+                    "name": "movement-behavior",
+                    "propertyType": "movement-behavior",
+                    "type": "string",
+                    "value": "none"
+                },
+                {
+                    "name": "only_if",
+                    "propertyType": "only-if",
+                    "type": "class",
+                    "value": {
+                    }
+                },
+                {
                     "name": "overworld-texture",
                     "type": "string",
                     "value": ""
+                },
+                {
+                    "name": "script",
+                    "type": "list",
+                    "value": [
+                    ]
                 },
                 {
                     "name": "text",
@@ -340,6 +1352,36 @@
             "type": "class",
             "useAs": [
                 "object"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 85,
+            "members": [
+                {
+                    "name": "comparison",
+                    "propertyType": "compare-op",
+                    "type": "string",
+                    "value": "eq"
+                },
+                {
+                    "name": "type",
+                    "propertyType": "if-list",
+                    "type": "string",
+                    "value": "flag"
+                },
+                {
+                    "name": "value",
+                    "type": "list",
+                    "value": [
+                    ]
+                }
+            ],
+            "name": "only-if",
+            "type": "class",
+            "useAs": [
+                "property"
             ]
         },
         {
@@ -366,6 +1408,19 @@
                     "name": "move-rate",
                     "type": "int",
                     "value": 500
+                },
+                {
+                    "name": "only_if",
+                    "propertyType": "only-if",
+                    "type": "class",
+                    "value": {
+                    }
+                },
+                {
+                    "name": "script",
+                    "type": "list",
+                    "value": [
+                    ]
                 },
                 {
                     "name": "shiny",
@@ -412,17 +1467,6 @@
             ]
         },
         {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 22,
-            "members": [
-            ],
-            "name": "script-tile",
-            "type": "class",
-            "useAs": [
-            ]
-        },
-        {
             "color": "#ffffa0a0",
             "drawFill": true,
             "id": 5,
@@ -454,6 +1498,13 @@
                     "propertyType": "facing-direction",
                     "type": "string",
                     "value": "down"
+                },
+                {
+                    "name": "only_if",
+                    "propertyType": "only-if",
+                    "type": "class",
+                    "value": {
+                    }
                 },
                 {
                     "name": "overworld-texture",
@@ -575,6 +1626,53 @@
             ]
         },
         {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 22,
+            "members": [
+                {
+                    "name": "once",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "only_if",
+                    "propertyType": "only-if",
+                    "type": "class",
+                    "value": {
+                    }
+                },
+                {
+                    "name": "script",
+                    "type": "list",
+                    "value": [
+                    ]
+                },
+                {
+                    "name": "trigger",
+                    "propertyType": "trigger-list",
+                    "type": "string",
+                    "value": "enter"
+                }
+            ],
+            "name": "trigger",
+            "type": "class",
+            "useAs": [
+                "object"
+            ]
+        },
+        {
+            "id": 23,
+            "name": "trigger-list",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "interact",
+                "enter"
+            ],
+            "valuesAsFlags": false
+        },
+        {
             "color": "#ffff00ff",
             "drawFill": true,
             "id": 7,
@@ -583,6 +1681,13 @@
                     "name": "layer",
                     "type": "string",
                     "value": ""
+                },
+                {
+                    "name": "only_if",
+                    "propertyType": "only-if",
+                    "type": "class",
+                    "value": {
+                    }
                 },
                 {
                     "name": "warp",
@@ -627,6 +1732,49 @@
             "useAs": [
                 "object",
                 "project"
+            ]
+        },
+        {
+            "color": "#ff8800ff",
+            "drawFill": true,
+            "id": 84,
+            "members": [
+                {
+                    "name": "anchor",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "warp_continue"
+                },
+                {
+                    "name": "layer",
+                    "type": "string",
+                    "value": "ground"
+                },
+                {
+                    "name": "map",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "x",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "y",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "cmd-warp_continue",
+            "type": "class",
+            "useAs": [
+                "property"
             ]
         }
     ]

@@ -2,26 +2,6 @@
   "compressionlevel": -1,
   "height": 76,
   "infinite": false,
-  "nextlayerid": 6,
-  "nextobjectid": 31,
-  "orientation": "orthogonal",
-  "renderorder": "right-down",
-  "tiledversion": "1.12.1",
-  "tileheight": 32,
-  "tilesets": [
-    {
-      "firstgid": 1,
-      "source": "../../tileset/maps/kanto_common.json"
-    },
-    {
-      "firstgid": 90,
-      "source": "../../tileset/maps/kanto_inside.json"
-    }
-  ],
-  "tilewidth": 32,
-  "type": "map",
-  "version": "1.11",
-  "width": 72,
   "layers": [
     {
       "data": [
@@ -5510,15 +5490,6 @@
       "properties": []
     },
     {
-      "height": 76,
-      "id": 6,
-      "name": "subground",
-      "opacity": 1,
-      "type": "tilelayer",
-      "visible": true,
-      "width": 72,
-      "x": 0,
-      "y": 0,
       "data": [
         0,
         0,
@@ -10993,6 +10964,15 @@
         0,
         0
       ],
+      "height": 76,
+      "id": 6,
+      "name": "subground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 72,
+      "x": 0,
+      "y": 0,
       "properties": []
     },
     {
@@ -28739,6 +28719,9 @@
       "properties": []
     }
   ],
+  "nextlayerid": 6,
+  "nextobjectid": 31,
+  "orientation": "orthogonal",
   "properties": [
     {
       "name": "map-settings",
@@ -28752,75 +28735,92 @@
               "propertytype": "encounter-pokemon",
               "type": "class",
               "value": {
-                "species": "caterpie",
-                "rarity": 45,
+                "level-range-max": 5,
                 "level-range-min": 3,
-                "level-range-max": 5
-              }
-            },
-            {
-              "propertytype": "encounter-pokemon",
-              "type": "class",
-              "value": {
-                "species": "weedle",
                 "rarity": 45,
+                "species": "caterpie"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
                 "level-range-min": 3,
-                "level-range-max": 5
+                "rarity": 45,
+                "species": "weedle"
               }
             },
             {
               "propertytype": "encounter-pokemon",
               "type": "class",
               "value": {
-                "species": "metapod",
-                "rarity": 10,
+                "level-range-max": 6,
                 "level-range-min": 4,
-                "level-range-max": 6
-              }
-            },
-            {
-              "propertytype": "encounter-pokemon",
-              "type": "class",
-              "value": {
-                "species": "kakuna",
                 "rarity": 10,
-                "level-range-min": 4,
-                "level-range-max": 6
+                "species": "metapod"
               }
             },
             {
               "propertytype": "encounter-pokemon",
               "type": "class",
               "value": {
-                "species": "pidgey",
+                "level-range-max": 6,
+                "level-range-min": 4,
+                "rarity": 10,
+                "species": "kakuna"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 3,
                 "rarity": 24,
-                "level-range-min": 3,
-                "level-range-max": 5
+                "species": "pidgey"
               }
             },
             {
               "propertytype": "encounter-pokemon",
               "type": "class",
               "value": {
-                "species": "pikachu",
+                "level-range-max": 5,
+                "level-range-min": 3,
                 "rarity": 10,
-                "level-range-min": 3,
-                "level-range-max": 5
+                "species": "pikachu"
               }
             },
             {
               "propertytype": "encounter-pokemon",
               "type": "class",
               "value": {
-                "species": "pidgeotto",
-                "rarity": 1,
+                "level-range-max": 9,
                 "level-range-min": 9,
-                "level-range-max": 9
+                "rarity": 1,
+                "species": "pidgeotto"
               }
             }
           ]
         }
       }
     }
-  ]
+  ],
+  "renderorder": "right-down",
+  "tiledversion": "1.12.1",
+  "tileheight": 32,
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "source": "../../tileset/maps/kanto_common.json"
+    },
+    {
+      "firstgid": 90,
+      "source": "../../tileset/maps/kanto_inside.json"
+    }
+  ],
+  "tilewidth": 32,
+  "type": "map",
+  "version": "1.11",
+  "width": 72
 }

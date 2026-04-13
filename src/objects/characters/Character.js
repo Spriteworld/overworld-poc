@@ -812,4 +812,20 @@ export default class extends MovableSprite {
     return Phaser.Geom.Rectangle.ContainsPoint(this.seenRect, character.characterRect);
   }
 
+  setMovementBehavior(movement, target) {
+    console.log('Setting movement behavior for', this.config.id, 'to', movement, 'with target', target);
+    this.config['movement-target'] = target;
+    switch (movement) {
+      case 'match-movement':
+        this.config['movement-behavior'] = movement;
+      break;
+      case 'mirror-move':
+        this.config['movement-behavior'] = movement;
+      break;
+      case 'none':
+        this.config['movement-behavior'] = null;
+        this.config['movement-target'] = null;
+      break;
+    }
+  }
 }

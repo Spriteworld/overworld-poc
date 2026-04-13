@@ -1,5 +1,5 @@
 import { Items, Tile } from '@Objects';
-import { getPropertyValue } from '@Utilities';
+import { getPropertyValue, checkOnlyIf } from '@Utilities';
 import store from '../../store/index.js';
 
 export default class {
@@ -14,9 +14,11 @@ export default class {
     const collected = store.state.overworld.collectedItems;
     const itemObjs = this.scene.findInteractions('item');
     itemObjs.forEach(obj => {
-      if (collected.includes(obj.name)){ 
+      if (collected.includes(obj.name)){
         return;
       }
+
+      if (!checkOnlyIf(getPropertyValue(obj.properties, 'only_if'), store.state.game.gameFlags)) return;
 
       const itemName = getPropertyValue(obj.properties, 'item');
       if (!itemName){

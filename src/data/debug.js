@@ -20,5 +20,6 @@ export default {
     gameMap: false,
     character: false,
     interactableShout: false,
+    scriptRunner: false,
   },
 };

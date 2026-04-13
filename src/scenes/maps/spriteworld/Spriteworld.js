@@ -1,11 +1,11 @@
 import { GameMap } from '@Objects';
-import { ForestMap } from '@Maps';
+import { SpriteworldMap } from '@Maps';
 
 export default class extends GameMap {
   constructor() {
     super({
-      mapName: 'Forest',
-      map: ForestMap,
+      mapName: 'Spriteworld',
+      map: SpriteworldMap,
       active: false,
       visible: false,
     });

@@ -90,6 +90,14 @@ export default {
      * @param {Array<{ item: { getName(): string }, quantity: number }>} battleItems
      *   The battle inventory items array — same objects mutated during the fight.
      */
+    RESET(state) {
+      state.items          = [];
+      state.pokeballs      = [];
+      state.tms            = [];
+      state.keyItems       = [];
+      state.registeredItem = null;
+    },
+
     SYNC_AFTER_BATTLE(state, battleItems) {
       for (const { item, quantity } of battleItems) {
         const entry = state.items.find(e => e.name === item.getName());

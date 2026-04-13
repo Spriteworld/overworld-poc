@@ -22,6 +22,15 @@ export default {
   expRate:          1.0,
 
   /**
+   * Controls when the evolution of a pokemon is triggered during battle.
+   *   'true'  — evolution is deferred until the end of the battle, 
+   *            allowing the pokemon to continue fighting until the battle concludes.
+   *   'false' — evolution occurs immediately when the pokemon reaches the required level, 
+   *            interrupting combat to play the evolution sequence.
+   */
+  deferEvolution:   true,
+
+  /**
    * Game mode.
    *   'vanilla'        — standard rules
    *   'nuzlocke'       — only the first Pokémon caught per zone may be kept;

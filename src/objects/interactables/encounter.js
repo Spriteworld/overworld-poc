@@ -351,9 +351,10 @@ export default class {
     const pokerus = Math.random() < 3 / 65536;
 
     return {
-      tilesetBaseUrl: '/',
-      textSpeed:      store.state.game.textSpeed ?? 'normal',
-      expRate:        def.expRate,
+      tilesetBaseUrl:  '/',
+      textSpeed:       store.state.game.textSpeed ?? 'normal',
+      expRate:         def.expRate,
+      deferEvolution:  def.deferEvolution,
       nuzlocke: def.gameMode === 'nuzlocke' ? {
         zone:       tableId ?? null,
         zoneCaught: tableId

@@ -1,7 +1,8 @@
 import { Tile, NPC } from '@Objects';
-import { getPropertyValue, remapProps, Vector2 } from '@Utilities';
+import { getPropertyValue, remapProps, Vector2, checkOnlyIf } from '@Utilities';
 import Tileset from '@Tileset';
 import store from '../../store/index.js';
+import ScriptRunner from '../../utilities/ScriptRunner.js';
 
 export default class {
   constructor(scene) {
@@ -25,9 +26,10 @@ export default class {
 
     this.scene.npcs.runChildUpdate = true;
     npcs.forEach((npc) => {
+      if (!checkOnlyIf(getPropertyValue(npc.properties, 'only_if'), store.state.game.gameFlags)) return;
       this.addToScene(
         npc.name,
-        getPropertyValue(npc.properties, 'overworld-sprite'),
+        getPropertyValue(npc.properties, 'overworld-texture'),
         Vector2(npc.x / Tile.WIDTH, npc.y / Tile.HEIGHT),
         {
           id: npc.name,
@@ -91,13 +93,20 @@ export default class {
 
       this.scene.load.spritesheet(texture, path, {
         frameWidth: Tile.WIDTH,
-        frameHeight: 42
+        frameHeight: 48
       });
       this.scene.load.once('filecomplete-spritesheet-' + texture, () => {
         this._ensureAnim(texture);
         this.scene.npcs.getChildren()
           .filter(n => n.config?.texture === texture)
-          .forEach(n => n.setTexture(texture));
+          .forEach(n => {
+            n.setTexture(texture);
+            // Re-apply the walking animation mapping so GridEngine uses frames
+            // from the new texture rather than the stale placeholder state.
+            if (this.scene.gridEngine?.hasCharacter(n.config.id)) {
+              this.scene.gridEngine.setWalkingAnimationMapping(n.config.id, n.characterFramesDef());
+            }
+          });
       });
       this.scene.load.start();
     }
@@ -121,19 +130,31 @@ export default class {
       console.log(['Interactables::pokemon::event', this.scene]);
     }
 
+    const OPPOSITE = { up: 'down', down: 'up', left: 'right', right: 'left' };
+    this._mirrorSub = this.scene.gridEngine.movementStarted().subscribe(({ charId, direction }) => {
+      this.scene.npcs.getChildren().forEach(npc => {
+        const behavior = npc.config?.['movement-behavior'];
+        if (!behavior || behavior === 'none') return;
+        const target = npc.config?.['mirror-target'] || 'player';
+        if (charId !== target) return;
+        if (behavior === 'match-movement') {
+          npc.move(direction);
+        } else if (behavior === 'mirror-move') {
+          npc.move(OPPOSITE[direction] || direction);
+        }
+      });
+    });
+
     this._onInteract = (tile) => {
       if (tile.obj.type !== 'npc') { return; }
+      const npcName = tile.obj.name;
 
-      const npcName = tile.obj.name || tile.obj.id;
-      const gaveFlag = 'npc_gave_' + npcName;
-      const gaveAlready = !!store.state.game.gameFlags[gaveFlag];
-
-      // Use text-given on repeat interactions if provided, otherwise fall back to text.
-      const textGiven = this.scene.getPropertyFromTile(tile.obj, 'text-given');
-      const text = (gaveAlready && textGiven)
-        ? textGiven
-        : this.scene.getPropertyFromTile(tile.obj, 'text');
-      if (!text) { return; }
+      const npcScript = this.scene.getPropertyFromTile(tile.obj, 'script');
+      console.log('NPC interaction script:', npcScript);
+      if (!npcScript) {
+        console.warn(`[NPC] No script found for NPC "${npcName}"`);
+        return;
+      }
 
       let player = this.scene.characters.get('player');
       let char = this.scene.characters.get(tile.obj.id);
@@ -141,39 +162,20 @@ export default class {
       char.stopSpin(true);
       char.stopMove(true);
 
-      this.scene.game.events.emit(
-        'textbox-changedata',
-        text,
-        tile.obj
-      );
+      const scriptDoneFlag = 'npc_interacted_' + npcName;
+      const scriptDone = !!store.state.game.gameFlags[scriptDoneFlag];
+      const scriptRepeatable = !!this.scene.getPropertyFromTile(tile.obj, 'script-repeatable');
 
-      const onComplete = this.scene.getPropertyFromTile(tile.obj, 'text-onComplete');
-      const [action, data] = onComplete.split(':');
-      if (action === 'item' && !gaveAlready) {
-        this.scene.game.events.once('textbox-disable', () => {
-          this.scene.game.events.emit('item-pickup', data);
-          store.commit('game/PATCH_FLAGS', { [gaveFlag]: true });
-        });
-      }
+      if (scriptDone && !scriptRepeatable) { return; }
 
-      if (action === 'heal') {
-        this.scene.game.events.once('textbox-disable', () => {
-          store.commit('party/RESTORE_ALL');
-          const player = this.scene.characters.get('player');
-          const pos = player?.getPosition() ?? { x: 0, y: 0 };
-          store.commit('game/SET_HEAL_LOCATION', {
-            map:       this.scene.scene.key,
-            x:         pos.x,
-            y:         pos.y,
-            charLayer: player?.getCharLayer?.() ?? 'ground',
-          });
-        });
-      }
+      store.commit('game/PATCH_FLAGS', { [scriptDoneFlag]: true });
+      new ScriptRunner(this.scene, [...npcScript]).run();
     };
     this.scene.game.events.on('interact-with-obj', this._onInteract);
   }
 
   destroy() {
     this.scene.game.events.off('interact-with-obj', this._onInteract);
+    if (this._mirrorSub) this._mirrorSub.unsubscribe();
   }
 }

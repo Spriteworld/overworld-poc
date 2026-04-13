@@ -3513,9 +3513,14 @@
                 {
                  "height":32,
                  "id":94,
-                 "name":"",
+                 "name":"OakStopsEncountersWithNoPokemon",
                  "opacity":1,
                  "properties":[
+                        {
+                         "name":"once",
+                         "type":"bool",
+                         "value":true
+                        }, 
                         {
                          "name":"script",
                          "type":"list",
@@ -3537,20 +3542,131 @@
                                     }
                                 }, 
                                 {
+                                 "propertytype":"cmd-spawn_npc",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "anchor":"oakRunningAfterPlayer",
+                                     "facing":"up",
+                                     "name":"Oak",
+                                     "texture":"professor_oak"
+                                    }
+                                }, 
+                                {
                                  "propertytype":"cmd-text",
                                  "type":"class",
                                  "value":
                                     {
                                      "text":"OAK: Hey Wait! Dont go out!"
                                     }
+                                }, 
+                                {
+                                 "propertytype":"cmd-walk_to_char",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "character1":"Oak",
+                                     "character2":"player"
+                                    }
+                                }, 
+                                {
+                                 "propertytype":"cmd-text",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "text":"OAK: It's unsafe! Wild POK{e}MON live in tall grass!\nYou need your own POK{e}MON for your protection. I know!\nWhy dont you come with me? I have an extra POK{e}MON at my lab!"
+                                    }
+                                }, 
+                                {
+                                 "propertytype":"cmd-move_npc",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "anchor":"oakRunningAfterPlayer",
+                                     "name":"Oak"
+                                    }
+                                }, 
+                                {
+                                 "propertytype":"cmd-warp_npc",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "anchor":"oakAway",
+                                     "character":"Oak",
+                                     "name":"Oak"
+                                    }
+                                }, 
+                                {
+                                 "propertytype":"cmd-warp_continue",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "anchor":"ProfessorLabWarp",
+                                     "map":"ProfessorLab"
+                                    }
+                                }, 
+                                {
+                                 "propertytype":"cmd-move_player",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "anchor":"playerAnchor"
+                                    }
+                                }, 
+                                {
+                                 "propertytype":"cmd-text",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "text":"{rival}: Gramps!\nI'm fed up with waiting!\nOak: {rival}?\nLet me think...\nOh, that's right, I told you to come! Just wait!\nHere, {player}.\nThere are three POK{e}MON here.\nHAHA!\nThe POK{e}MON are held inside these POK{e} BALLS.\nWhen I was young, I was a serious POK{e}MON TRAINER.\nBut now, in my old age, I have only these three left.\nYou can have one.\nGo on, choose!"
+                                    }
+                                }, 
+                                {
+                                 "propertytype":"cmd-set_var",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "key":"lock_lab",
+                                     "value":"true"
+                                    }
                                 }]
+                        }, 
+                        {
+                         "name":"trigger",
+                         "propertytype":"trigger-list",
+                         "type":"string",
+                         "value":"enter"
                         }],
                  "rotation":0,
                  "type":"trigger",
                  "visible":true,
                  "width":64,
                  "x":2560,
-                 "y":8928
+                 "y":8960
+                }, 
+                {
+                 "height":32,
+                 "id":95,
+                 "name":"oakRunningAfterPlayer",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"location-anchor",
+                 "visible":true,
+                 "width":32,
+                 "x":2560,
+                 "y":9312
+                }, 
+                {
+                 "height":32,
+                 "id":96,
+                 "name":"oakAway",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"location-anchor",
+                 "visible":true,
+                 "width":32,
+                 "x":3296,
+                 "y":9312
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -4227,7 +4343,7 @@
          "y":0
         }],
  "nextlayerid":19,
- "nextobjectid":95,
+ "nextobjectid":100,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",
@@ -4239,7 +4355,7 @@
         }, 
         {
          "firstgid":7985,
-         "source":"\/\/dev\/www\/linky\/spriteworld-claude\/character\/src\/tileset\/animated_grass.json"
+         "source":"..\/..\/tileset\/animated_grass.json"
         }],
  "tilewidth":32,
  "type":"map",

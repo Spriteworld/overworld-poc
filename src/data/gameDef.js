@@ -1,5 +1,35 @@
 import defaultDef from './gameDefs/kanto.js';
 
+/**
+ * @typedef {object} GameDef
+ * @property {string}                id               - Unique identifier for this preset.
+ * @property {string}                name             - Human-readable display name.
+ * @property {string}                overworldScene   - Phaser scene key launched when no save is present.
+ * @property {'gen_1'|'gen_2'|'gen_3'|[number,number]|number[]} availablePokemon
+ *   Species pool used for wild encounters and random learnset fallbacks.
+ *   String shorthands map to nat_dex_id ranges; a two-element array is an
+ *   inclusive [min, max] range; an arbitrary number array is an explicit id list.
+ * @property {number}                expRate          - Experience multiplier applied to all gains (1.0 = normal).
+ * @property {boolean}               deferEvolution
+ *   When true, level-up evolutions are held until the battle ends.
+ *   When false, the evolution sequence interrupts combat immediately.
+ *   Item-triggered evolutions (Rare Candy, Evolution Stones) are always deferred
+ *   regardless of this setting.
+ * @property {'vanilla'|'nuzlocke'|'map_randomizer'} gameMode
+ *   Controls ruleset enforcement.
+ *   'vanilla'        — standard rules, no restrictions.
+ *   'nuzlocke'       — only the first Pokémon caught per zone may be kept;
+ *                      subsequent Pokéball throws in that zone are blocked.
+ *   'map_randomizer' — encounter tables are seeded-randomly generated.
+ * @property {'vanilla'|'random'}    learnsets
+ *   Move source for wild and trainer Pokémon with no explicit moveset.
+ *   'vanilla' — most recently learnable moves from the FRLG level-up learnset.
+ *   'random'  — 4 random moves from the full FRLG move pool.
+ * @property {'vanilla'|'random'}    encounterTables
+ *   'vanilla' — use the encounter table embedded in the Tiled map properties.
+ *   'random'  — seeded-random table generated from the availablePokemon pool.
+ */
+
 let _active = defaultDef;
 
 /** Generation nat_dex_id ranges (inclusive). */

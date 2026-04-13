@@ -33,6 +33,16 @@ export default createStore({
       localStorage.setItem('sw_overworld',JSON.stringify({ collectedItems: state.overworld.collectedItems }));
     },
 
+    clearSave({ commit }) {
+      ['sw_game', 'sw_party', 'sw_bag', 'sw_pokedex', 'sw_overworld', 'spriteworld_save']
+        .forEach(k => localStorage.removeItem(k));
+      commit('game/RESET');
+      commit('party/RESET');
+      commit('bag/RESET');
+      commit('pokedex/RESET');
+      commit('overworld/RESET');
+    },
+
     loadGame({ commit }) {
       const gameRaw = localStorage.getItem('sw_game');
       // Fall back to the old single-key format if new keys aren't present.

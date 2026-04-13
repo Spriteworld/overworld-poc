@@ -17,5 +17,9 @@ export default {
         state.collectedItems = saved.collectedItems;
       }
     },
+
+    RESET(state) {
+      state.collectedItems = [];
+    },
   },
 };

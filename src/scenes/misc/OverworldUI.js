@@ -63,6 +63,8 @@ export default class extends Phaser.Scene {
     // pause menu
     this.pauseMenu = new PauseMenu(this);
 
+    this._scriptDepth = 0;
+
     this.handleEvents();
   }
 
@@ -97,9 +99,14 @@ export default class extends Phaser.Scene {
       this.toast.showMessage(display);
     });
 
+    this.game.events.on('script-runner-start', () => { this._scriptDepth++; });
+    this.game.events.on('script-runner-end',   () => { this._scriptDepth = Math.max(0, this._scriptDepth - 1); });
+
     this.game.events.on('textbox-disable', () => {
       this.textbox.setVisible(false);
-      EventBus.emit('player-move-enable');
+      if (this._scriptDepth === 0) {
+        EventBus.emit('player-move-enable');
+      }
     });
 
     this.game.events.on('textbox-changedata', (value) => {

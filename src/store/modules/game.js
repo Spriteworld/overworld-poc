@@ -86,5 +86,23 @@ export default {
       if (saved.textSpeed    != null) state.textSpeed    = saved.textSpeed;
       state.sessionStart = Date.now();
     },
+
+    RESET(state) {
+      state.seed                = Math.floor(Math.random() * 0x100000000) >>> 0;
+      state.playerName          = 'Red';
+      state.rivalName           = 'Blue';
+      state.playerSprite        = 'red';
+      state.onBike              = false;
+      state.playerFacing        = 'down';
+      state.currentMap          = 'HeroHouseF2';
+      state.playerTile          = { x: 2, y: 6, charLayer: 'ground' };
+      state.gameFlags           = { ...defaultFlags };
+      state.playtime            = 0;
+      state.sessionStart        = Date.now();
+      state.money               = 3000;
+      state.healLocation        = null;
+      state.lastOutdoorLocation = null;
+      state.textSpeed           = 'normal';
+    },
   },
 };

@@ -43,7 +43,7 @@ class TextBox {
     this._textObj = scene.add.text(bx + PAD_X, by + PAD_Y, '', {
       fontSize:    '20px',
       color:       '#ffffff',
-      wordWrap:    { width: ww, useAdvancedWrap: true },
+      wordWrap:    { width: ww, useAdvancedWrap: false },
       maxLines:    2,
     })
       .setScrollFactor(0)

@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import * as Tile from '@Objects/Tile.js';
 import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves, Items, FRLG_LEARNSETS } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
-import { getPropertyValue, remapProps, Vector2 } from '@Utilities';
+import { getPropertyValue, remapProps, Vector2, checkOnlyIf } from '@Utilities';
 import { getGameDef } from '@Data/gameDef.js';
 import Tileset from '@Tileset';
 import Trainer from '@Objects/characters/Trainer.js';
@@ -119,6 +119,7 @@ export default class {
     if (trainerObjs.length === 0) return;
 
     trainerObjs.forEach(obj => {
+      if (!checkOnlyIf(getPropertyValue(obj.properties, 'only_if'), store.state.game.gameFlags)) return;
       const defeatedFlag = 'trainer_defeated_' + obj.name;
       const isDefeated   = !!store.state.game.gameFlags[defeatedFlag];
 
@@ -345,9 +346,10 @@ export default class {
     const overworldSprite = getPropertyValue(obj.properties, 'overworld-texture');
     const battleSprite    = getPropertyValue(obj.properties, 'battle-texture') ?? overworldSprite;
     return {
-      tilesetBaseUrl: '/',
-      expRate:        getGameDef().expRate,
-      field:          { weather: null, terrain: 'normal' },
+      tilesetBaseUrl:  '/',
+      expRate:         getGameDef().expRate,
+      deferEvolution:  getGameDef().deferEvolution,
+      field:           { weather: null, terrain: 'normal' },
       player: {
         name:      'Red',
         team:      gameState.party.map(p => ({
