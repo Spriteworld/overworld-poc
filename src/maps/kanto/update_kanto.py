@@ -806,8 +806,9 @@ def main():
         print('ERROR: no "maps" objectgroup found in kanto.json')
         return
 
-    bounds       = {}   # fname -> world-space bounds dict
-    fname_to_key = {}   # fname -> CamelCase scene key (obj['name'])
+    bounds          = {}   # fname -> world-space bounds dict
+    fname_to_key    = {}   # fname -> CamelCase scene key (obj['name'])
+    map_properties  = {}   # fname -> properties list from maps-layer object
     for obj in maps_layer['objects']:
         fname = name_to_filename(obj['name'])
         bounds[fname] = {
@@ -816,7 +817,8 @@ def main():
             'width':  obj['width'],
             'height': obj['height'],
         }
-        fname_to_key[fname] = obj['name']
+        fname_to_key[fname]   = obj['name']
+        map_properties[fname] = obj.get('properties', [])
 
     # ── Update kanto.world ────────────────────────────────────────────────
     world_path = MAPS_DIR / 'kanto.world'
@@ -974,6 +976,12 @@ def main():
             print(f'  added obj "{obj["name"]}"')
 
         route['nextobjectid'] = max_id + 1
+
+        props = map_properties.get(fname, [])
+        if props:
+            route['properties'] = props
+        elif 'properties' in route:
+            del route['properties']
 
         sort_layers(route['layers'])
 

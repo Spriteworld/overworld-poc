@@ -4454,6 +4454,14 @@
                   "value": {}
                 },
                 {
+                  "propertytype": "cmd-bgm_start",
+                  "type": "class",
+                  "value": {
+                    "key": "prof_oak_theme",
+                    "loop": false
+                  }
+                },
+                {
                   "propertytype": "cmd-show_exclamation",
                   "type": "class",
                   "value": {
@@ -4535,6 +4543,11 @@
                     "key": "lock_lab",
                     "value": "true"
                   }
+                },
+                {
+                  "propertytype": "cmd-enable_input",
+                  "type": "class",
+                  "value": {}
                 }
               ]
             },
@@ -4603,5 +4616,15 @@
   "tilewidth": 32,
   "type": "map",
   "version": "1.11",
-  "width": 52
+  "width": 52,
+  "properties": [
+    {
+      "name": "map-settings",
+      "propertytype": "map-settings",
+      "type": "class",
+      "value": {
+        "bgm": "pallet.mp3"
+      }
+    }
+  ]
 }

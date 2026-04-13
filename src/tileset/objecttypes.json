@@ -138,8 +138,7 @@
                 "name": "item",
                 "propertyType": "item",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "qty",
@@ -173,8 +172,7 @@
                 "name": "pokemon",
                 "propertyType": "encounter-pokemon",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             }
         ],
         "name": "cmd-give_pokemon",
@@ -204,6 +202,45 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
+        "id": 89,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "if_facing"
+            },
+            {
+                "name": "direction",
+                "propertyType": "facing-direction",
+                "type": "string",
+                "value": "down"
+            },
+            {
+                "name": "else",
+                "type": "list",
+                "value": []
+            },
+            {
+                "name": "target",
+                "type": "string",
+                "value": "player"
+            },
+            {
+                "name": "then",
+                "type": "list",
+                "value": []
+            }
+        ],
+        "name": "cmd-if_facing",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
         "id": 32,
         "members": [
             {
@@ -215,8 +252,7 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "key",
@@ -226,11 +262,58 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             }
         ],
         "name": "cmd-if_flag",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 90,
+        "members": [
+            {
+                "name": "anchor",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "if_npc_at"
+            },
+            {
+                "name": "else",
+                "type": "list",
+                "value": []
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "then",
+                "type": "list",
+                "value": []
+            },
+            {
+                "name": "x",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "y",
+                "type": "int",
+                "value": 0
+            }
+        ],
+        "name": "cmd-if_npc_at",
         "type": "class",
         "useAs": [
             "property"
@@ -255,8 +338,7 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "op",
@@ -267,8 +349,7 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             }
         ],
         "name": "cmd-if_party_count",
@@ -291,8 +372,7 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "key",
@@ -302,8 +382,7 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "value",
@@ -515,6 +594,34 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
+        "id": 93,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "play_sound"
+            },
+            {
+                "name": "key",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "loop",
+                "type": "bool",
+                "value": false
+            }
+        ],
+        "name": "cmd-play_sound",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
         "id": 30,
         "members": [
             {
@@ -527,8 +634,7 @@
                 "name": "item",
                 "propertyType": "item",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "qty",
@@ -537,6 +643,29 @@
             }
         ],
         "name": "cmd-remove_item",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 92,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "remove_npc"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "cmd-remove_npc",
         "type": "class",
         "useAs": [
             "property"
@@ -671,6 +800,29 @@
         ]
     },
     {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 94,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "stop_sound"
+            },
+            {
+                "name": "key",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "cmd-stop_sound",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
         "color": "#ff0040c0",
         "drawFill": true,
         "id": 55,
@@ -747,6 +899,29 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
+        "id": 91,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "wait"
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "value": 500
+            }
+        ],
+        "name": "cmd-wait",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
         "id": 38,
         "members": [
             {
@@ -810,7 +985,7 @@
                 "name": "cmd",
                 "propertyType": "command-list",
                 "type": "string",
-                "value": "warp_continue"
+                "value": "walk_warp_continue"
             },
             {
                 "name": "layer",
@@ -826,16 +1001,6 @@
                 "name": "target",
                 "type": "string",
                 "value": "player"
-            },
-            {
-                "name": "walk_x",
-                "type": "int",
-                "value": 0
-            },
-            {
-                "name": "walk_y",
-                "type": "int",
-                "value": 0
             },
             {
                 "name": "x",
@@ -949,8 +1114,7 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "text",
@@ -960,8 +1124,7 @@
             {
                 "name": "yes",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             }
         ],
         "name": "cmd-yes_no",
@@ -1004,14 +1167,22 @@
             "movement_behavior",
             "face_char",
             "warp_npc",
-            "warp_continue",
+            "walk_warp_continue",
             "look",
             "if_facing",
             "if_npc_at",
             "wait",
             "remove_npc",
             "play_sound",
-            "stop_sound"
+            "stop_sound",
+            "if_has_item",
+            "fade_in",
+            "fade_out",
+            "camera_pan",
+            "camera_follow_player",
+            "camera_follow_npc",
+            "bgm_start",
+            "bgm_stop"
         ],
         "valuesAsFlags": false
     },
@@ -1036,8 +1207,7 @@
         "color": "#ff00aa00",
         "drawFill": true,
         "id": 10,
-        "members": [
-        ],
+        "members": [],
         "name": "cutTree",
         "type": "class",
         "useAs": [
@@ -1058,8 +1228,7 @@
             {
                 "name": "level-random",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "level-range-max",
@@ -1113,20 +1282,17 @@
             {
                 "name": "good-rod",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "grass",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "headbutt",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "name",
@@ -1136,26 +1302,22 @@
             {
                 "name": "old-rod",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "rock-smash",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "super-rod",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "surf",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             }
         ],
         "name": "encounterTable",
@@ -1207,8 +1369,7 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "quantity",
@@ -1317,14 +1478,9 @@
         "id": 17,
         "members": [
             {
-                "name": "bg-music-key",
+                "name": "bgm",
                 "type": "string",
                 "value": ""
-            },
-            {
-                "name": "bg-music-repeat",
-                "type": "bool",
-                "value": true
             },
             {
                 "name": "encounter-rate",
@@ -1336,20 +1492,13 @@
                 "propertyType": "encounterTable",
                 "type": "class",
                 "value": {
-                    "good-rod": [
-                    ],
-                    "grass": [
-                    ],
-                    "headbutt": [
-                    ],
-                    "old-rod": [
-                    ],
-                    "rock-smash": [
-                    ],
-                    "super-rod": [
-                    ],
-                    "surf": [
-                    ]
+                    "good-rod": [],
+                    "grass": [],
+                    "headbutt": [],
+                    "old-rod": [],
+                    "rock-smash": [],
+                    "super-rod": [],
+                    "surf": []
                 }
             }
         ],
@@ -1412,8 +1561,7 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "overworld-texture",
@@ -1423,8 +1571,7 @@
             {
                 "name": "script",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "text",
@@ -1468,8 +1615,7 @@
             {
                 "name": "value",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             }
         ],
         "name": "only-if",
@@ -1507,14 +1653,12 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "script",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "shiny",
@@ -1597,8 +1741,7 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "overworld-texture",
@@ -1652,8 +1795,7 @@
                     {
                         "propertyType": "trainer-pokemon",
                         "type": "class",
-                        "value": {
-                        }
+                        "value": {}
                     }
                 ]
             },
@@ -1733,14 +1875,12 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "script",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "trigger",
@@ -1780,8 +1920,7 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "warp",
@@ -1831,39 +1970,31 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
-        "id": 89,
+        "id": 95,
         "members": [
             {
                 "name": "cmd",
                 "propertyType": "command-list",
                 "type": "string",
-                "value": "if_facing"
-            },
-            {
-                "name": "direction",
-                "propertyType": "facing-direction",
-                "type": "string",
-                "value": "down"
+                "value": "if_has_item"
             },
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
-                "name": "target",
+                "name": "item",
                 "type": "string",
-                "value": "player"
+                "value": ""
             },
             {
                 "name": "then",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             }
         ],
-        "name": "cmd-if_facing",
+        "name": "cmd-if_has_item",
         "type": "class",
         "useAs": [
             "property"
@@ -1872,35 +2003,69 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
-        "id": 90,
+        "id": 96,
         "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "fade_in"
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "value": 500
+            }
+        ],
+        "name": "cmd-fade_in",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 97,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "fade_out"
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "value": 500
+            }
+        ],
+        "name": "cmd-fade_out",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 98,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "camera_pan"
+            },
             {
                 "name": "anchor",
                 "type": "string",
                 "value": ""
             },
             {
-                "name": "cmd",
-                "propertyType": "command-list",
-                "type": "string",
-                "value": "if_npc_at"
-            },
-            {
-                "name": "else",
-                "type": "list",
-                "value": [
-                ]
-            },
-            {
-                "name": "name",
-                "type": "string",
-                "value": ""
-            },
-            {
-                "name": "then",
-                "type": "list",
-                "value": [
-                ]
+                "name": "duration",
+                "type": "int",
+                "value": 500
             },
             {
                 "name": "x",
@@ -1913,7 +2078,7 @@
                 "value": 0
             }
         ],
-        "name": "cmd-if_npc_at",
+        "name": "cmd-camera_pan",
         "type": "class",
         "useAs": [
             "property"
@@ -1922,21 +2087,16 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
-        "id": 91,
+        "id": 99,
         "members": [
             {
                 "name": "cmd",
                 "propertyType": "command-list",
                 "type": "string",
-                "value": "wait"
-            },
-            {
-                "name": "duration",
-                "type": "int",
-                "value": 500
+                "value": "camera_follow_player"
             }
         ],
-        "name": "cmd-wait",
+        "name": "cmd-camera_follow_player",
         "type": "class",
         "useAs": [
             "property"
@@ -1945,13 +2105,13 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
-        "id": 92,
+        "id": 100,
         "members": [
             {
                 "name": "cmd",
                 "propertyType": "command-list",
                 "type": "string",
-                "value": "remove_npc"
+                "value": "camera_follow_npc"
             },
             {
                 "name": "name",
@@ -1959,7 +2119,7 @@
                 "value": ""
             }
         ],
-        "name": "cmd-remove_npc",
+        "name": "cmd-camera_follow_npc",
         "type": "class",
         "useAs": [
             "property"
@@ -1968,13 +2128,13 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
-        "id": 93,
+        "id": 101,
         "members": [
             {
                 "name": "cmd",
                 "propertyType": "command-list",
                 "type": "string",
-                "value": "play_sound"
+                "value": "bgm_start"
             },
             {
                 "name": "key",
@@ -1984,10 +2144,10 @@
             {
                 "name": "loop",
                 "type": "bool",
-                "value": false
+                "value": true
             }
         ],
-        "name": "cmd-play_sound",
+        "name": "cmd-bgm_start",
         "type": "class",
         "useAs": [
             "property"
@@ -1996,21 +2156,16 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
-        "id": 94,
+        "id": 102,
         "members": [
             {
                 "name": "cmd",
                 "propertyType": "command-list",
                 "type": "string",
-                "value": "stop_sound"
-            },
-            {
-                "name": "key",
-                "type": "string",
-                "value": ""
+                "value": "bgm_stop"
             }
         ],
-        "name": "cmd-stop_sound",
+        "name": "cmd-bgm_stop",
         "type": "class",
         "useAs": [
             "property"

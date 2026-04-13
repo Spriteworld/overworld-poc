@@ -6,6 +6,7 @@ export default class extends GameMap {
     super({
       mapName: 'PalletTown',
       map: PalletTownMap,
+      bgm: 'pallet',
     });
   }
 

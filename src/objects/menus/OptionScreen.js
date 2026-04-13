@@ -1,4 +1,5 @@
 import store from '../../store/index.js';
+import { stopSfx, resumeBgm } from '@Utilities/AudioManager.js';
 import {
   SX, SY, SW, SH,
   TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT,
@@ -13,6 +14,8 @@ const TEXT_SPEED_LABELS = { normal: 'Normal', fast: 'Fast', instant: 'Instant' }
 const OPTIONS = [
   { key: 'character',  label: 'Character'  },
   { key: 'textSpeed',  label: 'Text Speed' },
+  { key: 'bgmVolume',  label: 'BGM Vol'    },
+  { key: 'sfxVolume',  label: 'SFX Vol'    },
 ];
 
 const ROW_H   = 28;
@@ -79,6 +82,14 @@ export default class OptionScreen {
     if (key === 'textSpeed') {
       return TEXT_SPEED_LABELS[store.state.game.textSpeed] ?? store.state.game.textSpeed;
     }
+    if (key === 'bgmVolume') {
+      const v = store.state.game.bgmVolume;
+      return '█'.repeat(v) + '░'.repeat(20 - v);
+    }
+    if (key === 'sfxVolume') {
+      const v = store.state.game.sfxVolume;
+      return '█'.repeat(v) + '░'.repeat(20 - v);
+    }
     return '';
   }
 
@@ -100,6 +111,16 @@ export default class OptionScreen {
       const idx  = TEXT_SPEEDS.indexOf(store.state.game.textSpeed);
       const next = TEXT_SPEEDS[(idx + delta + TEXT_SPEEDS.length) % TEXT_SPEEDS.length];
       store.commit('game/SET_TEXT_SPEED', next);
+    } else if (key === 'bgmVolume') {
+      const prev = store.state.game.bgmVolume;
+      const next = Math.min(20, Math.max(0, prev + delta));
+      store.commit('game/SET_BGM_VOLUME', next);
+      this.menu.scene.game.events.emit('bgm-volume-change', next);
+      if (prev === 0 && next > 0) resumeBgm(this.menu.scene);
+    } else if (key === 'sfxVolume') {
+      const next = Math.min(20, Math.max(0, store.state.game.sfxVolume + delta));
+      store.commit('game/SET_SFX_VOLUME', next);
+      if (next === 0) stopSfx(this.menu.scene);
     }
     this.menu._clearSubTexts();
     this.build();

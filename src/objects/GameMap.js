@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import ScriptRunner from '@Utilities/ScriptRunner.js';
+import { playBgm, lazyLoadBgm, preloadSe } from '@Utilities/AudioManager.js';
 import Interactables from '@Objects/interactables/index.js';
 import Items from '@Objects/items/index.js';
 import * as Tile from '@Objects/Tile.js';
@@ -133,6 +134,8 @@ export default class extends Phaser.Scene {
       format: Phaser.Tilemaps.Formats.TILED_JSON,
     });
 
+    preloadSe(this);
+
     const tilesets = this.config.map?.tilesets ?? [];
     tilesets.forEach(ts => {
       const source = ts.source ?? '';
@@ -211,6 +214,12 @@ export default class extends Phaser.Scene {
     EventBus.emit('current-scene-ready', this);
     this.game.events.emit('map-enter', this.config.mapName);
     this.preloadConnectedMaps();
+
+    const mapSettings = this.config.map?.properties?.find(p => p.name === 'map-settings')?.value;
+    const bgmKey = this.config.bgm
+      ?? mapSettings?.bgm
+      ?? this.config.map?.properties?.find(p => p.name === 'bgm')?.value;
+    if (bgmKey) lazyLoadBgm(this, bgmKey);
 
     // Clean up all plugin event listeners when this scene shuts down.
     this.events.once('shutdown', () => {

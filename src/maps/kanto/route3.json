@@ -19023,5 +19023,145 @@
   "tilewidth": 32,
   "type": "map",
   "version": "1.11",
-  "width": 87
+  "width": 87,
+  "properties": [
+    {
+      "name": "map-settings",
+      "propertytype": "map-settings",
+      "type": "class",
+      "value": {
+        "encounter-table": {
+          "ROUTE_3": [
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 7,
+                "level-range-min": 6,
+                "rarity": 30,
+                "species": "pidgey"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 8,
+                "level-range-min": 6,
+                "rarity": 35,
+                "species": "spearow"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 7,
+                "level-range-min": 6,
+                "rarity": 14,
+                "species": "nidoran_m"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 7,
+                "level-range-min": 3,
+                "rarity": 10,
+                "species": "jigglypuff"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 7,
+                "level-range-min": 7,
+                "rarity": 10,
+                "species": "mankey"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 6,
+                "level-range-min": 6,
+                "rarity": 10,
+                "species": "nidoran_f"
+              }
+            }
+          ],
+          "grass": [
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 8,
+                "level-range-min": 6,
+                "rarity": 35,
+                "species": "spearow"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 7,
+                "level-range-min": 6,
+                "rarity": 30,
+                "species": "pidgey"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 7,
+                "level-range-min": 6,
+                "rarity": 14,
+                "species": "nidoran_m"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 7,
+                "level-range-min": 6,
+                "rarity": 14,
+                "species": "nidoran_f"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 7,
+                "level-range-min": 3,
+                "rarity": 10,
+                "species": "jigglypuff"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-random": [
+                  {
+                    "type": "int",
+                    "value": 7
+                  }
+                ],
+                "rarity": 10,
+                "species": "mankey"
+              }
+            }
+          ],
+          "name": "ROUTE_3"
+        }
+      }
+    }
+  ]
 }

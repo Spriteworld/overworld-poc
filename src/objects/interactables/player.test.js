@@ -2,7 +2,7 @@ import PlayerInteractable from './player.js';
 
 // ─── Scene factory ────────────────────────────────────────────────────────────
 
-function makeScene({ playerLocation = {}, spawns = null } = {}) {
+function makeScene({ playerLocation = {}, spawns = null, warpLocations = [] } = {}) {
   return {
     game: {
       config: {
@@ -10,7 +10,7 @@ function makeScene({ playerLocation = {}, spawns = null } = {}) {
       },
     },
     config: { playerLocation },
-    findInteractions: jest.fn(() => spawns),
+    findInteractions: jest.fn((type) => type === 'playerSpawn' ? spawns : warpLocations),
     registry:  { set: jest.fn() },
     cameras: {
       main: {
@@ -28,16 +28,28 @@ function makeScene({ playerLocation = {}, spawns = null } = {}) {
 // ─── init — spawn validation ──────────────────────────────────────────────────
 
 describe('PlayerInteractable.init spawn validation', () => {
-  test('throws when findInteractions returns null', () => {
-    const scene = makeScene({ spawns: null });
+  test('throws when no playerSpawn and no warpLocation', () => {
+    const scene = makeScene({ spawns: null, warpLocations: [] });
     const p = new PlayerInteractable(scene);
     expect(() => p.init()).toThrow('No player spawn found');
   });
 
-  test('throws when findInteractions returns an empty array', () => {
-    const scene = makeScene({ spawns: [] });
+  test('throws when playerSpawn is empty and no warpLocation', () => {
+    const scene = makeScene({ spawns: [], warpLocations: [] });
     const p = new PlayerInteractable(scene);
     expect(() => p.init()).toThrow('No player spawn found');
+  });
+
+  test('falls back to first warpLocation when no playerSpawn', () => {
+    const scene = makeScene({
+      spawns: [],
+      warpLocations: [{ name: 'Entry', x: 224, y: 416, properties: [] }],
+    });
+    const p = new PlayerInteractable(scene);
+    try { p.init(); } catch (_) { /* addPlayerToScene may fail in test env */ }
+    // Should have queried both types
+    expect(scene.findInteractions).toHaveBeenCalledWith('playerSpawn');
+    expect(scene.findInteractions).toHaveBeenCalledWith('warpLocation');
   });
 
   test('throws when more than one playerSpawn is found', () => {

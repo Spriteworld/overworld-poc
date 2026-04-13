@@ -2094,7 +2094,7 @@
                 {
                  "height":32,
                  "id":63,
-                 "name":"",
+                 "name":"cantEscapeLab",
                  "opacity":1,
                  "properties":[
                         {
@@ -2135,6 +2135,54 @@
                  "width":96,
                  "x":192,
                  "y":992
+                }, 
+                {
+                 "height":32,
+                 "id":64,
+                 "name":"aide1",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"facing-direction",
+                         "propertytype":"facing-direction",
+                         "type":"string",
+                         "value":"right"
+                        }, 
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"scientist"
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":384,
+                 "y":1056
+                }, 
+                {
+                 "height":32,
+                 "id":65,
+                 "name":"Aide2",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"facing-direction",
+                         "propertytype":"facing-direction",
+                         "type":"string",
+                         "value":"right"
+                        }, 
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"scientist"
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":128,
+                 "y":1088
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -2176,6 +2224,16 @@
                  "id":11,
                  "name":"ProfLab",
                  "opacity":1,
+                 "properties":[
+                        {
+                         "name":"map-settings",
+                         "propertytype":"map-settings",
+                         "type":"class",
+                         "value":
+                            {
+                             "bgm":"prof_oak_lab"
+                            }
+                        }],
                  "rotation":0,
                  "type":"location",
                  "visible":true,
@@ -2303,7 +2361,7 @@
          "y":0
         }],
  "nextlayerid":9,
- "nextobjectid":64,
+ "nextobjectid":66,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",

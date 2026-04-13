@@ -8859,5 +8859,61 @@
   "tilewidth": 32,
   "type": "map",
   "version": "1.11",
-  "width": 52
+  "width": 52,
+  "properties": [
+    {
+      "name": "map-settings",
+      "propertytype": "map-settings",
+      "type": "class",
+      "value": {
+        "encounter-table": {
+          "ROUTE_1": [
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 2,
+                "rarity": 50,
+                "species": "pidgey"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 4,
+                "level-range-min": 2,
+                "rarity": 50,
+                "species": "rattata"
+              }
+            }
+          ],
+          "grass": [
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 2,
+                "rarity": 5,
+                "species": "pidgey"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 2,
+                "rarity": 50,
+                "species": "ratatta"
+              }
+            }
+          ],
+          "name": "ROUTE_1"
+        }
+      }
+    }
+  ]
 }

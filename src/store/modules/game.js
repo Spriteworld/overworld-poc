@@ -19,6 +19,8 @@ export default {
     healLocation:        null,  // { map, x, y, charLayer } — set when player heals at a Pokémon Center
     lastOutdoorLocation: null, // { map, x, y, charLayer } — updated on every step on outdoor maps
     textSpeed:    'normal',    // 'normal' | 'fast' | 'instant'
+    bgmVolume:    20,          // 0–20 (each step = 5%)
+    sfxVolume:    20,          // 0–20 (each step = 5%)
   }),
 
   getters: {
@@ -45,6 +47,12 @@ export default {
     },
     SET_TEXT_SPEED(state, speed) {
       state.textSpeed = speed;
+    },
+    SET_BGM_VOLUME(state, v) {
+      state.bgmVolume = v;
+    },
+    SET_SFX_VOLUME(state, v) {
+      state.sfxVolume = v;
     },
 
     SET_ON_BIKE(state, value) {
@@ -84,6 +92,8 @@ export default {
       if (saved.money        != null) state.money        = saved.money;
       if (saved.healLocation != null) state.healLocation = saved.healLocation;
       if (saved.textSpeed    != null) state.textSpeed    = saved.textSpeed;
+      if (saved.bgmVolume   != null) state.bgmVolume   = saved.bgmVolume;
+      if (saved.sfxVolume   != null) state.sfxVolume   = saved.sfxVolume;
       state.sessionStart = Date.now();
     },
 
@@ -103,6 +113,8 @@ export default {
       state.healLocation        = null;
       state.lastOutdoorLocation = null;
       state.textSpeed           = 'normal';
+      state.bgmVolume           = 20;
+      state.sfxVolume           = 20;
     },
   },
 };

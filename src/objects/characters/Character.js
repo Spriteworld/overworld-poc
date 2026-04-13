@@ -152,6 +152,11 @@ export default class extends MovableSprite {
     this.seenRect.setName(identification+'-seen');
     this.characterRect.setOrigin(0, 0);
     this.characterRect.setName(identification+'-character');
+
+    if (!this.scene.game.config.debug.tests.rectOutlines) {
+      this.seenRect.setVisible(false);
+      this.characterRect.setVisible(false);
+    }
   }
 
   /**

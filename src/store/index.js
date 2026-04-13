@@ -25,6 +25,8 @@ export default createStore({
         money:        state.game.money,
         healLocation: state.game.healLocation,
         textSpeed:    state.game.textSpeed,
+        bgmVolume:    state.game.bgmVolume,
+        sfxVolume:    state.game.sfxVolume,
         savedAt,
       }));
       localStorage.setItem('sw_party',    JSON.stringify(state.party.list));

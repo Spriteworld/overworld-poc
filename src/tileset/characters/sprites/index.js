@@ -33,6 +33,7 @@ import red_run from './red_run.png';
 import red_surf from './red_surf.png';
 import sabrina from './sabrina.png';
 import sailor from './sailor.png';
+import scientist from './scientist.png';
 import sidney from './sidney.png';
 import steven from './steven.png';
 import surge from './surge.png';
@@ -78,6 +79,7 @@ export default {
   poke_kid,
   poke_maniac,
   police_man,
+  scientist,
 
   // elite four / champion
   drake,

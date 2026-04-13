@@ -19787,5 +19787,101 @@
   "tilewidth": 32,
   "type": "map",
   "version": "1.11",
-  "width": 58
+  "width": 58,
+  "properties": [
+    {
+      "name": "map-settings",
+      "propertytype": "map-settings",
+      "type": "class",
+      "value": {
+        "encounter-table": {
+          "ROUTE_2": [
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 2,
+                "rarity": 45,
+                "species": "pidgey"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 2,
+                "rarity": 45,
+                "species": "rattata"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 4,
+                "rarity": 5,
+                "species": "caterpie"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 4,
+                "rarity": 5,
+                "species": "weedle"
+              }
+            }
+          ],
+          "grass": [
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 2,
+                "rarity": 45,
+                "species": "pidgey"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 2,
+                "rarity": 45,
+                "species": "rattata"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 4,
+                "rarity": 5,
+                "species": "weedle"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 4,
+                "rarity": 5,
+                "species": "caterpie"
+              }
+            }
+          ],
+          "name": "ROUTE_2"
+        }
+      }
+    }
+  ]
 }

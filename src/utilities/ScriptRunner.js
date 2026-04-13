@@ -2,6 +2,7 @@ import store from '../store/index.js';
 import ChoicePrompt from './ChoicePrompt.js';
 import { getInputManager, Action } from './InputManager.js';
 import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
+import { playBgm, playSfx, stopByKey, stopAll, lazyLoadBgm, stopBgm } from './AudioManager.js';
 
 // Lazy-load the species list once per session.
 let _allSpec = null;
@@ -63,7 +64,8 @@ export default class ScriptRunner {
       'walk_warp_continue', 'teleport_to_pokecenter', 'escape_rope', 'wait',
       'wait_input', 'set_var', 'if_var', 'if_facing', 'if_npc_at', 'heal_party',
       'show_exclamation', 'knockback', 'look', 'face_char', 'movement_behavior',
-      'play_sound', 'stop_sound', 'fade_out', 'fade_in', 'camera_pan',
+      'play_sound', 'stop_sound', 'bgm_start', 'bgm_stop',
+      'fade_out', 'fade_in', 'camera_pan',
       'camera_follow_player', 'camera_follow_npc',
     ]);
     const REQUIRED = {
@@ -92,6 +94,7 @@ export default class ScriptRunner {
       face_char:         ['character1', 'character2'],
       movement_behavior: ['character1', 'value'],
       play_sound:        ['key'],
+      bgm_start:         ['key'],
       camera_follow_npc: ['name'],
     };
     const warnings = [];
@@ -933,17 +936,33 @@ export default class ScriptRunner {
 
       // ── Audio ─────────────────────────────────────────────────────────────
 
-      case 'play_sound':
-        this._scene.sound.play(cmd.key, { loop: cmd.loop ?? false });
+      case 'play_sound': {
+        const channel = cmd.channel ?? 'sfx';
+        if (channel === 'bgm') {
+          playBgm(this._scene, cmd.key, cmd.loop ?? true);
+        } else {
+          playSfx(this._scene, cmd.key, cmd.loop ?? false);
+        }
         this._step();
         break;
+      }
 
       case 'stop_sound':
         if (cmd.key) {
-          this._scene.sound.stopByKey(cmd.key);
+          stopByKey(this._scene, cmd.key);
         } else {
-          this._scene.sound.stopAll();
+          stopAll(this._scene);
         }
+        this._step();
+        break;
+
+      case 'bgm_start':
+        lazyLoadBgm(this._scene, cmd.key, cmd.loop ?? true);
+        this._step();
+        break;
+
+      case 'bgm_stop':
+        stopBgm();
         this._step();
         break;
 

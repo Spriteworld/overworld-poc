@@ -39,6 +39,7 @@ export default class DebugScreen {
     this._cursor   = 0;
     this._top      = 0;
     this._items    = [];
+    this._dirty    = false;
   }
 
   /** Called by PauseMenu._transitionTo — resets to first tab. */
@@ -46,6 +47,7 @@ export default class DebugScreen {
     this._tabIndex = 0;
     this._cursor   = 0;
     this._top      = 0;
+    this._dirty    = false;
     this._loadTab();
     this._render();
   }
@@ -260,6 +262,7 @@ export default class DebugScreen {
 
     this._write(item, !this._read(item));
     this._persist(item);
+    this._dirty = true;
     this._render();
   }
 

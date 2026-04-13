@@ -10261,5 +10261,173 @@
   "tilewidth": 32,
   "type": "map",
   "version": "1.11",
-  "width": 62
+  "width": 62,
+  "properties": [
+    {
+      "name": "map-settings",
+      "propertytype": "map-settings",
+      "type": "class",
+      "value": {
+        "encounter-table": {
+          "good-rod": [
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 15,
+                "level-range-min": 5,
+                "rarity": 20,
+                "species": "goldeen"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 15,
+                "level-range-min": 5,
+                "rarity": 60,
+                "species": "poliwag"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 15,
+                "level-range-min": 5,
+                "rarity": 20,
+                "species": "magikarp"
+              }
+            }
+          ],
+          "grass": [
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 2,
+                "rarity": 45,
+                "species": "mankey"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 2,
+                "rarity": 45,
+                "species": "rattata"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 5,
+                "level-range-min": 3,
+                "rarity": 10,
+                "species": "spearow"
+              }
+            }
+          ],
+          "headbutt": [],
+          "name": "ROUTE_22",
+          "old-rod": [
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-random": [
+                  {
+                    "type": "int",
+                    "value": 5
+                  }
+                ],
+                "rarity": 100,
+                "species": "magikarp"
+              }
+            }
+          ],
+          "rock-smash": [],
+          "super-rod": [
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 25,
+                "level-range-min": 15,
+                "rarity": 40,
+                "species": "poliwag"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 30,
+                "level-range-min": 20,
+                "rarity": 40,
+                "species": "poliwhirl"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 25,
+                "level-range-min": 15,
+                "rarity": 15,
+                "species": "gyarados"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 40,
+                "level-range-min": 15,
+                "rarity": 5,
+                "species": "psyduck"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 40,
+                "level-range-min": 15,
+                "rarity": 5,
+                "species": "slowpoke"
+              }
+            }
+          ],
+          "surf": [
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 40,
+                "level-range-min": 20,
+                "rarity": 50,
+                "species": "psyduck"
+              }
+            },
+            {
+              "propertytype": "encounter-pokemon",
+              "type": "class",
+              "value": {
+                "level-range-max": 40,
+                "level-range-min": 20,
+                "rarity": 50,
+                "species": "slowpoke"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

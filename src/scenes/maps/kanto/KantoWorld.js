@@ -1,4 +1,5 @@
 import { GameMap, Tile } from '@Objects';
+import { lazyLoadBgm } from '@Utilities/AudioManager.js';
 import { MAP_REGISTRY, KantoMap, WORLD_FILE, WORLD_MAP_KEYS } from '@Maps';
 import { gameState } from '@Data/gameState.js';
 import kantoCommonJson from '@Tileset/maps/kanto_common.json';
@@ -63,15 +64,20 @@ export default class KantoWorld extends GameMap {
     const minY  = Math.min(...maps.map(m => m.y));
 
     const layer = KantoMap.layers.find(l => l.name === 'maps' && l.type === 'objectgroup');
-    this._locationZones = (layer?.objects ?? []).map(obj => ({
-      name: obj.name,
-      // Convert kanto.json pixel origin → merged-world tile coords.
-      x: (obj.x - KANTO_OFFSET_X - minX) / Tile.WIDTH,
-      y: (obj.y - KANTO_OFFSET_Y - minY) / Tile.HEIGHT,
-      w: obj.width  / Tile.WIDTH,
-      h: obj.height / Tile.HEIGHT,
-    }));
+    this._locationZones = (layer?.objects ?? []).map(obj => {
+      const mapSettings = obj.properties?.find(p => p.name === 'map-settings')?.value;
+      return {
+        name: obj.name,
+        bgm:  mapSettings?.bgm ?? null,
+        // Convert kanto.json pixel origin → merged-world tile coords.
+        x: (obj.x - KANTO_OFFSET_X - minX) / Tile.WIDTH,
+        y: (obj.y - KANTO_OFFSET_Y - minY) / Tile.HEIGHT,
+        w: obj.width  / Tile.WIDTH,
+        h: obj.height / Tile.HEIGHT,
+      };
+    });
     this._currentLocation = null;
+    this._currentBgmKey   = null;
   }
 
   /**
@@ -83,12 +89,14 @@ export default class KantoWorld extends GameMap {
 
     // Check the player's spawn tile immediately (replaces the generic 'map-enter' toast).
     this._checkLocation(this.gridEngine.getPosition('player'));
+    this._checkForBGM();
 
     this._locationSub = this.gridEngine
       .positionChangeStarted()
       .subscribe(({ charId, enterTile }) => {
         if (charId !== 'player') return;
         this._checkLocation(enterTile);
+        this._checkForBGM();
       });
 
     this.events.once('shutdown', () => this._locationSub?.unsubscribe());
@@ -114,6 +122,18 @@ export default class KantoWorld extends GameMap {
       .replace(/([a-z])([A-Z])/g, '$1 $2')
       .replace(/([A-Za-z])(\d)/g, '$1 $2');
     this.game.events.emit('toast', display);
+  }
+
+  /**
+   * If the current location zone has a BGM key that differs from the one
+   * already playing, start loading and playing it.
+   */
+  _checkForBGM() {
+    const zone   = this._locationZones.find(z => z.name === this._currentLocation);
+    const bgmKey = zone?.bgm ?? null;
+    if (!bgmKey || bgmKey === this._currentBgmKey) return;
+    this._currentBgmKey = bgmKey;
+    lazyLoadBgm(this, bgmKey);
   }
 
   /**

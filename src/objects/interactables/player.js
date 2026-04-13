@@ -44,6 +44,18 @@ export default class {
 
     let spawn = this.scene.findInteractions('playerSpawn');
     if (spawn === null || spawn.length === 0) {
+      // Fall back to the first warpLocation on the map
+      const warps = this.scene.findInteractions('warpLocation');
+      if (warps && warps.length > 0) {
+        const w = warps[0];
+        console.warn(`Interactables::player — no playerSpawn found, using warpLocation "${w.name}" as fallback`);
+        this.addPlayerToScene(
+          parseInt(w.x / Tile.WIDTH),
+          parseInt(w.y / Tile.HEIGHT),
+          getPropertyValue(w.properties ?? [], 'layer', undefined)
+        );
+        return;
+      }
       throw 'No player spawn found';
     }
     if (spawn.length > 1) {

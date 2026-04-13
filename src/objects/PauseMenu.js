@@ -370,6 +370,9 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
         this.pendingUseItem = null;
         this._transitionTo('bag');
         return false;
+      case 'debug':
+        if (this.debugScreen._dirty) this.debugScreen._reloadMap();
+        break;
     }
     if (this._currentScreen !== null) {
       this._currentScreen = null;
