@@ -230,12 +230,26 @@ export default class {
     store.commit('game/SET_PLAYER_FACING', char.getFacingDirection());
 
     char.disableMovement();
+
+    // Capture and freeze any active script immediately so it doesn't advance
+    // into commands that reference the destination map while we are still on
+    // the current map (the warp fires on positionChangeStarted, but the script
+    // advances on positionChangeFinished — those are two separate ticks).
+    let pendingScript;
+    const runner = this.scene._activeScriptRunner;
+    if (runner?._queue?.length) {
+      pendingScript = [...runner._queue];
+      runner._queue.length = 0;
+    }
+
     this.scene.cameras.main.fadeOut(500, 0, 0, 0);
     this.scene.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
         this.scene.registry.set('map', warpTarget);
-        this.scene.scene.start(warpTarget, { warpLocationName });
+        const startParams = { warpLocationName };
+        if (pendingScript) startParams._pendingScript = pendingScript;
+        this.scene.scene.start(warpTarget, startParams);
       }
     );
   }
@@ -263,6 +277,13 @@ export default class {
       startData = { warpLocationName: locationData };
     } else if (locationData) {
       startData = { playerLocation: locationData };
+    } else {
+      startData = {};
+    }
+    const warpRunner = this.scene._activeScriptRunner;
+    if (warpRunner?._queue?.length) {
+      startData._pendingScript = [...warpRunner._queue];
+      warpRunner._queue.length = 0;
     }
     this.scene.scene.start(warpTarget, startData);
   }

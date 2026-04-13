@@ -359,6 +359,35 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
+        "id": 88,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "look"
+            },
+            {
+                "name": "direction",
+                "propertyType": "facing-direction",
+                "type": "string",
+                "value": "down"
+            },
+            {
+                "name": "target",
+                "type": "string",
+                "value": "player"
+            }
+        ],
+        "name": "cmd-look-npc",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
         "id": 37,
         "members": [
             {
@@ -768,6 +797,64 @@
         ]
     },
     {
+        "color": "#ff8800ff",
+        "drawFill": true,
+        "id": 84,
+        "members": [
+            {
+                "name": "anchor",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "warp_continue"
+            },
+            {
+                "name": "layer",
+                "type": "string",
+                "value": "ground"
+            },
+            {
+                "name": "map",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "target",
+                "type": "string",
+                "value": "player"
+            },
+            {
+                "name": "walk_x",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "walk_y",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "x",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "y",
+                "type": "int",
+                "value": 0
+            }
+        ],
+        "name": "cmd-walk_warp_continue",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
         "color": "#ff00aaff",
         "drawFill": true,
         "id": 83,
@@ -917,7 +1004,14 @@
             "movement_behavior",
             "face_char",
             "warp_npc",
-            "warp_continue"
+            "warp_continue",
+            "look",
+            "if_facing",
+            "if_npc_at",
+            "wait",
+            "remove_npc",
+            "play_sound",
+            "stop_sound"
         ],
         "valuesAsFlags": false
     },
@@ -1222,6 +1316,16 @@
         "drawFill": true,
         "id": 17,
         "members": [
+            {
+                "name": "bg-music-key",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "bg-music-repeat",
+                "type": "bool",
+                "value": true
+            },
             {
                 "name": "encounter-rate",
                 "type": "int",
@@ -1725,9 +1829,50 @@
         ]
     },
     {
-        "color": "#ff8800ff",
+        "color": "#ffa0a0a4",
         "drawFill": true,
-        "id": 84,
+        "id": 89,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "if_facing"
+            },
+            {
+                "name": "direction",
+                "propertyType": "facing-direction",
+                "type": "string",
+                "value": "down"
+            },
+            {
+                "name": "else",
+                "type": "list",
+                "value": [
+                ]
+            },
+            {
+                "name": "target",
+                "type": "string",
+                "value": "player"
+            },
+            {
+                "name": "then",
+                "type": "list",
+                "value": [
+                ]
+            }
+        ],
+        "name": "cmd-if_facing",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 90,
         "members": [
             {
                 "name": "anchor",
@@ -1738,17 +1883,24 @@
                 "name": "cmd",
                 "propertyType": "command-list",
                 "type": "string",
-                "value": "warp_continue"
+                "value": "if_npc_at"
             },
             {
-                "name": "layer",
-                "type": "string",
-                "value": "ground"
+                "name": "else",
+                "type": "list",
+                "value": [
+                ]
             },
             {
-                "name": "map",
+                "name": "name",
                 "type": "string",
                 "value": ""
+            },
+            {
+                "name": "then",
+                "type": "list",
+                "value": [
+                ]
             },
             {
                 "name": "x",
@@ -1761,7 +1913,104 @@
                 "value": 0
             }
         ],
-        "name": "cmd-warp_continue",
+        "name": "cmd-if_npc_at",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 91,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "wait"
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "value": 500
+            }
+        ],
+        "name": "cmd-wait",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 92,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "remove_npc"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "cmd-remove_npc",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 93,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "play_sound"
+            },
+            {
+                "name": "key",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "loop",
+                "type": "bool",
+                "value": false
+            }
+        ],
+        "name": "cmd-play_sound",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 94,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "stop_sound"
+            },
+            {
+                "name": "key",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "cmd-stop_sound",
         "type": "class",
         "useAs": [
             "property"

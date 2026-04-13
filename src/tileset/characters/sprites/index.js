@@ -12,10 +12,14 @@ import gentleman from './gentleman.png';
 import giovanni from './giovanni.png';
 import glacia from './glacia.png';
 import koga from './koga.png';
+import brendan from './brendan.png';
+import brendan_bike from './brendan_bike.png';
 import leaf from './leaf.png';
 import leaf_bike from './leaf_bike.png';
 import leaf_run from './leaf_run.png';
 import leaf_surf from './leaf_surf.png';
+import may from './may.png';
+import may_bike from './may_bike.png';
 import mom from './mom.png';
 import misty from './misty.png';
 import pheobe from './pheobe.png';
@@ -44,6 +48,10 @@ export default {
   leaf_bike,
   leaf_run,
   leaf_surf,
+  brendan,
+  brendan_bike,
+  may,
+  may_bike,
 
   // gym leaders
   blaine,

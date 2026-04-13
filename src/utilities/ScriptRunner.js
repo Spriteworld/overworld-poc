@@ -30,8 +30,9 @@ export default class ScriptRunner {
   constructor(scene, commands) {
     this._scene  = scene;
     this._queue  = ScriptRunner.normalize(commands);
-    this._vars   = {};
-    this._onDone = null;
+    this._vars          = {};
+    this._onDone        = null;
+    this._inspectorText = null;
   }
 
   /**
@@ -44,6 +45,70 @@ export default class ScriptRunner {
    * @param {object[]} cmds
    * @returns {object[]}
    */
+  /**
+   * Validate a command array and return an array of warning strings.
+   * Recurses into then/else/yes/no branches.
+   * Called at the start of run() when debug mode is enabled.
+   *
+   * @param {object[]} commands
+   * @param {string}   [path='root']
+   * @returns {string[]}
+   */
+  static validate(commands, path = 'root') {
+    const KNOWN = new Set([
+      'text', 'yes_no', 'give_item', 'remove_item', 'set_flag', 'if_flag',
+      'if_has_item', 'give_pokemon', 'enable_input', 'disable_input',
+      'move_player', 'move_npc', 'walk_to_char', 'spawn_npc', 'remove_npc',
+      'move_to_box', 'if_party_count', 'teach_move', 'warp_player', 'warp_npc',
+      'walk_warp_continue', 'teleport_to_pokecenter', 'escape_rope', 'wait',
+      'wait_input', 'set_var', 'if_var', 'if_facing', 'if_npc_at', 'heal_party',
+      'show_exclamation', 'knockback', 'look', 'face_char', 'movement_behavior',
+      'play_sound', 'stop_sound', 'fade_out', 'fade_in', 'camera_pan',
+      'camera_follow_player', 'camera_follow_npc',
+    ]);
+    const REQUIRED = {
+      text:              ['text'],
+      yes_no:            ['text'],
+      give_item:         ['item'],
+      remove_item:       ['item'],
+      set_flag:          ['key'],
+      if_flag:           ['key'],
+      if_has_item:       ['item'],
+      give_pokemon:      ['species'],
+      move_npc:          ['name'],
+      walk_to_char:      ['character1', 'character2', 'side'],
+      spawn_npc:         ['name', 'texture'],
+      remove_npc:        ['name'],
+      if_party_count:    ['count'],
+      teach_move:        ['move'],
+      warp_player:       ['map'],
+      warp_npc:          ['character'],
+      walk_warp_continue: ['map'],
+      set_var:           ['key', 'value'],
+      if_var:            ['key', 'value'],
+      if_facing:         ['direction'],
+      if_npc_at:         ['name'],
+      look:              ['direction'],
+      face_char:         ['character1', 'character2'],
+      movement_behavior: ['character1', 'value'],
+      play_sound:        ['key'],
+      camera_follow_npc: ['name'],
+    };
+    const warnings = [];
+    commands.forEach((cmd, i) => {
+      const loc = `${path}[${i}]`;
+      if (!cmd.cmd) { warnings.push(`${loc}: missing "cmd" field`); return; }
+      if (!KNOWN.has(cmd.cmd)) { warnings.push(`${loc}: unknown command "${cmd.cmd}"`); return; }
+      for (const field of (REQUIRED[cmd.cmd] ?? [])) {
+        if (cmd[field] == null) { warnings.push(`${loc} (${cmd.cmd}): missing required field "${field}"`); }
+      }
+      for (const key of ['then', 'else', 'yes', 'no']) {
+        if (Array.isArray(cmd[key])) { warnings.push(...ScriptRunner.validate(cmd[key], `${loc}.${key}`)); }
+      }
+    });
+    return warnings;
+  }
+
   static normalize(cmds) {
     return cmds.map(item => {
       if (item?.type === 'class' && typeof item.propertytype === 'string' && item.propertytype.startsWith('cmd-')) {
@@ -61,6 +126,13 @@ export default class ScriptRunner {
 
   run(onDone) {
     this._onDone = onDone ?? null;
+    if (this._debug()) {
+      const warnings = ScriptRunner.validate(this._queue);
+      if (warnings.length) {
+        console.warn('[ScriptRunner] Validation warnings:', warnings);
+      }
+    }
+    this._scene._activeScriptRunner = this;
     this._scene.game.events.emit('script-runner-start');
     if (this._debug()) console.log('[ScriptRunner] start — queue:', this._queue.map(c => c.cmd));
     this._step();
@@ -70,7 +142,12 @@ export default class ScriptRunner {
 
   _step() {
     if (!this._queue.length) {
+      if (this._inspectorText) {
+        this._inspectorText.destroy();
+        this._inspectorText = null;
+      }
       if (this._debug()) console.log('[ScriptRunner] done');
+      delete this._scene._activeScriptRunner;
       this._scene.game.events.emit('script-runner-end');
       this._onDone?.();
       return;
@@ -168,7 +245,35 @@ export default class ScriptRunner {
     return !!this._scene?.game?.config?.debug?.console?.scriptRunner;
   }
 
+  /**
+   * Start a new Phaser scene, forwarding any remaining queued commands as
+   * `_pendingScript` so they resume in the destination scene.
+   *
+   * @param {string} mapKey  - Scene key to start.
+   * @param {object} params  - Scene init data (mutated in-place to add _pendingScript).
+   */
+  _startScene(mapKey, params) {
+    if (this._queue.length) {
+      params._pendingScript = [...this._queue];
+      this._queue.length = 0;
+    }
+    this._scene.scene.start(mapKey, params);
+  }
+
   _exec(cmd) {
+    if (this._debug()) {
+      const label = `[Script] ${cmd.cmd}  (${this._queue.length} remaining)`;
+      if (!this._inspectorText) {
+        this._inspectorText = this._scene.add.text(8, 8, label, {
+          fontSize: '11px',
+          color: '#ffffff',
+          backgroundColor: '#000000cc',
+          padding: { x: 4, y: 2 },
+        }).setScrollFactor(0).setDepth(99999);
+      } else {
+        this._inspectorText.setText(label);
+      }
+    }
     if (this._debug()) console.log('[ScriptRunner] exec:', cmd.cmd, cmd);
     switch (cmd.cmd) {
 
@@ -223,6 +328,16 @@ export default class ScriptRunner {
         break;
       }
 
+      case 'if_has_item': {
+        const bag = store.state.bag;
+        const found = bag.items.some(e => e.name === cmd.item) ||
+                      bag.pokeballs.some(e => e.name === cmd.item) ||
+                      bag.tms.some(e => e.name === cmd.item) ||
+                      bag.keyItems.some(e => e.name === cmd.item);
+        this._branch(found ? (cmd.then ?? []) : (cmd.else ?? []));
+        break;
+      }
+
       // ── Gift Pokémon ──────────────────────────────────────────────────────
 
       case 'give_pokemon': {
@@ -272,6 +387,11 @@ export default class ScriptRunner {
         } else {
           const anchor = cmd.anchor ? this._resolveAnchor(cmd.anchor) : null;
           const target = anchor ?? { x: cmd.x, y: cmd.y };
+          if (target.x == null || target.y == null) {
+            console.warn(`[ScriptRunner] move_player: could not resolve target (anchor="${cmd.anchor}", x=${cmd.x}, y=${cmd.y}) — skipping`);
+            this._step();
+            break;
+          }
           const sub = this._scene.gridEngine.positionChangeFinished().subscribe(({ charId, enterTile }) => {
             if (charId !== 'player') return;
             if (enterTile.x === target.x && enterTile.y === target.y) {
@@ -295,6 +415,11 @@ export default class ScriptRunner {
         } else {
           const anchor = cmd.anchor ? this._resolveAnchor(cmd.anchor) : null;
           const target = anchor ?? { x: cmd.x, y: cmd.y };
+          if (target.x == null || target.y == null) {
+            console.warn(`[ScriptRunner] move_npc: could not resolve target (anchor="${cmd.anchor}", x=${cmd.x}, y=${cmd.y}) — skipping`);
+            this._step();
+            break;
+          }
           const noPathStrategy = cmd.strategy ?? 'CLOSEST_REACHABLE';
           let npcMoveSettled = false;
           const npcMoveSettle = () => {
@@ -314,6 +439,48 @@ export default class ScriptRunner {
           });
           npc.moveTo(target, { noPathFoundStrategy: noPathStrategy, pathBlockedStrategy: 'WAIT' });
         }
+        break;
+      }
+
+      // ── Camera ────────────────────────────────────────────────────────────
+
+      case 'camera_pan': {
+        let panX, panY;
+        if (cmd.anchor) {
+          const anchor = this._resolveAnchor(cmd.anchor);
+          if (!anchor) { this._step(); break; }
+          panX = anchor.x * 32 + 16;
+          panY = anchor.y * 32 + 16;
+        } else {
+          panX = (cmd.x ?? 0) * 32 + 16;
+          panY = (cmd.y ?? 0) * 32 + 16;
+        }
+        this._scene.cameras.main.pan(panX, panY, cmd.duration ?? 500, 'Linear', false, (cam, progress) => {
+          if (progress === 1) this._step();
+        });
+        break;
+      }
+
+      case 'camera_follow_player': {
+        const followPlayer = this._scene.characters?.get('player');
+        if (followPlayer) {
+          this._scene.cameras.main.startFollow(followPlayer, true, 1);
+          this._scene.cameras.main.setFollowOffset(-(followPlayer.width / 2), -(followPlayer.height / 2));
+        }
+        this._step();
+        break;
+      }
+
+      case 'camera_follow_npc': {
+        const followNpc = this._scene.characters?.get(cmd.name)
+                       ?? this._scene.characters?.get('npc_' + cmd.name);
+        if (followNpc) {
+          this._scene.cameras.main.startFollow(followNpc, true, 1);
+          this._scene.cameras.main.setFollowOffset(-(followNpc.width / 2), -(followNpc.height / 2));
+        } else {
+          console.warn(`[ScriptRunner] camera_follow_npc: character "${cmd.name}" not found`);
+        }
+        this._step();
         break;
       }
 
@@ -402,6 +569,20 @@ export default class ScriptRunner {
         break;
       }
 
+      // ── Remove NPC ───────────────────────────────────────────────────────
+
+      case 'remove_npc': {
+        const removeNpc = this._scene.characters?.get(cmd.name)
+                       ?? this._scene.characters?.get('npc_' + cmd.name);
+        if (removeNpc) {
+          removeNpc.remove();
+        } else {
+          console.warn(`[ScriptRunner] remove_npc: character "${cmd.name}" not found`);
+        }
+        this._step();
+        break;
+      }
+
       // ── Party management ──────────────────────────────────────────────────
 
       case 'move_to_box':
@@ -429,6 +610,18 @@ export default class ScriptRunner {
         });
         break;
       }
+
+      // ── Camera fades ──────────────────────────────────────────────────────
+
+      case 'fade_out':
+        this._scene.cameras.main.fadeOut(cmd.duration ?? 500, 0, 0, 0);
+        this._scene.cameras.main.once('camerafadeoutcomplete', () => this._step());
+        break;
+
+      case 'fade_in':
+        this._scene.cameras.main.fadeIn(cmd.duration ?? 500, 0, 0, 0);
+        this._scene.cameras.main.once('camerafadeincomplete', () => this._step());
+        break;
 
       // ── World navigation ──────────────────────────────────────────────────
 
@@ -468,28 +661,66 @@ export default class ScriptRunner {
           const params = cmd.anchor
             ? { warpLocationName: cmd.anchor }
             : { playerLocation: { x: cmd.x ?? 0, y: cmd.y ?? 0, charLayer: cmd.layer ?? 'ground' } };
-          this._scene.scene.start(cmd.map, params);
+          this._startScene(cmd.map, params);
         });
         break; // no _step() — scene is changing
       }
 
-      case 'warp_continue': {
-        const wcp = this._scene.characters?.get('player');
-        store.commit('game/SET_PLAYER_FACING', wcp?.getFacingDirection() ?? 'down');
-        wcp?.disableMovement?.();
-        this._scene.registry.set('map', cmd.map);
-        this._scene.game.events.emit('script-runner-end');
-        const wcParams = cmd.anchor
-          ? { warpLocationName: cmd.anchor }
-          : { playerLocation: { x: cmd.x ?? 0, y: cmd.y ?? 0, charLayer: cmd.layer ?? 'ground' } };
-        if (this._queue.length) {
-          wcParams._pendingScript = [...this._queue];
-          this._queue.length = 0; // prevent dead ScriptRunner from emitting script-runner-end again
+      case 'walk_warp_continue': {
+        const wwcTargetId = cmd.target ?? 'player';
+        const wwcChar = this._scene.characters?.get(wwcTargetId)
+                     ?? this._scene.characters?.get('npc_' + wwcTargetId);
+
+        const wwcDoWarp = () => {
+          const wwcPlayer = this._scene.characters?.get('player');
+          store.commit('game/SET_PLAYER_FACING', wwcPlayer?.getFacingDirection() ?? 'down');
+          wwcPlayer?.disableMovement?.();
+          this._scene.registry.set('map', cmd.map);
+          this._scene.game.events.emit('script-runner-end');
+          const wwcParams = cmd.anchor
+            ? { warpLocationName: cmd.anchor }
+            : { playerLocation: { x: cmd.x ?? 0, y: cmd.y ?? 0, charLayer: cmd.layer ?? 'ground' } };
+          this._scene.cameras.main.fadeOut(500, 0, 0, 0);
+          this._scene.cameras.main.once('camerafadeoutcomplete', () => {
+            this._startScene(cmd.map, wwcParams);
+          });
+        };
+
+        // Walk destination is specified as tile coords in the current map via walk_x / walk_y.
+        // cmd.anchor (and cmd.x/y) are only for the destination scene placement.
+        const hasWalkTarget = cmd.walk_x != null && cmd.walk_y != null;
+        if (!hasWalkTarget || !wwcChar || !this._scene.gridEngine) {
+          wwcDoWarp();
+          break;
         }
-        this._scene.cameras.main.fadeOut(500, 0, 0, 0);
-        this._scene.cameras.main.once('camerafadeoutcomplete', () => {
-          this._scene.scene.start(cmd.map, wcParams);
+
+        const wwcDest = { x: cmd.walk_x, y: cmd.walk_y };
+
+        // Already at destination — skip movement.
+        const wwcCurrent = this._scene.gridEngine.getPosition(wwcChar.config.id);
+        if (wwcCurrent && wwcCurrent.x === wwcDest.x && wwcCurrent.y === wwcDest.y) {
+          wwcDoWarp();
+          break;
+        }
+
+        let wwcSettled = false;
+        const wwcSettle = () => {
+          if (wwcSettled) return;
+          wwcSettled = true;
+          wwcMoveSub.unsubscribe();
+          wwcStopSub.unsubscribe();
+          wwcDoWarp();
+        };
+
+        const wwcMoveSub = this._scene.gridEngine.positionChangeFinished().subscribe(({ charId, enterTile }) => {
+          if (charId !== wwcChar.config.id) return;
+          if (enterTile.x === wwcDest.x && enterTile.y === wwcDest.y) wwcSettle();
         });
+        const wwcStopSub = this._scene.gridEngine.movementStopped().subscribe(({ charId }) => {
+          if (charId === wwcChar.config.id) wwcSettle();
+        });
+
+        wwcChar.moveTo(wwcDest, { noPathFoundStrategy: 'CLOSEST_REACHABLE', pathBlockedStrategy: 'WAIT' });
         break; // no _step() — scene is changing
       }
 
@@ -503,7 +734,7 @@ export default class ScriptRunner {
         this._scene.game.events.emit('script-runner-end');
         this._scene.cameras.main.fadeOut(500, 0, 0, 0);
         this._scene.cameras.main.once('camerafadeoutcomplete', () => {
-          this._scene.scene.start(healLoc.map, { playerLocation: healLoc });
+          this._startScene(healLoc.map, { playerLocation: healLoc });
         });
         break;
       }
@@ -519,10 +750,16 @@ export default class ScriptRunner {
         this._scene.game.events.emit('script-runner-end');
         this._scene.cameras.main.fadeOut(500, 0, 0, 0);
         this._scene.cameras.main.once('camerafadeoutcomplete', () => {
-          this._scene.scene.start(outdoor.map, { playerLocation: outdoor });
+          this._startScene(outdoor.map, { playerLocation: outdoor });
         });
         break;
       }
+
+      // ── Wait ─────────────────────────────────────────────────────────────
+
+      case 'wait':
+        this._scene.time.delayedCall(cmd.duration ?? 0, () => this._step());
+        break;
 
       // ── Wait for input ────────────────────────────────────────────────────
 
@@ -694,8 +931,24 @@ export default class ScriptRunner {
         break;
       }
 
+      // ── Audio ─────────────────────────────────────────────────────────────
+
+      case 'play_sound':
+        this._scene.sound.play(cmd.key, { loop: cmd.loop ?? false });
+        this._step();
+        break;
+
+      case 'stop_sound':
+        if (cmd.key) {
+          this._scene.sound.stopByKey(cmd.key);
+        } else {
+          this._scene.sound.stopAll();
+        }
+        this._step();
+        break;
+
       default:
-        console.warn(`[ScriptRunner] Unknown command: "${cmd.cmd}"`);
+        console.warn(`[ScriptRunner] Unknown command "${cmd.cmd}" — skipping.`, cmd);
         this._step();
     }
   }

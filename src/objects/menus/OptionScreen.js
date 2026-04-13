@@ -4,8 +4,8 @@ import {
   TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT,
 } from './layout.js';
 
-const SPRITES = ['red', 'leaf'];
-const SPRITE_LABELS = { red: 'Male (Red)', leaf: 'Female (Leaf)' };
+const SPRITES = ['red', 'leaf', 'brendan', 'may'];
+const SPRITE_LABELS = { red: 'Male (Red)', leaf: 'Female (Leaf)', brendan: 'Male (Brendan)', may: 'Female (May)' };
 
 const TEXT_SPEEDS = ['normal', 'fast', 'instant'];
 const TEXT_SPEED_LABELS = { normal: 'Normal', fast: 'Fast', instant: 'Instant' };
@@ -41,12 +41,32 @@ export default class OptionScreen {
     reg(sep);
 
     OPTIONS.forEach(({ key, label }, i) => {
-      const isCursor = i === this._cursor;
-      const prefix   = isCursor ? '▶ ' : '  ';
-      reg(scene.add.text(SX + 16, LIST_Y + i * ROW_H, prefix + label, TEXT_STYLE_BODY));
+      const isCursor  = i === this._cursor;
+      const prefix    = isCursor ? '▶ ' : '  ';
+      const rowY      = LIST_Y + i * ROW_H;
+      const labelText = scene.add.text(SX + 16, rowY, prefix + label, TEXT_STYLE_BODY);
+      reg(labelText);
+
+      if (key === 'character') {
+        const spriteKey = store.state.game.playerSprite;
+        if (scene.textures.exists(spriteKey)) {
+          const spriteScale = 0.5;
+          const cropH       = 32;
+          const spriteH     = cropH * spriteScale;
+          const head = scene.add.sprite(
+            SX + 16 + labelText.width + 4,
+            rowY + (ROW_H - spriteH) / 2 - 5,
+            spriteKey, 0
+          );
+          head.setCrop(0, 0, 32, cropH);
+          head.setScale(spriteScale);
+          head.setOrigin(0, 0);
+          reg(head);
+        }
+      }
 
       const value = this._getValue(key);
-      reg(scene.add.text(VAL_X, LIST_Y + i * ROW_H, '◀ ' + value + ' ▶', TEXT_STYLE_BODY)).setOrigin(1, 0);
+      reg(scene.add.text(VAL_X, rowY, '◀ ' + value + ' ▶', TEXT_STYLE_BODY)).setOrigin(1, 0);
     });
 
     reg(scene.add.text(SX + 16, SY + SH - 22, '▲▼ select   ◀▶ change   X  back', TEXT_STYLE_HINT));

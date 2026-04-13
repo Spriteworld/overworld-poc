@@ -92,6 +92,18 @@ export default class Script {
           }
         });
     }
+
+    // ── Map-enter trigger ─────────────────────────────────────────────────
+    const mapEnterEntries = this._entries.filter(e => e.trigger === 'map_enter');
+    if (mapEnterEntries.length) {
+      // Defer by one tick so GridEngine and all character plugins are fully
+      // initialised before the script reads positions or moves characters.
+      this.scene.time.delayedCall(0, () => {
+        for (const entry of mapEnterEntries) {
+          this._run(entry);
+        }
+      });
+    }
   }
 
   update() {}

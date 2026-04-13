@@ -61,6 +61,22 @@ export default class extends Phaser.Scene {
       frameWidth: 48,
       frameHeight: 48
     });
+    this.load.spritesheet('brendan', Tileset.trainers.brendan, {
+      frameWidth: 32,
+      frameHeight: 48
+    });
+    this.load.spritesheet('brendan_bike', Tileset.trainers.brendan_bike, {
+      frameWidth: 48,
+      frameHeight: 48
+    });
+    this.load.spritesheet('may', Tileset.trainers.may, {
+      frameWidth: 32,
+      frameHeight: 48
+    });
+    this.load.spritesheet('may_bike', Tileset.trainers.may_bike, {
+      frameWidth: 48,
+      frameHeight: 48
+    });
     this.load.spritesheet('animated_grass', Tileset.animated_grass, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
     this.load.spritesheet('animation', Tileset.animation_sheet, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
     this.load.spritesheet('gen3_inside', Tileset.gen3inside, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });

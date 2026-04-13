@@ -3587,22 +3587,19 @@
                                     }
                                 }, 
                                 {
-                                 "propertytype":"cmd-warp_npc",
+                                 "propertytype":"cmd-remove_npc",
                                  "type":"class",
                                  "value":
                                     {
-                                     "anchor":"oakAway",
-                                     "character":"Oak",
                                      "name":"Oak"
                                     }
                                 }, 
                                 {
-                                 "propertytype":"cmd-warp_continue",
+                                 "propertytype":"cmd-move_player",
                                  "type":"class",
                                  "value":
                                     {
-                                     "anchor":"ProfessorLabWarp",
-                                     "map":"ProfessorLab"
+                                     "anchor":"ProfessorLabWarp"
                                     }
                                 }, 
                                 {
@@ -3629,7 +3626,13 @@
                                      "key":"lock_lab",
                                      "value":"true"
                                     }
-                                }]
+                                },
+                                {
+                                 "propertytype":"cmd-enable_input",
+                                 "type":"class",
+                                 "value": {}
+                                }
+                            ]
                         }, 
                         {
                          "name":"trigger",

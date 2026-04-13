@@ -307,12 +307,14 @@ export default class extends MovableSprite {
       this.setTexture(bikeTexture);
     }
     this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesBikeDef());
+    this.look(this.getFacingDirection());
   }
   /** State callback: restore the base texture and frame mapping when leaving the BIKE state. */
   bikeOnExit() {
     this._baseMovementState = this.stateDef.IDLE;
     this.setTexture(this.config.texture);
     this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesDef());
+    this.look(this.getFacingDirection());
   }
 
   /**
