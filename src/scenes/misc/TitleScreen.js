@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import store from '../../store/index.js';
 import { getGameDef } from '@Data/gameDef.js';
+import { initRng } from '@Utilities/rng.js';
 
 const CX = 400;
 const CY = 260;
@@ -188,7 +189,10 @@ export default class TitleScreen extends Phaser.Scene {
       }
     } else if (this._state === 'confirm') {
       if (chosen === 'YES') {
-        store.dispatch('clearSave').then(() => this._newGame());
+        store.dispatch('clearSave').then(() => {
+          initRng(store.state.game.seed);
+          this._newGame();
+        });
       } else {
         this._state = 'menu';
         this._showMainMenu();

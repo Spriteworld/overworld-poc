@@ -4,6 +4,7 @@ import { gameState } from '@Data/gameState.js';
 import { getPropertyValue } from '@Utilities';
 import { getGameDef, filterByAvailablePokemon, seededRng } from '@Data/gameDef.js';
 import Tileset from '@Tileset';
+import { rng } from '@Utilities/rng.js';
 import store from '../../store/index.js';
 
 /** Default percentage of encounter-zone tiles that spawn a visible OW Pokémon. */
@@ -70,12 +71,12 @@ function buildBattleInventory() {
 }
 
 function pick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(rng() * arr.length)];
 }
 
 function pickWeighted(entries) {
   const total = entries.reduce((sum, e) => sum + e.rarity, 0);
-  let r = Math.random() * total;
+  let r = rng() * total;
   for (const e of entries) {
     r -= e.rarity;
     if (r <= 0) return e;
@@ -84,7 +85,7 @@ function pickWeighted(entries) {
 }
 
 function pickUnique(arr, n) {
-  return [...arr].sort(() => Math.random() - 0.5).slice(0, Math.min(n, arr.length));
+  return [...arr].sort(() => rng() - 0.5).slice(0, Math.min(n, arr.length));
 }
 
 function buildMovePool() {
@@ -202,7 +203,7 @@ export default class OverworldEncounter {
     this._movePool = buildMovePool();
 
     for (const tile of allTiles) {
-      if (Math.random() >= density) continue;
+      if (rng() >= density) continue;
 
       const battleConfig = this._buildBattleConfig(tile, encounterTable);
       if (!battleConfig) continue;
@@ -447,15 +448,15 @@ export default class OverworldEncounter {
     // Mark as seen in the Pokédex at spawn time.
     store.commit('pokedex/SEE', entry.nat_dex_id);
 
-    const level = levelMin + Math.floor(Math.random() * (levelMax - levelMin + 1));
+    const level = levelMin + Math.floor(rng() * (levelMax - levelMin + 1));
     const moves = def.learnsets === 'random'
       ? pickUnique(this._movePool, 4).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }))
       : buildMovesFromLearnset(entry.species, level, this._movePool);
 
-    const ivs     = Object.fromEntries(STAT_KEYS.map(s => [s, 31]));
+    const ivs     = Object.fromEntries(STAT_KEYS.map(s => [s, Math.floor(rng() * 32)]));
     const evs     = Object.fromEntries(STAT_KEYS.map(s => [s, 0]));
-    const isShiny = Math.random() < 1 / 8192;
-    const pokerus = Math.random() < 3 / 65536;
+    const isShiny = rng() < 1 / 8192;
+    const pokerus = rng() < 3 / 65536;
 
     return {
       tilesetBaseUrl: '/',

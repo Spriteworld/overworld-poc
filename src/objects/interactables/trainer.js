@@ -4,6 +4,7 @@ import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves, Items, FRLG_LEARNSETS }
 import { gameState } from '@Data/gameState.js';
 import { getPropertyValue, remapProps, Vector2, checkOnlyIf } from '@Utilities';
 import { getGameDef } from '@Data/gameDef.js';
+import { rng } from '@Utilities/rng.js';
 import Tileset from '@Tileset';
 import Trainer from '@Objects/characters/Trainer.js';
 import store from '../../store/index.js';
@@ -57,10 +58,10 @@ const STAT_KEYS   = [STATS.HP, STATS.ATTACK, STATS.DEFENSE, STATS.SPECIAL_ATTACK
 const NATURE_LIST = Object.values(NATURES);
 
 function pick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(rng() * arr.length)];
 }
 function pickUnique(arr, n) {
-  return [...arr].sort(() => Math.random() - 0.5).slice(0, Math.min(n, arr.length));
+  return [...arr].sort(() => rng() - 0.5).slice(0, Math.min(n, arr.length));
 }
 function buildMovePool() {
   return Moves.getMovesByGameId(GAMES.POKEMON_FIRE_RED).filter(
@@ -437,11 +438,11 @@ export default class {
     return specs.map(spec => {
       const defaults = {
         game:    GAMES.POKEMON_FIRE_RED,
-        pid:     Math.random(),
+        pid:     rng(),
         nature:  pick(NATURE_LIST).name,
         gender:  pick([GENDERS.MALE, GENDERS.FEMALE]),
         ability: { name: 'none' },
-        ivs:     Object.fromEntries(STAT_KEYS.map(s => [s, 31])),
+        ivs:     Object.fromEntries(STAT_KEYS.map(s => [s, Math.floor(rng() * 32)])),
         evs:     Object.fromEntries(STAT_KEYS.map(s => [s, 0])),
       };
       const resolved = { ...defaults, ...spec };

@@ -4,6 +4,7 @@ import { gameState } from '@Data/gameState.js';
 import { getPropertyValue } from '@Utilities';
 import { getGameDef, filterByAvailablePokemon, seededRng } from '@Data/gameDef.js';
 import store from '../../store/index.js';
+import { rng } from '@Utilities/rng.js';
 
 /** Ray-casting point-in-polygon test (pixel space). */
 function pointInPolygon(px, py, polygon) {
@@ -89,12 +90,12 @@ const STAT_KEYS = [
 const NATURE_LIST = Object.values(NATURES);
 
 function pick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(rng() * arr.length)];
 }
 
 function pickWeighted(entries) {
   const total = entries.reduce((sum, e) => sum + e.rarity, 0);
-  let r = Math.random() * total;
+  let r = rng() * total;
   for (const e of entries) {
     r -= e.rarity;
     if (r <= 0) return e;
@@ -103,7 +104,7 @@ function pickWeighted(entries) {
 }
 
 function pickUnique(arr, n) {
-  return [...arr].sort(() => Math.random() - 0.5).slice(0, Math.min(n, arr.length));
+  return [...arr].sort(() => rng() - 0.5).slice(0, Math.min(n, arr.length));
 }
 
 function buildMovePool() {
@@ -262,7 +263,7 @@ export default class {
         t => t.x === enterTile.x && t.y === enterTile.y
       );
       if (!tile) { return; }
-      if (Math.random() > this._encounterRate) { return; }
+      if (rng() > this._encounterRate) { return; }
 
       const battleConfig = this._buildWildBattle(tile);
       this.scene.game.events.emit('battle-start', battleConfig);
@@ -366,15 +367,15 @@ export default class {
     // Mark the wild Pokémon as seen in the Pokédex.
     store.commit('pokedex/SEE', entry.nat_dex_id);
 
-    const level = levelMin + Math.floor(Math.random() * (levelMax - levelMin + 1));
+    const level = levelMin + Math.floor(rng() * (levelMax - levelMin + 1));
     const moves = def.learnsets === 'random'
       ? pickUnique(this._movePool, 4).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }))
       : buildMovesFromLearnset(entry.species, level, this._movePool);
 
-    const ivs     = Object.fromEntries(STAT_KEYS.map(s => [s, 31]));
+    const ivs     = Object.fromEntries(STAT_KEYS.map(s => [s, Math.floor(rng() * 32)]));
     const evs     = Object.fromEntries(STAT_KEYS.map(s => [s, 0]));
-    const isShiny = Math.random() < 1 / 8192;
-    const pokerus = Math.random() < 3 / 65536;
+    const isShiny = rng() < 1 / 8192;
+    const pokerus = rng() < 3 / 65536;
 
     return {
       tilesetBaseUrl:  '/',

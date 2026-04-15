@@ -1,5 +1,6 @@
 import { defaultParty } from '@Data/party.js';
 import { Pokedex, GAMES, NATURES, FRLG_LEARNSETS, Moves, EXPERIENCE_TABLES, GROWTH } from '@spriteworld/pokemon-data';
+import { rng } from '@Utilities/rng.js';
 
 let _dex      = null;
 let _movePool = null;
@@ -112,22 +113,22 @@ export default {
       const exp        = (EXPERIENCE_TABLES[growth] ?? EXPERIENCE_TABLES[GROWTH.MEDIUM_FAST])[lvl - 1] ?? 0;
       const abils      = speciesData?.abilities ?? [];
       const ability    = abils.length
-        ? { name: abils[Math.floor(Math.random() * abils.length)].name }
+        ? { name: abils[Math.floor(rng() * abils.length)].name }
         : { name: 'none' };
       const moves      = speciesData ? buildMoves(speciesData.species, lvl) : [];
       const natureKeys = Object.keys(NATURES);
       state.list.push({
-        pid:       Date.now() + Math.floor(Math.random() * 1000),
+        pid:       Date.now() + Math.floor(rng() * 1000),
         species:   natDexId,
         level:     lvl,
         exp,
         nickname:  nickname ?? speciesData.species,
         shiny:     shiny    ?? false,
-        nature:    NATURES[natureKeys[Math.floor(Math.random() * natureKeys.length)]].name,
-        gender:    Math.random() < 0.5 ? 'male' : 'female',
+        nature:    NATURES[natureKeys[Math.floor(rng() * natureKeys.length)]].name,
+        gender:    rng() < 0.5 ? 'male' : 'female',
         ability,
         moves,
-        ivs:       Object.fromEntries(STAT_KEYS.map(s => [s, Math.floor(Math.random() * 32)])),
+        ivs:       Object.fromEntries(STAT_KEYS.map(s => [s, Math.floor(rng() * 32)])),
         evs:       Object.fromEntries(STAT_KEYS.map(s => [s, 0])),
         currentHp: null,
       });

@@ -8,6 +8,7 @@ import store from '../../store/index.js';
 import { getStartScene } from '@Data/startScene.js';
 import { getGameDef } from '@Data/gameDef.js';
 import { getStartFlags, clearStartFlags } from '@Data/startFlags.js';
+import { initRng } from '@Utilities/rng.js';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -105,6 +106,7 @@ export default class extends Phaser.Scene {
     clearStartFlags();
 
     loadGame();
+    initRng(store.state.game.seed);
 
     // Apply test-harness flags AFTER loadGame() so they override any saved state.
     // Write to both game.config.gameFlags (Phaser-level) and the Vuex store.
