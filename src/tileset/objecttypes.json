@@ -138,7 +138,8 @@
                 "name": "item",
                 "propertyType": "item",
                 "type": "class",
-                "value": {}
+                "value": {
+                }
             },
             {
                 "name": "qty",
@@ -172,7 +173,8 @@
                 "name": "pokemon",
                 "propertyType": "encounter-pokemon",
                 "type": "class",
-                "value": {}
+                "value": {
+                }
             }
         ],
         "name": "cmd-give_pokemon",
@@ -219,7 +221,8 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "target",
@@ -229,7 +232,8 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             }
         ],
         "name": "cmd-if_facing",
@@ -250,9 +254,16 @@
                 "value": "if_flag"
             },
             {
+                "name": "comparison",
+                "propertyType": "compare-op",
+                "type": "string",
+                "value": "eq"
+            },
+            {
                 "name": "else",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "key",
@@ -262,7 +273,13 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
+            },
+            {
+                "name": "value",
+                "type": "string",
+                "value": ""
             }
         ],
         "name": "cmd-if_flag",
@@ -290,7 +307,8 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "name",
@@ -300,7 +318,8 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "x",
@@ -331,6 +350,12 @@
                 "value": "if_party_count"
             },
             {
+                "name": "comparison",
+                "propertyType": "compare-op",
+                "type": "string",
+                "value": "eq"
+            },
+            {
                 "name": "count",
                 "type": "int",
                 "value": 1
@@ -338,18 +363,14 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": []
-            },
-            {
-                "name": "op",
-                "propertyType": "compare-op",
-                "type": "string",
-                "value": "eq"
+                "value": [
+                ]
             },
             {
                 "name": "then",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             }
         ],
         "name": "cmd-if_party_count",
@@ -370,9 +391,16 @@
                 "value": "if_var"
             },
             {
+                "name": "comparison",
+                "propertyType": "compare-op",
+                "type": "string",
+                "value": "lt"
+            },
+            {
                 "name": "else",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "key",
@@ -382,7 +410,8 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "value",
@@ -634,7 +663,8 @@
                 "name": "item",
                 "propertyType": "item",
                 "type": "class",
-                "value": {}
+                "value": {
+                }
             },
             {
                 "name": "qty",
@@ -778,9 +808,23 @@
                 "value": ""
             },
             {
+                "name": "on-interact",
+                "type": "class",
+                "value": {
+                }
+            },
+            {
                 "name": "texture",
                 "type": "string",
                 "value": ""
+            },
+            {
+                "name": "trigger",
+                "propertyType": "trigger",
+                "type": "class",
+                "value": {
+                    "trigger": "interact"
+                }
             },
             {
                 "name": "x",
@@ -1114,7 +1158,8 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "text",
@@ -1124,7 +1169,8 @@
             {
                 "name": "yes",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             }
         ],
         "name": "cmd-yes_no",
@@ -1153,6 +1199,7 @@
             "wait_input",
             "set_var",
             "if_var",
+            "if_variant",
             "heal_party",
             "show_exclamation",
             "knockback",
@@ -1182,7 +1229,9 @@
             "camera_follow_player",
             "camera_follow_npc",
             "bgm_start",
-            "bgm_stop"
+            "bgm_stop",
+            "spawn_pkmn",
+            "give_starter"
         ],
         "valuesAsFlags": false
     },
@@ -1207,7 +1256,8 @@
         "color": "#ff00aa00",
         "drawFill": true,
         "id": 10,
-        "members": [],
+        "members": [
+        ],
         "name": "cutTree",
         "type": "class",
         "useAs": [
@@ -1228,7 +1278,8 @@
             {
                 "name": "level-random",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "level-range-max",
@@ -1282,17 +1333,20 @@
             {
                 "name": "good-rod",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "grass",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "headbutt",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "name",
@@ -1302,22 +1356,26 @@
             {
                 "name": "old-rod",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "rock-smash",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "super-rod",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "surf",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             }
         ],
         "name": "encounterTable",
@@ -1346,7 +1404,8 @@
         "type": "enum",
         "values": [
             "flag",
-            "variable"
+            "variable",
+            "variant"
         ],
         "valuesAsFlags": false
     },
@@ -1369,7 +1428,8 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {}
+                "value": {
+                }
             },
             {
                 "name": "quantity",
@@ -1492,13 +1552,27 @@
                 "propertyType": "encounterTable",
                 "type": "class",
                 "value": {
-                    "good-rod": [],
-                    "grass": [],
-                    "headbutt": [],
-                    "old-rod": [],
-                    "rock-smash": [],
-                    "super-rod": [],
-                    "surf": []
+                    "good-rod": [
+                    ],
+                    "grass": [
+                    ],
+                    "headbutt": [
+                    ],
+                    "old-rod": [
+                    ],
+                    "rock-smash": [
+                    ],
+                    "super-rod": [
+                    ],
+                    "surf": [
+                    ]
+                }
+            },
+            {
+                "name": "script",
+                "propertyType": "trigger",
+                "type": "class",
+                "value": {
                 }
             }
         ],
@@ -1516,7 +1590,8 @@
         "values": [
             "none",
             "match-movement",
-            "mirror-move"
+            "mirror-move",
+            "spinner"
         ],
         "valuesAsFlags": false
     },
@@ -1561,7 +1636,8 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {}
+                "value": {
+                }
             },
             {
                 "name": "overworld-texture",
@@ -1571,7 +1647,8 @@
             {
                 "name": "script",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "text",
@@ -1607,6 +1684,11 @@
                 "value": "eq"
             },
             {
+                "name": "key",
+                "type": "string",
+                "value": ""
+            },
+            {
                 "name": "type",
                 "propertyType": "if-list",
                 "type": "string",
@@ -1615,7 +1697,8 @@
             {
                 "name": "value",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             }
         ],
         "name": "only-if",
@@ -1653,12 +1736,14 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {}
+                "value": {
+                }
             },
             {
                 "name": "script",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "shiny",
@@ -1738,10 +1823,17 @@
                 "value": "down"
             },
             {
+                "name": "movement-behavior",
+                "propertyType": "movement-behavior",
+                "type": "string",
+                "value": "none"
+            },
+            {
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {}
+                "value": {
+                }
             },
             {
                 "name": "overworld-texture",
@@ -1752,6 +1844,11 @@
                 "name": "seen-radius",
                 "type": "int",
                 "value": 5
+            },
+            {
+                "name": "spin-rate",
+                "type": "int",
+                "value": 600
             },
             {
                 "name": "text-defeated",
@@ -1795,7 +1892,8 @@
                     {
                         "propertyType": "trainer-pokemon",
                         "type": "class",
-                        "value": {}
+                        "value": {
+                        }
                     }
                 ]
             },
@@ -1867,6 +1965,11 @@
         "id": 22,
         "members": [
             {
+                "name": "description",
+                "type": "string",
+                "value": ""
+            },
+            {
                 "name": "once",
                 "type": "bool",
                 "value": false
@@ -1875,12 +1978,14 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {}
+                "value": {
+                }
             },
             {
                 "name": "script",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "trigger",
@@ -1892,6 +1997,7 @@
         "name": "trigger",
         "type": "class",
         "useAs": [
+            "property",
             "object"
         ]
     },
@@ -1902,7 +2008,8 @@
         "type": "enum",
         "values": [
             "interact",
-            "enter"
+            "enter",
+            "map_enter"
         ],
         "valuesAsFlags": false
     },
@@ -1920,7 +2027,8 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {}
+                "value": {
+                }
             },
             {
                 "name": "warp",
@@ -1929,6 +2037,11 @@
             },
             {
                 "name": "warp-dir",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "warp-variant",
                 "type": "string",
                 "value": ""
             },
@@ -1981,7 +2094,8 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             },
             {
                 "name": "item",
@@ -1991,7 +2105,8 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": []
+                "value": [
+                ]
             }
         ],
         "name": "cmd-if_has_item",
@@ -2052,15 +2167,15 @@
         "id": 98,
         "members": [
             {
+                "name": "anchor",
+                "type": "string",
+                "value": ""
+            },
+            {
                 "name": "cmd",
                 "propertyType": "command-list",
                 "type": "string",
                 "value": "camera_pan"
-            },
-            {
-                "name": "anchor",
-                "type": "string",
-                "value": ""
             },
             {
                 "name": "duration",
@@ -2166,6 +2281,132 @@
             }
         ],
         "name": "cmd-bgm_stop",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ff0080ff",
+        "drawFill": true,
+        "id": 104,
+        "members": [
+            {
+                "name": "anchor",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "spawn_pkmn"
+            },
+            {
+                "name": "facing",
+                "propertyType": "facing-direction",
+                "type": "string",
+                "value": "down"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "shiny",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "texture",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "trigger",
+                "propertyType": "trigger",
+                "type": "class",
+                "value": {
+                    "trigger": "enter"
+                }
+            },
+            {
+                "name": "x",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "y",
+                "type": "int",
+                "value": 0
+            }
+        ],
+        "name": "cmd-spawn_pkmn",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 105,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "if_variant"
+            },
+            {
+                "name": "comparison",
+                "propertyType": "compare-op",
+                "type": "string",
+                "value": "eq"
+            },
+            {
+                "name": "else",
+                "type": "list",
+                "value": [
+                ]
+            },
+            {
+                "name": "then",
+                "type": "list",
+                "value": [
+                ]
+            },
+            {
+                "name": "value",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "cmd-if_variant",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 106,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "give_starter"
+            },
+            {
+                "name": "index",
+                "type": "int",
+                "value": 0
+            }
+        ],
+        "name": "cmd-give_starter",
         "type": "class",
         "useAs": [
             "property"

@@ -98,6 +98,8 @@ function makeScene(overrides = {}) {
     time: {
       delayedCall: jest.fn(),
     },
+    sys: { settings: { key: 'TestScene' } },
+    cache: { audio: { has: jest.fn(() => true) } },
     gridEngine: null,
     config:     {},
     getPropertyFromTile: jest.fn(),
@@ -684,12 +686,12 @@ describe('face_char', () => {
 describe('play_sound', () => {
   test('calls sound.play with key and loop option', () => {
     const { scene } = run({ cmd: 'play_sound', key: 'fanfare', loop: true });
-    expect(scene.sound.play).toHaveBeenCalledWith('fanfare', { loop: true });
+    expect(scene.sound.play).toHaveBeenCalledWith('fanfare', expect.objectContaining({ loop: true }));
   });
 
   test('defaults loop to false', () => {
     const { scene } = run({ cmd: 'play_sound', key: 'blip' });
-    expect(scene.sound.play).toHaveBeenCalledWith('blip', { loop: false });
+    expect(scene.sound.play).toHaveBeenCalledWith('blip', expect.objectContaining({ loop: false }));
   });
 });
 

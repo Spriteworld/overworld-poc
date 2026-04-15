@@ -28,6 +28,12 @@ import defaultDef from './gameDefs/kanto.js';
  * @property {'vanilla'|'random'}    encounterTables
  *   'vanilla' — use the encounter table embedded in the Tiled map properties.
  *   'random'  — seeded-random table generated from the availablePokemon pool.
+ * @property {number[]}               [starterMon]
+ *   Ordered list of nat_dex_ids offered as starter Pokémon (e.g. in Oak's lab).
+ *   Index 0/1/2 maps to pokeball1/2/3. Referenced via the `give_starter` script command.
+ * @property {boolean}               owEncounters
+ *   When true, visible overworld Pokémon are spawned on encounter-zone tiles.
+ *   Individual maps can still opt out via map-settings['ow-encounters'] = false.
  */
 
 let _active = defaultDef;

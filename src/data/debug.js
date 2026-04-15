@@ -6,6 +6,7 @@ export default {
   nighttimeLightsOnly: true,
   inspector: false,
   playerCoords: false,
+  playerVariant: false,
   stateMachine: false,
   noEncounters: false,
   noTrainerSight: false,

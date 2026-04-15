@@ -18,7 +18,7 @@ export default class {
         return;
       }
 
-      if (!checkOnlyIf(getPropertyValue(obj.properties, 'only_if'), store.state.game.gameFlags)) return;
+      if (!checkOnlyIf(getPropertyValue(obj.properties, 'only_if'), store.state.game.gameFlags, this.scene.config.variant ?? null, this.scene.mapVars ?? {})) return;
 
       const itemName = getPropertyValue(obj.properties, 'item');
       if (!itemName){

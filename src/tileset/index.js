@@ -28,32 +28,22 @@ import red from '@Tileset/characters/sprites/red.png';
 
 import trainers from '@Tileset/characters';
 
-let loadPokemonSprites = [
-  1,2,3,4,5,6,7,8,9,22,25,83,179,180,197,'197s','025s'
-];
-loadPokemonSprites = loadPokemonSprites.map(id => {
-  if (typeof id === 'number') {
-    id = id.toString();
-  }
-  return id.padStart(3, '0');
-});
+const _pokemonGlob      = import.meta.glob('./overworld/pokemon/*.png',       { eager: false, query: '?url', import: 'default' });
+const _pokemonShinyGlob = import.meta.glob('./overworld/pokemon_shiny/*.png',  { eager: false, query: '?url', import: 'default' });
 
-// let pokemonGlob = import.meta.glob('@Tileset/overworld/pokemon/*.png', { eager: false, query: '?url', import: 'default' });
-let pokemonGlob = loadPokemonSprites.filter(id => id.length === 3);
-let pokemon = {};
-Object.values(pokemonGlob).map((key) => {
-  let id = key.split('/').pop().split('.')[0].padStart(3, '0');
-  if(!loadPokemonSprites.includes(id)) { return; }
-  pokemon[id] = new URL('overworld/pokemon/'+id+'.png', import.meta.url).href;
-});
+const pokemon = Object.fromEntries(
+  Object.entries(_pokemonGlob).map(([path, factory]) => [
+    path.split('/').pop().replace('.png', '').padStart(3, '0'),
+    factory,
+  ])
+);
 
-let pokemon_shinyGlob = loadPokemonSprites.filter(id => id.length !== 3);
-let pokemon_shiny = {};
-Object.values(pokemon_shinyGlob).map((key) => {
-  let id = key.split('/').pop().split('.')[0].padStart(3, '0');
-  if(!loadPokemonSprites.includes(id)) { return; }
-  pokemon_shiny[id] = new URL('overworld/pokemon_shiny/'+id+'.png', import.meta.url).href;
-});
+const pokemon_shiny = Object.fromEntries(
+  Object.entries(_pokemonShinyGlob).map(([path, factory]) => [
+    path.split('/').pop().replace('.png', '').padStart(3, '0') + 's',
+    factory,
+  ])
+);
 
 export default {
   blank,

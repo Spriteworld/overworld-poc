@@ -28728,8 +28728,8 @@
       "propertytype": "map-settings",
       "type": "class",
       "value": {
-        "encounter-rate": 20,
         "encounter-table": {
+          "good-rod": [],
           "grass": [
             {
               "propertytype": "encounter-pokemon",
@@ -28745,20 +28745,20 @@
               "propertytype": "encounter-pokemon",
               "type": "class",
               "value": {
-                "level-range-max": 5,
-                "level-range-min": 3,
-                "rarity": 45,
-                "species": "weedle"
+                "level-range-max": 6,
+                "level-range-min": 4,
+                "rarity": 10,
+                "species": "metapod"
               }
             },
             {
               "propertytype": "encounter-pokemon",
               "type": "class",
               "value": {
-                "level-range-max": 6,
-                "level-range-min": 4,
-                "rarity": 10,
-                "species": "metapod"
+                "level-range-max": 5,
+                "level-range-min": 3,
+                "rarity": 45,
+                "species": "weedle"
               }
             },
             {
@@ -28785,23 +28785,34 @@
               "propertytype": "encounter-pokemon",
               "type": "class",
               "value": {
-                "level-range-max": 5,
-                "level-range-min": 3,
-                "rarity": 10,
-                "species": "pikachu"
+                "level-random": [
+                  {
+                    "type": "int",
+                    "value": 9
+                  }
+                ],
+                "level-single": 6,
+                "rarity": 1,
+                "species": "pidgeotto"
               }
             },
             {
               "propertytype": "encounter-pokemon",
               "type": "class",
               "value": {
-                "level-range-max": 9,
-                "level-range-min": 9,
-                "rarity": 1,
-                "species": "pidgeotto"
+                "level-range-max": 3,
+                "level-range-min": 5,
+                "rarity": 10,
+                "species": "pikachu"
               }
             }
-          ]
+          ],
+          "headbutt": [],
+          "name": "VIRIDIAN_FOREST",
+          "old-rod": [],
+          "rock-smash": [],
+          "super-rod": [],
+          "surf": []
         }
       }
     }

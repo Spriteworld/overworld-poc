@@ -2,9 +2,10 @@ import Warp from './warp.js';
 
 // ─── Scene factory ───────────────────────────────────────────────────────────
 
-function makeScene(warpObjects = []) {
+function makeScene(warpObjects = [], { variant = undefined } = {}) {
   const store = {};
   return {
+    config: { variant },
     game: {
       config: { debug: { console: { interactableShout: false } } },
     },

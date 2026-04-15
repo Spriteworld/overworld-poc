@@ -138,23 +138,45 @@ export default class {
     // console.log('[Warp] positionChange', char.name, 'exit', exitTile, 'enter', enterTile);
     if (this.warps.length === 0) { return; }
 
-    let warp = this.warps.find(p => p.x === enterTile.x && p.y === enterTile.y);
-    if (typeof warp === 'undefined') {
+    const tileWarps = this.warps.filter(p => p.x === enterTile.x && p.y === enterTile.y);
+    if (tileWarps.length === 0) {
       // console.log('[Warp] no warp at', enterTile, '— registered warps:', this.warps.map(w => `(${w.x},${w.y})`));
       return;
     }
 
+    const variant  = this.scene.config.variant ?? null;
+    const mapVars  = this.scene.mapVars ?? {};
+    const gameFlags = store.state.game.gameFlags;
+    const warp = tileWarps.find(w => {
+      const onlyIf = getPropertyValue(w.obj.properties, 'only_if');
+      const pass   = checkOnlyIf(onlyIf, gameFlags, variant, mapVars);
+      if (onlyIf) {
+        let actual;
+        if (!onlyIf.type || onlyIf.type === 'flag') {
+          const key = onlyIf.key ?? null;
+          actual = key ? (key in mapVars ? mapVars[key] : gameFlags[key]) : onlyIf.value?.map(v => `${v}=${!!gameFlags[v]}`).join(', ');
+        } else if (onlyIf.type === 'variant') {
+          actual = variant;
+        } else if (onlyIf.type === 'variable') {
+          const key = onlyIf.key ?? onlyIf.value?.[0];
+          actual = mapVars[key];
+        }
+        console.log(`[Warp] only_if check — "${w.obj.name}" actual=${JSON.stringify(actual)} → ${pass ? 'pass' : 'fail'}`, onlyIf);
+      }
+      return pass;
+    });
+    if (!warp) return;
+
     let warpProps        = warp.obj.properties;
     let warpTarget       = getPropertyValue(warpProps, 'warp', null);
     let warpLocationName = getPropertyValue(warpProps, 'warp-location', null);
-    console.log('[Warp] matched warp tile → target:', warpTarget, '| location:', warpLocationName, '| props:', warpProps);
+    let warpVariant      = getPropertyValue(warpProps, 'warp-variant', null);
+    console.log('[Warp] matched warp tile → target:', warpTarget, '| location:', warpLocationName, '| variant:', warpVariant, '| props:', warpProps);
 
     if (warpTarget === null || warpTarget === '') {
       console.warn('[Warp] warp tile has no target scene (warp property missing or empty)');
       return;
     }
-
-    if (!checkOnlyIf(getPropertyValue(warpProps, 'only_if'), store.state.game.gameFlags)) return;
 
     if (char.config.type !== 'player') {
       if (this.scene.registry.get('map') === warpTarget) {
@@ -165,7 +187,7 @@ export default class {
       return;
     }
 
-    this.warpPlayerToMap(char, warpTarget, warpLocationName);
+    this.warpPlayerToMap(char, warpTarget, warpLocationName, warpVariant);
   }
 
   /**
@@ -186,7 +208,7 @@ export default class {
     if (this.scene.mapPlugins['player'].hasPlayerMon) {
       // get the pokemon to be in the right spot
       this.scene.gridEngine.setPosition(
-        this.playerMon.config.id,
+        this.scene.mapPlugins['player'].playerMon.config.id,
         char.getPosInBehindDirection(),
         playerLocation.layer
       );
@@ -200,7 +222,7 @@ export default class {
    * @param {string} warpTarget - Scene key of the destination map, or '_this_'.
    * @param {string} warpLocationName - Name of the warpLocation object on the destination map.
    */
-  warpPlayerToMap(char, warpTarget, warpLocationName) {
+  warpPlayerToMap(char, warpTarget, warpLocationName, warpVariant = null) {
     console.log('[Warp] warpPlayerToMap — from:', this.scene.config.mapName, '→', warpTarget, '| location:', warpLocationName);
 
     // Same map — resolve the warpLocation on this scene and teleport in place
@@ -248,6 +270,7 @@ export default class {
       () => {
         this.scene.registry.set('map', warpTarget);
         const startParams = { warpLocationName };
+        if (warpVariant) startParams.variant = warpVariant;
         if (pendingScript) startParams._pendingScript = pendingScript;
         this.scene.scene.start(warpTarget, startParams);
       }

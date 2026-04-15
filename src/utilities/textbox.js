@@ -1,5 +1,20 @@
 import { getInputManager, getKeybindLabel } from './InputManager.js';
 import store from '../store/index.js';
+import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
+import { getGameDef } from '../data/gameDef.js';
+
+// Lazily-built nat_dex_id → species name map shared across all TextBox instances.
+let _speciesMap = null;
+function getSpeciesName(natDexId) {
+  if (!_speciesMap) {
+    const dex = new Pokedex(GAMES.POKEMON_FIRE_RED);
+    _speciesMap = {};
+    for (const p of Object.values(dex.pokedex)) {
+      if (p.nat_dex_id != null) _speciesMap[p.nat_dex_id] = p.species;
+    }
+  }
+  return _speciesMap[Number(natDexId)] ?? `#${natDexId}`;
+}
 
 const CHAR_DELAY  = { normal: 30, fast: 10, instant: 0 }; // ms per character per speed
 const CLOSE_DELAY = 500;  // ms after Z before textbox-disable fires
@@ -96,11 +111,15 @@ class TextBox {
   start(text) {
     this._cancelPending();
     const raw = Array.isArray(text) ? text.join('\n') : text;
+
+    const starters = getGameDef()?.starterMon;
     const str = raw
-      .replace(/\{e\}/gi, 'é')
-      .replace(/\{E\}/gi, 'É')
+      .replace(/\{e\}/g, 'é')
+      .replace(/\{E\}/g, 'É')
       .replace(/\{player\}/gi, store.state.game.playerName)
       .replace(/\{rival\}/gi, store.state.game.rivalName)
+      .replace(/\{species:(\d+)\}/gi, (_, id) => getSpeciesName(id)?.toUpperCase())
+      .replace(/\{starter:(\d+)\}/gi, (_, id) => getSpeciesName(starters?.[id])?.toUpperCase())
       .replace(/\{KEYBIND\.([^}]+)\}/gi, (_, action) => getKeybindLabel(action.toLowerCase()));
     this._pages   = this._paginate(str);
     this._pageIdx = 0;
@@ -238,6 +257,7 @@ class TextBox {
    * Advance to the next page and begin typing it.
    */
   _typeNextPage() {
+    this._cancelPending();
     this._pageIdx++;
     this._typeCurrentPage();
   }
@@ -259,6 +279,17 @@ class TextBox {
     this._arrow.setVisible(true);
 
     if (this._isLastPage()) {
+      // Allow external code (e.g. yes_no script command) to intercept and suppress
+      // the auto-close by emitting 'textbox-intercept' synchronously in response
+      // to 'textbox-ready'.
+      this._intercepted = false;
+      const interceptHandler = () => { this._intercepted = true; };
+      this._scene.game.events.once('textbox-intercept', interceptHandler);
+      this._scene.game.events.emit('textbox-ready');
+      // Clean up the intercept listener if nobody used it.
+      this._scene.game.events.off('textbox-intercept', interceptHandler);
+      if (this._intercepted) return;
+
       // Register a one-shot close listener on both confirm and cancel
       this._closeOnce = () => {
         const im = getInputManager();

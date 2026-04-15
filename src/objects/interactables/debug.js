@@ -1,11 +1,13 @@
 import Debug from '@Data/debug.js';
 import { ObjectTypes, Tile } from '@Objects';
-import { getValue } from '@Utilities';
+import { getValue, checkOnlyIf } from '@Utilities';
+import store from '../../store/index.js';
 
 export default class {
   constructor(scene) {
     this.scene = scene;
     this._coordsText = null;
+    this._onlyIfEntries = []; // { textObj, name, onlyIf, onlyIfKey, onlyIfVal, type, op }
   }
 
   init() {
@@ -112,7 +114,20 @@ export default class {
         let bgc = (getValue(colors, obj.type, '000'))
           .replace('#', '')
           .substr(-6);
-        let text = this.scene.add.text(0, 0, obj.name, {
+        let label = obj.name;
+        let onlyIfEntry = null;
+        if (obj.type === 'trigger' || obj.type === 'on-interact') {
+          const onlyIf = this.scene.getPropertyFromTile(obj, 'only_if') ?? null;
+          const onlyIfKey = onlyIf?.key ?? null;
+          const onlyIfVal = onlyIf && (Array.isArray(onlyIf.value) ? onlyIf.value : (onlyIf.value != null ? [onlyIf.value] : [])).map(v => (v && typeof v === 'object' ? v.value : v));
+          if (onlyIf && (onlyIfKey || onlyIfVal.length)) {
+            const type = onlyIf.type || 'flag';
+            const op   = onlyIf.comparison ?? 'eq';
+            onlyIfEntry = { name: obj.name, onlyIf, onlyIfKey, onlyIfVal, type, op };
+            label += this.#onlyIfLabel(onlyIfEntry);
+          }
+        }
+        let text = this.scene.add.text(0, 0, label, {
             font: '9px',
             align: 'justify',
             padding: 3,
@@ -145,8 +160,28 @@ export default class {
           Phaser.Display.Align.In.TopCenter(text, this.scene.add.zone(obj.x-5, obj.y-15, obj.width+10, obj.height+10).setOrigin(0,0)),
         ]);
         debugObj.setDepth(9999999);
+        if (onlyIfEntry) {
+          onlyIfEntry.textObj = text;
+          this._onlyIfEntries.push(onlyIfEntry);
+        }
       })
     ;
+  }
+
+  #onlyIfLabel(entry) {
+    const { onlyIf, onlyIfKey, onlyIfVal, type, op } = entry;
+    const passes  = checkOnlyIf(onlyIf, store.state.game.gameFlags, this.scene.config.variant ?? null, this.scene.mapVars ?? {});
+    const keyPart = onlyIfKey ? `${onlyIfKey} ` : '';
+    const vals    = onlyIfVal.join(', ');
+    const valPart = vals ? `(${vals})` : '';
+    let currentPart = '';
+    if (onlyIfKey) {
+      const currentVal = type === 'variable'
+        ? ((this.scene.mapVars ?? {})[onlyIfKey] ?? 0)
+        : (store.state.game.gameFlags[onlyIfKey] ?? false);
+      currentPart = `  [${onlyIfKey} = ${currentVal}]`;
+    }
+    return `\n[only_if] ${type} ${keyPart}${op}${valPart ? ' ' + valPart : ''}\n→ ${passes ? '✓ pass' : '✗ fail'}${currentPart}`;
   }
 
   debugObject(obj, value) {
@@ -183,9 +218,16 @@ export default class {
   }
 
   update() {
-    if (!this._coordsText) return;
-    const pos = this.scene.gridEngine.getPosition('player');
-    this._coordsText.setText(`${pos.x}, ${pos.y}`);
+    if (this._coordsText) {
+      const pos = this.scene.gridEngine.getPosition('player');
+      const variant = this.scene.game.config.debug.playerVariant
+        ? (this.scene.config?.variant ?? null)
+        : null;
+      this._coordsText.setText(variant ? `${pos.x}, ${pos.y} [${variant}]` : `${pos.x}, ${pos.y}`);
+    }
+    for (const entry of this._onlyIfEntries) {
+      entry.textObj.setText(entry.name + this.#onlyIfLabel(entry));
+    }
   }
 
   #identifyColliders() {

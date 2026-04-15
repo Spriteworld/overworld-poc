@@ -100,13 +100,18 @@ export default class extends Phaser.Scene {
   create () {
     this.createTrainerAnimations();
 
+    // Capture before clearing so we can reapply after loadGame().
     const startFlags = getStartFlags();
-    if (startFlags) {
-      Object.assign(this.game.config.gameFlags, startFlags);
-      clearStartFlags();
-    }
+    clearStartFlags();
 
     loadGame();
+
+    // Apply test-harness flags AFTER loadGame() so they override any saved state.
+    // Write to both game.config.gameFlags (Phaser-level) and the Vuex store.
+    if (startFlags) {
+      Object.assign(this.game.config.gameFlags, startFlags);
+      store.commit('game/PATCH_FLAGS', startFlags);
+    }
 
     if (this.game.config.gameFlags.has_bike) {
       const hasBicycle = store.state.bag.keyItems.some(e => e.name === 'Bicycle');
@@ -128,12 +133,20 @@ export default class extends Phaser.Scene {
 
 
     if (skipIntro) {
-      const savedTile = store.state.game.playerTile;
+      const testScene = getStartScene();
+      // When launching a test scenario, ignore the saved player tile so the
+      // target map uses its own default spawn rather than coordinates from a
+      // different map's save file.
+      const savedTile = testScene ? null : store.state.game.playerTile;
       const playerLocation = (savedTile && (savedTile.x || savedTile.y))
         ? { x: savedTile.x, y: savedTile.y, charLayer: savedTile.charLayer }
         : {};
-      const startScene = loadMap || getStartScene() || store.state.game.currentMap || getGameDef().overworldScene;
-      this.scene.start(startScene, { playerLocation });
+      const startScene = loadMap || testScene || store.state.game.currentMap || getGameDef().overworldScene;
+      const startParams = { playerLocation };
+      // Restore the map variant that was active when the game was saved.
+      // Don't apply variant when launching a test scene — it sets its own.
+      if (!testScene && store.state.game.mapVariant) startParams.variant = store.state.game.mapVariant;
+      this.scene.start(startScene, startParams);
 
       if (this.game.config.debug.time) {
         this.scene.start('TimeOverlay');

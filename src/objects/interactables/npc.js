@@ -6,7 +6,8 @@ import ScriptRunner from '../../utilities/ScriptRunner.js';
 
 export default class {
   constructor(scene) {
-    this.scene = scene;
+    this.scene    = scene;
+    this._enterSub = null;
   }
 
   init() {
@@ -26,7 +27,7 @@ export default class {
 
     this.scene.npcs.runChildUpdate = true;
     npcs.forEach((npc) => {
-      if (!checkOnlyIf(getPropertyValue(npc.properties, 'only_if'), store.state.game.gameFlags)) return;
+      if (!checkOnlyIf(getPropertyValue(npc.properties, 'only_if'), store.state.game.gameFlags, this.scene.config.variant ?? null)) return;
       this.addToScene(
         npc.name,
         getPropertyValue(npc.properties, 'overworld-texture'),
@@ -54,6 +55,10 @@ export default class {
       'seen-character': '',
       'seen-radius': 0,
     };
+
+    if (npcDef['movement-behavior'] === 'spinner') {
+      npcDef.spin = true;
+    }
 
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::npc::addToScene', name, texture, coords.x, coords.y);
@@ -147,35 +152,80 @@ export default class {
 
     this._onInteract = (tile) => {
       if (tile.obj.type !== 'npc') { return; }
+
+      const _dbg = this.scene.game.config.debug.console.interactableShout;
+      const scriptTrigger = this.scene.getPropertyFromTile(tile.obj, 'script-trigger') ?? 'interact';
+      if (_dbg) console.log(`[NPC] interact "${tile.obj.name}" script-trigger="${scriptTrigger}"`);
+      if (scriptTrigger !== 'interact') return;
+
+      const player      = this.scene.characters.get('player');
+      const char        = this.scene.characters.get(tile.obj.id);
+      const originalDir = char?.getFacingDirection() ?? null;
+      char?.look(player.getOppositeFacingDirection());
+
       const npcName = tile.obj.name;
 
       const npcScript = this.scene.getPropertyFromTile(tile.obj, 'script');
-      console.log('NPC interaction script:', npcScript);
       if (!npcScript) {
         console.warn(`[NPC] No script found for NPC "${npcName}"`);
         return;
       }
 
-      let player = this.scene.characters.get('player');
-      let char = this.scene.characters.get(tile.obj.id);
-      char.look(player.getOppositeFacingDirection());
-      char.stopSpin(true);
-      char.stopMove(true);
+      const onlyIf = this.scene.getPropertyFromTile(tile.obj, 'only_if') ?? null;
+      const onlyIfPass = checkOnlyIf(onlyIf, store.state.game.gameFlags, this.scene.config.variant ?? null, this.scene.mapVars ?? {});
+      if (_dbg) console.log(`[NPC] interact "${npcName}" only_if →`, onlyIfPass, onlyIf ?? 'none');
+      if (!onlyIfPass) return;
 
       const scriptDoneFlag = 'npc_interacted_' + npcName;
       const scriptDone = !!store.state.game.gameFlags[scriptDoneFlag];
       const scriptRepeatable = !!this.scene.getPropertyFromTile(tile.obj, 'script-repeatable');
+      if (_dbg) console.log(`[NPC] interact "${npcName}" scriptDone=${scriptDone} repeatable=${scriptRepeatable}`);
 
       if (scriptDone && !scriptRepeatable) { return; }
 
+      // Only stop spin/move (with restart=true) when we're actually running the script,
+      // so we don't leave stale once('textbox-disable') listeners from early-return paths.
+      char?.stopSpin(true);
+      char?.stopMove(true);
+
       store.commit('game/PATCH_FLAGS', { [scriptDoneFlag]: true });
-      new ScriptRunner(this.scene, [...npcScript]).run();
+      if (_dbg) console.log(`[NPC] interact "${npcName}" running script (${npcScript.length} cmd(s))`);
+      new ScriptRunner(this.scene, [...npcScript]).run(() => {
+        if (originalDir) char?.look(originalDir);
+      });
     };
     this.scene.game.events.on('interact-with-obj', this._onInteract);
+
+    // ── Enter trigger ──────────────────────────────────────────────────────
+    if (this.scene.gridEngine) {
+      this._enterSub = this.scene.gridEngine
+        .positionChangeFinished()
+        .subscribe(({ charId, enterTile }) => {
+          if (charId !== 'player') return;
+          const _dbg = this.scene.game.config.debug.console.interactableShout;
+          this.scene.npcs.getChildren().forEach(npc => {
+            const cfg = npc.config;
+            if (!cfg?.properties) return;
+            const scriptTrigger = this.scene.getPropertyFromTile(cfg, 'script-trigger');
+            if (scriptTrigger !== 'enter') return;
+            const npcScript = this.scene.getPropertyFromTile(cfg, 'script');
+            if (!npcScript) return;
+            const pos = this.scene.gridEngine.getPosition(cfg.id);
+            if (!pos || pos.x !== enterTile.x || pos.y !== enterTile.y) return;
+            const onlyIf = this.scene.getPropertyFromTile(cfg, 'only_if') ?? null;
+            const onlyIfPass = checkOnlyIf(onlyIf, store.state.game.gameFlags, this.scene.config.variant ?? null, this.scene.mapVars ?? {});
+            if (_dbg) console.log(`[NPC] enter "${cfg.id}" at (${enterTile.x},${enterTile.y}) only_if →`, onlyIfPass, onlyIf ?? 'none');
+            if (!onlyIfPass) return;
+            if (_dbg) console.log(`[NPC] enter "${cfg.id}" running script (${npcScript.length} cmd(s))`);
+            new ScriptRunner(this.scene, [...npcScript]).run();
+          });
+        });
+    }
   }
 
   destroy() {
     this.scene.game.events.off('interact-with-obj', this._onInteract);
     if (this._mirrorSub) this._mirrorSub.unsubscribe();
+    if (this._enterSub)  this._enterSub.unsubscribe();
   }
 }

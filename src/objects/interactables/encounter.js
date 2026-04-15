@@ -41,12 +41,38 @@ const ITEM_REGISTRY = {
   'Revive':        Items.Revive,
 };
 
+/**
+ * Maps normalised ball names to their battle item constructors.
+ * Normalisation: lowercase, remove spaces/hyphens/underscores, replace accented e.
+ */
+const BALL_REGISTRY = {
+  'pokeball':   Items.Pokeball,
+  'greatball':  Items.GreatBall,
+  'ultraball':  Items.UltraBall,
+  'masterball': Items.MasterBall,
+};
+
+function normalizeBallName(name) {
+  return name.toLowerCase().replace(/[-_\s]/g, '').replace(/[éèê]/g, 'e');
+}
+
 function buildBattleInventory() {
-  const { items } = store.state.bag;
+  const { items, pokeballs } = store.state.bag;
+
+  const battleItems = items
+    .filter(e => ITEM_REGISTRY[e.name] && e.quantity > 0)
+    .map(e => ({ item: new ITEM_REGISTRY[e.name](), quantity: e.quantity }));
+
+  const battleBalls = pokeballs
+    .filter(e => e.quantity > 0)
+    .map(e => {
+      const Cls = BALL_REGISTRY[normalizeBallName(e.name)];
+      return Cls ? { item: new Cls(), quantity: e.quantity } : null;
+    })
+    .filter(Boolean);
+
   return {
-    items: items
-      .filter(e => ITEM_REGISTRY[e.name] && e.quantity > 0)
-      .map(e => ({ item: new ITEM_REGISTRY[e.name](), quantity: e.quantity })),
+    items: [...battleItems, ...battleBalls],
     pokeballs: [],
     tms: [],
   };
@@ -166,7 +192,7 @@ export default class {
     if (mapSettings['encounter-table']) {
       tableFragments.push(mapSettings['encounter-table']);
     }
-    try {
+    if (this.scene.config.tilemap.getObjectLayer('maps')) {
       const locationObjs = this.scene.config.tilemap.filterObjects(
         'maps', obj => obj.type === 'location'
       ) ?? [];
@@ -176,7 +202,7 @@ export default class {
           tableFragments.push(objSettings['encounter-table']);
         }
       }
-    } catch { /* 'maps' layer may not exist on this map */ }
+    }
 
     const merged = Object.assign({}, ...tableFragments);
     this._encounterTable = this._parseEncounterTable(

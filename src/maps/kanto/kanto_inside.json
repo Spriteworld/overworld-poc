@@ -809,6 +809,11 @@
                          "value":"left"
                         }, 
                         {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"mom"
+                        }, 
+                        {
                          "name":"script",
                          "type":"list",
                          "value":[
@@ -843,7 +848,8 @@
                                                 {
 
                                                 }
-                                            }]
+                                            }],
+                                     "value":"true"
                                     }
                                 }]
                         }, 
@@ -851,11 +857,6 @@
                          "name":"script-repeatable",
                          "type":"bool",
                          "value":true
-                        }, 
-                        {
-                         "name":"texture",
-                         "type":"string",
-                         "value":"mom"
                         }],
                  "rotation":0,
                  "type":"npc",
@@ -2051,83 +2052,57 @@
                 }, 
                 {
                  "height":32,
-                 "id":61,
-                 "name":"Oak",
-                 "opacity":1,
-                 "properties":[
-                        {
-                         "name":"overworld-texture",
-                         "type":"string",
-                         "value":"professor_oak"
-                        }],
-                 "rotation":0,
-                 "type":"npc",
-                 "visible":true,
-                 "width":32,
-                 "x":224,
-                 "y":832
-                }, 
-                {
-                 "height":32,
-                 "id":62,
-                 "name":"gary",
-                 "opacity":1,
-                 "properties":[
-                        {
-                         "name":"facing-direction",
-                         "propertytype":"facing-direction",
-                         "type":"string",
-                         "value":"right"
-                        }, 
-                        {
-                         "name":"overworld-texture",
-                         "type":"string",
-                         "value":"gary"
-                        }],
-                 "rotation":0,
-                 "type":"npc",
-                 "visible":true,
-                 "width":32,
-                 "x":192,
-                 "y":864
-                }, 
-                {
-                 "height":32,
                  "id":63,
                  "name":"cantEscapeLab",
                  "opacity":1,
                  "properties":[
                         {
+                         "name":"once",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
                          "name":"only_if",
+                         "propertytype":"only-if",
+                         "type":"class",
+                         "value":
+                            {
+                             "key":"lock_lab",
+                             "type":"variable",
+                             "value":[
+                                    {
+                                     "type":"string",
+                                     "value":"true"
+                                    }]
+                            }
+                        }, 
+                        {
+                         "name":"script",
                          "type":"list",
                          "value":[
                                 {
-                                 "propertytype":"cmd-if_flag",
+                                 "propertytype":"cmd-text",
                                  "type":"class",
                                  "value":
                                     {
-                                     "cmd":"if_var",
-                                     "else":[
-                                            {
-                                             "propertytype":"cmd-text",
-                                             "type":"class",
-                                             "value":
-                                                {
-                                                 "text":"OAK: Hey!\nDon't go away yet!"
-                                                }
-                                            }, 
-                                            {
-                                             "propertytype":"cmd-knockback",
-                                             "type":"class",
-                                             "value":
-                                                {
-                                                 "direction":"up",
-                                                 "target":"player"
-                                                }
-                                            }],
-                                     "key":"lock_lab"
+                                     "text":"OAK: Hey!\nDon't go away yet!"
+                                    }
+                                }, 
+                                {
+                                 "propertytype":"cmd-knockback",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "direction":"up",
+                                     "target":"player"
                                     }
                                 }]
+                        }, 
+                        {
+                         "name":"trigger",
+                         "propertytype":"trigger-list",
+                         "type":"string",
+                         "value":"enter"
                         }],
                  "rotation":0,
                  "type":"trigger",
@@ -2152,6 +2127,11 @@
                          "name":"overworld-texture",
                          "type":"string",
                          "value":"scientist"
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"I study POK{e}MON as PRO. OAK's AIDE."
                         }],
                  "rotation":0,
                  "type":"npc",
@@ -2176,12 +2156,118 @@
                          "name":"overworld-texture",
                          "type":"string",
                          "value":"scientist"
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"I study POK{e}MON as PRO. OAK's AIDE."
                         }],
                  "rotation":0,
                  "type":"npc",
                  "visible":true,
                  "width":32,
                  "x":128,
+                 "y":1088
+                }, 
+                {
+                 "height":32,
+                 "id":66,
+                 "name":"oakAnchor",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"location-anchor",
+                 "visible":true,
+                 "width":32,
+                 "x":224,
+                 "y":832
+                }, 
+                {
+                 "height":32,
+                 "id":67,
+                 "name":"garyAnchor",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"facing-direction",
+                         "propertytype":"facing-direction",
+                         "type":"string",
+                         "value":"right"
+                        }],
+                 "rotation":0,
+                 "type":"location-anchor",
+                 "visible":true,
+                 "width":32,
+                 "x":192,
+                 "y":864
+                }, 
+                {
+                 "height":32,
+                 "id":68,
+                 "name":"pokeball1",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"location-anchor",
+                 "visible":true,
+                 "width":32,
+                 "x":288,
+                 "y":864
+                }, 
+                {
+                 "height":32,
+                 "id":69,
+                 "name":"pokeball2",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"location-anchor",
+                 "visible":true,
+                 "width":32,
+                 "x":320,
+                 "y":864
+                }, 
+                {
+                 "height":32,
+                 "id":70,
+                 "name":"pokeball3",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"location-anchor",
+                 "visible":true,
+                 "width":32,
+                 "x":352,
+                 "y":864
+                }, 
+                {
+                 "height":32,
+                 "id":71,
+                 "name":"Daisy",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"facing-direction",
+                         "propertytype":"facing-direction",
+                         "type":"string",
+                         "value":"right"
+                        }, 
+                        {
+                         "name":"move",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"daisy"
+                        }, 
+                        {
+                         "name":"text",
+                         "type":"string",
+                         "value":"I study POK{e}MON as PRO. OAK's AIDE."
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":96,
                  "y":1088
                 }],
          "opacity":1,
@@ -2231,7 +2317,393 @@
                          "type":"class",
                          "value":
                             {
-                             "bgm":"prof_oak_lab"
+                             "bgm":"prof_oak_lab",
+                             "script":
+                                {
+                                 "script":[
+                                        {
+                                         "propertytype":"cmd-if_variant",
+                                         "type":"class",
+                                         "value":
+                                            {
+                                             "then":[
+                                                    {
+                                                     "propertytype":"cmd-spawn_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"garyAnchor",
+                                                         "facing":"right",
+                                                         "name":"Gary",
+                                                         "texture":"gary",
+                                                         "trigger":
+                                                            {
+                                                             "script":[
+                                                                    {
+                                                                     "propertytype":"cmd-text",
+                                                                     "type":"class",
+                                                                     "value":
+                                                                        {
+                                                                         "text":"GARY: What, it's only {player}?\nGramps isn't around."
+                                                                        }
+                                                                    }],
+                                                             "trigger":"interact"
+                                                            }
+                                                        }
+                                                    }, 
+                                                    {
+                                                     "propertytype":"cmd-spawn_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"pokeball1",
+                                                         "name":"pokeball1",
+                                                         "texture":"pokeball",
+                                                         "trigger":
+                                                            {
+                                                             "script":[
+                                                                    {
+                                                                     "propertytype":"cmd-text",
+                                                                     "type":"class",
+                                                                     "value":
+                                                                        {
+                                                                         "text":"One of Prof.Oak's POK{e} BALLS.\nI wonder what's inside!"
+                                                                        }
+                                                                    }],
+                                                             "trigger":"interact"
+                                                            }
+                                                        }
+                                                    }, 
+                                                    {
+                                                     "propertytype":"cmd-spawn_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"pokeball2",
+                                                         "name":"pokeball2",
+                                                         "texture":"pokeball",
+                                                         "trigger":
+                                                            {
+                                                             "script":[
+                                                                    {
+                                                                     "propertytype":"cmd-text",
+                                                                     "type":"class",
+                                                                     "value":
+                                                                        {
+                                                                         "text":"One of Prof.Oak's POK{e} BALLS.\nI wonder what's inside!"
+                                                                        }
+                                                                    }],
+                                                             "trigger":"interact"
+                                                            }
+                                                        }
+                                                    }, 
+                                                    {
+                                                     "propertytype":"cmd-spawn_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"pokeball3",
+                                                         "name":"pokeball3",
+                                                         "texture":"pokeball",
+                                                         "trigger":
+                                                            {
+                                                             "script":[
+                                                                    {
+                                                                     "propertytype":"cmd-text",
+                                                                     "type":"class",
+                                                                     "value":
+                                                                        {
+                                                                         "text":"One of Prof.Oak's POK{e} BALLS.\nI wonder what's inside!"
+                                                                        }
+                                                                    }],
+                                                             "trigger":"interact"
+                                                            }
+                                                        }
+                                                    }],
+                                             "value":"null"
+                                            }
+                                        }, 
+                                        {
+                                         "propertytype":"cmd-if_variant",
+                                         "type":"class",
+                                         "value":
+                                            {
+                                             "then":[
+                                                    {
+                                                     "propertytype":"cmd-spawn_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"garyAnchor",
+                                                         "facing":"right",
+                                                         "name":"Gary",
+                                                         "texture":"gary",
+                                                         "trigger":
+                                                            {
+                                                             "script":[
+                                                                    {
+                                                                     "propertytype":"cmd-text",
+                                                                     "type":"class",
+                                                                     "value":
+                                                                        {
+                                                                         "text":"{rival}: Heh, I do't need to be greedy like you. I'm mature!\nGo ahead and choose, {player}!"
+                                                                        }
+                                                                    }],
+                                                             "trigger":"interact"
+                                                            }
+                                                        }
+                                                    }, 
+                                                    {
+                                                     "propertytype":"cmd-spawn_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"oakAnchor",
+                                                         "facing":"down",
+                                                         "name":"Oak",
+                                                         "texture":"professor_oak",
+                                                         "trigger":
+                                                            {
+                                                             "script":[
+                                                                    {
+                                                                     "propertytype":"cmd-text",
+                                                                     "type":"class",
+                                                                     "value":
+                                                                        {
+                                                                         "text":"OAK: Now, {player}!\nInside those three POK{e} BALLS are POK{e}MON.\nWhich one will you choose for yourself?"
+                                                                        }
+                                                                    }],
+                                                             "trigger":"interact"
+                                                            }
+                                                        }
+                                                    }, 
+                                                    {
+                                                     "propertytype":"cmd-spawn_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"pokeball1",
+                                                         "name":"pokeball1",
+                                                         "texture":"pokeball",
+                                                         "trigger":
+                                                            {
+                                                             "script":[
+                                                                    {
+                                                                     "propertytype":"cmd-yes_no",
+                                                                     "type":"class",
+                                                                     "value":
+                                                                        {
+                                                                         "text":"Will you choose {starter:1}?",
+                                                                         "yes":[
+                                                                                {
+                                                                                 "propertytype":"cmd-give_starter",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "index":1
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-remove_npc",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "name":"pokeball1"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-move_npc",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "anchor":"pokeball3",
+                                                                                     "name":"Gary"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-remove_npc",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "name":"pokeball3"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-text",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "text":"{rival}: I'll take this one, then!"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-set_var",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "key":"lock_lab",
+                                                                                     "value":"false"
+                                                                                    }
+                                                                                }]
+                                                                        }
+                                                                    }],
+                                                             "trigger":"interact"
+                                                            }
+                                                        }
+                                                    }, 
+                                                    {
+                                                     "propertytype":"cmd-spawn_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"pokeball2",
+                                                         "name":"pokeball2",
+                                                         "texture":"pokeball",
+                                                         "trigger":
+                                                            {
+                                                             "script":[
+                                                                    {
+                                                                     "propertytype":"cmd-yes_no",
+                                                                     "type":"class",
+                                                                     "value":
+                                                                        {
+                                                                         "text":"Will you choose {starter:2}?",
+                                                                         "yes":[
+                                                                                {
+                                                                                 "propertytype":"cmd-give_starter",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "index":2
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-remove_npc",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "name":"pokeball2"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-move_npc",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "anchor":"pokeball1",
+                                                                                     "name":"Gary"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-remove_npc",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "name":"pokeball1"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-text",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "text":"{rival}: I'll take this one, then!"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-set_var",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "key":"lock_lab",
+                                                                                     "value":"false"
+                                                                                    }
+                                                                                }]
+                                                                        }
+                                                                    }],
+                                                             "trigger":"interact"
+                                                            }
+                                                        }
+                                                    }, 
+                                                    {
+                                                     "propertytype":"cmd-spawn_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"pokeball3",
+                                                         "name":"pokeball3",
+                                                         "texture":"pokeball",
+                                                         "trigger":
+                                                            {
+                                                             "script":[
+                                                                    {
+                                                                     "propertytype":"cmd-yes_no",
+                                                                     "type":"class",
+                                                                     "value":
+                                                                        {
+                                                                         "text":"Will you choose {starter:3}?",
+                                                                         "yes":[
+                                                                                {
+                                                                                 "propertytype":"cmd-give_starter",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "index":3
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-remove_npc",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "name":"pokeball3"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-move_npc",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "anchor":"pokeball2",
+                                                                                     "name":"Gary"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-remove_npc",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "name":"pokeball2"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-text",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "text":"{rival}: I'll take this one, then!"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-set_var",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "key":"lock_lab",
+                                                                                     "value":"false"
+                                                                                    }
+                                                                                }]
+                                                                        }
+                                                                    }],
+                                                             "trigger":"interact"
+                                                            }
+                                                        }
+                                                    }],
+                                             "value":"oak_gives_mon"
+                                            }
+                                        }],
+                                 "trigger":"map_enter"
+                                }
                             }
                         }],
                  "rotation":0,
@@ -2361,7 +2833,7 @@
          "y":0
         }],
  "nextlayerid":9,
- "nextobjectid":66,
+ "nextobjectid":72,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",

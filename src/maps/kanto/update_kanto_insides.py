@@ -778,6 +778,13 @@ def main():
 
         route['nextobjectid'] = max_oid + 1
 
+        # Sync map-level properties (map-settings, bgm, etc.) from the maps object.
+        props = obj.get('properties', [])
+        if props:
+            route['properties'] = props
+        elif 'properties' in route:
+            del route['properties']
+
         sort_layers(route['layers'])
         sync_layer_properties(route['layers'])
 

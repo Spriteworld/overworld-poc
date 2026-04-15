@@ -1,4 +1,25 @@
 import { defaultParty } from '@Data/party.js';
+import { Pokedex, GAMES, NATURES, FRLG_LEARNSETS, Moves, EXPERIENCE_TABLES, GROWTH } from '@spriteworld/pokemon-data';
+
+let _dex      = null;
+let _movePool = null;
+function getDex()      { return (_dex      ??= new Pokedex(GAMES.POKEMON_FIRE_RED)); }
+function getMovePool() { return (_movePool ??= Moves.getMovesByGameId(GAMES.POKEMON_FIRE_RED)); }
+
+function buildMoves(speciesName, level) {
+  const pool    = getMovePool();
+  const learnset = FRLG_LEARNSETS[speciesName.toUpperCase()];
+  if (!learnset?.length) {
+    return pool.slice(0, 4).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }));
+  }
+  const learnable = learnset.filter(([lvl]) => lvl <= level);
+  const selected  = learnable.slice(-4);
+  const ppByName  = Object.fromEntries(pool.map(m => [m.name, m.pp]));
+  return selected.map(([, name]) => {
+    const pp = ppByName[name] ?? 5;
+    return { name, pp: { max: pp, current: pp } };
+  });
+}
 
 function cloneParty(source) {
   return source.map(p => ({
@@ -84,22 +105,29 @@ export default {
      */
     ADD_POKEMON(state, { natDexId, level, nickname, shiny }) {
       if (state.list.length >= 6) return;
-      const STAT_KEYS = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
-      const NATURES   = ['Hardy','Lonely','Brave','Adamant','Naughty','Bold','Docile',
-                         'Relaxed','Impish','Lax','Timid','Hasty','Serious','Jolly',
-                         'Naive','Modest','Mild','Quiet','Bashful','Rash','Calm',
-                         'Gentle','Sassy','Careful','Quirky'];
+      const STAT_KEYS  = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
+      const lvl        = level ?? 5;
+      const speciesData = getDex().getPokemonById(natDexId);
+      const growth     = speciesData?.growth ?? GROWTH.MEDIUM_FAST;
+      const exp        = (EXPERIENCE_TABLES[growth] ?? EXPERIENCE_TABLES[GROWTH.MEDIUM_FAST])[lvl - 1] ?? 0;
+      const abils      = speciesData?.abilities ?? [];
+      const ability    = abils.length
+        ? { name: abils[Math.floor(Math.random() * abils.length)].name }
+        : { name: 'none' };
+      const moves      = speciesData ? buildMoves(speciesData.species, lvl) : [];
+      const natureKeys = Object.keys(NATURES);
       state.list.push({
         pid:       Date.now() + Math.floor(Math.random() * 1000),
         species:   natDexId,
-        level:     level    ?? 5,
-        nickname:  nickname ?? null,
+        level:     lvl,
+        exp,
+        nickname:  nickname ?? speciesData.species,
         shiny:     shiny    ?? false,
-        nature:    NATURES[Math.floor(Math.random() * NATURES.length)],
+        nature:    NATURES[natureKeys[Math.floor(Math.random() * natureKeys.length)]].name,
         gender:    Math.random() < 0.5 ? 'male' : 'female',
-        ability:   { name: 'none' },
-        moves:     [],
-        ivs:       Object.fromEntries(STAT_KEYS.map(s => [s, 31])),
+        ability,
+        moves,
+        ivs:       Object.fromEntries(STAT_KEYS.map(s => [s, Math.floor(Math.random() * 32)])),
         evs:       Object.fromEntries(STAT_KEYS.map(s => [s, 0])),
         currentHp: null,
       });

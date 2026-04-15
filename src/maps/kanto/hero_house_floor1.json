@@ -795,6 +795,11 @@
               "value": "left"
             },
             {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "mom"
+            },
+            {
               "name": "script",
               "type": "list",
               "value": [
@@ -825,7 +830,8 @@
                         "type": "class",
                         "value": {}
                       }
-                    ]
+                    ],
+                    "value": "true"
                   }
                 }
               ]
@@ -834,11 +840,6 @@
               "name": "script-repeatable",
               "type": "bool",
               "value": true
-            },
-            {
-              "name": "texture",
-              "type": "string",
-              "value": "mom"
             }
           ],
           "rotation": 0,

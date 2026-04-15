@@ -4279,9 +4279,24 @@
         {
           "height": 32,
           "id": 3,
-          "name": "ProfessorLabWarp",
+          "name": "ProfessorLabWarpV1",
           "opacity": 1,
           "properties": [
+            {
+              "name": "only_if",
+              "propertytype": "only-if",
+              "type": "class",
+              "value": {
+                "key": "lab_variant",
+                "type": "variable",
+                "value": [
+                  {
+                    "type": "string",
+                    "value": "null"
+                  }
+                ]
+              }
+            },
             {
               "name": "warp",
               "type": "string",
@@ -4291,6 +4306,11 @@
               "name": "warp-location",
               "type": "string",
               "value": "PalletTownEntry"
+            },
+            {
+              "name": "warp-variant",
+              "type": "string",
+              "value": "null"
             }
           ],
           "rotation": 0,
@@ -4445,6 +4465,21 @@
               "value": true
             },
             {
+              "name": "only_if",
+              "propertytype": "only-if",
+              "type": "class",
+              "value": {
+                "comparison": "eq",
+                "key": "has_pokemon",
+                "value": [
+                  {
+                    "type": "string",
+                    "value": "false"
+                  }
+                ]
+              }
+            },
+            {
               "name": "script",
               "type": "list",
               "value": [
@@ -4513,6 +4548,14 @@
                   "type": "class",
                   "value": {
                     "name": "Oak"
+                  }
+                },
+                {
+                  "propertytype": "cmd-set_var",
+                  "type": "class",
+                  "value": {
+                    "key": "lab_variant",
+                    "value": "oak_gives_mon"
                   }
                 },
                 {
@@ -4588,6 +4631,103 @@
           "width": 32,
           "x": 1632,
           "y": 384
+        },
+        {
+          "height": 32,
+          "id": 14,
+          "name": "ProfessorLabWarpV2",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "only_if",
+              "propertytype": "only-if",
+              "type": "class",
+              "value": {
+                "key": "lab_variant",
+                "type": "variable",
+                "value": [
+                  {
+                    "type": "string",
+                    "value": "oak_gives_mon"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "ProfessorLab"
+            },
+            {
+              "name": "warp-location",
+              "type": "string",
+              "value": "PalletTownEntry"
+            },
+            {
+              "name": "warp-variant",
+              "type": "string",
+              "value": "oak_gives_mon"
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 1024,
+          "y": 416
+        },
+        {
+          "height": 32,
+          "id": 15,
+          "name": "ProfessorLabWarp",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "only_if",
+              "propertytype": "only-if",
+              "type": "class",
+              "value": {
+                "comparison": "nin",
+                "key": "lab_variant",
+                "type": "variable",
+                "value": [
+                  {
+                    "type": "string",
+                    "value": "null"
+                  },
+                  {
+                    "type": "string",
+                    "value": "oak_gives_mon"
+                  },
+                  {
+                    "type": "string",
+                    "value": "oak_gives_dex"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "ProfessorLab"
+            },
+            {
+              "name": "warp-location",
+              "type": "string",
+              "value": "PalletTownEntry"
+            },
+            {
+              "name": "warp-variant",
+              "type": "string",
+              "value": "null"
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 1024,
+          "y": 416
         }
       ],
       "opacity": 1,
@@ -4598,7 +4738,7 @@
     }
   ],
   "nextlayerid": 9,
-  "nextobjectid": 14,
+  "nextobjectid": 16,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.11.2",

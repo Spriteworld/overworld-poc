@@ -13,6 +13,8 @@ export default {
     currentMap:   'HeroHouseF2',
     playerTile:   { x: 2, y: 6, charLayer: 'ground' },
     gameFlags:    { ...defaultFlags },
+    mapVars:      {},          // per-scene temporary variables: { [sceneName]: { [key]: value } }
+    mapVariant:   null,        // variant string of the current map (passed via warp-variant)
     playtime:     0,           // accumulated seconds from previous sessions
     sessionStart: Date.now(),
     money:        3000,
@@ -67,6 +69,15 @@ export default {
       Object.assign(state.gameFlags, overrides);
     },
 
+    SET_MAP_VAR(state, { map, key, value }) {
+      if (!state.mapVars[map]) state.mapVars[map] = {};
+      state.mapVars[map][key] = value;
+    },
+
+    SET_MAP_VARIANT(state, variant) {
+      state.mapVariant = variant ?? null;
+    },
+
     ADD_MONEY(state, amount) {
       state.money = Math.max(0, state.money + amount);
     },
@@ -88,12 +99,14 @@ export default {
       if (saved.currentMap  != null) state.currentMap  = saved.currentMap;
       if (saved.playerTile  != null) state.playerTile  = saved.playerTile;
       if (saved.gameFlags   != null) state.gameFlags   = saved.gameFlags;
+      if (saved.mapVars     != null) state.mapVars     = saved.mapVars;
+      if (saved.mapVariant  !== undefined) state.mapVariant = saved.mapVariant ?? null;
       if (saved.playtime     != null) state.playtime     = saved.playtime;
       if (saved.money        != null) state.money        = saved.money;
       if (saved.healLocation != null) state.healLocation = saved.healLocation;
       if (saved.textSpeed    != null) state.textSpeed    = saved.textSpeed;
-      if (saved.bgmVolume   != null) state.bgmVolume   = saved.bgmVolume;
-      if (saved.sfxVolume   != null) state.sfxVolume   = saved.sfxVolume;
+      if (saved.bgmVolume    != null) state.bgmVolume    = saved.bgmVolume;
+      if (saved.sfxVolume    != null) state.sfxVolume    = saved.sfxVolume;
       state.sessionStart = Date.now();
     },
 
@@ -107,6 +120,8 @@ export default {
       state.currentMap          = 'HeroHouseF2';
       state.playerTile          = { x: 2, y: 6, charLayer: 'ground' };
       state.gameFlags           = { ...defaultFlags };
+      state.mapVars             = {};
+      state.mapVariant          = null;
       state.playtime            = 0;
       state.sessionStart        = Date.now();
       state.money               = 3000;

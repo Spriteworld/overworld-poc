@@ -3,11 +3,12 @@ import ChoicePrompt from './ChoicePrompt.js';
 import { getInputManager, Action } from './InputManager.js';
 import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
 import { playBgm, playSfx, stopByKey, stopAll, lazyLoadBgm, stopBgm } from './AudioManager.js';
+import { getGameDef } from '../data/gameDef.js';
 
 // Lazy-load the species list once per session.
 let _allSpec = null;
 function getAllSpecies() {
-  if (!_allSpec) _allSpec = new Pokedex(GAMES.POKEMON_FIRE_RED).pokedex;
+  if (!_allSpec) _allSpec = Object.values(new Pokedex(GAMES.POKEMON_FIRE_RED).pokedex);
   return _allSpec;
 }
 
@@ -31,9 +32,10 @@ export default class ScriptRunner {
   constructor(scene, commands) {
     this._scene  = scene;
     this._queue  = ScriptRunner.normalize(commands);
-    this._vars          = {};
     this._onDone        = null;
     this._inspectorText = null;
+    // Map-scoped runtime variables — persist for the lifetime of the scene.
+    if (!this._scene.mapVars) this._scene.mapVars = {};
   }
 
   /**
@@ -58,11 +60,11 @@ export default class ScriptRunner {
   static validate(commands, path = 'root') {
     const KNOWN = new Set([
       'text', 'yes_no', 'give_item', 'remove_item', 'set_flag', 'if_flag',
-      'if_has_item', 'give_pokemon', 'enable_input', 'disable_input',
-      'move_player', 'move_npc', 'walk_to_char', 'spawn_npc', 'remove_npc',
+      'if_has_item', 'give_pokemon', 'give_starter', 'enable_input', 'disable_input',
+      'move_player', 'move_npc', 'walk_to_char', 'spawn_npc', 'spawn_pkmn', 'remove_npc',
       'move_to_box', 'if_party_count', 'teach_move', 'warp_player', 'warp_npc',
       'walk_warp_continue', 'teleport_to_pokecenter', 'escape_rope', 'wait',
-      'wait_input', 'set_var', 'if_var', 'if_facing', 'if_npc_at', 'heal_party',
+      'wait_input', 'set_var', 'if_var', 'if_variant', 'if_facing', 'if_npc_at', 'heal_party',
       'show_exclamation', 'knockback', 'look', 'face_char', 'movement_behavior',
       'play_sound', 'stop_sound', 'bgm_start', 'bgm_stop',
       'fade_out', 'fade_in', 'camera_pan',
@@ -77,9 +79,11 @@ export default class ScriptRunner {
       if_flag:           ['key'],
       if_has_item:       ['item'],
       give_pokemon:      ['species'],
+      give_starter:      ['index'],
       move_npc:          ['name'],
       walk_to_char:      ['character1', 'character2', 'side'],
       spawn_npc:         ['name', 'texture'],
+      spawn_pkmn:        ['name', 'texture'],
       remove_npc:        ['name'],
       if_party_count:    ['count'],
       teach_move:        ['move'],
@@ -88,6 +92,7 @@ export default class ScriptRunner {
       walk_warp_continue: ['map'],
       set_var:           ['key', 'value'],
       if_var:            ['key', 'value'],
+      if_variant:        ['value'],
       if_facing:         ['direction'],
       if_npc_at:         ['name'],
       look:              ['direction'],
@@ -293,14 +298,17 @@ export default class ScriptRunner {
 
       case 'yes_no': {
         const text = Array.isArray(cmd.text) ? cmd.text.join('\n') : String(cmd.text ?? '');
-        this._scene.game.events.emit('textbox-changedata', text);
-        this._scene.game.events.once('textbox-disable', () => {
+        this._scene.game.events.once('textbox-ready', () => {
+          // Suppress the textbox auto-close so the prompt appears alongside it.
+          this._scene.game.events.emit('textbox-intercept');
           // Render choice prompt in OverworldUI (always-active UI scene).
           const uiScene = this._scene.scene.get('OverworldUI');
           new ChoicePrompt(uiScene ?? this._scene, ['YES', 'NO'], (idx) => {
+            this._scene.game.events.emit('textbox-disable');
             this._branch(idx === 0 ? (cmd.yes ?? []) : (cmd.no ?? []));
           });
         });
+        this._scene.game.events.emit('textbox-changedata', text);
         break;
       }
 
@@ -326,8 +334,20 @@ export default class ScriptRunner {
         break;
 
       case 'if_flag': {
-        const val = !!store.state.game.gameFlags[cmd.key];
-        this._branch(val ? (cmd.then ?? []) : (cmd.else ?? []));
+        const flagVal    = store.state.game.gameFlags[cmd.key];
+        const comparison = cmd.comparison ?? 'eq';
+        const targets    = Array.isArray(cmd.value) ? cmd.value : (cmd.value != null ? [cmd.value] : []);
+        const coerce     = v => { if (v === 'true') return true; if (v === 'false') return false; return v; };
+        let pass;
+        if (comparison === 'in')       pass = targets.some(t  => flagVal == coerce(t));  // eslint-disable-line eqeqeq
+        else if (comparison === 'nin') pass = targets.every(t => flagVal != coerce(t));  // eslint-disable-line eqeqeq
+        else {
+          const target = coerce(targets[0] ?? true);
+          // eslint-disable-next-line eqeqeq
+          pass = comparison === 'neq' ? flagVal != target : flagVal == target;
+        }
+        if (this._debug()) console.log(`[ScriptRunner] if_flag — key: "${cmd.key}" (=${JSON.stringify(flagVal)}) ${comparison} ${JSON.stringify(targets)} → ${pass ? 'pass' : 'fail'}`);
+        this._branch(pass ? (cmd.then ?? []) : (cmd.else ?? []));
         break;
       }
 
@@ -337,6 +357,7 @@ export default class ScriptRunner {
                       bag.pokeballs.some(e => e.name === cmd.item) ||
                       bag.tms.some(e => e.name === cmd.item) ||
                       bag.keyItems.some(e => e.name === cmd.item);
+        if (this._debug()) console.log(`[ScriptRunner] if_has_item — item: "${cmd.item}" → ${found ? 'pass' : 'fail'}`);
         this._branch(found ? (cmd.then ?? []) : (cmd.else ?? []));
         break;
       }
@@ -360,6 +381,28 @@ export default class ScriptRunner {
           level:    cmd.level    ?? 5,
           nickname: cmd.nickname ?? null,
           shiny:    cmd.shiny    ?? false,
+        });
+        this._step();
+        break;
+      }
+
+      case 'give_starter': {
+        const starterMon = getGameDef().starterMon;
+        if (!Array.isArray(starterMon) || !starterMon.length) {
+          console.warn('[ScriptRunner] give_starter: no starterMon defined in gameDef');
+          this._step();
+          break;
+        }
+        const idx      = cmd.index ?? 0;
+        const natDexId = starterMon[idx];
+        if (natDexId == null) {
+          console.warn(`[ScriptRunner] give_starter: no starter at index ${idx}`);
+          this._step();
+          break;
+        }
+        store.commit('party/ADD_POKEMON', {
+          natDexId,
+          level:    cmd.level ?? 5,
         });
         this._step();
         break;
@@ -554,20 +597,35 @@ export default class ScriptRunner {
         const anchor = cmd.anchor ? this._resolveAnchor(cmd.anchor) : null;
         const coords = anchor ?? { x: cmd.x ?? 0, y: cmd.y ?? 0 };
         const spawnTex = cmd.texture ?? '';
-        npcPlugin.addToScene(
-          cmd.name,
-          spawnTex,
-          coords,
-          {
-            'facing-direction': anchor?.facingDir ?? cmd.facing ?? 'down',
-          },
-        );
+        const npcConfig = { 'facing-direction': anchor?.facingDir ?? cmd.facing ?? 'down' };
+        if (cmd.trigger && Array.isArray(cmd.trigger.script) && cmd.trigger.script.length) {
+          npcConfig.properties = [
+            { name: 'script',         value: ScriptRunner.normalize(cmd.trigger.script) },
+            { name: 'script-trigger', value: cmd.trigger.trigger ?? 'interact' },
+          ];
+        } else if (Array.isArray(cmd.script) && cmd.script.length) {
+          npcConfig.properties = [{ name: 'script', value: ScriptRunner.normalize(cmd.script) }];
+        }
+        npcPlugin.addToScene(cmd.name, spawnTex, coords, npcConfig);
         // Wait for the texture to finish loading before continuing the script,
         // so that subsequent movement commands use the real sprite from the start.
         if (!spawnTex || this._scene.textures.exists(spawnTex)) {
           this._step();
         } else {
-          this._scene.load.once('filecomplete-spritesheet-' + spawnTex, () => this._step());
+          const completeKey = 'filecomplete-spritesheet-' + spawnTex;
+          const errorKey    = 'loaderror';
+          const advance = () => {
+            this._scene.load.off(errorKey, onError);
+            this._step();
+          };
+          const onError = (file) => {
+            if (file.key !== spawnTex) return;
+            this._scene.load.off(completeKey, advance);
+            console.warn(`[ScriptRunner] spawn_npc: failed to load texture "${spawnTex}"`);
+            this._step();
+          };
+          this._scene.load.once(completeKey, advance);
+          this._scene.load.on(errorKey, onError);
         }
         break;
       }
@@ -586,6 +644,34 @@ export default class ScriptRunner {
         break;
       }
 
+      // ── Spawn Pokémon ─────────────────────────────────────────────────────
+
+      case 'spawn_pkmn': {
+        const pkmnPlugin = this._scene.mapPlugins?.['pokemon'];
+        if (!pkmnPlugin) { this._step(); break; }
+        const spawnAnchor = cmd.anchor ? this._resolveAnchor(cmd.anchor) : null;
+        const spawnCoords = spawnAnchor ?? { x: cmd.x ?? 0, y: cmd.y ?? 0 };
+        const pkmnConfig = {
+          id: cmd.name,
+          collides: false,
+          move: false,
+          spin: false,
+          shiny: cmd.shiny ?? false,
+          'facing-direction': spawnAnchor?.facingDir ?? cmd.facing ?? 'down',
+        };
+        if (cmd.trigger && Array.isArray(cmd.trigger.script) && cmd.trigger.script.length) {
+          pkmnConfig.properties = [
+            { name: 'script',         value: ScriptRunner.normalize(cmd.trigger.script) },
+            { name: 'script-trigger', value: cmd.trigger.trigger ?? 'interact' },
+          ];
+        } else if (Array.isArray(cmd.script) && cmd.script.length) {
+          pkmnConfig.properties = [{ name: 'script', value: ScriptRunner.normalize(cmd.script) }];
+        }
+        pkmnPlugin.addToScene(cmd.name, cmd.texture ?? '', spawnCoords, pkmnConfig);
+        this._step();
+        break;
+      }
+
       // ── Party management ──────────────────────────────────────────────────
 
       case 'move_to_box':
@@ -598,6 +684,7 @@ export default class ScriptRunner {
         const n    = cmd.count ?? 1;
         const ops  = { lt: len < n, lte: len <= n, eq: len === n, gte: len >= n, gt: len > n };
         const pass = ops[cmd.op ?? 'eq'] ?? false;
+        if (this._debug()) console.log(`[ScriptRunner] if_party_count — count: ${len}, op: "${cmd.op ?? 'eq'}", target: ${n} → ${pass ? 'pass' : 'fail'}`);
         this._branch(pass ? (cmd.then ?? []) : (cmd.else ?? []));
         break;
       }
@@ -766,21 +853,56 @@ export default class ScriptRunner {
 
       // ── Wait for input ────────────────────────────────────────────────────
 
-      case 'wait_input':
-        getInputManager()?.once(Action.CONFIRM, () => this._step());
+      case 'wait_input': {
+        const im = getInputManager();
+        if (!im) {
+          console.warn('[ScriptRunner] wait_input: no InputManager, skipping');
+          this._step();
+          break;
+        }
+        im.once(Action.CONFIRM, () => this._step());
         break;
+      }
 
       // ── Temporary variables ───────────────────────────────────────────────
 
       case 'set_var':
-        this._vars[cmd.key] = cmd.value;
+        this._scene.mapVars[cmd.key] = cmd.value;
+        store.commit('game/SET_MAP_VAR', { map: this._scene.sys.settings.key, key: cmd.key, value: cmd.value });
+        if (this._debug()) console.log(`[ScriptRunner] set_var — key: "${cmd.key}", value: ${JSON.stringify(cmd.value)}`);
         this._step();
         break;
 
       case 'if_var': {
+        const varVal  = this._scene.mapVars[cmd.key];
+        const varCmp  = cmd.comparison ?? 'eq';
+        const targets = Array.isArray(cmd.value) ? cmd.value : (cmd.value != null ? [cmd.value] : []);
+        let varMatch;
         // eslint-disable-next-line eqeqeq
-        const match = this._vars[cmd.key] == cmd.value;
-        this._branch(match ? (cmd.then ?? []) : (cmd.else ?? []));
+        if (varCmp === 'in')       varMatch = targets.some(t  => varVal == t);
+        // eslint-disable-next-line eqeqeq
+        else if (varCmp === 'nin') varMatch = targets.every(t => varVal != t);
+        else {
+          let varTarget = targets[0] ?? null;
+          if (varTarget === 'true')  varTarget = true;
+          if (varTarget === 'false') varTarget = false;
+          // eslint-disable-next-line eqeqeq
+          varMatch = varCmp === 'neq' ? varVal != varTarget : varVal == varTarget;
+        }
+        if (this._debug()) console.log(`[ScriptRunner] if_var — key: "${cmd.key}", comparison: "${varCmp}", targets: ${JSON.stringify(targets)}, actual: ${JSON.stringify(varVal)} → ${varMatch ? 'pass' : 'fail'}`);
+        this._branch(varMatch ? (cmd.then ?? []) : (cmd.else ?? []));
+        break;
+      }
+
+      case 'if_variant': {
+        const sceneVariant  = this._scene.config?.variant ?? null;
+        const variantValues = Array.isArray(cmd.value) ? cmd.value : [cmd.value];
+        const variantCmp    = cmd.comparison ?? 'eq';
+        const variantMatch  = variantCmp === 'neq'
+          ? !variantValues.includes(sceneVariant)
+          : variantValues.includes(sceneVariant);
+        if (this._debug()) console.log(`[ScriptRunner] if_variant — scene variant: "${sceneVariant}", ${variantCmp} ${JSON.stringify(variantValues)} → ${variantMatch ? 'pass' : 'fail'}`);
+        this._branch(variantMatch ? (cmd.then ?? []) : (cmd.else ?? []));
         break;
       }
 
@@ -800,6 +922,7 @@ export default class ScriptRunner {
           ?? this._scene.gridEngine?.getFacingDirection?.(ifFacingId)
           ?? null;
         const ifFacingMatch = facing === cmd.direction;
+        if (this._debug()) console.log(`[ScriptRunner] if_facing — target: "${ifFacingId}", facing: "${facing}", expected: "${cmd.direction}" → ${ifFacingMatch ? 'pass' : 'fail'}`);
         this._branch(ifFacingMatch ? (cmd.then ?? []) : (cmd.else ?? []));
         break;
       }
@@ -820,6 +943,7 @@ export default class ScriptRunner {
         const ifNpcMatch = ifNpcPos != null
           && ifNpcPos.x === ifNpcTarget.x
           && ifNpcPos.y === ifNpcTarget.y;
+        if (this._debug()) console.log(`[ScriptRunner] if_npc_at — name: "${cmd.name}", pos: ${JSON.stringify(ifNpcPos)}, target: ${JSON.stringify(ifNpcTarget)} → ${ifNpcMatch ? 'pass' : 'fail'}`);
         this._branch(ifNpcMatch ? (cmd.then ?? []) : (cmd.else ?? []));
         break;
       }

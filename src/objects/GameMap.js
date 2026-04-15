@@ -103,8 +103,10 @@ export default class extends Phaser.Scene {
     this.mapPlugins['cuttree'] = new Interactables.CutTree(this);
     this.mapPlugins['item'] = new Interactables.Item(this);
     this.mapPlugins['strengthboulder'] = new Interactables.StrengthBoulder(this);
-    this.mapPlugins['trainer'] = new Interactables.Trainer(this);
-    this.mapPlugins['script']  = new Interactables.Script(this);
+    this.mapPlugins['trainer']            = new Interactables.Trainer(this);
+    this.mapPlugins['script']             = new Interactables.Script(this);
+    // must be after 'pokemon' so addToScene() is available during init()
+    this.mapPlugins['overworld_encounter'] = new Interactables.OverworldEncounter(this);
   }
 
   /**
@@ -119,6 +121,13 @@ export default class extends Phaser.Scene {
     this.characters = new Map();
     this.npcs = new Map();
     this.pkmn = new Map();
+
+    // Restore persisted map variables for this scene (written by set_var commands).
+    const sceneKey = this.sys.settings.key;
+    this.mapVars = Object.assign({}, store.state.game.mapVars[sceneKey] ?? {});
+
+    // Persist the current map's variant so it survives a save/load cycle.
+    store.commit('game/SET_MAP_VARIANT', this.config.variant ?? null);
 
     this.ge_init = false;
     this.ge_events_init = false;
@@ -210,6 +219,14 @@ export default class extends Phaser.Scene {
       }
       plugin.init(this);
     });
+
+    // When arriving via a warp the previous scene already faded to black.
+    // Start a camera fade-in here so the screen stays dark until map_enter
+    // scripts have had a chance to run (they fire in the first update tick,
+    // before the first render).
+    if (this.config.warpLocationName || Object.keys(this.config.playerLocation ?? {}).length > 0) {
+      this.cameras.main.fadeIn(500, 0, 0, 0);
+    }
 
     EventBus.emit('current-scene-ready', this);
     this.game.events.emit('map-enter', this.config.mapName);
@@ -493,13 +510,13 @@ export default class extends Phaser.Scene {
    */
   updateCharacters(time, delta) {
     // console.log(['GameMap::updateCharacters', this.characters]);
+    const scaledDelta = delta * (this.game.registry.get('gameSpeed') ?? 1);
     Object.entries(this.mapPlugins)
         .filter(([_, plugin]) => typeof plugin.update === 'function')
-        .map(([_, plugin]) => plugin.update(time, delta));
+        .map(([_, plugin]) => plugin.update(time, scaledDelta));
 
     if (this.mapPlugins.player?.loadedPlayer) {
-      
-      this.mapPlugins['player'].player.update(time, delta);
+      this.mapPlugins['player'].player.update(time, scaledDelta);
     }
 
     // if (this.pkmn.length > 0) {
@@ -575,6 +592,12 @@ export default class extends Phaser.Scene {
     if (this.game.config.debug.console.gameMap) {
       console.log(['GameMap::initGEEvents']);
     }
+    if (this.config._pendingScript?.length) {
+      const queue = [...this.config._pendingScript];
+      delete this.config._pendingScript;
+      new ScriptRunner(this, queue).run();
+    }
+
     Object.entries(this.mapPlugins)
         .filter(([_, plugin]) => typeof plugin.event === 'function')
         .map(([_, plugin]) => plugin.event());
@@ -608,12 +631,6 @@ export default class extends Phaser.Scene {
       });
 
     this.events.once('shutdown', () => this._playerTileSub?.unsubscribe());
-
-    if (this.config._pendingScript?.length) {
-      const queue = [...this.config._pendingScript];
-      delete this.config._pendingScript;
-      new ScriptRunner(this, queue).run();
-    }
   }
 
 }

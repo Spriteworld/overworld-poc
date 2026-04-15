@@ -186,7 +186,7 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
    * @returns {string} Direction constant.
    */
   getOppositeFacingDirection() {
-    let dir = this.getFacingDirection();
+    let dir = this.getFacingDirection()?.toUpperCase();
     if (dir === Direction.UP) {
       return Direction.DOWN;
     } else if (dir === Direction.DOWN) {

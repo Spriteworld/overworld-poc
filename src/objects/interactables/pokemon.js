@@ -1,12 +1,14 @@
 import Debug from '@Data/debug.js';
 import { Tile, PkmnOverworld } from '@Objects';
-import { getValue, getPropertyValue, remapProps, Vector2 } from '@Utilities';
+import { getValue, getPropertyValue, remapProps, Vector2, checkOnlyIf } from '@Utilities';
+import store from '../../store/index.js';
 import Tileset from '@Tileset';
 import ScriptRunner from '../../utilities/ScriptRunner.js';
 
 export default class {
   constructor(scene) {
-    this.scene = scene;
+    this.scene     = scene;
+    this._enterSub = null;
   }
 
   init() {
@@ -96,11 +98,11 @@ export default class {
       }
     } else {
       const isShiny = texture.endsWith('s');
-      const path = isShiny ? Tileset.pokemon_shiny[texture] : Tileset.pokemon[texture];
+      const pathFactory = isShiny ? Tileset.pokemon_shiny[texture] : Tileset.pokemon[texture];
       const dimSource = isShiny ? Tileset.ow_pokemon_shiny_dimensions : Tileset.ow_pokemon_dimensions;
       const dims = dimSource.default[texture];
 
-      if (!path || !dims) {
+      if (!pathFactory || !dims) {
         console.error('Interactables::pokemon: missing sprite data for', texture);
         return pkmn;
       }
@@ -113,17 +115,19 @@ export default class {
         this.scene.gridEngine.addCharacter(pkmn.characterDef());
       }
 
-      this.scene.load.spritesheet(texture, path, {
-        frameWidth: dims.width / 4,
-        frameHeight: dims.height / 4
+      pathFactory().then(path => {
+        this.scene.load.spritesheet(texture, path, {
+          frameWidth: dims.width / 4,
+          frameHeight: dims.height / 4
+        });
+        this.scene.load.once('filecomplete-spritesheet-' + texture, () => {
+          this._ensureAnim(texture);
+          this.scene.pkmn.getChildren()
+            .filter(p => p.config?.texture === texture)
+            .forEach(p => p.setTexture(texture));
+        });
+        this.scene.load.start();
       });
-      this.scene.load.once('filecomplete-spritesheet-' + texture, () => {
-        this._ensureAnim(texture);
-        this.scene.pkmn.getChildren()
-          .filter(p => p.config?.texture === texture)
-          .forEach(p => p.setTexture(texture));
-      });
-      this.scene.load.start();
     }
 
     return pkmn;
@@ -148,43 +152,76 @@ export default class {
     this._onInteract = (tile) => {
       if (tile.obj.type !== 'pkmn') { return; }
 
-      let text = this.scene.getPropertyFromTile(tile.obj, 'text');
-      if (!text) { return; }
-      let player = this.scene.characters.get('player');
-      let char = this.scene.characters.get(tile.obj.id);
+      const scriptTrigger = this.scene.getPropertyFromTile(tile.obj, 'script-trigger') ?? 'interact';
+      if (scriptTrigger !== 'interact') return;
+
+      const player      = this.scene.characters.get('player');
+      const char        = this.scene.characters.get(tile.obj.id);
+      const originalDir = char?.getFacingDirection() ?? null;
       char?.look(player.getOppositeFacingDirection());
       char?.stopSpin(true);
 
-      this.scene.game.events.emit(
-        'textbox-changedata',
-        text,
-        tile.obj
-      );
-
+      const text   = this.scene.getPropertyFromTile(tile.obj, 'text');
       const script = this.scene.getPropertyFromTile(tile.obj, 'script');
-      if (script) {
-        let commands;
-        if (Array.isArray(script)) {
-          commands = script;
-        } else {
-          try {
-            commands = JSON.parse(script);
-          } catch (e) {
+      if (!text && !script) { return; }
+
+      const onlyIf = this.scene.getPropertyFromTile(tile.obj, 'only_if') ?? null;
+      if (!checkOnlyIf(onlyIf, store.state.game.gameFlags, this.scene.config.variant ?? null, this.scene.mapVars ?? {})) return;
+
+      const restore = () => { if (originalDir) char?.look(originalDir); };
+
+      const runScript = (raw) => {
+        let commands = Array.isArray(raw) ? raw : null;
+        if (!commands) {
+          try { commands = JSON.parse(raw); } catch (e) {
             console.warn(`[Interactables::pokemon] Invalid script JSON for "${tile.obj.name}":`, e.message);
+            restore();
             return;
           }
         }
         if (Array.isArray(commands)) {
-          this.scene.game.events.once('textbox-disable', () => {
-            new ScriptRunner(this.scene, [...commands]).run();
-          });
+          new ScriptRunner(this.scene, [...commands]).run(restore);
         }
+      };
+
+      if (text) {
+        this.scene.game.events.emit('textbox-changedata', text, tile.obj);
+        if (script) {
+          this.scene.game.events.once('textbox-disable', () => runScript(script));
+        } else {
+          this.scene.game.events.once('textbox-disable', restore);
+        }
+      } else {
+        runScript(script);
       }
     };
     this.scene.game.events.on('interact-with-obj', this._onInteract);
+
+    // ── Enter trigger ──────────────────────────────────────────────────────
+    if (this.scene.gridEngine) {
+      this._enterSub = this.scene.gridEngine
+        .positionChangeFinished()
+        .subscribe(({ charId, enterTile }) => {
+          if (charId !== 'player') return;
+          this.scene.pkmn.getChildren().forEach(pkmn => {
+            const cfg = pkmn.config;
+            if (!cfg?.properties) return;
+            const scriptTrigger = this.scene.getPropertyFromTile(cfg, 'script-trigger');
+            if (scriptTrigger !== 'enter') return;
+            const script = this.scene.getPropertyFromTile(cfg, 'script');
+            if (!script) return;
+            const pos = this.scene.gridEngine.getPosition(cfg.id);
+            if (!pos || pos.x !== enterTile.x || pos.y !== enterTile.y) return;
+            const onlyIf = this.scene.getPropertyFromTile(cfg, 'only_if') ?? null;
+            if (!checkOnlyIf(onlyIf, store.state.game.gameFlags, this.scene.config.variant ?? null, this.scene.mapVars ?? {})) return;
+            new ScriptRunner(this.scene, [...script]).run();
+          });
+        });
+    }
   }
 
   destroy() {
     this.scene.game.events.off('interact-with-obj', this._onInteract);
+    if (this._enterSub) this._enterSub.unsubscribe();
   }
 };

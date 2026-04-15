@@ -100,13 +100,19 @@ export default class extends Phaser.Scene {
     });
 
     this.game.events.on('script-runner-start', () => { this._scriptDepth++; });
-    this.game.events.on('script-runner-end',   () => { this._scriptDepth = Math.max(0, this._scriptDepth - 1); });
+    this.game.events.on('script-runner-end',   () => {
+      this._scriptDepth = Math.max(0, this._scriptDepth - 1);
+      // If the script ended without closing via a textbox (e.g. heal_party as
+      // the last command), player-move-enable was never re-emitted from the
+      // textbox-disable handler — do it here.
+      if (this._scriptDepth === 0 && !this.textbox.visible) {
+        EventBus.emit('player-move-enable');
+      }
+    });
 
     this.game.events.on('textbox-disable', () => {
       this.textbox.setVisible(false);
-      if (this._scriptDepth === 0) {
-        EventBus.emit('player-move-enable');
-      }
+      EventBus.emit('player-move-enable');
     });
 
     this.game.events.on('textbox-changedata', (value) => {
@@ -428,6 +434,15 @@ export default class extends Phaser.Scene {
       if (registered && this.registry.get('player_input') !== false) {
         this.game.events.emit('use-key-item', registered);
       }
+    });
+
+    // ─── Temp: Space = 10× speed toggle ──────────────────────────────────────
+    this.input.keyboard.on('keydown-SPACE', () => {
+      const speed = (this.game.registry.get('gameSpeed') ?? 1) === 1 ? 10 : 1;
+      this.game.registry.set('gameSpeed', speed);
+      this.game.scene.getScenes(true).forEach(s => {
+        if (s !== this) s.anims.globalTimeScale = speed;
+      });
     });
   }
 

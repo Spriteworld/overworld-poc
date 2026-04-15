@@ -4,6 +4,7 @@ import {
   SX, SY, SW, SH,
   TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT,
 } from './layout.js';
+import store from '../../store/index.js';
 
 const SKIP_SCENES = ['Preload', 'Base', 'OverworldUI', 'TimeOverlay'];
 const TILE_PX = 32;
@@ -112,6 +113,12 @@ export default class DebugScreen {
   _render() {
     this._menu._clearSubTexts();
 
+    // Snapshot the Vuex flags into a plain object once per render so that
+    // _read() calls don't hit the reactive proxy repeatedly.
+    this._flagsSnapshot = TABS[this._tabIndex] === 'FLAGS'
+      ? Object.assign({}, store.state.game.gameFlags)
+      : null;
+
     const reg   = obj => this._menu.reg(obj);
     const scene = this._scene;
 
@@ -173,11 +180,11 @@ export default class DebugScreen {
   // ─── Flag read / write ────────────────────────────────────────────────────
 
   _read(item) {
+    if (item.type === 'flag') {
+      return !!(this._flagsSnapshot ?? store.state.game.gameFlags)[item.key];
+    }
     const parts = item.key.split('.');
-    const root  = item.type === 'debug'
-      ? this._scene.game.config.debug
-      : this._scene.game.config.gameFlags;
-    let v = root;
+    let v = this._scene.game.config.debug;
     for (const p of parts) v = v?.[p];
     return !!v;
   }
@@ -260,8 +267,12 @@ export default class DebugScreen {
       return;
     }
 
-    this._write(item, !this._read(item));
+    const newVal = !this._read(item);
+    this._write(item, newVal);
     this._persist(item);
+    if (item.type === 'flag') {
+      store.commit('game/PATCH_FLAGS', { [item.key]: newVal });
+    }
     this._dirty = true;
     this._render();
   }

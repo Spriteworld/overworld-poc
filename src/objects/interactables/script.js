@@ -28,7 +28,10 @@ export default class Script {
       console.log('Interactables::script');
     }
 
-    const objs = this.scene.findInteractions('trigger');
+    const objs = [
+      ...this.scene.findInteractions('trigger'),
+      ...this.scene.findInteractions('on-interact').map(o => ({ ...o, _forceInteract: true })),
+    ];
     if (!objs.length) return;
 
     for (const obj of objs) {
@@ -53,7 +56,7 @@ export default class Script {
       }
 
       const once    = !!this.scene.getPropertyFromTile(obj, 'once');
-      const trigger = this.scene.getPropertyFromTile(obj, 'trigger') ?? 'interact';
+      const trigger = obj._forceInteract ? 'interact' : (this.scene.getPropertyFromTile(obj, 'trigger') ?? 'interact');
       const onlyIf  = this.scene.getPropertyFromTile(obj, 'only_if') ?? null;
 
       // Register as interactive tile (visible debug outline uses purple).
@@ -61,12 +64,26 @@ export default class Script {
 
       this._entries.push({ obj, commands, once, trigger, onlyIf });
     }
+
+    // ── map-settings script ──────────────────────────────────────────────────
+    const mapProps     = this.scene.config?.map?.properties ?? [];
+    const mapSettings  = mapProps.find(p => p.name === 'map-settings')?.value;
+    const mapScript    = mapSettings?.script;
+    if (mapScript?.trigger && Array.isArray(mapScript.script) && mapScript.script.length) {
+      this._entries.push({
+        obj:      { name: 'map_settings_script' },
+        commands: mapScript.script,
+        once:     false,
+        trigger:  mapScript.trigger,
+        onlyIf:   null,
+      });
+    }
   }
 
   event() {
     // ── Interact trigger ────────────────────────────────────────────────────
     this._onInteract = (tile) => {
-      if (tile.obj.type !== 'trigger') return;
+      if (tile.obj.type !== 'trigger' && tile.obj.type !== 'on-interact') return;
       const entry = this._entries.find(e => e.obj === tile.obj && e.trigger === 'interact');
       if (!entry) return;
       this._run(entry);
@@ -94,15 +111,13 @@ export default class Script {
     }
 
     // ── Map-enter trigger ─────────────────────────────────────────────────
+    // Run immediately — event() is only called after GridEngine is fully
+    // initialised (ge_init = true), so no extra deferral is needed.
+    // Running now (before the first render) ensures scripts execute while
+    // the camera fade-in overlay is still opaque.
     const mapEnterEntries = this._entries.filter(e => e.trigger === 'map_enter');
-    if (mapEnterEntries.length) {
-      // Defer by one tick so GridEngine and all character plugins are fully
-      // initialised before the script reads positions or moves characters.
-      this.scene.time.delayedCall(0, () => {
-        for (const entry of mapEnterEntries) {
-          this._run(entry);
-        }
-      });
+    for (const entry of mapEnterEntries) {
+      this._run(entry);
     }
   }
 
@@ -118,7 +133,7 @@ export default class Script {
   // ─── Private ──────────────────────────────────────────────────────────────
 
   _run(entry) {
-    if (!checkOnlyIf(entry.onlyIf, store.state.game.gameFlags)) return;
+    if (!checkOnlyIf(entry.onlyIf, store.state.game.gameFlags, this.scene.config.variant ?? null, this.scene.mapVars ?? {})) return;
     if (entry.once) {
       const flag = `script_done_${entry.obj.name}`;
       if (store.state.game.gameFlags[flag]) return;

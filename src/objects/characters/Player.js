@@ -253,7 +253,7 @@ export default class extends Character {
     tilePos = this.getPosInDirection(Direction.LEFT);
     if (player.gridengine.isBlocked(tilePos)) {
       this.blockedLeft.x = tilePos.x * Tile.WIDTH;
-      this.blockedLeft.y = tilePos.y * Tile.WIDTH;
+      this.blockedLeft.y = tilePos.y * Tile.HEIGHT;
       this.blockedLeft.width = Tile.WIDTH;
       this.blockedLeft.height = Tile.HEIGHT;
       this.blockedLeft.setAlpha(0.5);
@@ -266,7 +266,7 @@ export default class extends Character {
     tilePos = this.getPosInDirection(Direction.UP);
     if (player.gridengine.isBlocked(tilePos)) {
       this.blockedUp.x = tilePos.x * Tile.WIDTH;
-      this.blockedUp.y = tilePos.y * Tile.WIDTH;
+      this.blockedUp.y = tilePos.y * Tile.HEIGHT;
       this.blockedUp.width = Tile.WIDTH;
       this.blockedUp.height = Tile.HEIGHT;
       this.blockedUp.setAlpha(0.5);
@@ -279,7 +279,7 @@ export default class extends Character {
     tilePos = this.getPosInDirection(Direction.RIGHT);
     if (player.gridengine.isBlocked(tilePos)) {
       this.blockedRight.x = tilePos.x * Tile.WIDTH;
-      this.blockedRight.y = tilePos.y * Tile.WIDTH;
+      this.blockedRight.y = tilePos.y * Tile.HEIGHT;
       this.blockedRight.width = Tile.WIDTH;
       this.blockedRight.height = Tile.HEIGHT;
       this.blockedRight.setAlpha(0.5);
@@ -292,7 +292,7 @@ export default class extends Character {
     tilePos = this.getPosInDirection(Direction.DOWN);
     if (player.gridengine.isBlocked(tilePos)) {
       this.blockedDown.x = tilePos.x * Tile.WIDTH;
-      this.blockedDown.y = tilePos.y * Tile.WIDTH;
+      this.blockedDown.y = tilePos.y * Tile.HEIGHT;
       this.blockedDown.width = Tile.WIDTH;
       this.blockedDown.height = Tile.HEIGHT;
       this.blockedDown.setAlpha(0.5);

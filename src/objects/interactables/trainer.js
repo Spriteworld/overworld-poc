@@ -20,12 +20,34 @@ const ITEM_REGISTRY = {
   'Revive':        Items.Revive,
 };
 
+const BALL_REGISTRY = {
+  'pokeball':   Items.Pokeball,
+  'greatball':  Items.GreatBall,
+  'ultraball':  Items.UltraBall,
+  'masterball': Items.MasterBall,
+};
+
+function normalizeBallName(name) {
+  return name.toLowerCase().replace(/[-_\s]/g, '').replace(/[éèê]/g, 'e');
+}
+
 function buildBattleInventory() {
-  const { items } = store.state.bag;
+  const { items, pokeballs } = store.state.bag;
+
+  const battleItems = items
+    .filter(e => ITEM_REGISTRY[e.name] && e.quantity > 0)
+    .map(e => ({ item: new ITEM_REGISTRY[e.name](), quantity: e.quantity }));
+
+  const battleBalls = pokeballs
+    .filter(e => e.quantity > 0)
+    .map(e => {
+      const Cls = BALL_REGISTRY[normalizeBallName(e.name)];
+      return Cls ? { item: new Cls(), quantity: e.quantity } : null;
+    })
+    .filter(Boolean);
+
   return {
-    items: items
-      .filter(e => ITEM_REGISTRY[e.name] && e.quantity > 0)
-      .map(e => ({ item: new ITEM_REGISTRY[e.name](), quantity: e.quantity })),
+    items: [...battleItems, ...battleBalls],
     pokeballs: [],
     tms:       [],
   };
@@ -119,7 +141,7 @@ export default class {
     if (trainerObjs.length === 0) return;
 
     trainerObjs.forEach(obj => {
-      if (!checkOnlyIf(getPropertyValue(obj.properties, 'only_if'), store.state.game.gameFlags)) return;
+      if (!checkOnlyIf(getPropertyValue(obj.properties, 'only_if'), store.state.game.gameFlags, this.scene.config.variant ?? null, this.scene.mapVars ?? {})) return;
       const defeatedFlag = 'trainer_defeated_' + obj.name;
       const isDefeated   = !!store.state.game.gameFlags[defeatedFlag];
 
@@ -167,6 +189,10 @@ export default class {
       'seen-radius':    5,
       'move':           false,
     };
+
+    if (trainerDef['movement-behavior'] === 'spinner') {
+      trainerDef.spin = true;
+    }
 
     const trainerChar = new Trainer(trainerDef);
     this.scene.trainers.add(trainerChar);
@@ -231,14 +257,20 @@ export default class {
       const entry = this.trainers.find(t => t.char?.config.id === tile.obj.id);
       if (!entry) return;
 
+      const player      = this.scene.characters.get('player');
+      const originalDir = entry.char.getFacingDirection();
+      entry.char.look(player.getOppositeFacingDirection());
+
       const isDefeated = !!store.state.game.gameFlags[entry.defeatedFlag];
 
       if (isDefeated) {
         const text = this.scene.getPropertyFromTile(entry.obj, 'text-post-defeat');
-        if (!text) return;
-        const player = this.scene.characters.get('player');
-        entry.char.look(player.getOppositeFacingDirection());
+        if (!text) {
+          entry.char.look(originalDir);
+          return;
+        }
         this.scene.game.events.emit('textbox-changedata', text);
+        this.scene.game.events.once('textbox-disable', () => entry.char.look(originalDir));
         return;
       }
 

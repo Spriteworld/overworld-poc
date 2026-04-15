@@ -3,6 +3,7 @@ import bird_keeper from './bird_keeper.png';
 import black_belt from './black_belt.png';
 import blaine from './blaine.png';
 import brock from './brock.png';
+import daisy from './daisy.png';
 import drake from './drake.png';
 import erika from './erika.png';
 import fisherman from './fisherman.png';
@@ -25,6 +26,7 @@ import misty from './misty.png';
 import pheobe from './pheobe.png';
 import poke_kid from './poke_kid.png';
 import poke_maniac from './poke_maniac.png';
+import pokeball from './pokeball.png';
 import police_man from './police_man.png';
 import professor_oak from './professor_oak.png';
 import red from './red.png';
@@ -67,6 +69,7 @@ export default {
   // npc
   professor_oak,
   mom,
+  daisy,
 
   // trainers
   ace_trainer,
@@ -78,6 +81,7 @@ export default {
   gentleman,
   poke_kid,
   poke_maniac,
+  pokeball,
   police_man,
   scientist,
 

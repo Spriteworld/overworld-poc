@@ -52,4 +52,18 @@ export default {
    *   'random'  — seeded-random table generated from availablePokemon pool
    */
   encounterTables:  'vanilla',
+
+  /**
+   * Whether visible overworld Pokémon encounters are enabled globally.
+   * Individual maps can still opt out via map-settings['ow-encounters'] = false.
+   */
+  owEncounters:     true,
+
+  /**
+   * Starter Pokémon offered to the player (e.g. in Oak's lab).
+   * Each entry is a nat_dex_id. Index 0/1/2 maps to pokeball1/2/3.
+   * Use the `give_starter` script command with `index` 0, 1, or 2 to award the
+   * corresponding Pokémon.
+   */
+  starterMon:       [1, 7, 4],
 };

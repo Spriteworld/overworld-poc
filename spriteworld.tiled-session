@@ -5,13 +5,13 @@
     },
     "activeFile": "src/maps/kanto/kanto_inside.json",
     "expandedProjectPaths": [
-        "src",
+        "src/maps",
         "src/maps/spriteworld",
-        "src/maps/kanto",
-        "src/tileset",
         "src/tileset/maps",
+        "src/tileset",
         "src/maps/random",
-        "src/maps"
+        "src/maps/kanto",
+        "src"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -83,14 +83,13 @@
         },
         "src/maps/kanto/kanto.json": {
             "expandedObjectLayers": [
-                13,
                 12
             ],
             "scale": 1.5,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 3146.6666666666665,
-                "y": 9385
+                "x": 2704,
+                "y": 9360.333333333332
             }
         },
         "src/maps/kanto/kanto_inside.json": {
@@ -99,10 +98,10 @@
                 2
             ],
             "scale": 2,
-            "selectedLayer": 5,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 444,
-                "y": 991.75
+                "x": 240,
+                "y": 944.25
             }
         },
         "src/maps/kanto/pallet.json": {
@@ -146,12 +145,52 @@
                 "y": 943
             }
         },
+        "src/maps/kanto/route11.json": {
+            "scale": 0.7889453125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1280.1901272466207,
+                "y": 320.04753181165506
+            }
+        },
+        "src/maps/kanto/route12.json": {
+            "scale": 1.4011051829268293,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 640.2088943288454,
+                "y": 656.267645858833
+            }
+        },
+        "src/maps/kanto/route14.json": {
+            "scale": 1.248811141304348,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 320.30463756289953,
+                "y": 736.3002855977152
+            }
+        },
         "src/maps/kanto/route15.json": {
             "scale": 0.125,
             "selectedLayer": 0,
             "viewCenter": {
                 "x": -2032,
                 "y": -2780
+            }
+        },
+        "src/maps/kanto/route16.json": {
+            "scale": 1.8563419117647058,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 544.0808040798139,
+                "y": 320.2535029954945
+            }
+        },
+        "src/maps/kanto/route17.json": {
+            "scale": 0.8975830078125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 319.74758601931194,
+                "y": 1024.4177886576908
             }
         },
         "src/maps/kanto/route18.json": {
@@ -231,8 +270,32 @@
             "scale": 1.2629557291666664,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 767.6436929738649,
-                "y": 720.1360894891492
+                "x": 768.0395896695708,
+                "y": 720.1360894891491
+            }
+        },
+        "src/maps/kanto/route6.json": {
+            "scale": 1.127064732142857,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 896.1330890726346,
+                "y": 319.85740456503447
+            }
+        },
+        "src/maps/kanto/route7.json": {
+            "scale": 1.248811141304348,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 479.65619475044195,
+                "y": 736.3002855977152
+            }
+        },
+        "src/maps/kanto/route8.json": {
+            "scale": 1.127064732142857,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 896.1330890726346,
+                "y": 319.85740456503447
             }
         },
         "src/maps/kanto/route9.json": {
@@ -293,7 +356,7 @@
             "scale": 0.8206473214285713,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 1171.0267917856656,
+                "x": 1171.0267917856659,
                 "y": 1213.0667754657964
             }
         },
@@ -459,24 +522,24 @@
     "map.width": 100,
     "mapScene.enableWorlds": true,
     "openFiles": [
-        "src/maps/kanto/kanto.json",
-        "src/maps/kanto/kanto_inside.json"
+        "src/maps/kanto/kanto_inside.json",
+        "src/maps/kanto/kanto.json"
     ],
     "project": "spriteworld.tiled-project",
     "property.type": "only-if",
     "recentFiles": [
-        "src/maps/kanto/viridian_forest.json",
-        "src/maps/kanto/hero_house_floor2.json",
-        "src/maps/kanto/hero_house_floor1.json",
         "src/maps/kanto/prof_lab.json",
         "src/maps/kanto/kanto.json",
         "src/maps/kanto/kanto_inside.json",
-        "src/maps/random/base.json",
-        "src/maps/random/test.json",
         "src/maps/kanto/pallet.json",
-        "src/maps/random/forest.json",
-        "src/maps/random/skyland.json",
-        "src/maps/random/bridges.json"
+        "src/maps/kanto/viridian_forest.json",
+        "src/maps/kanto/route2.json",
+        "src/maps/kanto/route3.json",
+        "src/maps/kanto/route18.json",
+        "src/maps/kanto/route17.json",
+        "src/maps/kanto/route16.json",
+        "src/maps/kanto/route15.json",
+        "src/maps/kanto/route14.json"
     ],
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFilter": "All Files (*)",

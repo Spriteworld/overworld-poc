@@ -1,9 +1,19 @@
+jest.mock('../../store/index.js', () => ({
+  __esModule: true,
+  default: {
+    state: {
+      game: { gameFlags: {} },
+    },
+  },
+}));
+
 import Phaser from 'phaser';
 import CutTree from './cuttree.js';
+import store from '../../store/index.js';
 
 // ─── Factories ────────────────────────────────────────────────────────────────
 
-function makeScene({ hasCut = true, text = 'This tree can be cut.', charExists = true } = {}) {
+function makeScene({ charExists = true } = {}) {
   const gameEvents = new Phaser.Events.EventEmitter();
   const char = { remove: jest.fn() };
   return {
@@ -11,13 +21,11 @@ function makeScene({ hasCut = true, text = 'This tree can be cut.', charExists =
       events: gameEvents,
       config: {
         debug: { console: { interactableShout: false } },
-        gameFlags: { has_cut: hasCut },
       },
     },
-    getPropertyFromTile: jest.fn(() => text),
-    removeInteraction:   jest.fn(),
-    characters:          new Map(charExists ? [['tree1', char]] : []),
-    _char:               char,
+    removeInteraction: jest.fn(),
+    characters:        new Map(charExists ? [['tree1', char]] : []),
+    _char:             char,
   };
 }
 
@@ -27,10 +35,15 @@ function makeTile(overrides = {}) {
   };
 }
 
+beforeEach(() => {
+  store.state.game.gameFlags = {};
+});
+
 // ─── event routing ────────────────────────────────────────────────────────────
 
 describe('CutTree event routing', () => {
-  test('emits textbox-changedata with tile text when interacting with a cut-tree', () => {
+  test('emits textbox-changedata with CUT text when player has cut', () => {
+    store.state.game.gameFlags.has_cut = true;
     const scene   = makeScene();
     const cutTree = new CutTree(scene);
     cutTree.event();
@@ -39,7 +52,19 @@ describe('CutTree event routing', () => {
     scene.game.events.on('textbox-changedata', listener);
     scene.game.events.emit('interact-with-obj', makeTile());
 
-    expect(listener).toHaveBeenCalledWith('This tree can be cut.', expect.objectContaining({ type: 'cut-tree' }));
+    expect(listener).toHaveBeenCalledWith('This tree can be CUT.', expect.objectContaining({ type: 'cut-tree' }));
+  });
+
+  test('emits no-cut text when player does not have cut', () => {
+    const scene   = makeScene();
+    const cutTree = new CutTree(scene);
+    cutTree.event();
+
+    const listener = jest.fn();
+    scene.game.events.on('textbox-changedata', listener);
+    scene.game.events.emit('interact-with-obj', makeTile());
+
+    expect(listener).toHaveBeenCalledWith('You need the CUT ability to cut this tree.', expect.objectContaining({ type: 'cut-tree' }));
   });
 
   test('ignores interact-with-obj events for non-cut-tree types', () => {
@@ -54,20 +79,8 @@ describe('CutTree event routing', () => {
     expect(listener).not.toHaveBeenCalled();
   });
 
-  test('does nothing when tile has no text property', () => {
-    const scene   = makeScene({ text: null });
-    const cutTree = new CutTree(scene);
-    cutTree.event();
-
-    const listener = jest.fn();
-    scene.game.events.on('textbox-changedata', listener);
-    scene.game.events.emit('interact-with-obj', makeTile());
-
-    expect(listener).not.toHaveBeenCalled();
-  });
-
   test('does not register textbox-disable when has_cut is false', () => {
-    const scene   = makeScene({ hasCut: false });
+    const scene   = makeScene();
     const cutTree = new CutTree(scene);
     cutTree.event();
 
@@ -79,7 +92,8 @@ describe('CutTree event routing', () => {
   });
 
   test('removes interaction and char on textbox-disable when has_cut is true', () => {
-    const scene   = makeScene({ hasCut: true });
+    store.state.game.gameFlags.has_cut = true;
+    const scene   = makeScene();
     const cutTree = new CutTree(scene);
     cutTree.event();
 
@@ -91,7 +105,8 @@ describe('CutTree event routing', () => {
   });
 
   test('textbox-disable fires only once — second dialog does not remove again', () => {
-    const scene   = makeScene({ hasCut: true });
+    store.state.game.gameFlags.has_cut = true;
+    const scene   = makeScene();
     const cutTree = new CutTree(scene);
     cutTree.event();
 
@@ -103,7 +118,8 @@ describe('CutTree event routing', () => {
   });
 
   test('skips char.remove() when character is not in the scene', () => {
-    const scene   = makeScene({ hasCut: true, charExists: false });
+    store.state.game.gameFlags.has_cut = true;
+    const scene   = makeScene({ charExists: false });
     const cutTree = new CutTree(scene);
     cutTree.event();
 

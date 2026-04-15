@@ -99,12 +99,17 @@ export default {
     },
 
     SYNC_AFTER_BATTLE(state, battleItems) {
+      const norm = name => name.toLowerCase().replace(/[-_\s]/g, '').replace(/[éèê]/g, 'e');
       for (const { item, quantity } of battleItems) {
-        const entry = state.items.find(e => e.name === item.getName());
-        if (entry) entry.quantity = quantity;
+        const name = item.getName();
+        const itemEntry = state.items.find(e => e.name === name);
+        if (itemEntry) { itemEntry.quantity = quantity; continue; }
+        const ballEntry = state.pokeballs.find(e => norm(e.name) === norm(name));
+        if (ballEntry) ballEntry.quantity = quantity;
       }
-      // Remove items that were fully used up during the battle.
-      state.items = state.items.filter(e => e.quantity > 0);
+      // Remove items/balls that were fully used up during the battle.
+      state.items     = state.items.filter(e => e.quantity > 0);
+      state.pokeballs = state.pokeballs.filter(e => e.quantity > 0);
     },
   },
 };

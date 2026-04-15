@@ -21,6 +21,8 @@ export default createStore({
         currentMap:   state.game.currentMap,
         playerTile:   state.game.playerTile,
         gameFlags:    state.game.gameFlags,
+        mapVars:      state.game.mapVars,
+        mapVariant:   state.game.mapVariant,
         playtime:     state.game.playtime,
         money:        state.game.money,
         healLocation: state.game.healLocation,
