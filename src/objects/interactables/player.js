@@ -104,19 +104,35 @@ export default class {
     }
 
     if (this.scene.game.config.gameFlags.follower_pokemon) {
-      const lead = gameState.party[0];
-      if (lead) {
-        const speciesId = String(lead.species);
-        this.hasPlayerMon = true;
-        this.playerMon = this.scene.mapPlugins.pokemon.addToScene(
-          'playerMon',
-          speciesId,
-          { x, y },
-          { id: 'playerMon', collides: false, move: false, spin: false }
-        );
-      }
+      this._spawnFollowerMon({ x, y });
     }
 
+  }
+
+  _spawnFollowerMon(pos) {
+    const lead = gameState.party[0];
+    if (!lead) return;
+    const spawnPos = pos ?? this.scene.gridEngine?.getPosition('player') ?? { x: 0, y: 0 };
+    this.hasPlayerMon = true;
+    this.playerMon = this.scene.mapPlugins.pokemon.addToScene(
+      'playerMon',
+      String(lead.species),
+      spawnPos,
+      {
+        id: 'playerMon',
+        collides: false,
+        move: false,
+        spin: false,
+      }
+    );
+  }
+
+  _despawnFollowerMon() {
+    if (this.playerMon) {
+      this.playerMon.remove();
+      this.playerMon = null;
+    }
+    this.hasPlayerMon = false;
   }
 
   update(time, delta) {
@@ -148,9 +164,28 @@ export default class {
       this.player.stateMachine.setState(this.player.stateDef.BIKE);
     }
 
-    if (this.hasPlayerMon) {
-      this.scene.gridEngine.follow('playerMon', 'player', 1, true);
-    }
+    // Trail subscription: when the player moves, step the follower into the
+    // tile the player just vacated (Gen 3 "walk-behind" behavior).
+    this._followerTrailSub = this.scene.gridEngine
+      .positionChangeStarted()
+      .subscribe(({ charId, exitTile }) => {
+        if (charId !== 'player' || !this.hasPlayerMon || !this.playerMon) return;
+        const followerId = this.playerMon.config?.id ?? 'playerMon';
+        if (!this.scene.gridEngine.hasCharacter(followerId)) return;
+        this.scene.gridEngine.moveTo(followerId, exitTile, {
+          noPathFoundStrategy: 'STOP',
+          pathBlockedStrategy: 'STOP',
+        });
+      });
+
+    this._onFollowerChange = (enabled) => {
+      if (enabled) {
+        if (!this.hasPlayerMon) this._spawnFollowerMon();
+      } else {
+        this._despawnFollowerMon();
+      }
+    };
+    this.scene.game.events.on('follower-pokemon-change', this._onFollowerChange);
 
     let layerTransitions = this.scene.findInteractions('layerTransition');
     if (layerTransitions.length === 0) { return; }
@@ -164,5 +199,15 @@ export default class {
         y: tile.y / Tile.HEIGHT,
       }, from, to);
     });
+  }
+
+  destroy() {
+    if (this._followerTrailSub) {
+      this._followerTrailSub.unsubscribe();
+      this._followerTrailSub = null;
+    }
+    if (this._onFollowerChange) {
+      this.scene.game.events.off('follower-pokemon-change', this._onFollowerChange);
+    }
   }
 };

@@ -99,7 +99,10 @@ export default class extends Phaser.Scene {
       this.toast.showMessage(display);
     });
 
-    this.game.events.on('script-runner-start', () => { this._scriptDepth++; });
+    this.game.events.on('script-runner-start', () => {
+      this._scriptDepth++;
+      this.registry.set('player_input', false);
+    });
     this.game.events.on('script-runner-end',   () => {
       this._scriptDepth = Math.max(0, this._scriptDepth - 1);
       // If the script ended without closing via a textbox (e.g. heal_party as
@@ -107,6 +110,7 @@ export default class extends Phaser.Scene {
       // textbox-disable handler — do it here.
       if (this._scriptDepth === 0 && !this.textbox.visible) {
         EventBus.emit('player-move-enable');
+        this.registry.set('player_input', true);
       }
     });
 

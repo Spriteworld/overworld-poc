@@ -24,9 +24,22 @@ import * as ow_pokemon_dimensions from '@Tileset/overworld/pokemon/files.json';
 import * as ow_pokemon_shiny_dimensions from '@Tileset/overworld/pokemon_shiny/files.json';
 import * as bs_normal_dimensions from '@Tileset/battlescene/normal/files.json';
 
-import red from '@Tileset/characters/sprites/red.png';
+// Player sprites needed synchronously by Preload.js (eagerly bundled).
+import red          from '@Tileset/characters/sprites/red.png';
+import red_bike     from '@Tileset/characters/sprites/red_bike.png';
+import red_run      from '@Tileset/characters/sprites/red_run.png';
+import red_surf     from '@Tileset/characters/sprites/red_surf.png';
+import leaf         from '@Tileset/characters/sprites/leaf.png';
+import leaf_bike    from '@Tileset/characters/sprites/leaf_bike.png';
+import leaf_run     from '@Tileset/characters/sprites/leaf_run.png';
+import leaf_surf    from '@Tileset/characters/sprites/leaf_surf.png';
+import brendan      from '@Tileset/characters/sprites/brendan.png';
+import brendan_bike from '@Tileset/characters/sprites/brendan_bike.png';
+import may          from '@Tileset/characters/sprites/may.png';
+import may_bike     from '@Tileset/characters/sprites/may_bike.png';
 
-import trainers from '@Tileset/characters';
+// NPC/trainer sprites: lazy factories — only bundled when actually needed.
+import trainers, { sprites } from '@Tileset/characters';
 
 const _pokemonGlob      = import.meta.glob('./overworld/pokemon/*.png',       { eager: false, query: '?url', import: 'default' });
 const _pokemonShinyGlob = import.meta.glob('./overworld/pokemon_shiny/*.png',  { eager: false, query: '?url', import: 'default' });
@@ -40,7 +53,7 @@ const pokemon = Object.fromEntries(
 
 const pokemon_shiny = Object.fromEntries(
   Object.entries(_pokemonShinyGlob).map(([path, factory]) => [
-    path.split('/').pop().replace('.png', '').padStart(3, '0') + 's',
+    path.split('/').pop().replace('.png', ''), // files are named '001s.png' — key is already '001s'
     factory,
   ])
 );
@@ -65,6 +78,19 @@ export default {
   rse_outside_json,
 
   red,
+  red_bike,
+  red_run,
+  red_surf,
+  leaf,
+  leaf_bike,
+  leaf_run,
+  leaf_surf,
+  brendan,
+  brendan_bike,
+  may,
+  may_bike,
+
+  sprites,
   trainers,
 
   ow_pokemon_dimensions,

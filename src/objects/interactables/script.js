@@ -94,7 +94,7 @@ export default class Script {
     const enterEntries = this._entries.filter(e => e.trigger === 'enter');
     if (enterEntries.length && this.scene.gridEngine) {
       this._enterSub = this.scene.gridEngine
-        .positionChangeFinished()
+        .positionChangeStarted()
         .subscribe(({ charId, enterTile }) => {
           if (charId !== 'player') return;
           for (const entry of enterEntries) {

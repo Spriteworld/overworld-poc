@@ -687,6 +687,11 @@
                          "value":"left"
                         }, 
                         {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"ace_trainer"
+                        }, 
+                        {
                          "name":"seen-character",
                          "type":"string",
                          "value":"player"
@@ -700,11 +705,6 @@
                          "name":"spin-rate",
                          "type":"int",
                          "value":400
-                        }, 
-                        {
-                         "name":"texture",
-                         "type":"string",
-                         "value":"ace_trainer"
                         }],
                  "rotation":0,
                  "type":"npc",
@@ -720,6 +720,11 @@
                  "opacity":1,
                  "properties":[
                         {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"poke_kid"
+                        }, 
+                        {
                          "name":"spin",
                          "type":"bool",
                          "value":true
@@ -728,11 +733,6 @@
                          "name":"spin-rate",
                          "type":"int",
                          "value":400
-                        }, 
-                        {
-                         "name":"texture",
-                         "type":"string",
-                         "value":"poke_kid"
                         }],
                  "rotation":0,
                  "type":"npc",
@@ -758,7 +758,7 @@
                          "value":false
                         }, 
                         {
-                         "name":"texture",
+                         "name":"overworld-texture",
                          "type":"string",
                          "value":"poke_kid"
                         }],
@@ -791,6 +791,11 @@
                          "value":1000
                         }, 
                         {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"poke_kid"
+                        }, 
+                        {
                          "name":"spin",
                          "type":"bool",
                          "value":true
@@ -799,11 +804,6 @@
                          "name":"spin-rate",
                          "type":"int",
                          "value":1
-                        }, 
-                        {
-                         "name":"texture",
-                         "type":"string",
-                         "value":"poke_kid"
                         }],
                  "rotation":0,
                  "type":"npc",
@@ -1084,6 +1084,23 @@
                          "name":"facing-direction",
                          "type":"string",
                          "value":"down"
+                        }, 
+                        {
+                         "name":"only_if",
+                         "propertytype":"only-if",
+                         "type":"class",
+                         "value":
+                            {
+                             "value":[
+                                    {
+                                     "propertytype":"cmd-movement-behavior",
+                                     "type":"class",
+                                     "value":
+                                        {
+
+                                        }
+                                    }]
+                            }
                         }, 
                         {
                          "name":"seen-character",
@@ -1447,6 +1464,11 @@
                          "value":"up"
                         }, 
                         {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"poke_kid"
+                        }, 
+                        {
                          "name":"seen-character",
                          "type":"string",
                          "value":"player"
@@ -1460,11 +1482,6 @@
                          "name":"spin-rate",
                          "type":"int",
                          "value":600
-                        }, 
-                        {
-                         "name":"texture",
-                         "type":"string",
-                         "value":"poke_kid"
                         }],
                  "rotation":0,
                  "type":"npc",
@@ -1485,6 +1502,11 @@
                          "value":"right"
                         }, 
                         {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"poke_kid"
+                        }, 
+                        {
                          "name":"seen-character",
                          "type":"string",
                          "value":"player"
@@ -1498,11 +1520,6 @@
                          "name":"spin-rate",
                          "type":"int",
                          "value":300
-                        }, 
-                        {
-                         "name":"texture",
-                         "type":"string",
-                         "value":"poke_kid"
                         }],
                  "rotation":0,
                  "type":"npc",
@@ -1523,6 +1540,11 @@
                          "value":"down"
                         }, 
                         {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"red"
+                        }, 
+                        {
                          "name":"seen-character",
                          "type":"string",
                          "value":""
@@ -1536,11 +1558,6 @@
                          "name":"spin-rate",
                          "type":"int",
                          "value":300
-                        }, 
-                        {
-                         "name":"texture",
-                         "type":"string",
-                         "value":"red"
                         }, 
                         {
                          "name":"track-player",
@@ -1571,6 +1588,11 @@
                          "value":"up"
                         }, 
                         {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"poke_kid"
+                        }, 
+                        {
                          "name":"seen-character",
                          "type":"string",
                          "value":"player"
@@ -1584,11 +1606,6 @@
                          "name":"spin-rate",
                          "type":"int",
                          "value":300
-                        }, 
-                        {
-                         "name":"texture",
-                         "type":"string",
-                         "value":"poke_kid"
                         }],
                  "rotation":0,
                  "type":"npc",
@@ -2053,6 +2070,11 @@
                          "value":"down"
                         }, 
                         {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"poke_kid"
+                        }, 
+                        {
                          "name":"seen-character",
                          "type":"string",
                          "value":"player"
@@ -2066,11 +2088,6 @@
                          "name":"spin-rate",
                          "type":"int",
                          "value":300
-                        }, 
-                        {
-                         "name":"texture",
-                         "type":"string",
-                         "value":"poke_kid"
                         }],
                  "rotation":0,
                  "type":"npc",
@@ -2091,6 +2108,11 @@
                          "value":"up"
                         }, 
                         {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"red"
+                        }, 
+                        {
                          "name":"seen-character",
                          "type":"string",
                          "value":""
@@ -2104,11 +2126,6 @@
                          "name":"spin-rate",
                          "type":"int",
                          "value":300
-                        }, 
-                        {
-                         "name":"texture",
-                         "type":"string",
-                         "value":"red"
                         }, 
                         {
                          "name":"track-player",
@@ -2187,6 +2204,11 @@
                          "value":"right"
                         }, 
                         {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"red"
+                        }, 
+                        {
                          "name":"seen-radius",
                          "type":"int",
                          "value":5
@@ -2210,11 +2232,6 @@
                          "name":"text-defeated",
                          "type":"string",
                          "value":"me..."
-                        }, 
-                        {
-                         "name":"texture",
-                         "type":"string",
-                         "value":"red"
                         }, 
                         {
                          "name":"track-player",

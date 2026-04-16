@@ -204,8 +204,8 @@ export default class {
         this.scene.gridEngine.addCharacter(trainerChar.characterDef());
       }
     } else {
-      const path = texture ? Tileset.trainers[texture] : null;
-      if (!path) {
+      const pathFactory = texture ? Tileset.trainers[texture] : null;
+      if (!pathFactory) {
         if (texture) console.warn('[Trainer] no sprite path for texture:', texture);
         trainerChar.setTexture('red');
         if (this.scene.ge_init) {
@@ -216,12 +216,23 @@ export default class {
         if (this.scene.ge_init) {
           this.scene.gridEngine.addCharacter(trainerChar.characterDef());
         }
-        this.scene.load.spritesheet(texture, path, { frameWidth: Tile.WIDTH, frameHeight: 42 });
-        this.scene.load.once('filecomplete-spritesheet-' + texture, () => {
-          this._ensureAnim(texture);
-          trainerChar.setTexture(texture);
+        pathFactory().then(path => {
+          if (!this.scene.sys) return;
+          this.scene.load.spritesheet(texture, path, { frameWidth: Tile.WIDTH, frameHeight: 42 });
+          this.scene.load.once('filecomplete-spritesheet-' + texture, () => {
+            this._ensureAnim(texture);
+            // Update ALL trainers sharing this texture, not just the one that triggered the load.
+            this.scene.trainers.getChildren()
+              .filter(t => t.config?.texture === texture)
+              .forEach(t => {
+                t.setTexture(texture);
+                if (this.scene.gridEngine?.hasCharacter(t.config.id)) {
+                  this.scene.gridEngine.setWalkingAnimationMapping(t.config.id, t.characterFramesDef());
+                }
+              });
+          });
+          this.scene.load.start();
         });
-        this.scene.load.start();
       }
     }
 

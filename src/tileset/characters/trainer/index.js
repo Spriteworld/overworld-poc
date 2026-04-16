@@ -1,62 +1,8 @@
-import bird_keeper from './bird_keeper.png';
-import black_belt from './black_belt.png';
-import brendan from './brendan.png';
-import brock from './brock.png';
-import drake from './drake.png';
-import erika from './erika.png';
-import fisherman from './fisherman.png';
-import gary from './gary.png';
-import gentleman from './gentleman.png';
-import giovanni from './giovanni.png';
-import glacia from './glacia.png';
-import koga from './koga.png';
-import leaf from './leaf.png';
-import may from './may.png';
-import misty from './misty.png';
-import phoebe from './phoebe.png';
-import red from './red.png';
-import poke_maniac from './poke_maniac.png';
-import professor_oak from './profressor_oak.png';
-import sabrina from './sabrina.png';
-import sailor from './sailor.png';
-import sidney from './sidney.png';
-import steven from './steven.png';
-import surge from './surge.png';
-import wallace from './wallace.png';
+const _glob = import.meta.glob('./*.png', { eager: false, query: '?url', import: 'default' });
 
-export default {
-  // players
-  brendan,
-  leaf,
-  may,
-  red,
-
-  // gym leaders
-  brock,
-  erika,
-  giovanni,
-  koga,
-  misty,
-  sabrina,
-  surge,
-
-  // npc
-  professor_oak,
-
-  // trainers
-  bird_keeper,
-  black_belt,
-  fisherman,
-  gary,
-  gentleman,
-  poke_maniac,
-
-  // elite four / champion
-  drake,
-  glacia,
-  phoebe,
-  sailor,
-  sidney,
-  steven,
-  wallace,
-};
+export default Object.fromEntries(
+  Object.entries(_glob).map(([path, factory]) => [
+    path.slice(2).replace('.png', ''), // './brock.png' → 'brock'
+    factory,
+  ])
+);

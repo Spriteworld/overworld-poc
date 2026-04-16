@@ -31,6 +31,8 @@ export default class extends MovableSprite {
       'move-rate': 600,
       'move-radius': 0,
       follow: false,
+      'follow-target': null,
+      'follow-distance': 1,
       collides: true,
       'facing-direction': Direction.DOWN,
       'seen-radius': 0,
@@ -170,6 +172,14 @@ export default class extends MovableSprite {
   }
   /** State callback: called when leaving the IDLE state. */
   idleOnExit() {}
+
+  /**
+   * Idle update for non-player characters. Does not poll input — only refreshes
+   * the collision rect. Player overrides this with full input handling.
+   */
+  npcIdleOnUpdate() {
+    this.updateCharacterRect();
+  }
 
   /**
    * State callback: polls cursor keys each tick and transitions to MOVE
@@ -493,23 +503,41 @@ export default class extends MovableSprite {
   }
 
   /**
+   * Start following a target character via GridEngine's built-in follow.
+   * Runs once after GE is initialised; GE owns the movement from that point.
+   * Requires `config.follow === true` and `config['follow-target']` to be set.
+   */
+  addAutoFollow() {
+    if (!this.config.follow || this._followStarted) return;
+    const target = this.config['follow-target'];
+    if (!target || !this.gridengine.hasCharacter(target)) return;
+    this.gridengine.follow(
+      this.config.id,
+      target,
+      this.config['follow-distance'] ?? 1,
+      true  // ignoreLookDirection — GE won't force the follower to face the target
+    );
+    this._followStarted = true;
+  }
+
+  /**
    * Called each update tick to handle the initial facing direction on first creation
    * and periodic random direction changes when `config.spin` is true.
    * @param {number} delta - Time in ms since the last frame.
    */
   addAutoSpin(delta) {
     if (this.initalCreation) {
-      let lookDir = this.config['facing-direction'];
-      let faceDir = this.getFacingDirection();
-
+      const lookDir = (this.config['facing-direction'] ?? Direction.DOWN).toUpperCase();
+      const faceDir = this.getFacingDirection().toUpperCase();
       if (faceDir !== lookDir) {
         this.look(lookDir);
         return;
       }
-      this.initalCreation = !this.initalCreation;
+      this.initalCreation = false;
     }
 
     if (this.config.spin !== true && this.config['spin-rate'] && delta) { return; }
+    if (!this.config['spin-rate'] || !delta) { return; }
     this.spinRate -= delta;
     if (this.spinRate <= 0) {
       this.spinRate = parseInt(this.config['spin-rate']);

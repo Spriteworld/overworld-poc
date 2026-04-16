@@ -37,6 +37,7 @@ export default class {
         getPropertyValue(pokemon.properties, 'texture'),
         Vector2(pokemon.x / Tile.WIDTH, pokemon.y / Tile.HEIGHT),
         {
+          properties: pokemon.properties,
           ...remapProps(pokemon.properties)
         }
       );
@@ -85,7 +86,6 @@ export default class {
       scene: this.scene,
       'char-layer': 'ground'
     }, ...config };
-    console.log('pkmnDef', pkmnDef);
 
     // Always create immediately so GridEngine can manage this character from scene init.
     // If the texture isn't loaded yet it will show a placeholder; setTexture() fixes it once loaded.
@@ -100,41 +100,44 @@ export default class {
         this.scene.gridEngine.addCharacter(pkmn.characterDef());
       }
     } else {
-      // const pathFactory = isShiny ? Tileset.pokemon_shiny[texture] : Tileset.pokemon[texture];
-      const dimSource = isShiny ? Tileset.ow_pokemon_shiny_dimensions : Tileset.ow_pokemon_dimensions;
-      const dims = dimSource.default[texture];
+      const pathFactory = isShiny ? Tileset.pokemon_shiny[texture] : Tileset.pokemon[texture];
+      const dimSource   = isShiny ? Tileset.ow_pokemon_shiny_dimensions : Tileset.ow_pokemon_dimensions;
+      const dims        = dimSource.default?.[texture];
 
-      // if (!pathFactory || !dims) {
-      //   console.error('Interactables::pokemon: missing sprite data for', texture);
-      //   return pkmn;
-      // }
+      if (!pathFactory || !dims) {
+        console.warn('Interactables::pokemon: missing sprite data for', texture);
+        pkmn.setTexture('red');
+        if (this.scene.ge_init) {
+          this.scene.gridEngine.addCharacter(pkmn.characterDef());
+        }
+        return pkmn;
+      }
 
-      // Use the already-loaded 'red' spritesheet as a placeholder so GridEngine can
-      // manage frames normally without __MISSING frame warnings.
+      // Use 'red' as a placeholder while the real texture loads.
       pkmn.setTexture('red');
-
       if (this.scene.ge_init) {
         this.scene.gridEngine.addCharacter(pkmn.characterDef());
       }
 
-      this.scene.load.spritesheet(texture, texture, {
-        frameWidth: dims.width / 4,
-        frameHeight: dims.height / 4
+      pathFactory().then(path => {
+        if (!this.scene.sys) return;
+        this.scene.load.spritesheet(texture, path, {
+          frameWidth: Math.floor(dims.width  / 4),
+          frameHeight: Math.floor(dims.height / 4),
+        });
+        this.scene.load.once('filecomplete-spritesheet-' + texture, () => {
+          this._ensureAnim(texture);
+          this.scene.pkmn.getChildren()
+            .filter(n => n.config?.texture === texture)
+            .forEach(n => {
+              n.setTexture(texture);
+              if (this.scene.gridEngine?.hasCharacter(n.config.id)) {
+                this.scene.gridEngine.setWalkingAnimationMapping(n.config.id, n.characterFramesDef());
+              }
+            });
+        });
+        this.scene.load.start();
       });
-      this.scene.load.once('filecomplete-spritesheet-' + texture, () => {
-        this._ensureAnim(texture);
-        this.scene.pkmn.getChildren()
-          .filter(n => n.config?.texture === texture)
-          .forEach(n => {
-            n.setTexture(texture);
-            // Re-apply the walking animation mapping so GridEngine uses frames
-            // from the new texture rather than the stale placeholder state.
-            if (this.scene.gridEngine?.hasCharacter(n.config.id)) {
-              this.scene.gridEngine.setWalkingAnimationMapping(n.config.id, n.characterFramesDef());
-            }
-          });
-      });
-      this.scene.load.start();
     }
 
     return pkmn;

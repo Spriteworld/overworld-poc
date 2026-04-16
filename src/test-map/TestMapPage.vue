@@ -133,12 +133,7 @@ function onHashChange() {
   }
 }
 
-function onKeyDown(e) {
-  if (e.key === 'Escape' && active.value) close();
-}
-
 onMounted(() => {
-  window.addEventListener('keydown', onKeyDown);
   window.addEventListener('hashchange', onHashChange);
   const scene = window.location.hash.slice(1);
   if (scene) {
@@ -148,7 +143,6 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', onKeyDown);
   window.removeEventListener('hashchange', onHashChange);
 });
 </script>

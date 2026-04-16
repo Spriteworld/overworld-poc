@@ -21,8 +21,8 @@ export default {
     healLocation:        null,  // { map, x, y, charLayer } — set when player heals at a Pokémon Center
     lastOutdoorLocation: null, // { map, x, y, charLayer } — updated on every step on outdoor maps
     textSpeed:    'normal',    // 'normal' | 'fast' | 'instant'
-    bgmVolume:    20,          // 0–20 (each step = 5%)
-    sfxVolume:    20,          // 0–20 (each step = 5%)
+    bgmVolume:    10,          // 0–20 (each step = 5%)
+    sfxVolume:    10,          // 0–20 (each step = 5%)
   }),
 
   getters: {
@@ -128,8 +128,8 @@ export default {
       state.healLocation        = null;
       state.lastOutdoorLocation = null;
       state.textSpeed           = 'normal';
-      state.bgmVolume           = 20;
-      state.sfxVolume           = 20;
+      state.bgmVolume           = 10;
+      state.sfxVolume           = 10;
     },
   },
 };

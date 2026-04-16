@@ -13,7 +13,7 @@ export default class extends Character {
     this.stateMachine
       .addState(this.stateDef.IDLE, {
         onEnter: this.idleOnEnter,
-        onUpdate: this.idleOnUpdate,
+        onUpdate: this.npcIdleOnUpdate,
         onExit: this.idleOnExit,
       })
       .addState(this.stateDef.MOVE, {
@@ -63,6 +63,7 @@ export default class extends Character {
     this.canTrackPlayer();
     this.addAutoSpin(delta);
     this.addAutoMove();
+    this.addAutoFollow();
 
     if (this.trackingCoords && this.trackingCoords.length){
       if (this.isMoving()) {

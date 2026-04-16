@@ -123,7 +123,9 @@ function checkOnlyIf(onlyIf, gameFlags = {}, variant = null, mapVars = {}) {
 
   if (onlyIf.type === 'variable') {
     if (!key) return true;
-    const actual = mapVars[key] ?? null;
+    let actual = mapVars[key] ?? null;
+    if (actual === 'true')  actual = true;
+    if (actual === 'false') actual = false;
     // 'in' / 'nin' compare actual against the full value list
     if (op === 'in')  return value.some(t  => actual == t);  // eslint-disable-line eqeqeq
     if (op === 'nin') return value.every(t => actual != t);  // eslint-disable-line eqeqeq

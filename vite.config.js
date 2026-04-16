@@ -55,8 +55,9 @@ export default defineConfig({
     minify: true,
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        test: resolve(__dirname, 'test.html'),
+        main:         resolve(__dirname, 'index.html'),
+        test:         resolve(__dirname, 'test.html'),
+        scripteditor: resolve(__dirname, 'scripteditor/index.html'),
       },
       output: {
         entryFileNames: 'assets/[name]-[hash].js',

@@ -1579,6 +1579,11 @@
                     }
                 },
                 {
+                    "name": "ow-encounter-rate",
+                    "type": "int",
+                    "value": 3
+                },
+                {
                     "name": "script",
                     "propertyType": "trigger",
                     "type": "class",
@@ -1601,7 +1606,8 @@
                 "none",
                 "match-movement",
                 "mirror-move",
-                "spinner"
+                "spinner",
+                "follow"
             ],
             "valuesAsFlags": false
         },

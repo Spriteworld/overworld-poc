@@ -45,6 +45,7 @@ export default class {
   addToScene(name, texture, coords, config) {
     let npcDef = {
       id: 'npc_'+name,
+      name: name,
       type: 'npc',
       texture: texture,
       x: coords.x,
@@ -58,6 +59,12 @@ export default class {
 
     if (npcDef['movement-behavior'] === 'spinner') {
       npcDef.spin = true;
+    }
+
+    if (npcDef['movement-behavior'] === 'follow') {
+      npcDef.follow = true;
+      // follow-target defaults to 'player' if not explicitly set
+      if (!npcDef['follow-target']) npcDef['follow-target'] = 'player';
     }
 
     if (this.scene.game.config.debug.console.interactableShout) {
@@ -77,10 +84,9 @@ export default class {
         this.scene.gridEngine.addCharacter(npcObj.characterDef());
       }
     } else {
-      const path = texture ? Tileset.trainers[texture] : null;
-      if (!path) {
+      const pathFactory = texture ? (Tileset.sprites[texture] ?? Tileset.trainers[texture]) : null;
+      if (!pathFactory) {
         if (texture) console.warn('Interactables::npc: no sprite path for texture', texture);
-        // Fall back to placeholder so GridEngine can still manage this character.
         npcObj.setTexture('red');
         if (this.scene.ge_init) {
           this.scene.gridEngine.addCharacter(npcObj.characterDef());
@@ -88,32 +94,31 @@ export default class {
         return npcObj;
       }
 
-      // Use the already-loaded 'red' spritesheet as a placeholder so GridEngine can
-      // manage frames normally without __MISSING frame warnings.
+      // Use 'red' as a placeholder while the real texture loads.
       npcObj.setTexture('red');
-
       if (this.scene.ge_init) {
         this.scene.gridEngine.addCharacter(npcObj.characterDef());
       }
 
-      this.scene.load.spritesheet(texture, path, {
-        frameWidth: Tile.WIDTH,
-        frameHeight: 48
+      pathFactory().then(path => {
+        if (!this.scene.sys) return; // scene was destroyed
+        this.scene.load.spritesheet(texture, path, {
+          frameWidth: Tile.WIDTH,
+          frameHeight: 48
+        });
+        this.scene.load.once('filecomplete-spritesheet-' + texture, () => {
+          this._ensureAnim(texture);
+          this.scene.npcs.getChildren()
+            .filter(n => n.config?.texture === texture)
+            .forEach(n => {
+              n.setTexture(texture);
+              if (this.scene.gridEngine?.hasCharacter(n.config.id)) {
+                this.scene.gridEngine.setWalkingAnimationMapping(n.config.id, n.characterFramesDef());
+              }
+            });
+        });
+        this.scene.load.start();
       });
-      this.scene.load.once('filecomplete-spritesheet-' + texture, () => {
-        this._ensureAnim(texture);
-        this.scene.npcs.getChildren()
-          .filter(n => n.config?.texture === texture)
-          .forEach(n => {
-            n.setTexture(texture);
-            // Re-apply the walking animation mapping so GridEngine uses frames
-            // from the new texture rather than the stale placeholder state.
-            if (this.scene.gridEngine?.hasCharacter(n.config.id)) {
-              this.scene.gridEngine.setWalkingAnimationMapping(n.config.id, n.characterFramesDef());
-            }
-          });
-      });
-      this.scene.load.start();
     }
 
     return npcObj;

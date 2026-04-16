@@ -12,10 +12,11 @@ const TEXT_SPEEDS = ['normal', 'fast', 'instant'];
 const TEXT_SPEED_LABELS = { normal: 'Normal', fast: 'Fast', instant: 'Instant' };
 
 const OPTIONS = [
-  { key: 'character',  label: 'Character'  },
-  { key: 'textSpeed',  label: 'Text Speed' },
-  { key: 'bgmVolume',  label: 'BGM Vol'    },
-  { key: 'sfxVolume',  label: 'SFX Vol'    },
+  { key: 'character',       label: 'Character'       },
+  { key: 'textSpeed',       label: 'Text Speed'      },
+  { key: 'bgmVolume',       label: 'BGM Vol'         },
+  { key: 'sfxVolume',       label: 'SFX Vol'         },
+  { key: 'followerPokemon', label: 'Follower Pokémon' },
 ];
 
 const ROW_H   = 28;
@@ -90,6 +91,9 @@ export default class OptionScreen {
       const v = store.state.game.sfxVolume;
       return '█'.repeat(v) + '░'.repeat(20 - v);
     }
+    if (key === 'followerPokemon') {
+      return store.state.game.gameFlags.follower_pokemon ? 'On' : 'Off';
+    }
     return '';
   }
 
@@ -121,6 +125,10 @@ export default class OptionScreen {
       const next = Math.min(20, Math.max(0, store.state.game.sfxVolume + delta));
       store.commit('game/SET_SFX_VOLUME', next);
       if (next === 0) stopSfx(this.menu.scene);
+    } else if (key === 'followerPokemon') {
+      const next = !store.state.game.gameFlags.follower_pokemon;
+      store.commit('game/PATCH_FLAGS', { follower_pokemon: next });
+      this.menu.scene.game.events.emit('follower-pokemon-change', next);
     }
     this.menu._clearSubTexts();
     this.build();

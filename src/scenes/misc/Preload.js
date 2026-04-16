@@ -50,31 +50,31 @@ export default class extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 48
     });
-    this.load.spritesheet('red_bike', Tileset.trainers.red_bike, {
+    this.load.spritesheet('red_bike', Tileset.red_bike, {
       frameWidth: 48,
       frameHeight: 48
     });
-    this.load.spritesheet('leaf', Tileset.trainers.leaf, {
+    this.load.spritesheet('leaf', Tileset.leaf, {
       frameWidth: 32,
       frameHeight: 48
     });
-    this.load.spritesheet('leaf_bike', Tileset.trainers.leaf_bike, {
+    this.load.spritesheet('leaf_bike', Tileset.leaf_bike, {
       frameWidth: 48,
       frameHeight: 48
     });
-    this.load.spritesheet('brendan', Tileset.trainers.brendan, {
+    this.load.spritesheet('brendan', Tileset.brendan, {
       frameWidth: 32,
       frameHeight: 48
     });
-    this.load.spritesheet('brendan_bike', Tileset.trainers.brendan_bike, {
+    this.load.spritesheet('brendan_bike', Tileset.brendan_bike, {
       frameWidth: 48,
       frameHeight: 48
     });
-    this.load.spritesheet('may', Tileset.trainers.may, {
+    this.load.spritesheet('may', Tileset.may, {
       frameWidth: 32,
       frameHeight: 48
     });
-    this.load.spritesheet('may_bike', Tileset.trainers.may_bike, {
+    this.load.spritesheet('may_bike', Tileset.may_bike, {
       frameWidth: 48,
       frameHeight: 48
     });
@@ -113,6 +113,11 @@ export default class extends Phaser.Scene {
     if (startFlags) {
       Object.assign(this.game.config.gameFlags, startFlags);
       store.commit('game/PATCH_FLAGS', startFlags);
+    }
+
+    // Seed party with a Pikachu when running a test scenario and party is empty.
+    if (startFlags && store.state.party.list.length === 0) {
+      store.commit('party/ADD_POKEMON', { natDexId: 25, level: 15 });
     }
 
     if (this.game.config.gameFlags.has_bike) {

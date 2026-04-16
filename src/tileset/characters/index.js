@@ -1,5 +1,5 @@
 import sprites from './sprites/index.js';
+import trainer from './trainer/index.js';
 
-export default {
-  ...sprites,
-};
+export { sprites, trainer };
+export default { ...sprites, ...trainer };

@@ -12,6 +12,7 @@ const MAPS = [
           has_pokemon:       true,
           has_cut:           false,
           has_strength:      false,
+          follower_pokemon:  false,
         },
       },
       {
