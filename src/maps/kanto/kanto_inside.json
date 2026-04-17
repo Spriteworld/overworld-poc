@@ -2269,6 +2269,160 @@
                  "width":32,
                  "x":96,
                  "y":1088
+                }, 
+                {
+                 "height":32,
+                 "id":72,
+                 "name":"firstRivalBattle",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"once",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"only_if",
+                         "propertytype":"only-if",
+                         "type":"class",
+                         "value":
+                            {
+                             "key":"first_battle",
+                             "type":"variable",
+                             "value":[
+                                    {
+                                     "type":"string",
+                                     "value":"true"
+                                    }]
+                            }
+                        }, 
+                        {
+                         "name":"script",
+                         "type":"list",
+                         "value":[
+                                {
+                                 "propertytype":"cmd-show_exclamation",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "target":"Gary"
+                                    }
+                                },
+                                {
+                                 "propertytype":"cmd-text",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "text":"{rival}: Wait, {player}!\nLet's check out our POK{e}MON!\nCome on, I'll take you on!"
+                                    }
+                                },
+                                {
+                                 "propertytype":"cmd-walk_to_char",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "character1":"Gary",
+                                     "character2":"player",
+                                     "side":"up"
+                                    }
+                                },
+                                {
+                                 "propertytype":"cmd-if_flag",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "key":"rival_has_charmander",
+                                     "then":[
+                                            {
+                                             "propertytype":"cmd-start_battle",
+                                             "type":"class",
+                                             "value":
+                                                {
+                                                 "type":"trainer",
+                                                 "name":"Gary",
+                                                 "battle_texture":"gary",
+                                                 "use-ai":"trainer",
+                                                 "team":[
+                                                        {
+                                                         "species":"charmander",
+                                                         "level":5
+                                                        }]
+                                                }
+                                            }]
+                                    }
+                                },
+                                {
+                                 "propertytype":"cmd-if_flag",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "key":"rival_has_bulbasaur",
+                                     "then":[
+                                            {
+                                             "propertytype":"cmd-start_battle",
+                                             "type":"class",
+                                             "value":
+                                                {
+                                                 "type":"trainer",
+                                                 "name":"Gary",
+                                                 "battle_texture":"gary",
+                                                 "use-ai":"trainer",
+                                                 "team":[
+                                                        {
+                                                         "species":"bulbasaur",
+                                                         "level":5
+                                                        }]
+                                                }
+                                            }]
+                                    }
+                                },
+                                {
+                                 "propertytype":"cmd-if_flag",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "key":"rival_has_squirtle",
+                                     "then":[
+                                            {
+                                             "propertytype":"cmd-start_battle",
+                                             "type":"class",
+                                             "value":
+                                                {
+                                                 "type":"trainer",
+                                                 "name":"Gary",
+                                                 "battle_texture":"gary",
+                                                 "use-ai":"trainer",
+                                                 "team":[
+                                                        {
+                                                         "species":"squirtle",
+                                                         "level":5
+                                                        }]
+                                                }
+                                            }]
+                                    }
+                                },
+                                {
+                                 "propertytype":"cmd-set_var",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "key":"first_battle",
+                                     "value":"false"
+                                    }
+                                }]
+                        },
+                        {
+                         "name":"trigger",
+                         "propertytype":"trigger-list",
+                         "type":"string",
+                         "value":"enter"
+                        }],
+                 "rotation":0,
+                 "type":"trigger",
+                 "visible":true,
+                 "width":96,
+                 "x":192,
+                 "y":992
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -2512,12 +2666,13 @@
                                                                                     }
                                                                                 }, 
                                                                                 {
-                                                                                 "propertytype":"cmd-move_npc",
+                                                                                 "propertytype":"cmd-walk_to_char",
                                                                                  "type":"class",
                                                                                  "value":
                                                                                     {
-                                                                                     "anchor":"pokeball3",
-                                                                                     "name":"Gary"
+                                                                                     "character1":"Gary",
+                                                                                     "character2":"pokeball3",
+                                                                                     "side":"down"
                                                                                     }
                                                                                 }, 
                                                                                 {
@@ -2544,13 +2699,40 @@
                                                                                      "key":"lock_lab",
                                                                                      "value":"false"
                                                                                     }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-set_var",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "key":"first_battle",
+                                                                                     "value":"true"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-set_flag",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "key":"has_pokemon",
+                                                                                     "value":true
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                 "propertytype":"cmd-set_flag",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "key":"rival_has_charmander",
+                                                                                     "value":true
+                                                                                    }
                                                                                 }]
                                                                         }
                                                                     }],
                                                              "trigger":"interact"
                                                             }
                                                         }
-                                                    }, 
+                                                    },
                                                     {
                                                      "propertytype":"cmd-spawn_npc",
                                                      "type":"class",
@@ -2586,12 +2768,13 @@
                                                                                     }
                                                                                 }, 
                                                                                 {
-                                                                                 "propertytype":"cmd-move_npc",
+                                                                                 "propertytype":"cmd-walk_to_char",
                                                                                  "type":"class",
                                                                                  "value":
                                                                                     {
-                                                                                     "anchor":"pokeball1",
-                                                                                     "name":"Gary"
+                                                                                     "character1":"Gary",
+                                                                                     "character2":"pokeball1",
+                                                                                     "side":"down"
                                                                                     }
                                                                                 }, 
                                                                                 {
@@ -2618,13 +2801,40 @@
                                                                                      "key":"lock_lab",
                                                                                      "value":"false"
                                                                                     }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-set_var",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "key":"first_battle",
+                                                                                     "value":"true"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-set_flag",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "key":"has_pokemon",
+                                                                                     "value":true
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                 "propertytype":"cmd-set_flag",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "key":"rival_has_bulbasaur",
+                                                                                     "value":true
+                                                                                    }
                                                                                 }]
                                                                         }
                                                                     }],
                                                              "trigger":"interact"
                                                             }
                                                         }
-                                                    }, 
+                                                    },
                                                     {
                                                      "propertytype":"cmd-spawn_npc",
                                                      "type":"class",
@@ -2660,12 +2870,13 @@
                                                                                     }
                                                                                 }, 
                                                                                 {
-                                                                                 "propertytype":"cmd-move_npc",
+                                                                                 "propertytype":"cmd-walk_to_char",
                                                                                  "type":"class",
                                                                                  "value":
                                                                                     {
-                                                                                     "anchor":"pokeball2",
-                                                                                     "name":"Gary"
+                                                                                     "character1":"Gary",
+                                                                                     "character2":"pokeball2",
+                                                                                     "side":"down"
                                                                                     }
                                                                                 }, 
                                                                                 {
@@ -2691,6 +2902,33 @@
                                                                                     {
                                                                                      "key":"lock_lab",
                                                                                      "value":"false"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-set_var",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "key":"first_battle",
+                                                                                     "value":"true"
+                                                                                    }
+                                                                                }, 
+                                                                                {
+                                                                                 "propertytype":"cmd-set_flag",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "key":"has_pokemon",
+                                                                                     "value":true
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                 "propertytype":"cmd-set_flag",
+                                                                                 "type":"class",
+                                                                                 "value":
+                                                                                    {
+                                                                                     "key":"rival_has_squirtle",
+                                                                                     "value":true
                                                                                     }
                                                                                 }]
                                                                         }
@@ -2833,7 +3071,7 @@
          "y":0
         }],
  "nextlayerid":9,
- "nextobjectid":72,
+ "nextobjectid":73,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",

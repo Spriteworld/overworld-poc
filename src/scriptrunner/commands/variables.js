@@ -53,10 +53,14 @@ export default {
   },
 
   if_npc_at(runner, cmd) {
-    if (!runner._scene.gridEngine) { runner._branch(cmd.else ?? []); return; }
+    const ge     = runner._scene.gridEngine;
+    const geId   = ge?.hasCharacter(cmd.name)
+      ? cmd.name
+      : (ge?.hasCharacter('npc_' + cmd.name) ? 'npc_' + cmd.name : null);
+    if (!geId) { runner._branch(cmd.else ?? []); return; }
     const anchor = cmd.anchor ? runner._resolveAnchor(cmd.anchor) : null;
     const target = anchor ?? { x: cmd.x, y: cmd.y };
-    const pos    = runner._scene.gridEngine.getPosition(cmd.name);
+    const pos    = ge.getPosition(geId);
     const match  = pos != null && pos.x === target.x && pos.y === target.y;
     if (runner._debug()) console.log(`[ScriptRunner] if_npc_at — name: "${cmd.name}", pos: ${JSON.stringify(pos)}, target: ${JSON.stringify(target)} → ${match ? 'pass' : 'fail'}`);
     runner._branch(match ? (cmd.then ?? []) : (cmd.else ?? []));

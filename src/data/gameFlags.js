@@ -5,6 +5,9 @@ export default {
   has_running_shoes: true,
   
   // lab
+  rival_has_bulbasaur: false,
+  rival_has_charmander: false,
+  rival_has_squirtle: false,
   
   // veridian
   got_oaks_parcel: false,

@@ -9,7 +9,7 @@ import defaultDef from './gameDefs/kanto.js';
  *   Species pool used for wild encounters and random learnset fallbacks.
  *   String shorthands map to nat_dex_id ranges; a two-element array is an
  *   inclusive [min, max] range; an arbitrary number array is an explicit id list.
- * @property {number}                expRate          - Experience multiplier applied to all gains (1.0 = normal).
+ * @property {number}                expRateMultiplier - Experience multiplier applied to all gains (1.0 = normal).
  * @property {boolean}               deferEvolution
  *   When true, level-up evolutions are held until the battle ends.
  *   When false, the evolution sequence interrupts combat immediately.

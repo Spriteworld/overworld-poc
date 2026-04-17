@@ -461,7 +461,7 @@ export default class OverworldEncounter {
     return {
       tilesetBaseUrl: '/',
       textSpeed:      store.state.game.textSpeed ?? 'normal',
-      expRate:        def.expRate,
+      expRate:        def.expRateMultiplier,
       deferEvolution: def.deferEvolution,
       nuzlocke: def.gameMode === 'nuzlocke' ? {
         zone:       tile.tableId ?? null,

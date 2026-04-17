@@ -27,7 +27,8 @@ export default {
   camera_follow_npc(runner, cmd) {
     const npc = runner._scene.characters?.get(cmd.name)
              ?? runner._scene.characters?.get('npc_' + cmd.name);
-    if (npc) {
+    const ge  = runner._scene.gridEngine;
+    if (npc && (!ge || ge.hasCharacter(npc.config.id))) {
       runner._scene.cameras.main.startFollow(npc, true, 1);
       runner._scene.cameras.main.setFollowOffset(-(npc.width / 2), -(npc.height / 2));
     } else {

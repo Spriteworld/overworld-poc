@@ -10,6 +10,7 @@ import variableCmds  from './commands/variables.js';
 import cameraCmds    from './commands/camera.js';
 import audioCmds     from './commands/audio.js';
 import characterCmds from './commands/character.js';
+import battleCmds    from './commands/battle.js';
 
 const HANDLERS = {
   ...dialogueCmds,
@@ -23,6 +24,7 @@ const HANDLERS = {
   ...cameraCmds,
   ...audioCmds,
   ...characterCmds,
+  ...battleCmds,
 };
 
 /**
@@ -122,14 +124,20 @@ export default class ScriptRunner {
    * a time. Advances to the next step when the character lands on each tile.
    */
   _walkPath(charId, char, steps, finalAnchor) {
+    const ge = this._scene.gridEngine;
+    const known = !ge || ge.hasCharacter(charId);
     if (!steps.length) {
-      if (finalAnchor?.facingDir) char.look?.(finalAnchor.facingDir);
+      if (finalAnchor?.facingDir && known) char.look?.(finalAnchor.facingDir);
+      this._step();
+      return;
+    }
+    if (!ge || !known) {
       this._step();
       return;
     }
     const dir = steps.shift();
     const { dx, dy } = this._dirToDelta(dir);
-    const pos  = this._scene.gridEngine.getPosition(charId);
+    const pos  = ge.getPosition(charId);
     const dest = { x: pos.x + dx, y: pos.y + dy };
 
     let settled = false;

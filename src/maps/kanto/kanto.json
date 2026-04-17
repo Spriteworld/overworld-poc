@@ -3820,6 +3820,140 @@
                  "width":32,
                  "x":2688,
                  "y":9344
+                }, 
+                {
+                 "height":32,
+                 "id":102,
+                 "name":"battle_tutor",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"facing-direction",
+                         "type":"string",
+                         "value":"down"
+                        },
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"old_man_lying_down"
+                        },
+                        {
+                         "name":"script",
+                         "type":"list",
+                         "value":[
+                                {
+                                 "propertytype":"cmd-text",
+                                 "type":"class",
+                                 "value":{
+                                    "text":"Hello, {player}!\nLet me show you how to catch a POK{e}MON."
+                                 }
+                                },
+                                {
+                                 "propertytype":"cmd-text",
+                                 "type":"class",
+                                 "value":{
+                                    "text":"Watch carefully..."
+                                 }
+                                },
+                                {
+                                 "propertytype":"cmd-start_battle",
+                                 "type":"class",
+                                 "value":{
+                                    "type":"wild",
+                                    "tutorial":true,
+                                    "force_catch":true,
+                                    "team":[
+                                        {
+                                         "propertytype":"trainer-pokemon",
+                                         "type":"class",
+                                         "value":{
+                                            "level":5,
+                                            "species":"rattata"
+                                         }
+                                        }
+                                    ],
+                                    "player_override":{
+                                        "name":"Tutor",
+                                        "team":[
+                                            {
+                                             "propertytype":"trainer-pokemon",
+                                             "type":"class",
+                                             "value":{
+                                                "level":10,
+                                                "species":"nidoran (m)",
+                                                "move1":"Tackle"
+                                             }
+                                            }
+                                        ],
+                                        "inventory":[
+                                            {
+                                             "propertytype":"inventory-entry",
+                                             "type":"class",
+                                             "value":{
+                                                "name":"Poké Ball",
+                                                "qty":1
+                                             }
+                                            }
+                                        ]
+                                    },
+                                    "scripted_actions":[
+                                        {
+                                         "propertytype":"scripted-action",
+                                         "type":"class",
+                                         "value":{
+                                            "type":"attack",
+                                            "move":"Tackle"
+                                         }
+                                        },
+                                        {
+                                         "propertytype":"scripted-action",
+                                         "type":"class",
+                                         "value":{
+                                            "type":"use_item",
+                                            "itemName":"Poké Ball"
+                                         }
+                                        }
+                                    ]
+                                 }
+                                },
+                                {
+                                 "propertytype":"cmd-text",
+                                 "type":"class",
+                                 "value":{
+                                    "text":"And that's how you catch a POK{e}MON!"
+                                 }
+                                }
+                        ]
+                        },
+                        {
+                         "name":"script-repeatable",
+                         "type":"bool",
+                         "value":true
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":2464,
+                 "y":6432
+                },
+                {
+                 "height":32,
+                 "id":103,
+                 "name":"ViridianPlayerSpawn",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"facing-direction",
+                         "type":"string",
+                         "value":"up"
+                        }],
+                 "rotation":0,
+                 "type":"playerSpawn",
+                 "visible":true,
+                 "width":32,
+                 "x":2464,
+                 "y":6464
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -4506,7 +4640,7 @@
          "y":0
         }],
  "nextlayerid":19,
- "nextobjectid":102,
+ "nextobjectid":103,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",

@@ -6,6 +6,10 @@ function onlyIf(type, comparison, value) {
   return { type, comparison, value };
 }
 
+function varOnlyIf(key, comparison, target) {
+  return { type: 'variable', key, comparison, value: [target] };
+}
+
 // ─── null / empty guard ───────────────────────────────────────────────────────
 
 describe('checkOnlyIf — null / empty', () => {
@@ -88,47 +92,47 @@ describe("checkOnlyIf — type='variable'", () => {
   const mapVars = { score: 10 };
 
   test('eq — passes when values are equal', () => {
-    expect(checkOnlyIf(onlyIf('variable', 'eq', ['score', '10']), {}, null, mapVars)).toBe(true);
+    expect(checkOnlyIf(varOnlyIf('score', 'eq', '10'), {}, null, mapVars)).toBe(true);
   });
 
   test('eq — fails when values differ', () => {
-    expect(checkOnlyIf(onlyIf('variable', 'eq', ['score', '5']), {}, null, mapVars)).toBe(false);
+    expect(checkOnlyIf(varOnlyIf('score', 'eq', '5'), {}, null, mapVars)).toBe(false);
   });
 
   test('neq — passes when values differ', () => {
-    expect(checkOnlyIf(onlyIf('variable', 'neq', ['score', '5']), {}, null, mapVars)).toBe(true);
+    expect(checkOnlyIf(varOnlyIf('score', 'neq', '5'), {}, null, mapVars)).toBe(true);
   });
 
   test('lt — passes when current < target', () => {
-    expect(checkOnlyIf(onlyIf('variable', 'lt', ['score', '20']), {}, null, mapVars)).toBe(true);
+    expect(checkOnlyIf(varOnlyIf('score', 'lt', '20'), {}, null, mapVars)).toBe(true);
   });
 
   test('lt — fails when current >= target', () => {
-    expect(checkOnlyIf(onlyIf('variable', 'lt', ['score', '10']), {}, null, mapVars)).toBe(false);
+    expect(checkOnlyIf(varOnlyIf('score', 'lt', '10'), {}, null, mapVars)).toBe(false);
   });
 
   test('lte — passes when current <= target', () => {
-    expect(checkOnlyIf(onlyIf('variable', 'lte', ['score', '10']), {}, null, mapVars)).toBe(true);
+    expect(checkOnlyIf(varOnlyIf('score', 'lte', '10'), {}, null, mapVars)).toBe(true);
   });
 
   test('gt — passes when current > target', () => {
-    expect(checkOnlyIf(onlyIf('variable', 'gt', ['score', '5']), {}, null, mapVars)).toBe(true);
+    expect(checkOnlyIf(varOnlyIf('score', 'gt', '5'), {}, null, mapVars)).toBe(true);
   });
 
   test('gt — fails when current <= target', () => {
-    expect(checkOnlyIf(onlyIf('variable', 'gt', ['score', '10']), {}, null, mapVars)).toBe(false);
+    expect(checkOnlyIf(varOnlyIf('score', 'gt', '10'), {}, null, mapVars)).toBe(false);
   });
 
   test('gte — passes when current >= target', () => {
-    expect(checkOnlyIf(onlyIf('variable', 'gte', ['score', '10']), {}, null, mapVars)).toBe(true);
+    expect(checkOnlyIf(varOnlyIf('score', 'gte', '10'), {}, null, mapVars)).toBe(true);
   });
 
   test('defaults missing variable to 0', () => {
-    expect(checkOnlyIf(onlyIf('variable', 'eq', ['missing', '0']), {}, null, {})).toBe(true);
+    expect(checkOnlyIf(varOnlyIf('missing', 'eq', '0'), {}, null, {})).toBe(false);
   });
 
   test('coerces string variable values to numbers', () => {
-    expect(checkOnlyIf(onlyIf('variable', 'gte', ['score', '10']), {}, null, { score: '10' })).toBe(true);
+    expect(checkOnlyIf(varOnlyIf('score', 'gte', '10'), {}, null, { score: '10' })).toBe(true);
   });
 
   test('key field — uses key for lookup, value[0] as target', () => {

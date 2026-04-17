@@ -4,10 +4,19 @@ function resolveChar(scene, name) {
   return scene.characters?.get(name) ?? scene.characters?.get('npc_' + name);
 }
 
+/**
+ * True if gridEngine either isn't initialized yet or knows about this character.
+ * Gates gridEngine calls that would otherwise throw "Character unknown".
+ */
+function geKnows(scene, id) {
+  const ge = scene.gridEngine;
+  return !ge || ge.hasCharacter(id);
+}
+
 export default {
   move_player(runner, cmd) {
     const player = runner._scene.characters?.get('player');
-    if (!player || !runner._scene.gridEngine) { runner._step(); return; }
+    if (!player || !runner._scene.gridEngine || !geKnows(runner._scene, 'player')) { runner._step(); return; }
     runner._scene.gridEngine.setSpeed('player', 4);
     if (cmd.path?.length) {
       runner._walkPath('player', player, [...cmd.path], null);
@@ -33,7 +42,7 @@ export default {
 
   move_npc(runner, cmd) {
     const npc = resolveChar(runner._scene, cmd.name);
-    if (!npc || !runner._scene.gridEngine) { runner._step(); return; }
+    if (!npc || !runner._scene.gridEngine || !geKnows(runner._scene, npc.config.id)) { runner._step(); return; }
     const npcCharId = npc.config.id;
     if (cmd.path?.length) {
       runner._walkPath(npcCharId, npc, [...cmd.path], null);
@@ -68,7 +77,7 @@ export default {
 
   walk_to_char(runner, cmd) {
     const char1 = resolveChar(runner._scene, cmd.character1);
-    if (!char1 || !runner._scene.gridEngine) {
+    if (!char1 || !runner._scene.gridEngine || !geKnows(runner._scene, char1.config.id)) {
       if (runner._debug()) console.warn(`[ScriptRunner] walk_to_char: character1 "${cmd.character1}" not found`);
       runner._step();
       return;
@@ -115,7 +124,7 @@ export default {
 
   warp_npc(runner, cmd) {
     const warpNpc = resolveChar(runner._scene, cmd.character);
-    if (!warpNpc || !runner._scene.gridEngine) {
+    if (!warpNpc || !runner._scene.gridEngine || !geKnows(runner._scene, warpNpc.config.id)) {
       console.warn(`[ScriptRunner] warp_npc: character "${cmd.character}" not found`);
       runner._step();
       return;
@@ -169,7 +178,7 @@ export default {
     };
 
     const hasWalkTarget = cmd.walk_x != null && cmd.walk_y != null;
-    if (!hasWalkTarget || !char || !runner._scene.gridEngine) { doWarp(); return; }
+    if (!hasWalkTarget || !char || !runner._scene.gridEngine || !geKnows(runner._scene, char.config.id)) { doWarp(); return; }
 
     const dest    = { x: cmd.walk_x, y: cmd.walk_y };
     const current = runner._scene.gridEngine.getPosition(char.config.id);

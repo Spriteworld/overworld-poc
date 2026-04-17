@@ -44,8 +44,8 @@ export default {
       runner._step();
       return;
     }
-    const idx      = cmd.index ?? 0;
-    const natDexId = starterMon[idx];
+    const idx      = cmd.index ?? 1;
+    const natDexId = starterMon[idx - 1];
     if (natDexId == null) {
       console.warn(`[ScriptRunner] give_starter: no starter at index ${idx}`);
       runner._step();

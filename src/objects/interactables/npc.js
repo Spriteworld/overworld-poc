@@ -147,6 +147,7 @@ export default class {
         if (!behavior || behavior === 'none') return;
         const target = npc.config?.['mirror-target'] || 'player';
         if (charId !== target) return;
+        if (!this.scene.gridEngine.hasCharacter(npc.config.id)) return;
         if (behavior === 'match-movement') {
           npc.move(direction);
         } else if (behavior === 'mirror-move') {
@@ -196,7 +197,9 @@ export default class {
       store.commit('game/PATCH_FLAGS', { [scriptDoneFlag]: true });
       if (_dbg) console.log(`[NPC] interact "${npcName}" running script (${npcScript.length} cmd(s))`);
       new ScriptRunner(this.scene, [...npcScript]).run(() => {
-        if (originalDir) char?.look(originalDir);
+        if (!originalDir || !char) return;
+        if (!this.scene.gridEngine?.hasCharacter(char.config.id)) return;
+        char.look(originalDir);
       });
     };
     this.scene.game.events.on('interact-with-obj', this._onInteract);

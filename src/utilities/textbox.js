@@ -119,7 +119,7 @@ class TextBox {
       .replace(/\{player\}/gi, store.state.game.playerName)
       .replace(/\{rival\}/gi, store.state.game.rivalName)
       .replace(/\{species:(\d+)\}/gi, (_, id) => getSpeciesName(id)?.toUpperCase())
-      .replace(/\{starter:(\d+)\}/gi, (_, id) => getSpeciesName(starters?.[id])?.toUpperCase())
+      .replace(/\{starter:(\d+)\}/gi, (_, id) => getSpeciesName(starters?.[id - 1])?.toUpperCase())
       .replace(/\{KEYBIND\.([^}]+)\}/gi, (_, action) => getKeybindLabel(action.toLowerCase()));
     this._pages   = this._paginate(str);
     this._pageIdx = 0;

@@ -116,6 +116,17 @@ const MAPS = [
           has_pokedex:       false,
         },
       },
+      {
+        scene: 'ViridianCity',
+        title: 'Viridian City — Catching Tutorial',
+        description: "Talk to the old man (battle_tutor) to watch the fully auto-played catching demo. Tests tutorial / force_catch / scripted_actions / player_override — party, bag, and Pokédex must stay untouched afterwards.",
+        color: '#166534',
+        tags: ['tutorial', 'battle', 'scripted'],
+        state: {
+          has_pokemon:       true,
+          has_pokedex:       true,
+        },
+      },
     ],
   },
 ];

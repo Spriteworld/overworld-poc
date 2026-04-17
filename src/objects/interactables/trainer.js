@@ -4,6 +4,7 @@ import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves, Items, FRLG_LEARNSETS }
 import { gameState } from '@Data/gameState.js';
 import { getPropertyValue, remapProps, Vector2, checkOnlyIf } from '@Utilities';
 import { getGameDef } from '@Data/gameDef.js';
+import { resolveAiType, DEFAULT_TRAINER_AI } from '@Data/aiTypes.js';
 import { rng } from '@Utilities/rng.js';
 import Tileset from '@Tileset';
 import Trainer from '@Objects/characters/Trainer.js';
@@ -391,7 +392,7 @@ export default class {
     const battleSprite    = getPropertyValue(obj.properties, 'battle-texture') ?? overworldSprite;
     return {
       tilesetBaseUrl:  '/',
-      expRate:         getGameDef().expRate,
+      expRate:         getGameDef().expRateMultiplier,
       deferEvolution:  getGameDef().deferEvolution,
       field:           { weather: null, terrain: 'normal' },
       player: {
@@ -408,6 +409,7 @@ export default class {
         isTrainer:             true,
         name:                  this.scene.getPropertyFromTile(obj, 'trainer-name') || obj.name,
         team,
+        trainerClass:          resolveAiType(getPropertyValue(obj.properties, 'use-ai'), DEFAULT_TRAINER_AI),
         prizeMoney:            this._calcPrizeMoney(obj, team),
         trainerBattleSprite:   battleSprite ?? null,
         midFightText:          getPropertyValue(obj.properties, 'text-mid-fight') ?? null,
@@ -428,7 +430,7 @@ export default class {
     const explicit = getPropertyValue(obj.properties, 'prize-money');
     if (explicit != null) { return Math.max(0, parseInt(explicit, 10) || 0); }
     const highestLevel = team.reduce((max, p) => Math.max(max, p.level ?? 1), 1);
-    return highestLevel * 50;
+    return highestLevel * 50 * (getGameDef().prizeMoneyMultiplier ?? 1);
   }
 
   _parseTrainerTeam(obj) {

@@ -1,3 +1,8 @@
+jest.mock('../../utilities/rng.js', () => ({
+  rng:     jest.fn(() => 0.5),
+  initRng: jest.fn(),
+}));
+
 // Mock @spriteworld/pokemon-data before any imports that depend on it
 jest.mock('@spriteworld/pokemon-data', () => {
   const STATS = {
@@ -66,6 +71,7 @@ jest.mock('@spriteworld/pokemon-data', () => {
 
 import Encounter from './encounter.js';
 import store from '../../store/index.js';
+import { rng } from '../../utilities/rng.js';
 
 // ─── Test party fixture (used in place of a real defaultParty) ────────────────
 
@@ -111,6 +117,9 @@ function makeInitScene(properties = [], locationObjects = []) {
     config: {
       tilemap: {
         properties,
+        getObjectLayer: jest.fn(layer =>
+          layer === 'maps' && locationObjects.length > 0 ? { name: 'maps' } : null
+        ),
         filterObjects: jest.fn((layer, fn) =>
           layer === 'maps' ? locationObjects.filter(fn) : []
         ),
@@ -279,14 +288,14 @@ describe('_buildWildBattle wild pokemon fields — isShiny and pokerus', () => {
     expect(typeof battle.enemy.team[0].isShiny).toBe('boolean');
   });
 
-  test('isShiny is true when Math.random returns below the 1/8192 threshold', () => {
-    jest.spyOn(Math, 'random').mockReturnValue(0);
+  test('isShiny is true when rng returns below the 1/8192 threshold', () => {
+    rng.mockReturnValue(0);
     const battle = makeEncounter()._buildWildBattle();
     expect(battle.enemy.team[0].isShiny).toBe(true);
   });
 
-  test('isShiny is false when Math.random returns above the 1/8192 threshold', () => {
-    jest.spyOn(Math, 'random').mockReturnValue(0.5);
+  test('isShiny is false when rng returns above the 1/8192 threshold', () => {
+    rng.mockReturnValue(0.5);
     const battle = makeEncounter()._buildWildBattle();
     expect(battle.enemy.team[0].isShiny).toBe(false);
   });
@@ -296,14 +305,14 @@ describe('_buildWildBattle wild pokemon fields — isShiny and pokerus', () => {
     expect(typeof battle.enemy.team[0].pokerus).toBe('boolean');
   });
 
-  test('pokerus is true when Math.random returns below the 3/65536 threshold', () => {
-    jest.spyOn(Math, 'random').mockReturnValue(0);
+  test('pokerus is true when rng returns below the 3/65536 threshold', () => {
+    rng.mockReturnValue(0);
     const battle = makeEncounter()._buildWildBattle();
     expect(battle.enemy.team[0].pokerus).toBe(true);
   });
 
-  test('pokerus is false when Math.random returns above the 3/65536 threshold', () => {
-    jest.spyOn(Math, 'random').mockReturnValue(0.5);
+  test('pokerus is false when rng returns above the 3/65536 threshold', () => {
+    rng.mockReturnValue(0.5);
     const battle = makeEncounter()._buildWildBattle();
     expect(battle.enemy.team[0].pokerus).toBe(false);
   });

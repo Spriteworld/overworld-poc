@@ -28,6 +28,11 @@ export default class extends Phaser.Scene {
       return;
     }
 
+    console.log(this.game.scene.inside);
+    if (this.game.scene.inside === true) {
+      return;
+    }
+
     this.add.text(16, 16, 'Day', { fontSize: '32px', fill: '#000', stroke: '#000', strokeThickness: 2});
     this.add.text(416, 16, 'Evening', { fontSize: '32px', fill: '#000', stroke: '#000', strokeThickness: 2});
     let cam2overlay = this.add.image(400, 0, 'blank')
@@ -83,6 +88,10 @@ export default class extends Phaser.Scene {
     };
     // console.log(hour, mins, this.time);
 
+    if (this.game.scene.getScenes(true).some(s => s.config?.inside === true)) {
+      this.overlay.setAlpha(0);
+      return;
+    }
 
     if (!this.game.config.debug.tests.timeOverlay) {
       if (this.time.morning) {

@@ -19,7 +19,7 @@ export default {
   availablePokemon: 'gen_1',
 
   /** Experience rate multiplier (1.0 = normal, 2.0 = double, 0.5 = half). */
-  expRate:          1.0,
+  expRateMultiplier: 1.0,
 
   /**
    * Controls when the evolution of a pokemon is triggered during battle.
@@ -61,9 +61,15 @@ export default {
 
   /**
    * Starter Pokémon offered to the player (e.g. in Oak's lab).
-   * Each entry is a nat_dex_id. Index 0/1/2 maps to pokeball1/2/3.
-   * Use the `give_starter` script command with `index` 0, 1, or 2 to award the
+   * Each entry is a nat_dex_id. Index 1/2/3 maps to pokeball1/2/3.
+   * Use the `give_starter` script command with `index` 1, 2, or 3 to award the
    * corresponding Pokémon.
    */
   starterMon:       [1, 7, 4],
+
+  /**
+   * Multiplier applied to trainer prize money. Final payout is
+   * `highestTeamLevel × 50 × prizeMoneyMultiplier`. 1.0 = standard Gen 1 rate.
+   */
+  prizeMoneyMultiplier: 1.0,
 };

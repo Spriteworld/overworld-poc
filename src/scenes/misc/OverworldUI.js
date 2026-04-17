@@ -131,6 +131,7 @@ export default class extends Phaser.Scene {
     });
 
     this.game.events.on('battle-start', (data) => {
+      console.log('[OverworldUI] battle-start received, launching BattleScene2 with data=', data);
       const mapName = this.registry.get('map');
       // Close menu if somehow open when battle fires
       if (this.pauseMenu.visible) {
@@ -162,11 +163,16 @@ export default class extends Phaser.Scene {
             delay: 100,
           });
 
-          this.game.events.once('battle-complete', ({ result, prizeMoney } = {}) => {
-            if (prizeMoney > 0) { store.commit('game/ADD_MONEY', prizeMoney); }
+          this.game.events.once('battle-complete', ({ result, prizeMoney, tutorial } = {}) => {
             const battleScene = this.scene.get('BattleScene2');
+            // Tutorial battles run on a stand-in trainer + synthetic inventory.
+            // Skip every mutation that would touch the real save — party sync,
+            // bag sync, prize money, and any future caught-flow side-effects.
+            const isTutorial = tutorial === true || battleScene?.tutorial === true;
+
+            if (!isTutorial && prizeMoney > 0) { store.commit('game/ADD_MONEY', prizeMoney); }
             const pokemon = battleScene?.config?.player?.team?.pokemon;
-            if (pokemon) {
+            if (!isTutorial && pokemon) {
               const team = pokemon.map(p => ({
                 pid:                 p.pid,
                 species:             p.pokemon?.nat_dex_id ?? null,
@@ -180,13 +186,14 @@ export default class extends Phaser.Scene {
               store.commit('party/SYNC_AFTER_BATTLE', team);
             }
             const battleItems = battleScene?.config?.player?.inventory?.items;
-            if (battleItems?.length) {
+            if (!isTutorial && battleItems?.length) {
               store.commit('bag/SYNC_AFTER_BATTLE', battleItems);
             }
 
             // Check for any pending overworld evolutions (stone use out of battle,
             // or any that the battle Evolution state didn't process).
-            const evolvingPokemon = (pokemon ?? []).filter(p => p.readyToEvolve != null);
+            // Tutorial battles never evolve their stand-in team.
+            const evolvingPokemon = isTutorial ? [] : (pokemon ?? []).filter(p => p.readyToEvolve != null);
             const tilesetBaseUrl  = battleScene?.data?.tilesetBaseUrl ?? '';
 
             const runEvolutionQueue = (queue, onDone) => {
@@ -242,7 +249,7 @@ export default class extends Phaser.Scene {
                   duration: 250,
                   onComplete: () => {
                     this.scene.stop('BattleScene2');
-                    if (result === 'lost') {
+                    if (!isTutorial && result === 'lost') {
                       // White-out: restore party and warp to last heal location.
                       store.commit('party/RESTORE_ALL');
                       const healLoc = store.state.game.healLocation ?? { map: 'KantoWorld', x: 74, y: 278, charLayer: 'ground' };

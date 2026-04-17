@@ -46,38 +46,16 @@ export default class extends Phaser.Scene {
     this.load.on('complete', () => progress.destroy());
 
     this.load.image('blank', Tileset.blank);
-    this.load.spritesheet('red', Tileset.red, {
-      frameWidth: 32,
-      frameHeight: 48
-    });
-    this.load.spritesheet('red_bike', Tileset.red_bike, {
-      frameWidth: 48,
-      frameHeight: 48
-    });
-    this.load.spritesheet('leaf', Tileset.leaf, {
-      frameWidth: 32,
-      frameHeight: 48
-    });
-    this.load.spritesheet('leaf_bike', Tileset.leaf_bike, {
-      frameWidth: 48,
-      frameHeight: 48
-    });
-    this.load.spritesheet('brendan', Tileset.brendan, {
-      frameWidth: 32,
-      frameHeight: 48
-    });
-    this.load.spritesheet('brendan_bike', Tileset.brendan_bike, {
-      frameWidth: 48,
-      frameHeight: 48
-    });
-    this.load.spritesheet('may', Tileset.may, {
-      frameWidth: 32,
-      frameHeight: 48
-    });
-    this.load.spritesheet('may_bike', Tileset.may_bike, {
-      frameWidth: 48,
-      frameHeight: 48
-    });
+    
+    this.load.spritesheet('red', Tileset.red, {frameWidth: 32, frameHeight: 48});
+    this.load.spritesheet('red_bike', Tileset.red_bike, {frameWidth: 48, frameHeight: 48});
+    this.load.spritesheet('leaf', Tileset.leaf, {frameWidth: 32, frameHeight: 48});
+    this.load.spritesheet('leaf_bike', Tileset.leaf_bike, {frameWidth: 48, frameHeight: 48});
+    this.load.spritesheet('brendan', Tileset.brendan, {frameWidth: 32, frameHeight: 48});
+    this.load.spritesheet('brendan_bike', Tileset.brendan_bike, {frameWidth: 48, frameHeight: 48});
+    this.load.spritesheet('may', Tileset.may, {frameWidth: 32, frameHeight: 48});
+    this.load.spritesheet('may_bike', Tileset.may_bike, {frameWidth: 48, frameHeight: 48});
+
     this.load.spritesheet('animated_grass', Tileset.animated_grass, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
     this.load.spritesheet('animation', Tileset.animation_sheet, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
     this.load.spritesheet('gen3_inside', Tileset.gen3inside, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });

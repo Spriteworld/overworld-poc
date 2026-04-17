@@ -1,14 +1,35 @@
-jest.mock('@spriteworld/pokemon-data', () => ({
-  Pokedex: class {
-    constructor() {
-      this.pokedex = [
-        { nat_dex_id: 1, species: 'Bulbasaur' },
-        { nat_dex_id: 4, species: 'Charmander' },
-      ];
-    }
-  },
-  GAMES: { POKEMON_FIRE_RED: 'firered' },
-}));
+jest.mock('@spriteworld/pokemon-data', () => {
+  const STATS = {
+    HP: 'hp', ATTACK: 'attack', DEFENSE: 'defense',
+    SPECIAL_ATTACK: 'special_attack', SPECIAL_DEFENSE: 'special_defense', SPEED: 'speed',
+  };
+  return {
+    GAMES:   { POKEMON_FIRE_RED: 'firered' },
+    NATURES: { HARDY: { name: 'hardy' }, ADAMANT: { name: 'adamant' } },
+    GENDERS: { MALE: 'male', FEMALE: 'female' },
+    STATS,
+    FRLG_LEARNSETS: {},
+    Pokedex: class {
+      constructor() {
+        this.pokedex = [
+          { nat_dex_id: 1, species: 'Bulbasaur' },
+          { nat_dex_id: 4, species: 'Charmander' },
+        ];
+      }
+    },
+    Moves: {
+      getMovesByGameId: () => [
+        { name: 'tackle', pp: 35, power: 40, category: 'PHYSICAL' },
+      ],
+      MOVE_CATEGORIES: { STATUS: 'STATUS' },
+    },
+    Items: {
+      Potion: class {}, SuperPotion: class {}, HyperPotion: class {}, MaxPotion: class {},
+      FullRestore: class {}, Ether: class {}, Revive: class {},
+      Pokeball: class {}, GreatBall: class {}, UltraBall: class {}, MasterBall: class {},
+    },
+  };
+});
 
 jest.mock('./ChoicePrompt.js', () => jest.fn());
 jest.mock('./InputManager.js', () => ({

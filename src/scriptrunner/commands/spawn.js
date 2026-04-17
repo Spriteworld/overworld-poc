@@ -41,7 +41,9 @@ export default {
     const npc = runner._scene.characters?.get(cmd.name)
              ?? runner._scene.characters?.get('npc_' + cmd.name);
     if (npc) {
+      const npcId = npc.config.id;
       npc.remove();
+      runner._scene.removeInteraction?.(npcId);
     } else {
       console.warn(`[ScriptRunner] remove_npc: character "${cmd.name}" not found`);
     }

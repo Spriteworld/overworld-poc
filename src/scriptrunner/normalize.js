@@ -36,6 +36,7 @@ export function validate(commands, path = 'root') {
     'play_sound', 'stop_sound', 'bgm_start', 'bgm_stop',
     'fade_out', 'fade_in', 'camera_pan',
     'camera_follow_player', 'camera_follow_npc',
+    'start_battle',
   ]);
   const REQUIRED = {
     text:              ['text'],
@@ -68,6 +69,7 @@ export function validate(commands, path = 'root') {
     play_sound:        ['key'],
     bgm_start:         ['key'],
     camera_follow_npc: ['name'],
+    start_battle:      ['team'],
   };
   const warnings = [];
   commands.forEach((cmd, i) => {

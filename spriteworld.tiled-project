@@ -18,10 +18,143 @@
                 "wild",
                 "trainer",
                 "gym_leader",
-                "elite_4",
-                "champion"
+                "elite_four",
+                "champions",
+                "gen_1",
+                "gen_2",
+                "gen_3",
+                "gen_4",
+                "gen_5",
+                "gen_6",
+                "gen_7",
+                "gen_8"
             ],
             "valuesAsFlags": false
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 101,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "bgm_start"
+                },
+                {
+                    "name": "key",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "loop",
+                    "type": "bool",
+                    "value": true
+                }
+            ],
+            "name": "cmd-bgm_start",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 102,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "bgm_stop"
+                }
+            ],
+            "name": "cmd-bgm_stop",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 100,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "camera_follow_npc"
+                },
+                {
+                    "name": "name",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "cmd-camera_follow_npc",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 99,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "camera_follow_player"
+                }
+            ],
+            "name": "cmd-camera_follow_player",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 98,
+            "members": [
+                {
+                    "name": "anchor",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "camera_pan"
+                },
+                {
+                    "name": "duration",
+                    "type": "int",
+                    "value": 500
+                },
+                {
+                    "name": "x",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "y",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "cmd-camera_pan",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
         },
         {
             "color": "#ffa0a0a4",
@@ -100,6 +233,52 @@
                 }
             ],
             "name": "cmd-face_char",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 96,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "fade_in"
+                },
+                {
+                    "name": "duration",
+                    "type": "int",
+                    "value": 500
+                }
+            ],
+            "name": "cmd-fade_in",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 97,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "fade_out"
+                },
+                {
+                    "name": "duration",
+                    "type": "int",
+                    "value": 500
+                }
+            ],
+            "name": "cmd-fade_out",
             "type": "class",
             "useAs": [
                 "property"
@@ -188,6 +367,29 @@
                 }
             ],
             "name": "cmd-give_pokemon",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 106,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "give_starter"
+                },
+                {
+                    "name": "index",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "cmd-give_starter",
             "type": "class",
             "useAs": [
                 "property"
@@ -293,6 +495,41 @@
                 }
             ],
             "name": "cmd-if_flag",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 95,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "if_has_item"
+                },
+                {
+                    "name": "else",
+                    "type": "list",
+                    "value": [
+                    ]
+                },
+                {
+                    "name": "item",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "then",
+                    "type": "list",
+                    "value": [
+                    ]
+                }
+            ],
+            "name": "cmd-if_has_item",
             "type": "class",
             "useAs": [
                 "property"
@@ -430,6 +667,47 @@
                 }
             ],
             "name": "cmd-if_var",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 105,
+            "members": [
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "if_variant"
+                },
+                {
+                    "name": "comparison",
+                    "propertyType": "compare-op",
+                    "type": "string",
+                    "value": "eq"
+                },
+                {
+                    "name": "else",
+                    "type": "list",
+                    "value": [
+                    ]
+                },
+                {
+                    "name": "then",
+                    "type": "list",
+                    "value": [
+                    ]
+                },
+                {
+                    "name": "value",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "cmd-if_variant",
             "type": "class",
             "useAs": [
                 "property"
@@ -854,6 +1132,68 @@
             ]
         },
         {
+            "color": "#ff0080ff",
+            "drawFill": true,
+            "id": 104,
+            "members": [
+                {
+                    "name": "anchor",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "spawn_pkmn"
+                },
+                {
+                    "name": "facing",
+                    "propertyType": "facing-direction",
+                    "type": "string",
+                    "value": "down"
+                },
+                {
+                    "name": "name",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "shiny",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "texture",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "trigger",
+                    "propertyType": "trigger",
+                    "type": "class",
+                    "value": {
+                        "trigger": "enter"
+                    }
+                },
+                {
+                    "name": "x",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "y",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "cmd-spawn_pkmn",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
             "color": "#ffa0a0a4",
             "drawFill": true,
             "id": 94,
@@ -1241,7 +1581,8 @@
                 "bgm_start",
                 "bgm_stop",
                 "spawn_pkmn",
-                "give_starter"
+                "give_starter",
+                "start_battle"
             ],
             "valuesAsFlags": false
         },
@@ -1582,6 +1923,11 @@
                     "name": "ow-encounter-rate",
                     "type": "int",
                     "value": 3
+                },
+                {
+                    "name": "ow-encounters",
+                    "type": "bool",
+                    "value": true
                 },
                 {
                     "name": "script",
@@ -2097,93 +2443,23 @@
             ]
         },
         {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 95,
-            "members": [
-                {
-                    "name": "cmd",
-                    "propertyType": "command-list",
-                    "type": "string",
-                    "value": "if_has_item"
-                },
-                {
-                    "name": "else",
-                    "type": "list",
-                    "value": [
-                    ]
-                },
-                {
-                    "name": "item",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "then",
-                    "type": "list",
-                    "value": [
-                    ]
-                }
+            "id": 107,
+            "name": "battle-type",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "wild",
+                "trainer"
             ],
-            "name": "cmd-if_has_item",
-            "type": "class",
-            "useAs": [
-                "property"
-            ]
+            "valuesAsFlags": false
         },
         {
             "color": "#ffa0a0a4",
             "drawFill": true,
-            "id": 96,
+            "id": 108,
             "members": [
                 {
-                    "name": "cmd",
-                    "propertyType": "command-list",
-                    "type": "string",
-                    "value": "fade_in"
-                },
-                {
-                    "name": "duration",
-                    "type": "int",
-                    "value": 500
-                }
-            ],
-            "name": "cmd-fade_in",
-            "type": "class",
-            "useAs": [
-                "property"
-            ]
-        },
-        {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 97,
-            "members": [
-                {
-                    "name": "cmd",
-                    "propertyType": "command-list",
-                    "type": "string",
-                    "value": "fade_out"
-                },
-                {
-                    "name": "duration",
-                    "type": "int",
-                    "value": 500
-                }
-            ],
-            "name": "cmd-fade_out",
-            "type": "class",
-            "useAs": [
-                "property"
-            ]
-        },
-        {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 98,
-            "members": [
-                {
-                    "name": "anchor",
+                    "name": "battle-texture",
                     "type": "string",
                     "value": ""
                 },
@@ -2191,215 +2467,117 @@
                     "name": "cmd",
                     "propertyType": "command-list",
                     "type": "string",
-                    "value": "camera_pan"
+                    "value": "start_battle"
                 },
                 {
-                    "name": "duration",
-                    "type": "int",
-                    "value": 500
-                },
-                {
-                    "name": "x",
-                    "type": "int",
-                    "value": 0
-                },
-                {
-                    "name": "y",
-                    "type": "int",
-                    "value": 0
-                }
-            ],
-            "name": "cmd-camera_pan",
-            "type": "class",
-            "useAs": [
-                "property"
-            ]
-        },
-        {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 99,
-            "members": [
-                {
-                    "name": "cmd",
-                    "propertyType": "command-list",
-                    "type": "string",
-                    "value": "camera_follow_player"
-                }
-            ],
-            "name": "cmd-camera_follow_player",
-            "type": "class",
-            "useAs": [
-                "property"
-            ]
-        },
-        {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 100,
-            "members": [
-                {
-                    "name": "cmd",
-                    "propertyType": "command-list",
-                    "type": "string",
-                    "value": "camera_follow_npc"
-                },
-                {
-                    "name": "name",
-                    "type": "string",
-                    "value": ""
-                }
-            ],
-            "name": "cmd-camera_follow_npc",
-            "type": "class",
-            "useAs": [
-                "property"
-            ]
-        },
-        {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 101,
-            "members": [
-                {
-                    "name": "cmd",
-                    "propertyType": "command-list",
-                    "type": "string",
-                    "value": "bgm_start"
-                },
-                {
-                    "name": "key",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "loop",
-                    "type": "bool",
-                    "value": true
-                }
-            ],
-            "name": "cmd-bgm_start",
-            "type": "class",
-            "useAs": [
-                "property"
-            ]
-        },
-        {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 102,
-            "members": [
-                {
-                    "name": "cmd",
-                    "propertyType": "command-list",
-                    "type": "string",
-                    "value": "bgm_stop"
-                }
-            ],
-            "name": "cmd-bgm_stop",
-            "type": "class",
-            "useAs": [
-                "property"
-            ]
-        },
-        {
-            "color": "#ff0080ff",
-            "drawFill": true,
-            "id": 104,
-            "members": [
-                {
-                    "name": "anchor",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "cmd",
-                    "propertyType": "command-list",
-                    "type": "string",
-                    "value": "spawn_pkmn"
-                },
-                {
-                    "name": "facing",
-                    "propertyType": "facing-direction",
-                    "type": "string",
-                    "value": "down"
-                },
-                {
-                    "name": "name",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "shiny",
+                    "name": "force_catch",
                     "type": "bool",
                     "value": false
                 },
                 {
-                    "name": "texture",
+                    "name": "mid_fight_text",
                     "type": "string",
                     "value": ""
                 },
                 {
-                    "name": "trigger",
-                    "propertyType": "trigger",
+                    "name": "name",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "player_override",
+                    "propertyType": "player-override",
                     "type": "class",
                     "value": {
-                        "trigger": "enter"
                     }
                 },
                 {
-                    "name": "x",
-                    "type": "int",
-                    "value": 0
-                },
-                {
-                    "name": "y",
-                    "type": "int",
-                    "value": 0
-                }
-            ],
-            "name": "cmd-spawn_pkmn",
-            "type": "class",
-            "useAs": [
-                "property"
-            ]
-        },
-        {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 105,
-            "members": [
-                {
-                    "name": "cmd",
-                    "propertyType": "command-list",
-                    "type": "string",
-                    "value": "if_variant"
-                },
-                {
-                    "name": "comparison",
-                    "propertyType": "compare-op",
-                    "type": "string",
-                    "value": "eq"
-                },
-                {
-                    "name": "else",
-                    "type": "list",
-                    "value": [
-                    ]
-                },
-                {
-                    "name": "then",
-                    "type": "list",
-                    "value": [
-                    ]
-                },
-                {
-                    "name": "value",
+                    "name": "post_defeat_text",
                     "type": "string",
                     "value": ""
+                },
+                {
+                    "name": "scripted_actions",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "scripted-action",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "team",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "trainer-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "tutorial",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "type",
+                    "propertyType": "battle-type",
+                    "type": "string",
+                    "value": "wild"
+                },
+                {
+                    "name": "use-ai",
+                    "propertyType": "ai-list",
+                    "type": "string",
+                    "value": "trainer"
                 }
             ],
-            "name": "cmd-if_variant",
+            "name": "cmd-start_battle",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "id": 109,
+            "name": "scripted-action-type",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "attack",
+                "use_item"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 110,
+            "members": [
+                {
+                    "name": "itemName",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "move",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "type",
+                    "propertyType": "scripted-action-type",
+                    "type": "string",
+                    "value": "attack"
+                }
+            ],
+            "name": "scripted-action",
             "type": "class",
             "useAs": [
                 "property"
@@ -2408,21 +2586,61 @@
         {
             "color": "#ffa0a0a4",
             "drawFill": true,
-            "id": 106,
+            "id": 111,
             "members": [
                 {
-                    "name": "cmd",
-                    "propertyType": "command-list",
+                    "name": "name",
                     "type": "string",
-                    "value": "give_starter"
+                    "value": ""
                 },
                 {
-                    "name": "index",
+                    "name": "qty",
                     "type": "int",
-                    "value": 0
+                    "value": 1
                 }
             ],
-            "name": "cmd-give_starter",
+            "name": "inventory-entry",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 112,
+            "members": [
+                {
+                    "name": "inventory",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "inventory-entry",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "name",
+                    "type": "string",
+                    "value": "Tutor"
+                },
+                {
+                    "name": "team",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "trainer-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                }
+            ],
+            "name": "player-override",
             "type": "class",
             "useAs": [
                 "property"

@@ -8,8 +8,16 @@
             "wild",
             "trainer",
             "gym_leader",
-            "elite_4",
-            "champion"
+            "elite_four",
+            "champions",
+            "gen_1",
+            "gen_2",
+            "gen_3",
+            "gen_4",
+            "gen_5",
+            "gen_6",
+            "gen_7",
+            "gen_8"
         ],
         "valuesAsFlags": false
     },
@@ -1231,7 +1239,19 @@
             "bgm_start",
             "bgm_stop",
             "spawn_pkmn",
-            "give_starter"
+            "give_starter",
+            "start_battle"
+        ],
+        "valuesAsFlags": false
+    },
+    {
+        "id": 108,
+        "name": "battle-type",
+        "storageType": "string",
+        "type": "enum",
+        "values": [
+            "wild",
+            "trainer"
         ],
         "valuesAsFlags": false
     },
@@ -2418,6 +2438,199 @@
             }
         ],
         "name": "cmd-give_starter",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 107,
+        "members": [
+            {
+                "name": "battle-texture",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "start_battle"
+            },
+            {
+                "name": "force_catch",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "mid_fight_text",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "player_override",
+                "propertyType": "player-override",
+                "type": "class",
+                "value": {
+                }
+            },
+            {
+                "name": "post_defeat_text",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "scripted_actions",
+                "type": "list",
+                "value": [
+                    {
+                        "propertyType": "scripted-action",
+                        "type": "class",
+                        "value": {
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "team",
+                "type": "list",
+                "value": [
+                    {
+                        "propertyType": "trainer-pokemon",
+                        "type": "class",
+                        "value": {
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "tutorial",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "type",
+                "propertyType": "battle-type",
+                "type": "string",
+                "value": "wild"
+            },
+            {
+                "name": "use-ai",
+                "propertyType": "ai-list",
+                "type": "string",
+                "value": "trainer"
+            }
+        ],
+        "name": "cmd-start_battle",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "id": 109,
+        "name": "scripted-action-type",
+        "storageType": "string",
+        "type": "enum",
+        "values": [
+            "attack",
+            "use_item"
+        ],
+        "valuesAsFlags": false
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 110,
+        "members": [
+            {
+                "name": "itemName",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "move",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "type",
+                "propertyType": "scripted-action-type",
+                "type": "string",
+                "value": "attack"
+            }
+        ],
+        "name": "scripted-action",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 111,
+        "members": [
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "qty",
+                "type": "int",
+                "value": 1
+            }
+        ],
+        "name": "inventory-entry",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 112,
+        "members": [
+            {
+                "name": "inventory",
+                "type": "list",
+                "value": [
+                    {
+                        "propertyType": "inventory-entry",
+                        "type": "class",
+                        "value": {
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": "Tutor"
+            },
+            {
+                "name": "team",
+                "type": "list",
+                "value": [
+                    {
+                        "propertyType": "trainer-pokemon",
+                        "type": "class",
+                        "value": {
+                        }
+                    }
+                ]
+            }
+        ],
+        "name": "player-override",
         "type": "class",
         "useAs": [
             "property"

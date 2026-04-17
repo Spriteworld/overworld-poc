@@ -88,8 +88,8 @@
             "scale": 1.5,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 2671.333333333333,
-                "y": 9181
+                "x": 2813.333333333333,
+                "y": 7709.666666666666
             }
         },
         "src/maps/kanto/kanto_inside.json": {
@@ -97,10 +97,10 @@
                 3
             ],
             "scale": 1,
-            "selectedLayer": 1,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 1731,
-                "y": 1145.5
+                "x": 240,
+                "y": 1008.5
             }
         },
         "src/maps/kanto/pallet.json": {

@@ -6,7 +6,7 @@ export default class extends GameMap {
     super({
       mapName: 'ProfessorLab',
       map: ProfessorLabMap,
-      inside: false,
+      inside: true,
     });
   }
 

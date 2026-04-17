@@ -9,8 +9,9 @@ function makeScene() {
   function makeRect() {
     return {
       x: 0, y: 0,
-      setOrigin: jest.fn().mockReturnThis(),
-      setName:   jest.fn().mockReturnThis(),
+      setOrigin:  jest.fn().mockReturnThis(),
+      setName:    jest.fn().mockReturnThis(),
+      setVisible: jest.fn().mockReturnThis(),
     };
   }
 

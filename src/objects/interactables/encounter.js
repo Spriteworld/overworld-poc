@@ -167,7 +167,7 @@ function buildMovesFromLearnset(speciesName, level, fallbackPool) {
  *   availablePokemon  – filters the species pool for fallbacks and random tables
  *   encounterTables   – 'vanilla' uses the map's encounter-table; 'random' generates seeded tables
  *   learnsets         – 'vanilla' uses FRLG learnset; 'random' picks 4 random moves
- *   expRate           – passed through to the battle config
+ *   expRateMultiplier – passed through to the battle config
  *   gameMode          – 'nuzlocke' records first-catch-per-zone flags
  */
 export default class {
@@ -380,7 +380,7 @@ export default class {
     return {
       tilesetBaseUrl:  '/',
       textSpeed:       store.state.game.textSpeed ?? 'normal',
-      expRate:         def.expRate,
+      expRate:         def.expRateMultiplier,
       deferEvolution:  def.deferEvolution,
       nuzlocke: def.gameMode === 'nuzlocke' ? {
         zone:       tableId ?? null,
