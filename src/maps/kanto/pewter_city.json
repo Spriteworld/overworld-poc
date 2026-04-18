@@ -10929,7 +10929,123 @@
       "draworder": "topdown",
       "id": 5,
       "name": "interactions",
-      "objects": [],
+      "objects": [
+        {
+          "height": 32,
+          "id": 1,
+          "name": "pewterAide",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "only_if",
+              "propertytype": "only-if",
+              "type": "class",
+              "value": {}
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "scientist"
+            },
+            {
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-if_flag",
+                  "type": "class",
+                  "value": {
+                    "comparison": "eq",
+                    "else": [
+                      {
+                        "propertytype": "cmd-text",
+                        "type": "class",
+                        "value": {}
+                      }
+                    ],
+                    "key": "has_boulderbadge",
+                    "then": [
+                      {
+                        "propertytype": "cmd-text",
+                        "type": "class",
+                        "value": {
+                          "text": "You're a TRAINER, right?\nBROCK's looking for new challengers.\nFollow me!"
+                        }
+                      },
+                      {
+                        "propertytype": "cmd-disable_input",
+                        "type": "class",
+                        "value": {}
+                      },
+                      {
+                        "propertytype": "cmd-movement_behavior",
+                        "type": "class",
+                        "value": {
+                          "character1": "player",
+                          "character2": "pewterAide",
+                          "value": "follow"
+                        }
+                      },
+                      {
+                        "propertytype": "cmd-move_npc",
+                        "type": "class",
+                        "value": {
+                          "anchor": "pewterGym",
+                          "character": "pewterAide"
+                        }
+                      },
+                      {
+                        "propertytype": "cmd-movement_behavior",
+                        "type": "class",
+                        "value": {
+                          "character1": "player",
+                          "value": "none"
+                        }
+                      },
+                      {
+                        "propertytype": "cmd-enable_input",
+                        "type": "class",
+                        "value": {}
+                      }
+                    ],
+                    "value": "true"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 32,
+          "x": 1760,
+          "y": 960
+        },
+        {
+          "height": 32,
+          "id": 2,
+          "name": "pewterGym",
+          "opacity": 1,
+          "rotation": 0,
+          "type": "location-anchor",
+          "visible": true,
+          "width": 32,
+          "x": 800,
+          "y": 864
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "aideBlocker",
+          "opacity": 1,
+          "rotation": 0,
+          "type": "location-anchor",
+          "visible": true,
+          "width": 32,
+          "x": 1760,
+          "y": 960
+        }
+      ],
       "opacity": 1,
       "type": "objectgroup",
       "visible": true,
@@ -10938,7 +11054,7 @@
     }
   ],
   "nextlayerid": 1,
-  "nextobjectid": 1,
+  "nextobjectid": 4,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.12.1",

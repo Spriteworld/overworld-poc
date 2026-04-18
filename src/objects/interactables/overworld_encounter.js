@@ -1,11 +1,12 @@
 import { Tile } from '@Objects';
-import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves, Items, FRLG_LEARNSETS } from '@spriteworld/pokemon-data';
+import { Pokedex, buildMon } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
 import { getPropertyValue } from '@Utilities';
 import { getGameDef, filterByAvailablePokemon, seededRng } from '@Data/gameDef.js';
 import Tileset from '@Tileset';
 import { rng } from '@Utilities/rng.js';
 import store from '../../store/index.js';
+import { buildBattleInventory } from './encounter.js';
 
 /** Default percentage of encounter-zone tiles that spawn a visible OW Pokémon. */
 const DEFAULT_DENSITY = 3; // 3 %
@@ -21,58 +22,37 @@ const SPAWN_RADIUS = 10;
 const WILD_LEVEL_MIN = 3;
 const WILD_LEVEL_MAX = 8;
 
-const STAT_KEYS = [
-  STATS.HP, STATS.ATTACK, STATS.DEFENSE,
-  STATS.SPECIAL_ATTACK, STATS.SPECIAL_DEFENSE, STATS.SPEED,
-];
-const NATURE_LIST = Object.values(NATURES);
+const OW_ENC_PREFIX = 'ow_enc_';
 
-const ITEM_REGISTRY = {
-  'Potion':        Items.Potion,
-  'Super Potion':  Items.SuperPotion,
-  'Hyper Potion':  Items.HyperPotion,
-  'Max Potion':    Items.MaxPotion,
-  'Full Restore':  Items.FullRestore,
-  'Ether':         Items.Ether,
-  'Revive':        Items.Revive,
-};
-
-const BALL_REGISTRY = {
-  'pokeball':   Items.Pokeball,
-  'greatball':  Items.GreatBall,
-  'ultraball':  Items.UltraBall,
-  'masterball': Items.MasterBall,
-};
-
-function normalizeBallName(name) {
-  return name.toLowerCase().replace(/[-_\s]/g, '').replace(/[éèê]/g, 'e');
-}
-
-function buildBattleInventory() {
-  const { items, pokeballs } = store.state.bag;
-
-  const battleItems = items
-    .filter(e => ITEM_REGISTRY[e.name] && e.quantity > 0)
-    .map(e => ({ item: new ITEM_REGISTRY[e.name](), quantity: e.quantity }));
-
-  const battleBalls = pokeballs
-    .filter(e => e.quantity > 0)
-    .map(e => {
-      const Cls = BALL_REGISTRY[normalizeBallName(e.name)];
-      return Cls ? { item: new Cls(), quantity: e.quantity } : null;
-    })
-    .filter(Boolean);
-
-  return {
-    items: [...battleItems, ...battleBalls],
-    pokeballs: [],
-    tms: [],
-  };
-}
-
-function pick(arr) {
-  return arr[Math.floor(rng() * arr.length)];
-}
+// ── Level-aware reactive behaviour tuning ─────────────────────────────────────
+/** Tiles within which a mon can notice the player (Manhattan). */
+const DETECTION_RADIUS        = 5;
+/** Per-player-step chance that an eligible mon reacts. */
+const REACTION_CHANCE         = 0.25;
+/** Player-steps of cooldown after a reaction ends before the same mon can re-react. */
+const REACTION_COOLDOWN_STEPS = 5;
+/** mon.level ≥ lead + N → eligible to chase. */
+const LEVEL_CHASE_THRESHOLD   = 3;
+/** lead.level ≥ mon + N → eligible to flee. */
+const LEVEL_FLEE_THRESHOLD    = 3;
+/** Tiles a chaser walks before giving up. */
+const CHASE_TILE_BUDGET       = 5;
+/** Tiles a fleer walks before resuming normal wandering. */
+const FLEE_TILE_BUDGET        = 4;
+/** Hard time cap on a chase/flee reaction (ms). */
+const CHASE_MAX_MS            = 8000;
+/** If no step is taken for this long during a reaction (ms), give up. */
+const BLOCKED_TIMEOUT_MS      = 1500;
+/** GridEngine tile-speed during chase (moveRandomly default ≈ 3). */
+const CHASE_SPEED             = 6;
+/** GridEngine tile-speed during flee. */
+const FLEE_SPEED              = 5;
+/** Duration of the `!` exclamation before the chaser starts moving (ms). */
+const EXCLAIM_MS              = 700;
+/** Default GridEngine tile-speed to restore after a reaction. */
+const DEFAULT_SPEED           = 3;
+/** Shared `!` animation key (matches `src/scriptrunner/commands/character.js`). */
+const EXCLAIM_ANIM_KEY        = 'trainer-spotted';
 
 function pickWeighted(entries) {
   const total = entries.reduce((sum, e) => sum + e.rarity, 0);
@@ -82,30 +62,6 @@ function pickWeighted(entries) {
     if (r <= 0) return e;
   }
   return entries[entries.length - 1];
-}
-
-function pickUnique(arr, n) {
-  return [...arr].sort(() => rng() - 0.5).slice(0, Math.min(n, arr.length));
-}
-
-function buildMovePool() {
-  return Moves.getMovesByGameId(GAMES.POKEMON_FIRE_RED).filter(
-    m => m.pp > 0 && (m.power !== null || m.category === Moves.MOVE_CATEGORIES.STATUS)
-  );
-}
-
-function buildMovesFromLearnset(speciesName, level, fallbackPool) {
-  const learnset = FRLG_LEARNSETS[speciesName.toUpperCase()];
-  if (!learnset?.length) {
-    return pickUnique(fallbackPool, 4).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }));
-  }
-  const learnable = learnset.filter(([lvl]) => lvl <= level);
-  const selected  = learnable.slice(-4);
-  const ppByName  = Object.fromEntries(fallbackPool.map(m => [m.name, m.pp]));
-  return selected.map(([, name]) => {
-    const pp = ppByName[name] ?? 5;
-    return { name, pp: { max: pp, current: pp } };
-  });
 }
 
 /** Ray-cast point-in-polygon test (pixel space). */
@@ -126,6 +82,14 @@ function hashStr(s) {
   let h = 5381;
   for (let i = 0; i < s.length; i++) h = (Math.imul(h, 33) ^ s.charCodeAt(i)) >>> 0;
   return h;
+}
+
+/** Two pixel rectangles touch (share an edge/corner) or overlap. */
+function rectsNeighbor(a, b) {
+  return a.x <= b.x + b.width
+      && b.x <= a.x + a.width
+      && a.y <= b.y + b.height
+      && b.y <= a.y + a.height;
 }
 
 /**
@@ -155,12 +119,20 @@ function hashStr(s) {
  */
 export default class OverworldEncounter {
   constructor(scene) {
-    this.scene     = scene;
-    this._pending  = []; // [{ x, y, texture, battleConfig }]      — not yet spawned
-    this._active   = []; // [{ x, y, sprite, battleConfig }]       — sprite live
-    this._sub      = null; // positionChangeStarted — battle trigger
-    this._spawnSub = null; // positionChangeFinished — proximity spawn
-    this._movePool = null;
+    this.scene      = scene;
+    this._pending   = []; // [{ x, y, texture, battleConfig }]      — not yet spawned
+    this._active    = []; // [{ x, y, sprite, battleConfig }]       — sprite live
+    this._sub       = null; // positionChangeStarted — battle trigger
+    this._spawnSub  = null; // positionChangeFinished — spawn/despawn by route
+    this._locations = []; // [{ name, x, y, width, height }]         — map location objects (pixels)
+    this._movePool  = null;
+    /**
+     * Per-mon reaction state, keyed by GridEngine id.
+     * { mode: 'neutral'|'chase'|'flee'|'battling',
+     *   stepsLeft, cooldownLeft, startedAt, lastMoveAt,
+     *   origRate, origRadius, exclaimSprite, exclaimTimer }
+     */
+    this._behaviour = {};
   }
 
   init() {
@@ -185,6 +157,7 @@ export default class OverworldEncounter {
         'maps', obj => obj.type === 'location'
       ) ?? [];
       for (const obj of locationObjs) {
+        this._locations.push({ name: obj.name, x: obj.x, y: obj.y, width: obj.width, height: obj.height });
         const objSettings = getPropertyValue(obj.properties ?? [], 'map-settings');
         if (objSettings?.['encounter-table']) {
           tableFragments.push(objSettings['encounter-table']);
@@ -199,8 +172,6 @@ export default class OverworldEncounter {
 
     const allTiles = this._collectEncounterTiles();
     if (allTiles.length === 0) return;
-
-    this._movePool = buildMovePool();
 
     for (const tile of allTiles) {
       if (rng() >= density) continue;
@@ -222,70 +193,446 @@ export default class OverworldEncounter {
 
     // Spawn anything near the player's starting position before first movement.
     const startPos = this.scene.gridEngine.getPosition('player');
-    if (startPos) this._trySpawnNearby(startPos);
+    if (startPos) this._syncSpawns(startPos);
 
-    // Battle trigger — positionChangeStarted fires before GE finalises the move,
-    // so we only do the battle check here (no addCharacter calls).
+    // Battle trigger — positionChangeStarted fires before GE finalises the move.
+    // We look up each active spawn's current GE position since the Pokémon is
+    // wandering via moveRandomly.
     this._sub = this.scene.gridEngine.positionChangeStarted().subscribe(({ charId, enterTile }) => {
       if (charId !== 'player') return;
       if (this.scene.game.config.debug.noEncounters) return;
 
-      const spawn = this._active.find(s => s.x === enterTile.x && s.y === enterTile.y);
+      const spawn = this._active.find(s => {
+        if (!s.geId || !this.scene.gridEngine.hasCharacter(s.geId)) {
+          return s.x === enterTile.x && s.y === enterTile.y;
+        }
+        const pos = this.scene.gridEngine.getPosition(s.geId);
+        return pos && pos.x === enterTile.x && pos.y === enterTile.y;
+      });
       if (!spawn) return;
+      // If a chaser already fired battle-start this same tick, don't double-fire.
+      const b = spawn.geId && this._behaviour[spawn.geId];
+      if (b?.mode === 'battling') return;
+      if (b) b.mode = 'battling';
 
-      // Rebuild inventory at trigger time so it reflects current bag contents.
+      // Attach the player's live bag inventory at trigger time — the stored
+      // battleConfig is built at map load, so its bag snapshot would be stale.
       spawn.battleConfig.player.inventory = buildBattleInventory();
 
       this.scene.game.events.emit('battle-start', spawn.battleConfig);
       this.scene.game.events.once('battle-complete', () => this._removeSpawn(spawn));
     });
 
-    // Proximity spawning — positionChangeFinished fires after GE completes the
-    // move, so addCharacter() calls inside addToScene() are safe here.
+    // Spawn/despawn by route — positionChangeFinished fires after GE completes
+    // the move, so addCharacter() calls inside addToScene() are safe here. Also
+    // drives chase/flee step counting and overlap-nudging for OW mons.
     this._spawnSub = this.scene.gridEngine.positionChangeFinished().subscribe(({ charId, enterTile }) => {
-      if (charId !== 'player') return;
-      this._trySpawnNearby(enterTile);
+      if (charId === 'player') {
+        this._syncSpawns(enterTile);
+        this._tickBehaviour(enterTile);
+      } else if (typeof charId === 'string' && charId.startsWith(OW_ENC_PREFIX)) {
+        this._onMonStepFinished(charId, enterTile);
+        this._nudgeIfOverlapping(charId);
+      }
     });
   }
 
   destroy() {
     this._sub?.unsubscribe();
     this._spawnSub?.unsubscribe();
+    // Clean up any in-flight `!` sprites / timers so they don't leak past the
+    // scene transition. GE characters are torn down automatically with the scene.
+    for (const b of Object.values(this._behaviour)) {
+      if (b.exclaimTimer)  b.exclaimTimer.remove?.(false);
+      if (b.exclaimSprite) b.exclaimSprite.destroy();
+    }
+    this._behaviour = {};
   }
 
   // ── Private ──────────────────────────────────────────────────────────────────
 
   /**
-   * Create plain Phaser sprites for any pending spawn within SPAWN_RADIUS tiles
-   * of `playerTile`.  Sprites are NOT registered with GridEngine or
-   * `scene.characters`, which keeps them invisible to all GE-event subscribers
-   * and avoids "Character unknown" errors entirely.
+   * Spawn pending entries whose origin tile lies in a location the player is
+   * currently in or next to, and despawn active entries whose origin tile is
+   * outside that set. Despawned entries are moved back to `_pending` so they
+   * respawn if the player re-enters the area.
+   *
+   * Falls back to a Manhattan-distance radius when the map has no location
+   * objects on the `maps` layer (e.g. small test maps).
+   *
    * @param {{ x:number, y:number }} playerTile
    */
-  _trySpawnNearby(playerTile) {
-    const toSpawn = this._pending.filter(p =>
-      Math.abs(p.x - playerTile.x) + Math.abs(p.y - playerTile.y) <= SPAWN_RADIUS
-    );
-    for (const entry of toSpawn) {
-      const sprite = this._spawnVisualSprite(entry);
-      if (!sprite) continue;
-      this._active.push({ x: entry.x, y: entry.y, sprite, battleConfig: entry.battleConfig });
+  _syncSpawns(playerTile) {
+    const inSet = this._locations.length > 0
+      ? (() => {
+          const active = this._activeLocations(playerTile);
+          return (tx, ty) => this._tileInLocations(tx, ty, active);
+        })()
+      : (tx, ty) => Math.abs(tx - playerTile.x) + Math.abs(ty - playerTile.y) <= SPAWN_RADIUS;
+
+    // Despawn anything outside the active set — move back to _pending.
+    const stillActive = [];
+    for (const s of this._active) {
+      if (inSet(s.x, s.y)) {
+        stillActive.push(s);
+      } else {
+        this._despawnToPending(s);
+      }
     }
-    this._pending = this._pending.filter(p =>
-      Math.abs(p.x - playerTile.x) + Math.abs(p.y - playerTile.y) > SPAWN_RADIUS
-    );
+    this._active = stillActive;
+
+    // Spawn anything pending that's now in range.
+    const stillPending = [];
+    for (const p of this._pending) {
+      if (!inSet(p.x, p.y)) { stillPending.push(p); continue; }
+      const result = this._spawnVisualSprite(p);
+      if (!result) { stillPending.push(p); continue; }
+      this._active.push({
+        x: p.x,
+        y: p.y,
+        sprite: result.sprite,
+        geId:   result.geId,
+        battleConfig: p.battleConfig,
+      });
+    }
+    this._pending = stillPending;
   }
 
   /**
-   * Create a plain `Phaser.GameObjects.Sprite` for a pending OW encounter entry.
-   * The sprite is NOT a GridEngine character — no `addCharacter` call, no entry in
-   * `scene.characters` — so it is completely invisible to all GE-event subscribers.
+   * The locations the player is currently in, union with their neighbours.
+   * Two locations are neighbours when their pixel rectangles touch or overlap.
+   */
+  _activeLocations(playerTile) {
+    const px = playerTile.x * Tile.WIDTH  + Tile.WIDTH  / 2;
+    const py = playerTile.y * Tile.HEIGHT + Tile.HEIGHT / 2;
+    const here = this._locations.filter(loc =>
+      px >= loc.x && px <= loc.x + loc.width &&
+      py >= loc.y && py <= loc.y + loc.height
+    );
+    if (here.length === 0) return [];
+    const result = new Set(here);
+    for (const loc of this._locations) {
+      if (result.has(loc)) continue;
+      for (const h of here) {
+        if (rectsNeighbor(loc, h)) { result.add(loc); break; }
+      }
+    }
+    return [...result];
+  }
+
+  /**
+   * If another OW encounter mon is standing on the same tile as `geId`, push
+   * `geId` onto the first walkable neighbour tile that isn't also occupied.
+   * Two OW mons can share a tile because their `collisionGroups` is empty so
+   * that the player can still walk through them to trigger a battle.
+   */
+  _nudgeIfOverlapping(geId) {
+    const ge = this.scene.gridEngine;
+    if (!ge?.hasCharacter(geId)) return;
+    const pos   = ge.getPosition(geId);
+    const layer = ge.getCharLayer?.(geId) ?? 'ground';
+
+    const others = [];
+    for (const s of this._active) {
+      if (s.geId === geId || !s.geId) continue;
+      if (!ge.hasCharacter(s.geId)) continue;
+      const p = ge.getPosition(s.geId);
+      if (p) others.push(p);
+    }
+    if (!others.some(o => o.x === pos.x && o.y === pos.y)) return;
+
+    const candidates = [
+      { dir: 'up',    dx:  0, dy: -1 },
+      { dir: 'down',  dx:  0, dy:  1 },
+      { dir: 'left',  dx: -1, dy:  0 },
+      { dir: 'right', dx:  1, dy:  0 },
+    ].sort(() => rng() - 0.5);
+
+    for (const c of candidates) {
+      const t = { x: pos.x + c.dx, y: pos.y + c.dy };
+      if (ge.isBlocked(t, layer) !== false) continue;
+      if (others.some(o => o.x === t.x && o.y === t.y)) continue;
+      ge.move(geId, c.dir);
+      return;
+    }
+  }
+
+  /**
+   * Player stepped — decrement cooldowns, enforce time-based give-ups, and
+   * maybe trigger a chase/flee reaction on mons within DETECTION_RADIUS.
+   */
+  _tickBehaviour(playerTile) {
+    const ge       = this.scene.gridEngine;
+    const lead     = gameState.party?.[0];
+    const leadLvl  = typeof lead?.level === 'number' ? lead.level : null;
+    const now      = this.scene.time?.now ?? 0;
+
+    for (const spawn of this._active) {
+      const b = this._behaviour[spawn.geId];
+      if (!b) continue;
+
+      // Time-based give-up for any in-progress reaction.
+      if (b.mode === 'chase' || b.mode === 'flee') {
+        if (now - b.startedAt  > CHASE_MAX_MS
+         || now - b.lastMoveAt > BLOCKED_TIMEOUT_MS) {
+          this._endReaction(spawn);
+          continue;
+        }
+      }
+
+      if (b.cooldownLeft > 0) b.cooldownLeft--;
+      if (b.mode !== 'neutral' || b.cooldownLeft > 0) continue;
+      if (leadLvl == null) continue;
+      if (!ge?.hasCharacter(spawn.geId)) continue;
+
+      const pos = ge.getPosition(spawn.geId);
+      const dist = Math.abs(pos.x - playerTile.x) + Math.abs(pos.y - playerTile.y);
+      if (dist > DETECTION_RADIUS) continue;
+
+      const monLevel = spawn.battleConfig?.enemy?.team?.[0]?.level ?? 1;
+      if (rng() >= REACTION_CHANCE) continue;
+
+      if (monLevel - leadLvl >= LEVEL_CHASE_THRESHOLD)      this._beginChase(spawn);
+      else if (leadLvl - monLevel >= LEVEL_FLEE_THRESHOLD)  this._beginFlee(spawn);
+    }
+  }
+
+  /**
+   * Stop wandering, show the `!` animation, then pathfind toward the player.
+   * Gives up after CHASE_TILE_BUDGET tiles walked, a hard time cap, or when
+   * no progress is made for BLOCKED_TIMEOUT_MS.
+   */
+  _beginChase(spawn) {
+    const ge = this.scene.gridEngine;
+    if (!ge?.hasCharacter(spawn.geId)) return;
+    const b = this._behaviour[spawn.geId];
+    if (!b) return;
+
+    const now = this.scene.time?.now ?? 0;
+    b.mode        = 'chase';
+    b.stepsLeft   = CHASE_TILE_BUDGET;
+    b.startedAt   = now;
+    b.lastMoveAt  = now;
+
+    ge.stopMovement(spawn.geId);
+    this._playExclaim(spawn, () => {
+      if (!ge.hasCharacter(spawn.geId)) return;
+      if (this._behaviour[spawn.geId]?.mode !== 'chase') return;
+      ge.setSpeed(spawn.geId, CHASE_SPEED);
+      this._chaseStep(spawn);
+    });
+  }
+
+  /**
+   * Pathfind toward the player's current tile. Re-issued each step-finished
+   * so the chaser keeps re-targeting as the player moves.
+   */
+  _chaseStep(spawn) {
+    const ge = this.scene.gridEngine;
+    if (!ge?.hasCharacter(spawn.geId)) return;
+    const playerPos = ge.getPosition('player');
+    if (!playerPos) return;
+    ge.moveTo(spawn.geId, playerPos, {
+      noPathFoundStrategy: 'CLOSEST_REACHABLE',
+      pathBlockedStrategy: 'WAIT',
+    });
+  }
+
+  /**
+   * Walk away from the player along the dominant axis of separation, up to
+   * FLEE_TILE_BUDGET tiles. No `!` animation — fleers slink away quietly.
+   */
+  _beginFlee(spawn) {
+    const ge = this.scene.gridEngine;
+    if (!ge?.hasCharacter(spawn.geId)) return;
+    const b = this._behaviour[spawn.geId];
+    if (!b) return;
+
+    const playerPos = ge.getPosition('player');
+    if (!playerPos) return;
+    const monPos = ge.getPosition(spawn.geId);
+    const layer  = ge.getCharLayer?.(spawn.geId) ?? 'ground';
+
+    // Unit vector away from player. Prefer dominant axis; fall back to the
+    // other axis if the preferred one leads straight into a wall.
+    const dxSign = Math.sign(monPos.x - playerPos.x) || (rng() < 0.5 ? -1 : 1);
+    const dySign = Math.sign(monPos.y - playerPos.y) || (rng() < 0.5 ? -1 : 1);
+    const axes = Math.abs(monPos.x - playerPos.x) >= Math.abs(monPos.y - playerPos.y)
+      ? [{ dx: dxSign, dy: 0 }, { dx: 0, dy: dySign }]
+      : [{ dx: 0, dy: dySign }, { dx: dxSign, dy: 0 }];
+
+    let dest = null;
+    for (const axis of axes) {
+      for (let n = FLEE_TILE_BUDGET; n >= 1; n--) {
+        const t = { x: monPos.x + axis.dx * n, y: monPos.y + axis.dy * n };
+        if (ge.isBlocked(t, layer) === false) { dest = t; break; }
+      }
+      if (dest) break;
+    }
+    if (!dest) return;  // fully blocked — just keep wandering
+
+    const now = this.scene.time?.now ?? 0;
+    b.mode       = 'flee';
+    b.stepsLeft  = FLEE_TILE_BUDGET;
+    b.startedAt  = now;
+    b.lastMoveAt = now;
+
+    ge.stopMovement(spawn.geId);
+    ge.setSpeed(spawn.geId, FLEE_SPEED);
+    ge.moveTo(spawn.geId, dest, {
+      noPathFoundStrategy: 'CLOSEST_REACHABLE',
+      pathBlockedStrategy: 'STOP',
+    });
+  }
+
+  /**
+   * Show the `!` animation above the mon for EXCLAIM_MS, then invoke `after()`.
+   * Registers the shared `trainer-spotted` animation once per scene.
+   */
+  _playExclaim(spawn, after) {
+    const scene = this.scene;
+    if (!scene.anims.exists(EXCLAIM_ANIM_KEY)) {
+      scene.anims.create({
+        key:       EXCLAIM_ANIM_KEY,
+        frames:    scene.anims.generateFrameNumbers('animation', { start: 13, end: 16 }),
+        frameRate: 10,
+      });
+    }
+    const b = this._behaviour[spawn.geId];
+    const ex = scene.add.sprite(
+      spawn.sprite.x,
+      spawn.sprite.y - spawn.sprite.displayHeight / 2 - 2,
+      'animation',
+      13,
+    ).setOrigin(0.5, 1).setDepth(9999);
+    ex.play(EXCLAIM_ANIM_KEY);
+    if (b) b.exclaimSprite = ex;
+
+    const timer = scene.time.delayedCall(EXCLAIM_MS, () => {
+      ex.destroy();
+      if (b && b.exclaimSprite === ex) { b.exclaimSprite = null; b.exclaimTimer = null; }
+      after?.();
+    });
+    if (b) b.exclaimTimer = timer;
+  }
+
+  /**
+   * Called on every OW mon's positionChangeFinished. Decrements reaction step
+   * budgets and, for chasers that landed on the player's tile, fires the
+   * battle-start handoff that `positionChangeStarted` (player side) usually
+   * handles for stationary-player collisions.
+   */
+  _onMonStepFinished(charId, enterTile) {
+    const b = this._behaviour[charId];
+    if (!b || b.mode === 'neutral' || b.mode === 'battling') return;
+    b.lastMoveAt = this.scene.time?.now ?? 0;
+
+    const spawn = this._active.find(s => s.geId === charId);
+    if (!spawn) return;
+
+    if (b.mode === 'chase') {
+      const playerPos = this.scene.gridEngine.getPosition('player');
+      if (playerPos && playerPos.x === enterTile.x && playerPos.y === enterTile.y) {
+        this._triggerBattleFromChase(spawn);
+        return;
+      }
+      b.stepsLeft--;
+      if (b.stepsLeft <= 0) { this._endReaction(spawn); return; }
+      // Re-target the player for the next step.
+      this._chaseStep(spawn);
+    } else if (b.mode === 'flee') {
+      b.stepsLeft--;
+      if (b.stepsLeft <= 0) this._endReaction(spawn);
+    }
+  }
+
+  /**
+   * A chaser landed on the player's tile — emit `battle-start` with the same
+   * contract as the player-side `positionChangeStarted` handler.
+   */
+  _triggerBattleFromChase(spawn) {
+    if (this.scene.game.config.debug.noEncounters) { this._endReaction(spawn); return; }
+    const b = this._behaviour[spawn.geId];
+    if (b) b.mode = 'battling';
+    spawn.battleConfig.player.inventory = buildBattleInventory();
+    this.scene.game.events.emit('battle-start', spawn.battleConfig);
+    this.scene.game.events.once('battle-complete', () => this._removeSpawn(spawn));
+  }
+
+  /**
+   * End a chase/flee reaction: tear down the `!` sprite/timer, restore default
+   * speed, resume wandering, and impose a per-mon cooldown.
+   */
+  _endReaction(spawn) {
+    const ge = this.scene.gridEngine;
+    const b  = this._behaviour[spawn.geId];
+    if (!b) return;
+
+    if (b.exclaimTimer)  { b.exclaimTimer.remove?.(false); b.exclaimTimer = null; }
+    if (b.exclaimSprite) { b.exclaimSprite.destroy(); b.exclaimSprite = null; }
+
+    if (ge?.hasCharacter(spawn.geId)) {
+      ge.stopMovement(spawn.geId);
+      ge.setSpeed(spawn.geId, DEFAULT_SPEED);
+      ge.moveRandomly(spawn.geId, b.origRate, b.origRadius);
+    }
+
+    b.mode         = 'neutral';
+    b.stepsLeft    = 0;
+    b.cooldownLeft = REACTION_COOLDOWN_STEPS;
+  }
+
+  _tileInLocations(tx, ty, locations) {
+    const px = tx * Tile.WIDTH  + Tile.WIDTH  / 2;
+    const py = ty * Tile.HEIGHT + Tile.HEIGHT / 2;
+    for (const loc of locations) {
+      if (px >= loc.x && px <= loc.x + loc.width
+        && py >= loc.y && py <= loc.y + loc.height) return true;
+    }
+    return false;
+  }
+
+  /**
+   * Tear down a live spawn's sprite/GE registration and push a pending-entry
+   * equivalent back onto `_pending` so it can respawn on re-entry.
+   */
+  _despawnToPending(spawn) {
+    const texture = spawn.sprite?.texture?.key;
+    this._clearBehaviour(spawn.geId);
+    try {
+      if (spawn.geId && this.scene.gridEngine?.hasCharacter(spawn.geId)) {
+        this.scene.gridEngine.stopMovement(spawn.geId);
+        this.scene.gridEngine.removeCharacter(spawn.geId);
+      }
+      spawn.sprite?.destroy();
+    } catch (_) {}
+    this._pending.push({
+      x: spawn.x,
+      y: spawn.y,
+      texture: texture && texture !== '__DEFAULT' ? texture : String(spawn.battleConfig?.enemy?.team?.[0]?.species ?? '').padStart(3, '0'),
+      battleConfig: spawn.battleConfig,
+    });
+  }
+
+  _clearBehaviour(geId) {
+    const b = geId && this._behaviour[geId];
+    if (!b) return;
+    if (b.exclaimTimer)  b.exclaimTimer.remove?.(false);
+    if (b.exclaimSprite) b.exclaimSprite.destroy();
+    delete this._behaviour[geId];
+  }
+
+  /**
+   * Create a Phaser sprite for a pending OW encounter entry and register it
+   * with GridEngine so it can wander via `moveRandomly`. Battle trigger still
+   * reads the spawn's live GE position (see `event()`).
    *
-   * Texture is lazy-loaded: the sprite starts with a transparent placeholder and
-   * swaps to the real Pokémon sprite when the spritesheet finishes loading.
+   * Texture is lazy-loaded: the sprite starts with a transparent placeholder
+   * and registration-with-GE is deferred until the real spritesheet arrives so
+   * the walking animation mapping has valid frames.
    *
    * @param {{ x:number, y:number, texture:string }} entry
-   * @returns {Phaser.GameObjects.Sprite|null}
+   * @returns {{ sprite:Phaser.GameObjects.Sprite, geId:string }|null}
    */
   _spawnVisualSprite(entry) {
     const { texture } = entry;
@@ -301,15 +648,51 @@ export default class OverworldEncounter {
 
     const frameW = Math.floor(dims.width  / 4);
     const frameH = Math.floor(dims.height / 4);
-    const px     = entry.x * Tile.WIDTH;
-    const py     = entry.y * Tile.HEIGHT;
+    // Match player_mon placement: feet at the tile's bottom, origin-centered.
+    const px     = entry.x * Tile.WIDTH + Tile.WIDTH / 2;
+    const py     = (entry.y + 1) * Tile.HEIGHT - frameH / 2;
 
-    // Create the sprite now with an invisible placeholder so it occupies space
-    // in the scene without showing the wrong texture first.
     const sprite = this.scene.add.sprite(px, py, '__DEFAULT');
-    sprite.setOrigin(0, 0);
-    sprite.setDepth(py + frameH); // depth-sort by sprite bottom edge
-    sprite.setAlpha(0);           // hidden until real texture loads
+    sprite.setOrigin(0.5, 0.5);
+    sprite.setAlpha(0);  // hidden until real texture loads
+
+    const geId = `${OW_ENC_PREFIX}${entry.x}_${entry.y}`;
+
+    const registerWithGE = () => {
+      if (!sprite.active) return;
+      if (this.scene.gridEngine.hasCharacter(geId)) return;
+      this.scene.gridEngine.addCharacter({
+        id: geId,
+        sprite,
+        walkingAnimationMapping: {
+          up:    { leftFoot: 13, standing: 12, rightFoot: 15 },
+          down:  { leftFoot:  1, standing:  0, rightFoot:  3 },
+          left:  { leftFoot:  7, standing:  4, rightFoot:  5 },
+          right: { leftFoot:  9, standing:  8, rightFoot: 11 },
+        },
+        startPosition: { x: entry.x, y: entry.y },
+        // Collide with tile obstacles (walls, unwalkable terrain) but not
+        // with any other character — empty collisionGroups means the player
+        // can still step onto the Pokémon's tile to trigger the battle.
+        collides: {
+          collidesWithTiles: true,
+          collisionGroups:   [],
+        },
+        charLayer: 'ground',
+      });
+      this.scene.gridEngine.moveRandomly(geId, 2500, 2);
+      this._behaviour[geId] = {
+        mode:         'neutral',
+        stepsLeft:    0,
+        cooldownLeft: 0,
+        startedAt:    0,
+        lastMoveAt:   0,
+        origRate:     2500,
+        origRadius:   2,
+        exclaimSprite: null,
+        exclaimTimer:  null,
+      };
+    };
 
     const applyTexture = () => {
       if (!sprite.active) return;
@@ -323,6 +706,7 @@ export default class OverworldEncounter {
       }
       sprite.setTexture(texture, 0);
       sprite.setAlpha(1);
+      registerWithGE();
     };
 
     if (this.scene.textures.exists(texture)) {
@@ -336,16 +720,22 @@ export default class OverworldEncounter {
       });
     }
 
-    return sprite;
+    return { sprite, geId };
   }
 
   /**
-   * Remove an active spawn: destroy the visual sprite and drop it from `_active`.
-   * No GE cleanup needed because OW encounter sprites are never registered with GE.
-   * @param {{ x:number, y:number, sprite:Phaser.GameObjects.Sprite, battleConfig:object }} spawn
+   * Remove an active spawn: deregister the GE character and destroy the sprite.
+   * @param {{ x:number, y:number, sprite:Phaser.GameObjects.Sprite, geId?:string, battleConfig:object }} spawn
    */
   _removeSpawn(spawn) {
-    try { spawn.sprite?.destroy(); } catch (_) {}
+    this._clearBehaviour(spawn.geId);
+    try {
+      if (spawn.geId && this.scene.gridEngine?.hasCharacter(spawn.geId)) {
+        this.scene.gridEngine.stopMovement(spawn.geId);
+        this.scene.gridEngine.removeCharacter(spawn.geId);
+      }
+      spawn.sprite?.destroy();
+    } catch (_) {}
     this._active = this._active.filter(s => s !== spawn);
   }
 
@@ -414,7 +804,7 @@ export default class OverworldEncounter {
    */
   _buildBattleConfig(tile, encounterTable) {
     const def     = getGameDef();
-    const dex     = new Pokedex(GAMES.POKEMON_FIRE_RED);
+    const dex     = new Pokedex(def.game);
     const allSpec = Object.values(dex.pokedex);
     const pool    = filterByAvailablePokemon(allSpec);
     if (!pool.length) return null;
@@ -436,7 +826,7 @@ export default class OverworldEncounter {
         entry        = allSpec.find(p => p.species?.toLowerCase() === name);
         if (!entry) {
           console.warn(`[OverworldEncounter] unknown species '${name}', falling back to random`);
-          entry = pick(pool);
+          entry = pool[Math.floor(rng() * pool.length)];
         }
         levelMin = picked['level-range-min'] ?? WILD_LEVEL_MIN;
         levelMax = picked['level-range-max'] ?? levelMin;
@@ -449,14 +839,11 @@ export default class OverworldEncounter {
     store.commit('pokedex/SEE', entry.nat_dex_id);
 
     const level = levelMin + Math.floor(rng() * (levelMax - levelMin + 1));
-    const moves = def.learnsets === 'random'
-      ? pickUnique(this._movePool, 4).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }))
-      : buildMovesFromLearnset(entry.species, level, this._movePool);
-
-    const ivs     = Object.fromEntries(STAT_KEYS.map(s => [s, Math.floor(rng() * 32)]));
-    const evs     = Object.fromEntries(STAT_KEYS.map(s => [s, 0]));
-    const isShiny = rng() < 1 / 8192;
-    const pokerus = rng() < 3 / 65536;
+    const wildMon = buildMon(entry.nat_dex_id, level, {
+      rng,
+      game:      def.game,
+      movesMode: def.learnsets,
+    });
 
     return {
       tilesetBaseUrl: '/',
@@ -478,25 +865,13 @@ export default class OverworldEncounter {
           ivs:   { ...p.ivs },
           evs:   { ...p.evs },
         })),
-        inventory: buildBattleInventory(),
+        // inventory is attached from the player's live bag at trigger time
+        // (see `event()`), not at map-load time.
       },
       enemy: {
         isTrainer: false,
         name:      'Wild',
-        team: [{
-          game:    GAMES.POKEMON_FIRE_RED,
-          pid:     1,
-          species: entry.nat_dex_id,
-          level,
-          nature:  pick(NATURE_LIST).name,
-          gender:  pick([GENDERS.MALE, GENDERS.FEMALE]),
-          ability: { name: 'none' },
-          moves,
-          ivs,
-          evs,
-          isShiny,
-          pokerus,
-        }],
+        team:      [wildMon],
       },
     };
   }

@@ -86,6 +86,7 @@ export default class {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log(['Interactables::warp::event', this.scene])
     }
+    if (this.warps.length === 0) return;
 
     // handle warp tiles
     this._sub = this.scene.gridEngine

@@ -5,6 +5,7 @@ import { random_rgba } from './random_rgba.js';
 import { getPropertyValue, getValue, remapProps, generateTileCoords, Vector2, checkOnlyIf } from './tiles.js';
 import { EventBus } from './EventBus.js';
 import InputManager, { Action, createInputManager, getInputManager } from './InputManager.js';
+import { RESERVED_CHARACTER_IDS, assertNotReservedId } from './reservedIds.js';
 
 export {
   debugDraw,
@@ -22,4 +23,6 @@ export {
   Action,
   createInputManager,
   getInputManager,
+  RESERVED_CHARACTER_IDS,
+  assertNotReservedId,
 };

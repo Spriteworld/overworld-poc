@@ -48,7 +48,7 @@ export function validate(commands, path = 'root') {
     if_has_item:       ['item'],
     give_pokemon:      ['species'],
     give_starter:      ['index'],
-    move_npc:          ['name'],
+    move_npc:          ['character'],
     walk_to_char:      ['character1', 'character2', 'side'],
     spawn_npc:         ['name', 'texture'],
     spawn_pkmn:        ['name', 'texture'],

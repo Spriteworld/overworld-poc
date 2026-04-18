@@ -1,4 +1,5 @@
-import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
+import { Pokedex } from '@spriteworld/pokemon-data';
+import { getGameDef } from '@Data/gameDef.js';
 import { drawStatsPanel } from '../common/pokemonStats.js';
 import { gameState } from '@Data/gameState.js';
 import { EVOLUTIONS } from '@Data/evolutions.js';
@@ -50,7 +51,7 @@ function blendColors(c1, c2, t = 0.5) {
  * @param {number}      [opts.tab=0] - active tab index
  */
 export function drawMonDetail(menu, { mon, entry, x, y, w, h, tab = 0 }) {
-  if (!menu.dex) menu.dex = new Pokedex(GAMES.POKEMON_FIRE_RED);
+  if (!menu.dex) menu.dex = new Pokedex(getGameDef().game);
 
   if (!entry && mon) entry = resolveMonData(menu.dex, mon).entry;
 

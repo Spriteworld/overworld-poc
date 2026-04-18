@@ -792,15 +792,15 @@
                     "value": ""
                 },
                 {
+                    "name": "character",
+                    "type": "string",
+                    "value": ""
+                },
+                {
                     "name": "cmd",
                     "propertyType": "command-list",
                     "type": "string",
                     "value": "move_npc"
-                },
-                {
-                    "name": "name",
-                    "type": "string",
-                    "value": ""
                 },
                 {
                     "name": "x",
@@ -2260,6 +2260,11 @@
                     ]
                 },
                 {
+                    "name": "trainer-won-text",
+                    "type": "string",
+                    "value": ""
+                },
+                {
                     "name": "use-ai",
                     "propertyType": "ai-list",
                     "type": "string",
@@ -2485,28 +2490,9 @@
                     "value": ""
                 },
                 {
-                    "name": "player_override",
-                    "propertyType": "player-override",
-                    "type": "class",
-                    "value": {
-                    }
-                },
-                {
                     "name": "post_defeat_text",
                     "type": "string",
                     "value": ""
-                },
-                {
-                    "name": "scripted_actions",
-                    "type": "list",
-                    "value": [
-                        {
-                            "propertyType": "scripted-action",
-                            "type": "class",
-                            "value": {
-                            }
-                        }
-                    ]
                 },
                 {
                     "name": "team",
@@ -2519,6 +2505,11 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "trainer_won_text",
+                    "type": "string",
+                    "value": ""
                 },
                 {
                     "name": "tutorial",

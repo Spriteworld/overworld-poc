@@ -1,26 +1,10 @@
 import { defaultParty } from '@Data/party.js';
-import { Pokedex, GAMES, NATURES, FRLG_LEARNSETS, Moves, EXPERIENCE_TABLES, GROWTH } from '@spriteworld/pokemon-data';
+import { Pokedex, EXPERIENCE_TABLES, GROWTH, buildMon } from '@spriteworld/pokemon-data';
+import { getGameDef } from '@Data/gameDef.js';
 import { rng } from '@Utilities/rng.js';
 
-let _dex      = null;
-let _movePool = null;
-function getDex()      { return (_dex      ??= new Pokedex(GAMES.POKEMON_FIRE_RED)); }
-function getMovePool() { return (_movePool ??= Moves.getMovesByGameId(GAMES.POKEMON_FIRE_RED)); }
-
-function buildMoves(speciesName, level) {
-  const pool    = getMovePool();
-  const learnset = FRLG_LEARNSETS[speciesName.toUpperCase()];
-  if (!learnset?.length) {
-    return pool.slice(0, 4).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }));
-  }
-  const learnable = learnset.filter(([lvl]) => lvl <= level);
-  const selected  = learnable.slice(-4);
-  const ppByName  = Object.fromEntries(pool.map(m => [m.name, m.pp]));
-  return selected.map(([, name]) => {
-    const pp = ppByName[name] ?? 5;
-    return { name, pp: { max: pp, current: pp } };
-  });
-}
+let _dex = null;
+function getDex() { return (_dex ??= new Pokedex(getGameDef().game)); }
 
 function cloneParty(source) {
   return source.map(p => ({
@@ -106,30 +90,34 @@ export default {
      */
     ADD_POKEMON(state, { natDexId, level, nickname, shiny }) {
       if (state.list.length >= 6) return;
-      const STAT_KEYS  = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
-      const lvl        = level ?? 5;
+      const lvl         = level ?? 5;
       const speciesData = getDex().getPokemonById(natDexId);
-      const growth     = speciesData?.growth ?? GROWTH.MEDIUM_FAST;
-      const exp        = (EXPERIENCE_TABLES[growth] ?? EXPERIENCE_TABLES[GROWTH.MEDIUM_FAST])[lvl - 1] ?? 0;
-      const abils      = speciesData?.abilities ?? [];
-      const ability    = abils.length
+      const growth      = speciesData?.growth ?? GROWTH.MEDIUM_FAST;
+      const exp         = (EXPERIENCE_TABLES[growth] ?? EXPERIENCE_TABLES[GROWTH.MEDIUM_FAST])[lvl - 1] ?? 0;
+      const abils       = speciesData?.abilities ?? [];
+      const ability     = abils.length
         ? { name: abils[Math.floor(rng() * abils.length)].name }
         : { name: 'none' };
-      const moves      = speciesData ? buildMoves(speciesData.species, lvl) : [];
-      const natureKeys = Object.keys(NATURES);
-      state.list.push({
-        pid:       Date.now() + Math.floor(rng() * 1000),
-        species:   natDexId,
-        level:     lvl,
-        exp,
-        nickname:  nickname ?? speciesData.species,
-        shiny:     shiny    ?? false,
-        nature:    NATURES[natureKeys[Math.floor(rng() * natureKeys.length)]].name,
-        gender:    rng() < 0.5 ? 'male' : 'female',
+
+      const mon = buildMon(natDexId, lvl, {
+        rng,
+        game:    getGameDef().game,
+        pid:     Date.now() + Math.floor(rng() * 1000),
         ability,
-        moves,
-        ivs:       Object.fromEntries(STAT_KEYS.map(s => [s, Math.floor(rng() * 32)])),
-        evs:       Object.fromEntries(STAT_KEYS.map(s => [s, 0])),
+        // gift mons don't roll pokerus and use a lowercased gender literal
+        isShiny: shiny ?? false,
+        pokerus: false,
+        gender:  rng() < 0.5 ? 'male' : 'female',
+      });
+      if (!mon) return;
+
+      // Party state uses `shiny` (not `isShiny`); normalise.
+      const { isShiny, ...rest } = mon;
+      state.list.push({
+        ...rest,
+        exp,
+        nickname:  nickname ?? speciesData?.species,
+        shiny:     isShiny,
         currentHp: null,
       });
     },

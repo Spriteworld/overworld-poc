@@ -1,6 +1,7 @@
 import { gameState } from '@Data/gameState.js';
 import store from '../../store/index.js';
-import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
+import { Pokedex } from '@spriteworld/pokemon-data';
+import { getGameDef } from '@Data/gameDef.js';
 import PokemonSprite from '../PokemonSprite.js';
 import {
   SX, SY, SW, SH, ITEM_H, PAD,
@@ -100,7 +101,7 @@ export default class TeamScreen {
   }
 
   _buildList() {
-    if (!this.menu.dex) this.menu.dex = new Pokedex(GAMES.POKEMON_FIRE_RED);
+    if (!this.menu.dex) this.menu.dex = new Pokedex(getGameDef().game);
     const { menu } = this;
     const { scene, reg } = menu;
 

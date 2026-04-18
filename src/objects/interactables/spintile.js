@@ -19,6 +19,7 @@ export default class {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log(['Interactables::spinTile::event', this.scene]);
     }
+    if (this.spinTiles.length === 0 && this.stopTiles.length === 0) return;
 
     this._subs = [
       // handle spin tiles

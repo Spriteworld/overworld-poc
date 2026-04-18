@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 import * as Tile from '@Objects/Tile.js';
-import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves, Items, FRLG_LEARNSETS } from '@spriteworld/pokemon-data';
+import { Items, buildMon, buildMovePool, resolveSpecies } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
-import { getPropertyValue, remapProps, Vector2, checkOnlyIf } from '@Utilities';
+import { getPropertyValue, remapProps, Vector2, checkOnlyIf, assertNotReservedId } from '@Utilities';
 import { getGameDef } from '@Data/gameDef.js';
 import { resolveAiType, DEFAULT_TRAINER_AI } from '@Data/aiTypes.js';
 import { rng } from '@Utilities/rng.js';
@@ -55,72 +55,6 @@ function buildBattleInventory() {
   };
 }
 
-const STAT_KEYS   = [STATS.HP, STATS.ATTACK, STATS.DEFENSE, STATS.SPECIAL_ATTACK, STATS.SPECIAL_DEFENSE, STATS.SPEED];
-const NATURE_LIST = Object.values(NATURES);
-
-function pick(arr) {
-  return arr[Math.floor(rng() * arr.length)];
-}
-function pickUnique(arr, n) {
-  return [...arr].sort(() => rng() - 0.5).slice(0, Math.min(n, arr.length));
-}
-function buildMovePool() {
-  return Moves.getMovesByGameId(GAMES.POKEMON_FIRE_RED).filter(
-    m => m.pp > 0 && (m.power !== null || m.category === Moves.MOVE_CATEGORIES.STATUS)
-  );
-}
-
-let _pokedex = null;
-function getPokedex() {
-  if (!_pokedex) _pokedex = new Pokedex(GAMES.POKEMON_FIRE_RED);
-  return _pokedex;
-}
-
-/**
- * Resolves a species value to a nat_dex_id.
- * Accepts a numeric nat_dex_id directly, or a species name string (e.g. 'pikachu').
- * Returns the species name alongside the id so callers can use it for learnset lookup.
- * @param {number|string} species
- * @returns {{ id: number|null, name: string|null }}
- */
-function resolveSpecies(species) {
-  if (typeof species === 'number') {
-    const entry = Object.values(getPokedex().pokedex).find(p => p.nat_dex_id === species);
-    return { id: species, name: entry?.name ?? null };
-  }
-  if (typeof species === 'string') {
-    const lower = species.toLowerCase();
-    const entry = Object.values(getPokedex().pokedex).find(
-      p => p.name?.toLowerCase() === lower
-    );
-    return { id: entry?.nat_dex_id ?? null, name: entry?.name ?? species };
-  }
-  return { id: null, name: null };
-}
-
-/**
- * Builds up to four moves for a Pokémon using its FRLG level-up learnset,
- * taking the most recently learned moves at or below `level`.
- * Falls back to random moves from `fallbackPool` when no learnset exists.
- * @param {string}   speciesName
- * @param {number}   level
- * @param {object[]} fallbackPool
- * @returns {{ name: string, pp: { max: number, current: number } }[]}
- */
-function buildMovesFromLearnset(speciesName, level, fallbackPool) {
-  const learnset = FRLG_LEARNSETS[speciesName.toUpperCase()];
-  if (!learnset?.length) {
-    return pickUnique(fallbackPool, 4).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }));
-  }
-  const learnable = learnset.filter(([lvl]) => lvl <= level);
-  const selected  = learnable.slice(-4);
-  const ppByName  = Object.fromEntries(fallbackPool.map(m => [m.name, m.pp]));
-  return selected.map(([, name]) => {
-    const pp = ppByName[name] ?? 5;
-    return { name, pp: { max: pp, current: pp } };
-  });
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 
 const EXCLAIM_ANIM_KEY  = 'trainer-spotted';
@@ -144,6 +78,7 @@ export default class {
 
     trainerObjs.forEach(obj => {
       if (!checkOnlyIf(getPropertyValue(obj.properties, 'only_if'), store.state.game.gameFlags, this.scene.config.variant ?? null, this.scene.mapVars ?? {})) return;
+      assertNotReservedId(obj.name, 'Interactables::trainer');
       const defeatedFlag = 'trainer_defeated_' + obj.name;
       const isDefeated   = !!store.state.game.gameFlags[defeatedFlag];
 
@@ -414,6 +349,7 @@ export default class {
         trainerBattleSprite:   battleSprite ?? null,
         midFightText:          getPropertyValue(obj.properties, 'text-mid-fight') ?? null,
         postDefeatText:        getPropertyValue(obj.properties, 'text-post-defeat') ?? null,
+        trainerWonText:        getPropertyValue(obj.properties, 'trainer-won-text') ?? null,
       },
     };
   }
@@ -447,67 +383,61 @@ export default class {
       try { specs = JSON.parse(raw || '[]'); } catch { return []; }
     }
 
-    const movePool = buildMovePool();
+    const game     = getGameDef().game;
+    const movePool = buildMovePool(game);
+
     return specs.map(spec => {
-      const defaults = {
-        game:    GAMES.POKEMON_FIRE_RED,
-        pid:     rng(),
-        nature:  pick(NATURE_LIST).name,
-        gender:  pick([GENDERS.MALE, GENDERS.FEMALE]),
-        ability: { name: 'none' },
-        ivs:     Object.fromEntries(STAT_KEYS.map(s => [s, Math.floor(rng() * 32)])),
-        evs:     Object.fromEntries(STAT_KEYS.map(s => [s, 0])),
-      };
-      const resolved = { ...defaults, ...spec };
+      const { id: speciesId } = spec.species != null
+        ? resolveSpecies(spec.species, game)
+        : { id: null };
+      if (speciesId == null) return null;
 
-      // Resolve species → nat_dex_id, keeping the name for learnset lookup.
-      const { id: speciesId, name: speciesName } = resolved.species != null
-        ? resolveSpecies(resolved.species)
-        : { id: null, name: null };
-      if (speciesId != null) resolved.species = speciesId;
-
-      // Collect move1–move4 string fields (new Tiled format).
+      // Resolve Tiled move1-4 / legacy moves[] into a fully-formed moves array.
+      // If neither is provided, leave `moves` undefined and let buildMon roll it.
       const moveNames = [spec.move1, spec.move2, spec.move3, spec.move4]
         .filter(m => typeof m === 'string' && m.trim() !== '');
-
+      let moves;
       if (moveNames.length > 0) {
         const ppByName = Object.fromEntries(movePool.map(m => [m.name.toLowerCase(), m.pp]));
-        resolved.moves = moveNames.map(name => {
+        moves = moveNames.map(name => {
           const pp = ppByName[name.toLowerCase()] ?? 5;
           return { name, pp: { max: pp, current: pp } };
         });
       } else if (spec.moves?.length) {
-        // Legacy JSON format: moves array of strings or objects.
         const ppByName = Object.fromEntries(movePool.map(m => [m.name.toLowerCase(), m.pp]));
-        resolved.moves = spec.moves.slice(0, 4).map(m => {
+        moves = spec.moves.slice(0, 4).map(m => {
           if (typeof m === 'string') {
             const pp = ppByName[m.toLowerCase()] ?? 5;
             return { name: m, pp: { max: pp, current: pp } };
           }
           return m;
         });
-      } else {
-        // Default moves: respect the learnsets game-def setting.
-        const useRandom = getGameDef().learnsets === 'random' || speciesName == null;
-        resolved.moves = useRandom
-          ? pickUnique(movePool, 4).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }))
-          : buildMovesFromLearnset(speciesName, resolved.level ?? 1, movePool);
       }
 
-      // Hold item: `item` field from Tiled (empty string = no item).
-      if (spec.item && typeof spec.item === 'string' && spec.item.trim() !== '') {
-        resolved.heldItem = spec.item.trim();
-      }
+      const heldItem = spec.item && typeof spec.item === 'string' && spec.item.trim() !== ''
+        ? spec.item.trim()
+        : undefined;
 
-      // Remove raw Tiled move/item fields from the resolved config.
-      delete resolved.move1;
-      delete resolved.move2;
-      delete resolved.move3;
-      delete resolved.move4;
-      delete resolved.item;
+      const overrides = {
+        rng,
+        game,
+        movePool,
+        movesMode: getGameDef().learnsets,
+        pid:       spec.pid ?? rng(),
+      };
+      if (spec.nature  != null) overrides.nature  = spec.nature;
+      if (spec.gender  != null) overrides.gender  = spec.gender;
+      if (spec.ability != null) overrides.ability = spec.ability;
+      if (spec.ivs     != null) overrides.ivs     = spec.ivs;
+      if (spec.evs     != null) overrides.evs     = spec.evs;
+      if (moves        != null) overrides.moves   = moves;
+      if (heldItem     != null) overrides.heldItem = heldItem;
+      if (spec.isShiny != null) overrides.isShiny = !!spec.isShiny;
+      if (spec.shiny   != null) overrides.isShiny = !!spec.shiny;
+      if (spec.pokerus != null) overrides.pokerus = !!spec.pokerus;
 
-      return resolved;
-    });
+      return buildMon(speciesId, spec.level ?? 1, overrides);
+    }).filter(Boolean);
   }
 
   _onBattleComplete(entry, result) {

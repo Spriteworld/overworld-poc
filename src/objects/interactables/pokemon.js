@@ -1,6 +1,6 @@
 import Debug from '@Data/debug.js';
 import { Tile, PkmnOverworld } from '@Objects';
-import { getValue, getPropertyValue, remapProps, Vector2, checkOnlyIf } from '@Utilities';
+import { getValue, getPropertyValue, remapProps, Vector2, checkOnlyIf, assertNotReservedId } from '@Utilities';
 import store from '../../store/index.js';
 import { rng as gameRng } from '@Utilities/rng.js';
 import Tileset from '@Tileset';
@@ -32,6 +32,7 @@ export default class {
           pokemon.x, pokemon.y
         );
       }
+      assertNotReservedId(pokemon.name, 'Interactables::pokemon');
       this.addToScene(
         pokemon.name,
         getPropertyValue(pokemon.properties, 'texture'),
@@ -208,11 +209,24 @@ export default class {
     this.scene.game.events.on('interact-with-obj', this._onInteract);
 
     // ── Enter trigger ──────────────────────────────────────────────────────
+    // Precompute whether any pkmn has an enter-trigger script so we can skip
+    // the per-step scan on maps where none do. Recomputed on group add/remove.
+    const recomputeEnterFlag = () => {
+      this._hasEnterTriggerPkmn = this.scene.pkmn.getChildren().some(
+        p => this.scene.getPropertyFromTile(p.config, 'script-trigger') === 'enter'
+      );
+    };
+    recomputeEnterFlag();
+    this._onPkmnGroupChange = recomputeEnterFlag;
+    this.scene.pkmn.on('add',    this._onPkmnGroupChange);
+    this.scene.pkmn.on('remove', this._onPkmnGroupChange);
+
     if (this.scene.gridEngine) {
       this._enterSub = this.scene.gridEngine
         .positionChangeFinished()
         .subscribe(({ charId, enterTile }) => {
           if (charId !== 'player') return;
+          if (!this._hasEnterTriggerPkmn) return;
           this.scene.pkmn.getChildren().forEach(pkmn => {
             const cfg = pkmn.config;
             if (!cfg?.properties) return;
@@ -233,5 +247,9 @@ export default class {
   destroy() {
     this.scene.game.events.off('interact-with-obj', this._onInteract);
     if (this._enterSub) this._enterSub.unsubscribe();
+    if (this._onPkmnGroupChange && this.scene.pkmn?.off) {
+      this.scene.pkmn.off('add',    this._onPkmnGroupChange);
+      this.scene.pkmn.off('remove', this._onPkmnGroupChange);
+    }
   }
 };

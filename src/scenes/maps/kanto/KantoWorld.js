@@ -364,6 +364,25 @@ export default class KantoWorld extends GameMap {
       objects: allObjects, visible: true, opacity: 1, x: 0, y: 0,
     });
 
+    // ── Merge the `maps` objectgroup from kanto.json ─────────────────────────
+    // Each location carries a map-settings property (encounter-table, bgm, …)
+    // that the encounter plugin reads to build per-zone encounter tables.
+    // Translate coordinates from kanto.json space to merged-world space.
+    const kantoMapsLayer = KantoMap.layers.find(
+      l => l.name === 'maps' && l.type === 'objectgroup'
+    );
+    if (kantoMapsLayer) {
+      const mapObjects = kantoMapsLayer.objects.map(obj => ({
+        ...obj,
+        x: obj.x - KANTO_OFFSET_X - minX,
+        y: obj.y - KANTO_OFFSET_Y - minY,
+      }));
+      mergedLayers.push({
+        name: 'maps', type: 'objectgroup',
+        objects: mapObjects, visible: false, opacity: 1, x: 0, y: 0,
+      });
+    }
+
     return {
       width: worldW,
       height: worldH,

@@ -1,13 +1,13 @@
 import { getInputManager, getKeybindLabel } from './InputManager.js';
 import store from '../store/index.js';
-import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
+import { Pokedex } from '@spriteworld/pokemon-data';
 import { getGameDef } from '../data/gameDef.js';
 
 // Lazily-built nat_dex_id → species name map shared across all TextBox instances.
 let _speciesMap = null;
 function getSpeciesName(natDexId) {
   if (!_speciesMap) {
-    const dex = new Pokedex(GAMES.POKEMON_FIRE_RED);
+    const dex = new Pokedex(getGameDef().game);
     _speciesMap = {};
     for (const p of Object.values(dex.pokedex)) {
       if (p.nat_dex_id != null) _speciesMap[p.nat_dex_id] = p.species;

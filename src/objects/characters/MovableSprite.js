@@ -287,15 +287,37 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
    * @returns {void}
    */
   remove() {
-    // remove sprite
-    this.destroy();
+    const id    = this.config.id;
+    const scene = this.config.scene;
+    // Prefer the scene's current gridEngine so we don't act on a stale
+    // reference captured at construction time.
+    const ge    = scene?.gridEngine ?? this.gridengine;
 
-    // remove character from scene
-    if (this.config.scene && this.config.scene.characters) {
-      this.config.scene.characters.delete(this.config.id);
+    // Stop follow / moveTo before GE removal so subscriptions don't fire
+    // against a character that's about to be gone.
+    if (typeof this._stopBreadcrumbFollow === 'function') {
+      try { this._stopBreadcrumbFollow(); } catch (_) {}
     }
 
-    // remove character from gridengine
-    return this.gridengine.removeCharacter(this.config.id);
+    // Deregister from GridEngine FIRST so the tile becomes passable and GE
+    // doesn't hold a reference to a destroyed sprite. Always attempt the
+    // removal — never skip based on hasCharacter, which can lie in edge cases.
+    if (ge) {
+      try { ge.stopMovement(id); }    catch (_) {}
+      try { ge.removeCharacter(id); } catch (_) {}
+    }
+
+    // Remove from the scene's character map.
+    scene?.characters?.delete(id);
+
+    // Explicitly remove from any Phaser Groups the sprite was added to
+    // (scene.npcs, scene.pkmn). Phaser's auto-remove-on-destroy is
+    // config-dependent, so we do it manually. scene.pkmn may still be a Map
+    // on scenes without the pokemon plugin — guard with a function check.
+    if (typeof scene?.npcs?.remove === 'function') scene.npcs.remove(this, false, false);
+    if (typeof scene?.pkmn?.remove === 'function') scene.pkmn.remove(this, false, false);
+
+    // Destroy the Phaser GameObject last.
+    this.destroy();
   }
 };

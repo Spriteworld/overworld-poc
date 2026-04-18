@@ -41,7 +41,7 @@ export default {
   },
 
   move_npc(runner, cmd) {
-    const npc = resolveChar(runner._scene, cmd.name);
+    const npc = resolveChar(runner._scene, cmd.character);
     if (!npc || !runner._scene.gridEngine || !geKnows(runner._scene, npc.config.id)) { runner._step(); return; }
     const npcCharId = npc.config.id;
     if (cmd.path?.length) {

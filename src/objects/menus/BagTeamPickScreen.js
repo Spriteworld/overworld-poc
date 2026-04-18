@@ -1,7 +1,8 @@
 import { gameState } from '@Data/gameState.js';
 import store from '../../store/index.js';
 import { applyRareCandy } from '@Data/items/rareCandyEffect.js';
-import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
+import { Pokedex } from '@spriteworld/pokemon-data';
+import { getGameDef } from '@Data/gameDef.js';
 import {
   SX, SY, SW, SH, PAD,
   TEXT_STYLE, TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT, TEXT_STYLE_SM,
@@ -31,7 +32,7 @@ export default class BagTeamPickScreen {
     const party    = this._party();
 
     // Ensure dex is available for species name lookups.
-    if (!this.menu.dex) this.menu.dex = new Pokedex(GAMES.POKEMON_FIRE_RED);
+    if (!this.menu.dex) this.menu.dex = new Pokedex(getGameDef().game);
     const dex = this.menu.dex;
 
     reg(scene.add.text(SX + PAD, SY + 4, `USE ${itemName.toUpperCase()}`, TEXT_STYLE_BOLD));

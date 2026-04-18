@@ -1,9 +1,18 @@
+import { GAMES } from '@spriteworld/pokemon-data';
+
 /**
  * Default Kanto game definition — standard Gen 1 experience.
  */
 export default {
   id:               'kanto',
   name:             'Kanto Classic',
+
+  /**
+   * Pokémon-data game identifier. Drives movedex, pokedex, and move pool
+   * selection throughout the game. Must be one of the `GAMES` constants
+   * exported by `@spriteworld/pokemon-data`.
+   */
+  game:             GAMES.POKEMON_FIRE_RED,
 
   /** Overworld scene key launched when no saved game is present. */
   overworldScene:   'KantoWorld',

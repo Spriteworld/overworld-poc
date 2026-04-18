@@ -1,10 +1,10 @@
 import store from '../../store/index.js';
-import { Pokedex, GAMES } from '@spriteworld/pokemon-data';
+import { Pokedex } from '@spriteworld/pokemon-data';
 import { getGameDef } from '../../data/gameDef.js';
 
 let _allSpec = null;
 function getAllSpecies() {
-  if (!_allSpec) _allSpec = Object.values(new Pokedex(GAMES.POKEMON_FIRE_RED).pokedex);
+  if (!_allSpec) _allSpec = Object.values(new Pokedex(getGameDef().game).pokedex);
   return _allSpec;
 }
 

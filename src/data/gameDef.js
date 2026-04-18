@@ -5,6 +5,7 @@ import defaultDef from './gameDefs/kanto.js';
  * @property {string}                id               - Unique identifier for this preset.
  * @property {string}                name             - Human-readable display name.
  * @property {string}                overworldScene   - Phaser scene key launched when no save is present.
+ * @property {string}                game             - Pokémon-data game id (one of the `GAMES` constants). Drives movedex, pokedex, and move pool lookups.
  * @property {'gen_1'|'gen_2'|'gen_3'|[number,number]|number[]} availablePokemon
  *   Species pool used for wild encounters and random learnset fallbacks.
  *   String shorthands map to nat_dex_id ranges; a two-element array is an

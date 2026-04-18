@@ -1,5 +1,5 @@
 import { Tile } from '@Objects';
-import { Pokedex, GAMES, NATURES, GENDERS, STATS, Moves, Items, FRLG_LEARNSETS } from '@spriteworld/pokemon-data';
+import { Pokedex, Items, buildMon } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
 import { getPropertyValue } from '@Utilities';
 import { getGameDef, filterByAvailablePokemon, seededRng } from '@Data/gameDef.js';
@@ -57,7 +57,7 @@ function normalizeBallName(name) {
   return name.toLowerCase().replace(/[-_\s]/g, '').replace(/[éèê]/g, 'e');
 }
 
-function buildBattleInventory() {
+export function buildBattleInventory() {
   const { items, pokeballs } = store.state.bag;
 
   const battleItems = items
@@ -83,16 +83,6 @@ const ENCOUNTER_RATE = 0.1; // 10% chance per tile step
 const WILD_LEVEL_MIN = 3;
 const WILD_LEVEL_MAX = 8;
 
-const STAT_KEYS = [
-  STATS.HP, STATS.ATTACK, STATS.DEFENSE,
-  STATS.SPECIAL_ATTACK, STATS.SPECIAL_DEFENSE, STATS.SPEED,
-];
-const NATURE_LIST = Object.values(NATURES);
-
-function pick(arr) {
-  return arr[Math.floor(rng() * arr.length)];
-}
-
 function pickWeighted(entries) {
   const total = entries.reduce((sum, e) => sum + e.rarity, 0);
   let r = rng() * total;
@@ -101,47 +91,6 @@ function pickWeighted(entries) {
     if (r <= 0) return e;
   }
   return entries[entries.length - 1];
-}
-
-function pickUnique(arr, n) {
-  return [...arr].sort(() => rng() - 0.5).slice(0, Math.min(n, arr.length));
-}
-
-function buildMovePool() {
-  return Moves.getMovesByGameId(GAMES.POKEMON_FIRE_RED).filter(
-    m => m.pp > 0 && (m.power !== null || m.category === Moves.MOVE_CATEGORIES.STATUS)
-  );
-}
-
-/**
- * Build a move list for a wild Pokémon using its FRLG level-up learnset.
- * Selects up to four moves learnable at or below `level`, preferring the
- * most recently learned ones (highest level first).  Falls back to four
- * random moves from `fallbackPool` when no learnset entry exists.
- *
- * @param {string}   speciesName  - Species name (any case, e.g. 'Pidgey').
- * @param {number}   level        - The wild Pokémon's level.
- * @param {object[]} fallbackPool - Full move pool for fallback selection.
- * @returns {{ name: string, pp: { max: number, current: number } }[]}
- */
-function buildMovesFromLearnset(speciesName, level, fallbackPool) {
-  const learnset = FRLG_LEARNSETS[speciesName.toUpperCase()];
-  if (!learnset?.length) {
-    return pickUnique(fallbackPool, 4).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }));
-  }
-
-  // All moves learnable at or below this level, most-recently-learned last.
-  const learnable = learnset.filter(([lvl]) => lvl <= level);
-  // Take the last 4 (the newest moves a Pokémon would have at this level).
-  const selected  = learnable.slice(-4);
-
-  // Build a name → PP lookup so we can fill in PP values.
-  const ppByName = Object.fromEntries(fallbackPool.map(m => [m.name, m.pp]));
-
-  return selected.map(([, name]) => {
-    const pp = ppByName[name] ?? 5;
-    return { name, pp: { max: pp, current: pp } };
-  });
 }
 
 /**
@@ -266,6 +215,7 @@ export default class {
       if (rng() > this._encounterRate) { return; }
 
       const battleConfig = this._buildWildBattle(tile);
+      if (!battleConfig) { return; }
       this.scene.game.events.emit('battle-start', battleConfig);
 
       // Nuzlocke: record the first catch in this zone.
@@ -325,12 +275,8 @@ export default class {
   _buildWildBattle(tile) {
     const tableId = tile?.tableId ?? null;
 
-    if (!this._movePool) {
-      this._movePool = buildMovePool();
-    }
-
     const def      = getGameDef();
-    const dex      = new Pokedex(GAMES.POKEMON_FIRE_RED);
+    const dex      = new Pokedex(def.game);
     const allSpec  = Object.values(dex.pokedex);
     const pool     = filterByAvailablePokemon(allSpec);
 
@@ -347,35 +293,30 @@ export default class {
     } else {
       // Vanilla: use the map's encounter-table from map-settings.
       const entries = tableId ? this._encounterTable?.[tableId] : null;
-      if (entries?.length > 0) {
-        const picked = pickWeighted(entries);
-        const name   = picked.species?.toLowerCase();
-        entry        = allSpec.find(p => p.species?.toLowerCase() === name);
-        if (entry == null) {
-          console.warn(`Encounter::buildWildBattle::noEntryFound for '${name}'`);
-          entry = pick(pool);
-        }
-        levelMin = picked['level-range-min'] ?? WILD_LEVEL_MIN;
-        levelMax = picked['level-range-max'] ?? levelMin;
-      } else {
-        entry    = pick(pool);
-        levelMin = WILD_LEVEL_MIN;
-        levelMax = WILD_LEVEL_MAX;
+      if (!entries?.length) {
+        console.warn(`Encounter::buildWildBattle::noTableFound for tableId='${tableId}' — skipping encounter`);
+        return null;
       }
+      const picked = pickWeighted(entries);
+      const name   = picked.species?.toLowerCase();
+      entry        = allSpec.find(p => p.species?.toLowerCase() === name);
+      if (entry == null) {
+        console.warn(`Encounter::buildWildBattle::noEntryFound for '${name}' — skipping encounter`);
+        return null;
+      }
+      levelMin = picked['level-range-min'] ?? WILD_LEVEL_MIN;
+      levelMax = picked['level-range-max'] ?? levelMin;
     }
 
     // Mark the wild Pokémon as seen in the Pokédex.
     store.commit('pokedex/SEE', entry.nat_dex_id);
 
     const level = levelMin + Math.floor(rng() * (levelMax - levelMin + 1));
-    const moves = def.learnsets === 'random'
-      ? pickUnique(this._movePool, 4).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }))
-      : buildMovesFromLearnset(entry.species, level, this._movePool);
-
-    const ivs     = Object.fromEntries(STAT_KEYS.map(s => [s, Math.floor(rng() * 32)]));
-    const evs     = Object.fromEntries(STAT_KEYS.map(s => [s, 0]));
-    const isShiny = rng() < 1 / 8192;
-    const pokerus = rng() < 3 / 65536;
+    const wildMon = buildMon(entry.nat_dex_id, level, {
+      rng,
+      game:      def.game,
+      movesMode: def.learnsets,
+    });
 
     return {
       tilesetBaseUrl:  '/',
@@ -402,20 +343,7 @@ export default class {
       enemy: {
         isTrainer: false,
         name:      'Wild',
-        team: [{
-          game:    GAMES.POKEMON_FIRE_RED,
-          pid:     1,
-          species: entry.nat_dex_id,
-          level,
-          nature:  pick(NATURE_LIST).name,
-          gender:  pick([GENDERS.MALE, GENDERS.FEMALE]),
-          ability: { name: 'none' },
-          moves,
-          ivs,
-          evs,
-          isShiny,
-          pokerus,
-        }],
+        team:      [wildMon],
       },
     };
   }

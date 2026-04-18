@@ -54,7 +54,10 @@ export default {
     console.log('movement_behavior command:', cmd);
     const npc = resolveChar(runner._scene, cmd.character1);
     if (npc) {
-      npc.setMovementBehavior(cmd.value, cmd.character2 ?? 'none');
+      const target = cmd.value === 'follow'
+        ? (cmd.character2 ?? 'player')
+        : (cmd.character2 ?? 'none');
+      npc.setMovementBehavior(cmd.value, target);
     } else {
       console.warn(`[ScriptRunner] movement_behavior: character "${cmd.character1}" not found`);
     }

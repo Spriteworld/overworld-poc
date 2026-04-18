@@ -4,7 +4,7 @@ import { playBgm, lazyLoadBgm, preloadSe } from '@Utilities/AudioManager.js';
 import Interactables from '@Objects/interactables/index.js';
 import Items from '@Objects/items/index.js';
 import * as Tile from '@Objects/Tile.js';
-import { getValue, EventBus } from '@Utilities';
+import { getValue, EventBus, getPropertyValue } from '@Utilities';
 import { gameState } from '@Data/gameState.js';
 import store from '../store/index.js';
 import Tileset from '@Tileset';
@@ -231,6 +231,10 @@ export default class extends Phaser.Scene {
     EventBus.emit('current-scene-ready', this);
     this.game.events.emit('map-enter', this.config.mapName);
     this.preloadConnectedMaps();
+
+    if (this.game.config.debug.console.mapDebug) {
+      this._logMapDebug();
+    }
 
     const mapSettings = this.config.map?.properties?.find(p => p.name === 'map-settings')?.value;
     const bgmKey = this.config.bgm
@@ -582,6 +586,150 @@ export default class extends Phaser.Scene {
     if (this.load.totalToLoad > 0) {
       this.load.start();
     }
+  }
+
+  /**
+   * Dump a summary of everything interesting about this map to the console.
+   * Gated by `debug.console.mapDebug`; fires once per map load (including warps
+   * and teleports) right after plugins have run their `init()`.
+   *
+   * Logs: merged encounter tables, NPCs/trainers/pkmn, pre-generated OW mon
+   * spawns, and warp destinations.
+   */
+  _logMapDebug() {
+    const mapName   = this.config.mapName ?? this.config.map?.properties?.find(p => p.name === 'name')?.value ?? '(unknown)';
+    const mapProps  = this.config.tilemap?.properties ?? [];
+    const settings  = getPropertyValue(mapProps, 'map-settings') ?? {};
+
+    // ── Encounter tables: top-level + every location-object fragment ──
+    const fragments = [];
+    if (settings['encounter-table']) fragments.push({ src: 'map-settings', table: settings['encounter-table'] });
+    if (this.config.tilemap?.getObjectLayer?.('maps')) {
+      const locs = this.config.tilemap.filterObjects('maps', o => o.type === 'location') ?? [];
+      for (const loc of locs) {
+        const ls = getPropertyValue(loc.properties ?? [], 'map-settings');
+        if (ls?.['encounter-table']) fragments.push({ src: loc.name ?? 'location', table: ls['encounter-table'] });
+      }
+    }
+
+    // ── NPCs / trainers / pkmn ──
+    const npcs     = this.findInteractions('npc');
+    const trainers = this.findInteractions('trainer');
+    const pkmn     = this.findInteractions('pkmn');
+
+    // ── OW encounter spawns (pending from the plugin) ──
+    const owPlugin  = this.mapPlugins?.['overworld_encounter'];
+    const owPending = owPlugin?._pending ?? [];
+
+    // ── Warps ──
+    const warps = this.findInteractions('warp');
+
+    console.groupCollapsed(`[mapDebug] ${mapName}`);
+
+    if (fragments.length === 0) {
+      console.log('encounter-tables: (none)');
+    } else {
+      console.groupCollapsed(`encounter-tables (${fragments.length} fragment${fragments.length === 1 ? '' : 's'})`);
+      for (const { src, table } of fragments) {
+        console.groupCollapsed(src);
+        for (const [key, list] of Object.entries(table ?? {})) {
+          const rows = (Array.isArray(list) ? list : [])
+            .map(e => e?.value ?? e)
+            .filter(e => e?.species)
+            .map(e => ({
+              species:  e.species,
+              rarity:   e.rarity ?? null,
+              levelMin: e['level-range-min'] ?? null,
+              levelMax: e['level-range-max'] ?? null,
+            }));
+          if (rows.length === 0) continue;
+          console.groupCollapsed(`${key} (${rows.length})`);
+          console.table(rows);
+          console.groupEnd();
+        }
+        console.groupEnd();
+      }
+      console.groupEnd();
+    }
+
+    const npcRows = npcs.map(o => ({
+      name:    o.name,
+      type:    o.type,
+      tileX:   Math.floor(o.x / Tile.WIDTH),
+      tileY:   Math.floor(o.y / Tile.HEIGHT),
+      texture: getPropertyValue(o.properties ?? [], 'overworld-texture') ?? '',
+    }));
+    if (npcRows.length > 0) {
+      console.groupCollapsed(`npcs (${npcRows.length})`);
+      console.table(npcRows);
+      console.groupEnd();
+    }
+
+    const trainerRows = trainers.map(o => {
+      const team = getPropertyValue(o.properties ?? [], 'trainer-pokemon');
+      const teamSummary = Array.isArray(team)
+        ? team.map(e => {
+            const v = e?.value ?? e;
+            return `${v?.species ?? '?'}(L${v?.level ?? '?'})`;
+          }).join(', ')
+        : (typeof team === 'string' ? team.slice(0, 120) : '');
+      return {
+        name:    o.name,
+        tileX:   Math.floor(o.x / Tile.WIDTH),
+        tileY:   Math.floor(o.y / Tile.HEIGHT),
+        texture: getPropertyValue(o.properties ?? [], 'overworld-texture') ?? '',
+        team:    teamSummary,
+      };
+    });
+    if (trainerRows.length > 0) {
+      console.groupCollapsed(`trainers (${trainerRows.length})`);
+      console.table(trainerRows);
+      console.groupEnd();
+    }
+
+    const pkmnRows = pkmn.map(o => ({
+      name:    o.name,
+      tileX:   Math.floor(o.x / Tile.WIDTH),
+      tileY:   Math.floor(o.y / Tile.HEIGHT),
+      texture: getPropertyValue(o.properties ?? [], 'overworld-texture') ?? '',
+    }));
+    if (pkmnRows.length > 0) {
+      console.groupCollapsed(`pkmn objects (${pkmnRows.length})`);
+      console.table(pkmnRows);
+      console.groupEnd();
+    }
+
+    if (owPending.length > 0) {
+      const rows = owPending.map(p => {
+        const mon = p.battleConfig?.enemy?.team?.[0];
+        return {
+          tileX:   p.x,
+          tileY:   p.y,
+          species: mon?.species ?? '?',
+          level:   mon?.level ?? '?',
+          shiny:   !!mon?.isShiny,
+          texture: p.texture ?? '',
+        };
+      });
+      console.groupCollapsed(`ow-encounter spawns (${rows.length})`);
+      console.table(rows);
+      console.groupEnd();
+    }
+
+    const warpRows = warps.map(o => ({
+      name:        o.name ?? '',
+      tileX:       Math.floor(o.x / Tile.WIDTH),
+      tileY:       Math.floor(o.y / Tile.HEIGHT),
+      destination: getPropertyValue(o.properties ?? [], 'warp')          ?? '',
+      anchor:      getPropertyValue(o.properties ?? [], 'warp-location') ?? '',
+    }));
+    if (warpRows.length > 0) {
+      console.groupCollapsed(`warps (${warpRows.length})`);
+      console.table(warpRows);
+      console.groupEnd();
+    }
+
+    console.groupEnd();
   }
 
   /**

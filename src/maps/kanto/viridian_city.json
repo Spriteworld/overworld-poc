@@ -8139,9 +8139,40 @@
                   "propertytype": "cmd-start_battle",
                   "type": "class",
                   "value": {
-                    "type": "wild",
-                    "tutorial": true,
                     "force_catch": true,
+                    "player_override": {
+                      "inventory": [
+                        {
+                          "type": "",
+                          "value": null
+                        }
+                      ],
+                      "name": "Tutor",
+                      "team": [
+                        {
+                          "type": "",
+                          "value": null
+                        }
+                      ]
+                    },
+                    "scripted_actions": [
+                      {
+                        "propertytype": "scripted-action",
+                        "type": "class",
+                        "value": {
+                          "move": "Tackle",
+                          "type": "attack"
+                        }
+                      },
+                      {
+                        "propertytype": "scripted-action",
+                        "type": "class",
+                        "value": {
+                          "itemName": "Pok\u00e9 Ball",
+                          "type": "use_item"
+                        }
+                      }
+                    ],
                     "team": [
                       {
                         "propertytype": "trainer-pokemon",
@@ -8152,48 +8183,8 @@
                         }
                       }
                     ],
-                    "player_override": {
-                      "name": "Tutor",
-                      "team": [
-                        {
-                          "propertytype": "trainer-pokemon",
-                          "type": "class",
-                          "value": {
-                            "level": 10,
-                            "species": "nidoran (m)",
-                            "move1": "Tackle"
-                          }
-                        }
-                      ],
-                      "inventory": [
-                        {
-                          "propertytype": "inventory-entry",
-                          "type": "class",
-                          "value": {
-                            "name": "Pok\u00e9 Ball",
-                            "qty": 1
-                          }
-                        }
-                      ]
-                    },
-                    "scripted_actions": [
-                      {
-                        "propertytype": "scripted-action",
-                        "type": "class",
-                        "value": {
-                          "type": "attack",
-                          "move": "Tackle"
-                        }
-                      },
-                      {
-                        "propertytype": "scripted-action",
-                        "type": "class",
-                        "value": {
-                          "type": "use_item",
-                          "itemName": "Pok\u00e9 Ball"
-                        }
-                      }
-                    ]
+                    "tutorial": true,
+                    "type": "wild"
                   }
                 },
                 {

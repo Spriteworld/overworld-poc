@@ -22,5 +22,6 @@ export default {
     character: false,
     interactableShout: false,
     scriptRunner: false,
+    mapDebug: false,
   },
 };

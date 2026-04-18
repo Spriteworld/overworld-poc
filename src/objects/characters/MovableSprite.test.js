@@ -7,6 +7,7 @@ function makeGridEngine(pos = { x: 0, y: 0 }) {
   return {
     addCharacter:    jest.fn(),
     removeCharacter: jest.fn(),
+    hasCharacter:    jest.fn(() => true),
     move:            jest.fn(),
     moveTo:          jest.fn(),
     isMoving:        jest.fn(() => false),

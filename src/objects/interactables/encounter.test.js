@@ -9,50 +9,117 @@ jest.mock('@spriteworld/pokemon-data', () => {
     HP: 'hp', ATTACK: 'attack', DEFENSE: 'defense',
     SPECIAL_ATTACK: 'special_attack', SPECIAL_DEFENSE: 'special_defense', SPEED: 'speed',
   };
+  const STAT_KEYS = [STATS.HP, STATS.ATTACK, STATS.DEFENSE, STATS.SPECIAL_ATTACK, STATS.SPECIAL_DEFENSE, STATS.SPEED];
+  const NATURES = {
+    HARDY:   { name: 'hardy'   },
+    ADAMANT: { name: 'adamant' },
+  };
+  const NATURE_LIST = Object.values(NATURES);
+  const GENDERS = { MALE: 'male', FEMALE: 'female' };
+  /**
+   * FRLG learnsets used by buildMovesFromLearnset.
+   * Keys are uppercase species names.
+   * Bulbasaur: 4 moves across levels 1–13 (tests full learnset path).
+   * Charmander: 2 early moves (tests fewer than 4 learnable moves).
+   * Squirtle is absent — triggers the fallback-to-random-pool path.
+   */
+  const FRLG_LEARNSETS = {
+    BULBASAUR: [
+      [1,  'tackle'   ],
+      [3,  'growl'    ],
+      [7,  'vine whip'],
+      [13, 'synthesis'],
+    ],
+    CHARMANDER: [
+      [1, 'scratch'],
+      [4, 'growl'  ],
+    ],
+  };
+  const MOVE_POOL = [
+    { name: 'tackle',    pp: 35, power: 40,   category: 'PHYSICAL' },
+    { name: 'growl',     pp: 40, power: null, category: 'STATUS'   },
+    { name: 'vine whip', pp: 10, power: 45,   category: 'PHYSICAL' },
+    { name: 'synthesis', pp: 5,  power: null, category: 'STATUS'   },
+    { name: 'scratch',   pp: 35, power: 40,   category: 'PHYSICAL' },
+  ];
+  const DEX = {
+    1: { nat_dex_id: 1, species: 'Bulbasaur'  },
+    4: { nat_dex_id: 4, species: 'Charmander' },
+    7: { nat_dex_id: 7, species: 'Squirtle'   },
+  };
+  const coerceRng = (rng) => (typeof rng === 'function' ? rng : Math.random);
+  const pick = (arr, r) => arr[Math.floor(r() * arr.length)];
+  const pickUnique = (arr, n, r) => [...arr].sort(() => r() - 0.5).slice(0, Math.min(n, arr.length));
+
+  const resolveSpecies = (species) => {
+    if (typeof species === 'number') {
+      const e = DEX[species];
+      return { id: species, name: e?.species ?? null };
+    }
+    if (typeof species === 'string') {
+      const lower = species.toLowerCase();
+      const e = Object.values(DEX).find(p => p.species?.toLowerCase() === lower);
+      return { id: e?.nat_dex_id ?? null, name: e?.species ?? species };
+    }
+    return { id: null, name: null };
+  };
+
+  const buildMovePool = () => MOVE_POOL;
+
+  const buildMovesFromLearnset = (speciesName, level, pool, learnsets = FRLG_LEARNSETS, r = Math.random) => {
+    const learnset = learnsets[speciesName?.toUpperCase()];
+    if (!learnset?.length) {
+      return pickUnique(pool, 4, r).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }));
+    }
+    const selected = learnset.filter(([lvl]) => lvl <= level).slice(-4);
+    const ppByName = Object.fromEntries(pool.map(m => [m.name, m.pp]));
+    return selected.map(([, name]) => {
+      const pp = ppByName[name] ?? 5;
+      return { name, pp: { max: pp, current: pp } };
+    });
+  };
+
+  const buildMon = (species, level, overrides = {}) => {
+    const { rng: rngOpt, movesMode = 'learnset', movePool, learnsets = FRLG_LEARNSETS, ...mon } = overrides;
+    const r = coerceRng(rngOpt);
+    const { id, name } = resolveSpecies(species);
+    if (id == null) return null;
+    const pool = movePool ?? MOVE_POOL;
+    const rollMoves = () => (movesMode === 'random' || name == null)
+      ? pickUnique(pool, 4, r).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }))
+      : buildMovesFromLearnset(name, level, pool, learnsets, r);
+    const result = {
+      game:    mon.game    ?? 'firered',
+      pid:     mon.pid     ?? 1,
+      species: id,
+      level,
+      nature:  mon.nature  ?? pick(NATURE_LIST, r).name,
+      gender:  mon.gender  ?? pick([GENDERS.MALE, GENDERS.FEMALE], r),
+      ability: mon.ability ?? { name: 'none' },
+      moves:   mon.moves   ?? rollMoves(),
+      ivs:     mon.ivs     ?? Object.fromEntries(STAT_KEYS.map(s => [s, Math.floor(r() * 32)])),
+      evs:     mon.evs     ?? Object.fromEntries(STAT_KEYS.map(s => [s, 0])),
+      isShiny: mon.isShiny ?? (r() < 1 / 8192),
+      pokerus: mon.pokerus ?? (r() < 3 / 65536),
+    };
+    if (mon.heldItem) result.heldItem = mon.heldItem;
+    if (mon.nickname) result.nickname = mon.nickname;
+    return result;
+  };
+
   return {
     GAMES:   { POKEMON_FIRE_RED: 'firered' },
-    NATURES: {
-      HARDY:   { name: 'hardy'   },
-      ADAMANT: { name: 'adamant' },
-    },
-    GENDERS: { MALE: 'male', FEMALE: 'female' },
+    NATURES,
+    NATURE_LIST,
+    GENDERS,
     STATS,
-    /**
-     * FRLG learnsets used by buildMovesFromLearnset.
-     * Keys are uppercase species names.
-     * Bulbasaur: 4 moves across levels 1–13 (tests full learnset path).
-     * Charmander: 2 early moves (tests fewer than 4 learnable moves).
-     * Squirtle is absent — triggers the fallback-to-random-pool path.
-     */
-    FRLG_LEARNSETS: {
-      BULBASAUR: [
-        [1,  'tackle'   ],
-        [3,  'growl'    ],
-        [7,  'vine whip'],
-        [13, 'synthesis'],
-      ],
-      CHARMANDER: [
-        [1, 'scratch'],
-        [4, 'growl'  ],
-      ],
-    },
+    STAT_KEYS,
+    FRLG_LEARNSETS,
     Pokedex: class {
-      constructor() {
-        this.pokedex = {
-          1: { nat_dex_id: 1, species: 'Bulbasaur'  },
-          4: { nat_dex_id: 4, species: 'Charmander' },
-          7: { nat_dex_id: 7, species: 'Squirtle'   },
-        };
-      }
+      constructor() { this.pokedex = DEX; }
     },
     Moves: {
-      getMovesByGameId: () => [
-        { name: 'tackle',    pp: 35, power: 40,   category: 'PHYSICAL' },
-        { name: 'growl',     pp: 40, power: null,  category: 'STATUS'   },
-        { name: 'vine whip', pp: 10, power: 45,   category: 'PHYSICAL' },
-        { name: 'synthesis', pp: 5,  power: null,  category: 'STATUS'   },
-        { name: 'scratch',   pp: 35, power: 40,   category: 'PHYSICAL' },
-      ],
+      getMovesByGameId: () => MOVE_POOL,
       MOVE_CATEGORIES: { STATUS: 'STATUS' },
     },
     // Items stubs — only need to be non-undefined so the module-level ITEM_REGISTRY
@@ -66,6 +133,10 @@ jest.mock('@spriteworld/pokemon-data', () => {
       Ether:       class {},
       Revive:      class {},
     },
+    buildMon,
+    buildMovePool,
+    buildMovesFromLearnset,
+    resolveSpecies,
   };
 });
 
@@ -89,8 +160,14 @@ const TEST_PARTY = [
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function makeEncounter() {
-  return new Encounter({ game: { config: { debug: { console: { interactableShout: false } } } } });
+  const enc = new Encounter({ game: { config: { debug: { console: { interactableShout: false } } } } });
+  enc._encounterTable = {
+    zone: [{ species: 'bulbasaur', rarity: 1, 'level-range-min': 5, 'level-range-max': 5 }],
+  };
+  return enc;
 }
+
+const ZONE_TILE = { tableId: 'zone' };
 
 /**
  * Creates an Encounter with a pre-parsed encounter table injected directly,
@@ -231,17 +308,17 @@ describe('encounter _buildWildBattle party isolation', () => {
   });
 
   test('returned player.team is a different array from the store party', () => {
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     expect(battle.player.team).not.toBe(store.state.party.list);
   });
 
   test('returned pokemon config objects are copies, not the originals', () => {
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     expect(battle.player.team[0]).not.toBe(store.state.party.list[0]);
   });
 
   test('returned pp objects are copies — mutating them does not affect the store party', () => {
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     const originalCurrent = store.state.party.list[0].moves[0].pp.current;
 
     battle.player.team[0].moves[0].pp.current = 0;
@@ -250,7 +327,7 @@ describe('encounter _buildWildBattle party isolation', () => {
   });
 
   test('returned ivs are copies — mutating them does not affect the store party', () => {
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     const originalHP = store.state.party.list[0].ivs.hp;
 
     battle.player.team[0].ivs.hp = 0;
@@ -259,7 +336,7 @@ describe('encounter _buildWildBattle party isolation', () => {
   });
 
   test('returned evs are copies — mutating them does not affect the store party', () => {
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     const originalHP = store.state.party.list[0].evs.hp;
 
     battle.player.team[0].evs.hp = 99;
@@ -269,8 +346,8 @@ describe('encounter _buildWildBattle party isolation', () => {
 
   test('multiple battles each get independent copies', () => {
     const enc = makeEncounter();
-    const battle1 = enc._buildWildBattle();
-    const battle2 = enc._buildWildBattle();
+    const battle1 = enc._buildWildBattle(ZONE_TILE);
+    const battle2 = enc._buildWildBattle(ZONE_TILE);
 
     battle1.player.team[0].moves[0].pp.current = 0;
 
@@ -284,36 +361,36 @@ describe('encounter _buildWildBattle party isolation', () => {
 
 describe('_buildWildBattle wild pokemon fields — isShiny and pokerus', () => {
   test('enemy pokemon has isShiny field of type boolean', () => {
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     expect(typeof battle.enemy.team[0].isShiny).toBe('boolean');
   });
 
   test('isShiny is true when rng returns below the 1/8192 threshold', () => {
     rng.mockReturnValue(0);
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     expect(battle.enemy.team[0].isShiny).toBe(true);
   });
 
   test('isShiny is false when rng returns above the 1/8192 threshold', () => {
     rng.mockReturnValue(0.5);
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     expect(battle.enemy.team[0].isShiny).toBe(false);
   });
 
   test('enemy pokemon has pokerus field of type boolean', () => {
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     expect(typeof battle.enemy.team[0].pokerus).toBe('boolean');
   });
 
   test('pokerus is true when rng returns below the 3/65536 threshold', () => {
     rng.mockReturnValue(0);
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     expect(battle.enemy.team[0].pokerus).toBe(true);
   });
 
   test('pokerus is false when rng returns above the 3/65536 threshold', () => {
     rng.mockReturnValue(0.5);
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     expect(battle.enemy.team[0].pokerus).toBe(false);
   });
 });
@@ -322,12 +399,12 @@ describe('_buildWildBattle wild pokemon fields — isShiny and pokerus', () => {
 
 describe('_buildWildBattle battle config', () => {
   test('textSpeed is present in the returned config', () => {
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     expect(battle.textSpeed).toBeDefined();
   });
 
   test('textSpeed matches the store default of "normal"', () => {
-    const battle = makeEncounter()._buildWildBattle();
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     expect(battle.textSpeed).toBe('normal');
   });
 });

@@ -1,8 +1,9 @@
 import {
   GEN_1_EVOLUTIONS, GEN_2_EVOLUTIONS, GEN_3_EVOLUTIONS,
   EVOLUTION_METHOD, EXPERIENCE_TABLES, GROWTH,
-  FRLG_LEARNSETS, Moves, GAMES,
+  FRLG_LEARNSETS, Moves,
 } from '@spriteworld/pokemon-data';
+import { getGameDef } from '../gameDef.js';
 
 // Merged evolution table (same as applyExperienceGains.js in battle).
 const ALL_EVOLUTIONS = {};
@@ -17,7 +18,7 @@ let _movePpCache = null;
 function getMoveByName(name) {
   if (!_movePpCache) {
     _movePpCache = {};
-    for (const m of Moves.getMovesByGameId(GAMES.POKEMON_FIRE_RED)) {
+    for (const m of Moves.getMovesByGameId(getGameDef().game)) {
       _movePpCache[m.name] = m;
     }
   }

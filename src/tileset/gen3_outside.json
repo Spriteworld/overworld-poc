@@ -3231,6 +3231,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3238,6 +3243,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -3435,6 +3445,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3442,6 +3457,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -3626,6 +3646,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3633,6 +3658,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -3770,6 +3800,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3777,6 +3812,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -3977,6 +4017,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3986,6 +4031,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3993,6 +4043,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4121,6 +4176,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4128,6 +4188,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4139,6 +4204,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4146,6 +4216,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4157,6 +4232,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4164,6 +4244,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4265,6 +4350,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4272,6 +4362,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4283,6 +4378,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4290,6 +4390,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4301,6 +4406,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4308,6 +4418,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4418,6 +4533,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4425,6 +4545,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4436,6 +4561,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4443,6 +4573,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4454,6 +4589,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4461,6 +4601,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4472,6 +4617,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4479,6 +4629,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4562,6 +4717,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4569,6 +4729,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4580,6 +4745,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4587,6 +4757,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4598,6 +4773,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4605,6 +4785,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4616,6 +4801,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4623,6 +4813,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4724,6 +4919,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4731,6 +4931,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4742,6 +4947,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4749,6 +4959,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4760,6 +4975,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4767,6 +4987,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4796,6 +5021,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4805,6 +5035,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4812,6 +5047,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4868,6 +5108,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4875,6 +5120,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4886,6 +5136,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4893,6 +5148,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4904,6 +5164,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4911,6 +5176,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4940,6 +5210,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4949,6 +5224,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4956,6 +5236,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -5027,6 +5312,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5036,6 +5326,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5043,6 +5338,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -5099,6 +5399,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5108,6 +5413,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5115,6 +5425,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -5171,6 +5486,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5180,6 +5500,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5187,6 +5512,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -5315,6 +5645,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5324,6 +5659,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5331,6 +5671,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -5459,6 +5804,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5468,6 +5818,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5475,6 +5830,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -37498,6 +37858,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":false
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -37505,6 +37870,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -37516,6 +37886,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -37523,6 +37898,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -37534,6 +37914,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -37541,6 +37926,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -37552,6 +37942,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -37559,6 +37954,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -60316,6 +60716,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -60325,6 +60730,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -60332,6 +60742,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -60460,6 +60875,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -60469,6 +60889,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -60476,6 +60901,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]

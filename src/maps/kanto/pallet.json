@@ -4504,6 +4504,14 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-face_char",
+                  "type": "class",
+                  "value": {
+                    "character1": "player",
+                    "character2": "Oak"
+                  }
+                },
+                {
                   "propertytype": "cmd-spawn_npc",
                   "type": "class",
                   "value": {
@@ -4536,11 +4544,44 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-movement_behavior",
+                  "type": "class",
+                  "value": {
+                    "character1": "player",
+                    "character2": "Oak",
+                    "value": "follow"
+                  }
+                },
+                {
                   "propertytype": "cmd-move_npc",
                   "type": "class",
                   "value": {
-                    "anchor": "oakRunningAfterPlayer",
-                    "name": "Oak"
+                    "anchor": "ProfessorLabExit",
+                    "character": "Oak"
+                  }
+                },
+                {
+                  "propertytype": "cmd-movement_behavior",
+                  "type": "class",
+                  "value": {
+                    "character1": "player",
+                    "value": "none"
+                  }
+                },
+                {
+                  "propertytype": "cmd-warp_npc",
+                  "type": "class",
+                  "value": {
+                    "anchor": "oakAway",
+                    "character": "Oak"
+                  }
+                },
+                {
+                  "propertytype": "cmd-movement_behavior",
+                  "type": "class",
+                  "value": {
+                    "character1": "player",
+                    "value": "none"
                   }
                 },
                 {
@@ -4617,7 +4658,7 @@
           "type": "location-anchor",
           "visible": true,
           "width": 32,
-          "x": 896,
+          "x": 832,
           "y": 384
         },
         {

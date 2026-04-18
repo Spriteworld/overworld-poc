@@ -1,5 +1,5 @@
 import { Tile, NPC } from '@Objects';
-import { getPropertyValue, remapProps, Vector2, checkOnlyIf } from '@Utilities';
+import { getPropertyValue, remapProps, Vector2, checkOnlyIf, assertNotReservedId } from '@Utilities';
 import Tileset from '@Tileset';
 import store from '../../store/index.js';
 import ScriptRunner from '../../utilities/ScriptRunner.js';
@@ -28,6 +28,7 @@ export default class {
     this.scene.npcs.runChildUpdate = true;
     npcs.forEach((npc) => {
       if (!checkOnlyIf(getPropertyValue(npc.properties, 'only_if'), store.state.game.gameFlags, this.scene.config.variant ?? null)) return;
+      assertNotReservedId(npc.name, 'Interactables::npc');
       this.addToScene(
         npc.name,
         getPropertyValue(npc.properties, 'overworld-texture'),
@@ -140,20 +141,40 @@ export default class {
       console.log(['Interactables::pokemon::event', this.scene]);
     }
 
+    // Fast-path flags — the common case has no mirror-target overrides and no
+    // enter-trigger NPCs, so we can skip both per-step scans entirely.
+    // Recomputed on NPC add/remove.
+    const recomputeFlags = () => {
+      const children = this.scene.npcs.getChildren();
+      this._hasExplicitMirrorTarget = children.some(
+        n => n.config?.['mirror-target'] && n.config['mirror-target'] !== 'player'
+      );
+      this._hasEnterTriggerNpc = children.some(
+        n => this.scene.getPropertyFromTile(n.config, 'script-trigger') === 'enter'
+      );
+    };
+    recomputeFlags();
+    this._onNpcGroupChange = recomputeFlags;
+    this.scene.npcs.on('add',    this._onNpcGroupChange);
+    this.scene.npcs.on('remove', this._onNpcGroupChange);
+
     const OPPOSITE = { up: 'down', down: 'up', left: 'right', right: 'left' };
     this._mirrorSub = this.scene.gridEngine.movementStarted().subscribe(({ charId, direction }) => {
-      this.scene.npcs.getChildren().forEach(npc => {
+      if (charId !== 'player' && !this._hasExplicitMirrorTarget) return;
+      const children = this.scene.npcs.getChildren();
+      if (children.length === 0) return;
+      for (const npc of children) {
         const behavior = npc.config?.['movement-behavior'];
-        if (!behavior || behavior === 'none') return;
+        if (!behavior || behavior === 'none') continue;
         const target = npc.config?.['mirror-target'] || 'player';
-        if (charId !== target) return;
-        if (!this.scene.gridEngine.hasCharacter(npc.config.id)) return;
+        if (charId !== target) continue;
+        if (!this.scene.gridEngine.hasCharacter(npc.config.id)) continue;
         if (behavior === 'match-movement') {
           npc.move(direction);
         } else if (behavior === 'mirror-move') {
           npc.move(OPPOSITE[direction] || direction);
         }
-      });
+      }
     });
 
     this._onInteract = (tile) => {
@@ -210,6 +231,7 @@ export default class {
         .positionChangeFinished()
         .subscribe(({ charId, enterTile }) => {
           if (charId !== 'player') return;
+          if (!this._hasEnterTriggerNpc) return;
           const _dbg = this.scene.game.config.debug.console.interactableShout;
           this.scene.npcs.getChildren().forEach(npc => {
             const cfg = npc.config;
@@ -235,5 +257,9 @@ export default class {
     this.scene.game.events.off('interact-with-obj', this._onInteract);
     if (this._mirrorSub) this._mirrorSub.unsubscribe();
     if (this._enterSub)  this._enterSub.unsubscribe();
+    if (this._onNpcGroupChange && this.scene.npcs) {
+      this.scene.npcs.off('add',    this._onNpcGroupChange);
+      this.scene.npcs.off('remove', this._onNpcGroupChange);
+    }
   }
 }

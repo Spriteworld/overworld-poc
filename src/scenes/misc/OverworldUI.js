@@ -5,7 +5,8 @@ import { PauseMenu } from '@Objects';
 import { gameState, saveGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
 import { KEY_ITEMS } from '../../store/modules/bag.js';
-import { Pokedex, GAMES, GENDERS } from '@spriteworld/pokemon-data';
+import { Pokedex, GENDERS } from '@spriteworld/pokemon-data';
+import { getGameDef } from '@Data/gameDef.js';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -204,7 +205,7 @@ export default class extends Phaser.Scene {
               const targetId  = p.readyToEvolve;
               let toName;
               try {
-                const entry = new Pokedex(p.game ?? GAMES.POKEMON_FIRE_RED).getPokemonById(targetId);
+                const entry = new Pokedex(p.game ?? getGameDef().game).getPokemonById(targetId);
                 toName = (entry.species ?? `#${targetId}`).replace(/\b\w/g, c => c.toUpperCase());
               } catch {
                 toName = `#${targetId}`;
@@ -242,33 +243,42 @@ export default class extends Phaser.Scene {
             };
 
             const returnToMap = () => {
-              this.time.delayedCall(2000, () => {
-                this.tweens.add({
-                  targets: this.transitionRect,
-                  alpha: 1,
-                  duration: 250,
-                  onComplete: () => {
-                    this.scene.stop('BattleScene2');
-                    if (!isTutorial && result === 'lost') {
-                      // White-out: restore party and warp to last heal location.
-                      store.commit('party/RESTORE_ALL');
-                      const healLoc = store.state.game.healLocation ?? { map: 'KantoWorld', x: 74, y: 278, charLayer: 'ground' };
-                      this.scene.stop(mapName);
-                      this.scene.start(healLoc.map, { playerLocation: { x: healLoc.x, y: healLoc.y, charLayer: healLoc.charLayer } });
-                    } else {
-                      this.scene.wake(mapName);
-                    }
-                    this.tweens.add({
-                      targets: this.transitionRect,
-                      alpha: 0,
-                      duration: 300,
-                      onComplete: () => {
-                        this.registry.set('player_input', true);
-                      },
-                    });
-                  },
-                });
+              const runWarp = () => this.tweens.add({
+                targets: this.transitionRect,
+                alpha: 1,
+                duration: 250,
+                onComplete: () => {
+                  this.scene.stop('BattleScene2');
+                  if (!isTutorial && result === 'lost') {
+                    // White-out: restore party and warp to last heal location.
+                    store.commit('party/RESTORE_ALL');
+                    const healLoc = store.state.game.healLocation ?? { map: 'KantoWorld', x: 74, y: 278, charLayer: 'ground' };
+                    this.scene.stop(mapName);
+                    this.scene.start(healLoc.map, { playerLocation: { x: healLoc.x, y: healLoc.y, charLayer: healLoc.charLayer } });
+                  } else {
+                    this.scene.wake(mapName);
+                  }
+                  this.tweens.add({
+                    targets: this.transitionRect,
+                    alpha: 0,
+                    duration: 300,
+                    onComplete: () => {
+                      this.registry.set('player_input', true);
+                    },
+                  });
+                },
               });
+
+              // On a lost trainer battle, show the trainer's loss line (if any)
+              // before the screen fades to white and we warp to the heal point.
+              const wonText = battleScene?.config?.enemy?.trainerWonText;
+              const isTrainerLoss = !isTutorial && result === 'lost' && battleScene?.config?.enemy?.isTrainer;
+              if (isTrainerLoss && wonText) {
+                this.game.events.emit('textbox-changedata', wonText);
+                this.game.events.once('textbox-disable', runWarp);
+              } else {
+                this.time.delayedCall(2000, runWarp);
+              }
             };
 
             runEvolutionQueue(evolvingPokemon, returnToMap);
@@ -320,7 +330,7 @@ export default class extends Phaser.Scene {
       if (this.pauseMenu.visible) this.pauseMenu.close();
       this.registry.set('player_input', false);
 
-      const dex      = new Pokedex(GAMES.POKEMON_FIRE_RED);
+      const dex      = new Pokedex(getGameDef().game);
       const targetId = readyToEvolve;
 
       let fromName, toName;
@@ -360,7 +370,7 @@ export default class extends Phaser.Scene {
 
       let monName = 'Pokémon';
       try {
-        const entry = new Pokedex(GAMES.POKEMON_FIRE_RED).getPokemonById(mon.species);
+        const entry = new Pokedex(getGameDef().game).getPokemonById(mon.species);
         monName = (entry?.species ?? monName).replace(/\b\w/g, c => c.toUpperCase());
       } catch { /* keep default */ }
 

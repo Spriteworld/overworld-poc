@@ -503,21 +503,47 @@ export default class extends MovableSprite {
   }
 
   /**
-   * Start following a target character via GridEngine's built-in follow.
-   * Runs once after GE is initialised; GE owns the movement from that point.
+   * Start following a target character using Gen 2-style breadcrumb trail:
+   * each time the leader vacates a tile, the follower walks onto it.
    * Requires `config.follow === true` and `config['follow-target']` to be set.
    */
   addAutoFollow() {
     if (!this.config.follow || this._followStarted) return;
     const target = this.config['follow-target'];
     if (!target || !this.gridengine.hasCharacter(target)) return;
-    this.gridengine.follow(
-      this.config.id,
-      target,
-      this.config['follow-distance'] ?? 1,
-      true  // ignoreLookDirection — GE won't force the follower to face the target
-    );
+    this._startBreadcrumbFollow(target);
+  }
+
+  /**
+   * Subscribe to the leader's position-change stream and walk this character
+   * onto each tile the leader just vacated. Mirrors the player_mon follower.
+   */
+  _startBreadcrumbFollow(leaderId) {
+    const ge = this.gridengine;
+    const followerId = this.config.id;
+    if (!ge?.hasCharacter(followerId) || !ge.hasCharacter(leaderId)) return;
+    this._stopBreadcrumbFollow();
+    // Use positionChangeFinished so the leader has fully vacated the tile before
+    // the follower's pathfind runs — otherwise a colliding follower (anything
+    // except collides:false like playerMon) treats the leader as a path blocker.
+    this._followTrailSub = ge.positionChangeFinished().subscribe(({ charId, exitTile }) => {
+      if (charId !== leaderId) return;
+      if (!ge.hasCharacter(followerId)) return;
+      ge.moveTo(followerId, exitTile, {
+        noPathFoundStrategy: 'STOP',
+        pathBlockedStrategy: 'WAIT',
+      });
+    });
     this._followStarted = true;
+    this.once?.('destroy', () => this._stopBreadcrumbFollow());
+  }
+
+  _stopBreadcrumbFollow() {
+    if (this._followTrailSub) {
+      this._followTrailSub.unsubscribe();
+      this._followTrailSub = null;
+    }
+    this._followStarted = false;
   }
 
   /**
@@ -857,9 +883,34 @@ export default class extends MovableSprite {
       case 'mirror-move':
         this.config['movement-behavior'] = movement;
       break;
-      case 'none':
+      case 'follow': {
+        const ge = this.gridengine;
+        const targetId = ge?.hasCharacter(target)
+          ? target
+          : (ge?.hasCharacter('npc_' + target) ? 'npc_' + target : null);
+        if (!ge || !targetId || !ge.hasCharacter(this.config.id)) {
+          console.warn('[Character.setMovementBehavior] follow: target not found:', target);
+          break;
+        }
+        this.config['movement-behavior'] = 'follow';
+        this.config['follow-target']     = targetId;
+        this.config.follow               = true;
+        this._startBreadcrumbFollow(targetId);
+      }
+      break;
+      case 'none': {
+        const wasFollowing = this.config['movement-behavior'] === 'follow' || this._followStarted;
         this.config['movement-behavior'] = null;
-        this.config['movement-target'] = null;
+        this.config['movement-target']   = null;
+        if (wasFollowing) {
+          this.config.follow          = false;
+          this.config['follow-target'] = null;
+          this._stopBreadcrumbFollow();
+          if (this.gridengine?.hasCharacter(this.config.id)) {
+            this.gridengine.stopMovement(this.config.id);
+          }
+        }
+      }
       break;
     }
   }

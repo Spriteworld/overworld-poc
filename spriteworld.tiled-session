@@ -88,19 +88,20 @@
             "scale": 1.5,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 2813.333333333333,
-                "y": 7709.666666666666
+                "x": 2104.6666666666665,
+                "y": 9130.333333333332
             }
         },
         "src/maps/kanto/kanto_inside.json": {
             "expandedObjectLayers": [
-                3
+                3,
+                2
             ],
             "scale": 1,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 240,
-                "y": 1008.5
+                "x": 703,
+                "y": 1211.5
             }
         },
         "src/maps/kanto/pallet.json": {
@@ -353,7 +354,7 @@
         },
         "src/maps/kanto/viridian_forest.json": {
             "scale": 0.8206473214285713,
-            "selectedLayer": 3,
+            "selectedLayer": 2,
             "viewCenter": {
                 "x": 1171.0267917856659,
                 "y": 1213.0667754657964
@@ -527,18 +528,18 @@
     "project": "spriteworld.tiled-project",
     "property.type": "bool",
     "recentFiles": [
+        "src/tileset/gen3_inside.json",
         "src/tileset/gen3_outside.json",
+        "src/maps/kanto/kanto_inside.json",
         "src/maps/kanto/prof_lab.json",
         "src/maps/kanto/kanto.json",
-        "src/maps/kanto/kanto_inside.json",
         "src/maps/kanto/pallet.json",
         "src/maps/kanto/viridian_forest.json",
         "src/maps/kanto/route2.json",
         "src/maps/kanto/route3.json",
         "src/maps/kanto/route18.json",
         "src/maps/kanto/route17.json",
-        "src/maps/kanto/route16.json",
-        "src/maps/kanto/route15.json"
+        "src/maps/kanto/route16.json"
     ],
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFilter": "All Files (*)",

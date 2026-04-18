@@ -1,12 +1,12 @@
 {
  "columns": 8,
  "image": "kanto_inside.png",
- "imageheight": 512,
+ "imageheight": 800,
  "imagewidth": 256,
  "margin": 0,
  "name": "kanto_inside",
  "spacing": 0,
- "tilecount": 128,
+ "tilecount": 200,
  "tiledversion": "1.12.1",
  "tileheight": 32,
  "tilewidth": 32,
@@ -167,7 +167,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -207,7 +207,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -247,7 +247,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -287,7 +287,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -297,7 +297,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -337,7 +337,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -347,7 +347,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -397,7 +397,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -407,7 +407,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -417,7 +417,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -427,7 +427,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -447,7 +447,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -457,7 +457,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -467,7 +467,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -477,7 +477,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -497,7 +497,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -517,7 +517,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -537,7 +537,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -547,7 +547,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -557,7 +557,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -567,7 +567,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -607,7 +607,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -627,7 +627,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -637,7 +637,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -647,7 +647,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -687,7 +687,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -707,7 +707,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -727,7 +727,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -737,7 +737,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -747,7 +747,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -757,7 +757,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -787,7 +787,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -797,7 +797,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -817,7 +817,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -827,7 +827,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -837,7 +837,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -868,26 +868,6 @@
      "name": "ge_collide",
      "type": "bool",
      "value": false
-    },
-    {
-     "name": "ge_collide_down",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_up",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -897,7 +877,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -908,26 +888,6 @@
      "name": "ge_collide",
      "type": "bool",
      "value": false
-    },
-    {
-     "name": "ge_collide_down",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_up",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -967,7 +927,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -977,7 +937,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -987,7 +947,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -997,7 +957,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -1007,7 +967,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -1027,7 +987,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -1038,6 +998,26 @@
      "name": "ge_collide",
      "type": "bool",
      "value": false
+    },
+    {
+     "name": "ge_collide_down",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_up",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -1047,7 +1027,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -1058,6 +1038,26 @@
      "name": "ge_collide",
      "type": "bool",
      "value": false
+    },
+    {
+     "name": "ge_collide_down",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_up",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -1067,7 +1067,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -1087,7 +1087,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -1097,7 +1097,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -1147,7 +1147,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -1157,7 +1157,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1167,7 +1167,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1177,7 +1177,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1187,7 +1187,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1217,7 +1217,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1227,7 +1227,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1237,7 +1237,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1247,7 +1247,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1257,7 +1257,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1277,7 +1277,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -1307,7 +1307,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1323,6 +1323,666 @@
   },
   {
    "id": 127,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 128,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 129,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 130,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 131,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 132,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 133,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 134,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 135,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 136,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 137,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 138,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 139,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 140,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 141,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 142,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 143,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 144,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 145,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 146,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 147,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 148,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 149,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 150,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 151,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 152,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 153,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 154,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 155,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 156,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 157,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 158,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 159,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 160,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 161,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 162,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 163,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 164,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 165,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 166,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 167,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 168,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 169,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 170,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 171,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 172,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 173,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 174,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 175,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 176,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 177,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 178,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 179,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 180,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 181,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 182,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 183,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 184,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 185,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 186,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 187,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 188,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 189,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 190,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 191,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 192,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": 193,
    "properties": [
     {
      "name": "ge_collide",
