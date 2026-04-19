@@ -71,7 +71,8 @@ export default class {
 
   init() {
     this.scene.trainers = this.scene.add.group();
-    this.scene.trainers.runChildUpdate = true;
+    // Updates are driven by GameMap.updateCharacters with camera culling.
+    this.scene.trainers.runChildUpdate = false;
 
     const trainerObjs = this.scene.findInteractions('trainer');
     if (trainerObjs.length === 0) return;
@@ -138,6 +139,7 @@ export default class {
       this._ensureAnim(texture);
       if (this.scene.ge_init) {
         this.scene.gridEngine.addCharacter(trainerChar.characterDef());
+        this.scene._indexCharacter?.(trainerChar.config.id);
       }
     } else {
       const pathFactory = texture ? Tileset.trainers[texture] : null;
@@ -146,11 +148,13 @@ export default class {
         trainerChar.setTexture('red');
         if (this.scene.ge_init) {
           this.scene.gridEngine.addCharacter(trainerChar.characterDef());
+          this.scene._indexCharacter?.(trainerChar.config.id);
         }
       } else {
         trainerChar.setTexture('red');
         if (this.scene.ge_init) {
           this.scene.gridEngine.addCharacter(trainerChar.characterDef());
+          this.scene._indexCharacter?.(trainerChar.config.id);
         }
         pathFactory().then(path => {
           if (!this.scene.sys) return;

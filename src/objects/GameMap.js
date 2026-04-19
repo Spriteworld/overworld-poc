@@ -107,6 +107,11 @@ export default class extends Phaser.Scene {
     this.mapPlugins['script']             = new Interactables.Script(this);
     // must be after 'pokemon' so addToScene() is available during init()
     this.mapPlugins['overworld_encounter'] = new Interactables.OverworldEncounter(this);
+
+    // Cache the subset of plugins that actually define update() so the
+    // per-frame loop doesn't re-filter every tick.
+    this._updatablePlugins = Object.values(this.mapPlugins)
+      .filter(p => typeof p?.update === 'function');
   }
 
   /**
@@ -131,6 +136,18 @@ export default class extends Phaser.Scene {
 
     this.ge_init = false;
     this.ge_events_init = false;
+
+    // Sequence counters bumped on GridEngine position changes. NPCs compare
+    // against their last-checked value to skip re-running sight / tracking
+    // work when nothing on the map moved this frame.
+    this._tileSeq       = 0;  // any character changed tiles
+    this._playerTileSeq = 0;  // the player specifically changed tiles
+
+    // Tile index for O(1) `isCharacterOnTile` checks. Excludes the player.
+    // Kept in sync by initGEEvents's position subscription and by
+    // _indexCharacter / _unindexCharacter on dynamic spawn/remove.
+    this._charTileIndex = new Map();  // "x,y" → Set<charId>
+    this._charLastTile  = new Map();  // charId → "x,y"
   }
 
   /**
@@ -315,31 +332,32 @@ export default class extends Phaser.Scene {
   getTileProperties(x, y) {
     x = parseInt(x);
     y = parseInt(y);
-    
-    if (this.game.config.debug.console.gameMap) {
-      console.log(['GameMap::getTileProperties', x, y]);
+
+    // Cache is scoped to the current tilemap (static within a scene run).
+    // Clear it if the tilemap reference ever changes.
+    if (this._tilePropsCacheMap !== this.config.tilemap) {
+      this._tilePropsCacheMap = this.config.tilemap;
+      this._tilePropsCache    = new Map();
     }
-    var props = new Map();
+    const key = x + ',' + y;
+    const cached = this._tilePropsCache.get(key);
+    if (cached) return cached;
+
+    const props = new Map();
     this.config.tilemap.getTileLayerNames().forEach(layer => {
       layer = this.config.tilemap.getLayer(layer);
-      if (!layer.visible) {
-        return; // skip invisible layers
-      }
+      if (!layer.visible) return;
 
-      let layerTiles = this.config.tilemap.getTilesWithin(x, y, 1, 1, {}, layer.name);
-      if (layerTiles === null || layerTiles.length === 0) {
-        return;
-      }
+      const layerTiles = this.config.tilemap.getTilesWithin(x, y, 1, 1, {}, layer.name);
+      if (!layerTiles || layerTiles.length === 0) return;
 
-      layerTiles.forEach(layerTile => {
+      for (const layerTile of layerTiles) {
         this.getPropertiesFromTile(layerTile)
-          .forEach((value, key) => {
-            props.set(key, value);
-          })
-        ;
-      });
+          .forEach((value, k) => { props.set(k, value); });
+      }
     });
 
+    this._tilePropsCache.set(key, props);
     return props;
   }
 
@@ -450,23 +468,62 @@ export default class extends Phaser.Scene {
    * @returns {boolean}
    */
   isCharacterOnTile(x, y) {
-    let isOnTile = false;
-    this.characters.forEach((character) => {
-      if (character.config.type === 'player') {
-        return;
+    const set = this._charTileIndex.get(x + ',' + y);
+    return !!(set && set.size);
+  }
+
+  /**
+   * Upsert a non-player character into the tile index. Called when the
+   * character is added to GridEngine (initial map load or dynamic spawn).
+   * Safe to call repeatedly; idempotent.
+   * @param {string} charId - GridEngine character id.
+   */
+  _indexCharacter(charId) {
+    if (charId === 'player') return;
+    const ge = this.gridEngine;
+    if (!ge?.hasCharacter?.(charId)) return;
+    const pos = ge.getPosition(charId);
+    if (!pos) return;
+    this._updateCharTileIndex(charId, pos.x + ',' + pos.y);
+  }
+
+  /**
+   * Remove a non-player character from the tile index. Called from
+   * MovableSprite.remove() after the character is deregistered from GE.
+   * @param {string} charId
+   */
+  _unindexCharacter(charId) {
+    this._updateCharTileIndex(charId, null);
+  }
+
+  /**
+   * Internal: move a character from its last indexed tile to a new one, or
+   * remove it entirely if `newKey` is null. Maintains both `_charTileIndex`
+   * and `_charLastTile` in sync.
+   * @param {string} charId
+   * @param {string|null} newKey - "x,y" or null to remove.
+   */
+  _updateCharTileIndex(charId, newKey) {
+    const prev = this._charLastTile.get(charId);
+    if (prev === newKey) return;
+    if (prev) {
+      const oldSet = this._charTileIndex.get(prev);
+      if (oldSet) {
+        oldSet.delete(charId);
+        if (oldSet.size === 0) this._charTileIndex.delete(prev);
       }
-
-      let bounds = character.getPosition();
-      let xCheck = parseInt(bounds.x);
-      let yCheck = parseInt(bounds.y);
-
-      if (xCheck === x && yCheck === y) {
-        isOnTile = true;
-        return;
+    }
+    if (newKey) {
+      let set = this._charTileIndex.get(newKey);
+      if (!set) {
+        set = new Set();
+        this._charTileIndex.set(newKey, set);
       }
-    });
-
-    return isOnTile;
+      set.add(charId);
+      this._charLastTile.set(charId, newKey);
+    } else {
+      this._charLastTile.delete(charId);
+    }
   }
 
   /**
@@ -513,24 +570,56 @@ export default class extends Phaser.Scene {
    * @param {number} delta - Time since last frame in ms.
    */
   updateCharacters(time, delta) {
-    // console.log(['GameMap::updateCharacters', this.characters]);
     const scaledDelta = delta * (this.game.registry.get('gameSpeed') ?? 1);
-    Object.entries(this.mapPlugins)
-        .filter(([_, plugin]) => typeof plugin.update === 'function')
-        .map(([_, plugin]) => plugin.update(time, scaledDelta));
+    const plugins = this._updatablePlugins;
+    if (plugins) {
+      for (let i = 0; i < plugins.length; i++) plugins[i].update(time, scaledDelta);
+    }
 
     if (this.mapPlugins.player?.loadedPlayer) {
       this.mapPlugins['player'].player.update(time, scaledDelta);
     }
 
-    // if (this.pkmn.length > 0) {
-    //   this.pkmn.forEach((mon) => mon.update(time, delta));
-    // }
+    // Tick NPCs / trainers / overworld Pokémon ourselves (runChildUpdate is
+    // disabled on their groups) so we can cull off-screen children cheaply.
+    this._updateCulledGroups(time, scaledDelta);
 
     if (this.ge_init && !this.ge_events_init) {
       this.initGEEvents();
       this.ge_events_init = true;
     }
+  }
+
+  /**
+   * Walk the npcs / trainers / pkmn Phaser Groups and call update() only on
+   * children whose pixel position falls inside the camera's worldView
+   * expanded by a small buffer. Off-screen characters skip their per-frame
+   * sight / tracking / auto-move work entirely.
+   * @param {number} time
+   * @param {number} scaledDelta
+   */
+  _updateCulledGroups(time, scaledDelta) {
+    const view = this.cameras?.main?.worldView;
+    if (!view) return;
+    const buffer = Tile.WIDTH * 4;
+    const minX = view.x - buffer;
+    const minY = view.y - buffer;
+    const maxX = view.x + view.width  + buffer;
+    const maxY = view.y + view.height + buffer;
+
+    const tick = (group) => {
+      if (!group?.getChildren) return;
+      const children = group.getChildren();
+      for (let i = 0; i < children.length; i++) {
+        const c = children[i];
+        if (!c.active || !c.update) continue;
+        if (c.x < minX || c.x > maxX || c.y < minY || c.y > maxY) continue;
+        c.update(time, scaledDelta);
+      }
+    };
+    tick(this.npcs);
+    tick(this.trainers);
+    tick(this.pkmn);
   }
 
   
@@ -758,23 +847,39 @@ export default class extends Phaser.Scene {
       charLayer: this.gridEngine.getCharLayer('player'),
     };
 
-    // Keep playerTile current as the player moves.
+    // Seed the tile index with every non-player character's starting tile.
+    for (const [charId, character] of this.characters) {
+      if (character.config.type !== 'player') this._indexCharacter(charId);
+    }
+
+    // Keep playerTile current as the player moves, and bump the seq counters
+    // that NPC sight / tracking checks read to decide whether to re-evaluate.
     this._playerTileSub = this.gridEngine
       .positionChangeStarted()
       .subscribe(({ charId, enterTile }) => {
-        if (charId !== 'player') return;
-        gameState.playerTile = {
-          x: enterTile.x,
-          y: enterTile.y,
-          charLayer: this.gridEngine.getCharLayer('player'),
-        };
-        if (!this.config?.inside) {
-          store.commit('game/SET_LAST_OUTDOOR_LOCATION', {
-            map:       this.config.mapName,
-            x:         enterTile.x,
-            y:         enterTile.y,
+        this._tileSeq++;
+        if (charId === 'player') {
+          this._playerTileSeq++;
+          gameState.playerTile = {
+            x: enterTile.x,
+            y: enterTile.y,
             charLayer: this.gridEngine.getCharLayer('player'),
-          });
+          };
+          if (!this.config?.inside) {
+            store.commit('game/SET_LAST_OUTDOOR_LOCATION', {
+              map:       this.config.mapName,
+              x:         enterTile.x,
+              y:         enterTile.y,
+              charLayer: this.gridEngine.getCharLayer('player'),
+            });
+          }
+        } else {
+          // NPC moved — mark its own tracking pyramid stale (the pyramid is
+          // anchored at the NPC's tile, so it must regenerate on arrival).
+          const npc = this.characters.get(charId);
+          if (npc) npc._trackingCoordsStale = true;
+          // Keep the tile index in sync with the character's new position.
+          this._updateCharTileIndex(charId, enterTile.x + ',' + enterTile.y);
         }
       });
 

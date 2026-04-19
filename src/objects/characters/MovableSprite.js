@@ -309,6 +309,8 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
 
     // Remove from the scene's character map.
     scene?.characters?.delete(id);
+    // Drop from the O(1) tile index used by isCharacterOnTile.
+    scene?._unindexCharacter?.(id);
 
     // Explicitly remove from any Phaser Groups the sprite was added to
     // (scene.npcs, scene.pkmn). Phaser's auto-remove-on-destroy is

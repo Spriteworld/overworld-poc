@@ -4,7 +4,7 @@ export default {
   set_var(runner, cmd) {
     runner._scene.mapVars[cmd.key] = cmd.value;
     store.commit('game/SET_MAP_VAR', { map: runner._scene.sys.settings.key, key: cmd.key, value: cmd.value });
-    console.log(`[ScriptRunner] set_var — key: "${cmd.key}", value: ${JSON.stringify(cmd.value)}`);
+    if (runner._debug()) console.log(`[ScriptRunner] set_var — key: "${cmd.key}", value: ${JSON.stringify(cmd.value)}`);
     runner._step();
   },
 

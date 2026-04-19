@@ -117,9 +117,14 @@ export default class extends Character {
       return;
     }
     const im = getInputManager();
-    if (im?.isDown(Action.CONFIRM) && im.getDuration(Action.CONFIRM) < 80) {
+    // Edge-triggered: fire exactly once on the frame CONFIRM is first pressed.
+    // Previously this fired every frame for ~5 frames (getDuration < 80ms),
+    // calling handleInteractables and the registry interaction search each time.
+    const confirmDown = !!im?.isDown(Action.CONFIRM);
+    if (confirmDown && !this._confirmHeldLastFrame) {
       this.handleInteractables();
     }
+    this._confirmHeldLastFrame = confirmDown;
   }
 
   /**
@@ -150,7 +155,7 @@ export default class extends Character {
     } else {
       this.stateMachine.setState(this.stateDef.IDLE);
     }
-    EventBus.emit('player-move-complete', this);
+    this._emitMoveCompleteIfTileChanged();
   }
 
   /** Override: swap texture/mapping and shift camera x by -0.5 tiles. */
@@ -179,7 +184,11 @@ export default class extends Character {
 
     this.gridengine.setSpeed(this.config.id, 20);
 
-    if (im?.isDown(Action.CONFIRM) && im.getDuration(Action.CONFIRM) < 80) {
+    // Edge-triggered CONFIRM (matches idleOnUpdate).
+    const confirmDown = !!im?.isDown(Action.CONFIRM);
+    const confirmJustPressed = confirmDown && !this._confirmHeldLastFrame;
+    this._confirmHeldLastFrame = confirmDown;
+    if (confirmJustPressed) {
       this.handleInteractables();
     } else if (im?.isDown(Action.LEFT)) {
       this.handleMove(Direction.LEFT);
@@ -190,6 +199,20 @@ export default class extends Character {
     } else if (im?.isDown(Action.DOWN)) {
       this.handleMove(Direction.DOWN);
     }
+    this._emitMoveCompleteIfTileChanged();
+  }
+
+  /**
+   * Only emit the cross-boundary `player-move-complete` event when the player's
+   * tile coordinate actually changes. Previously this fired every tick while
+   * the move state was active, churning Vue reactivity for no new information.
+   */
+  _emitMoveCompleteIfTileChanged() {
+    const tx = (this.x / Tile.WIDTH)  | 0;
+    const ty = (this.y / Tile.HEIGHT) | 0;
+    if (tx === this._lastEmittedTileX && ty === this._lastEmittedTileY) return;
+    this._lastEmittedTileX = tx;
+    this._lastEmittedTileY = ty;
     EventBus.emit('player-move-complete', this);
   }
 

@@ -59,16 +59,16 @@ export default class extends Character {
   update(time, delta) {
     if (!this.config.scene.ge_init) { return; }
     this.stateMachine.update(time);
+    // Static NPCs (no spin / move / follow / sight / tracking) skip the
+    // entire auto-behavior pipeline. _hasUpdateWork is refreshed in the
+    // Character constructor and in setMovementBehavior.
+    if (!this._hasUpdateWork) return;
     this.canSeeCharacter();
     this.canTrackPlayer();
     this.addAutoSpin(delta);
     this.addAutoMove();
     this.addAutoFollow();
-
-    if (this.trackingCoords && this.trackingCoords.length){
-      if (this.isMoving()) {
-        this.generateTrackingCoords();
-      }
-    }
+    // Pyramid regenerates lazily in canTrackPlayer when _trackingCoordsStale
+    // is flipped by a positionChangeStarted subscription on this NPC.
   }
 }

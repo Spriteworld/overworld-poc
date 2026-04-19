@@ -25,7 +25,10 @@ export default class {
       console.log(['Interactables::npc', npcs]);
     }
 
-    this.scene.npcs.runChildUpdate = true;
+    // Updates are driven by GameMap.updateCharacters with camera culling
+    // instead of Phaser's runChildUpdate (which would tick every NPC on the
+    // map, not just the on-screen ones).
+    this.scene.npcs.runChildUpdate = false;
     npcs.forEach((npc) => {
       if (!checkOnlyIf(getPropertyValue(npc.properties, 'only_if'), store.state.game.gameFlags, this.scene.config.variant ?? null)) return;
       assertNotReservedId(npc.name, 'Interactables::npc');
@@ -83,6 +86,7 @@ export default class {
       // If GridEngine is already initialised (dynamic spawn mid-game), register now
       if (this.scene.ge_init) {
         this.scene.gridEngine.addCharacter(npcObj.characterDef());
+        this.scene._indexCharacter?.(npcObj.config.id);
       }
     } else {
       const pathFactory = texture ? (Tileset.sprites[texture] ?? Tileset.trainers[texture]) : null;
@@ -91,6 +95,7 @@ export default class {
         npcObj.setTexture('red');
         if (this.scene.ge_init) {
           this.scene.gridEngine.addCharacter(npcObj.characterDef());
+          this.scene._indexCharacter?.(npcObj.config.id);
         }
         return npcObj;
       }
@@ -99,6 +104,7 @@ export default class {
       npcObj.setTexture('red');
       if (this.scene.ge_init) {
         this.scene.gridEngine.addCharacter(npcObj.characterDef());
+        this.scene._indexCharacter?.(npcObj.config.id);
       }
 
       pathFactory().then(path => {

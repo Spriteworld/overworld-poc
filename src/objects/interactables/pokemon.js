@@ -22,7 +22,8 @@ export default class {
     let pkmn = this.scene.findInteractions('pkmn');
     if (pkmn.length === 0) { return; }
 
-    this.scene.pkmn.runChildUpdate = true;
+    // Updates are driven by GameMap.updateCharacters with camera culling.
+    this.scene.pkmn.runChildUpdate = false;
     pkmn.forEach((pokemon) => {
       if (this.scene.game.config.debug.console.interactableShout) {
         console.log(
@@ -99,6 +100,7 @@ export default class {
       // If GridEngine is already initialised (dynamic spawn mid-game), register now
       if (this.scene.ge_init) {
         this.scene.gridEngine.addCharacter(pkmn.characterDef());
+        this.scene._indexCharacter?.(pkmn.config.id);
       }
     } else {
       const pathFactory = isShiny ? Tileset.pokemon_shiny[texture] : Tileset.pokemon[texture];
@@ -110,6 +112,7 @@ export default class {
         pkmn.setTexture('red');
         if (this.scene.ge_init) {
           this.scene.gridEngine.addCharacter(pkmn.characterDef());
+          this.scene._indexCharacter?.(pkmn.config.id);
         }
         return pkmn;
       }
@@ -118,6 +121,7 @@ export default class {
       pkmn.setTexture('red');
       if (this.scene.ge_init) {
         this.scene.gridEngine.addCharacter(pkmn.characterDef());
+        this.scene._indexCharacter?.(pkmn.config.id);
       }
 
       pathFactory().then(path => {

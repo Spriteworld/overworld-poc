@@ -215,9 +215,9 @@ export default class OverworldEncounter {
       if (b?.mode === 'battling') return;
       if (b) b.mode = 'battling';
 
-      // Attach the player's live bag inventory at trigger time — the stored
-      // battleConfig is built at map load, so its bag snapshot would be stale.
-      spawn.battleConfig.player.inventory = buildBattleInventory();
+      // Refresh the player half of the pre-built battleConfig so the battle
+      // sees the LIVE party + bag — not the snapshot taken at map load.
+      this._refreshPlayerSide(spawn.battleConfig);
 
       this.scene.game.events.emit('battle-start', spawn.battleConfig);
       this.scene.game.events.once('battle-complete', () => this._removeSpawn(spawn));
@@ -245,6 +245,7 @@ export default class OverworldEncounter {
     for (const b of Object.values(this._behaviour)) {
       if (b.exclaimTimer)  b.exclaimTimer.remove?.(false);
       if (b.exclaimSprite) b.exclaimSprite.destroy();
+      if (b.startTimer)    b.startTimer.remove?.(false);
     }
     this._behaviour = {};
   }
@@ -554,9 +555,26 @@ export default class OverworldEncounter {
     if (this.scene.game.config.debug.noEncounters) { this._endReaction(spawn); return; }
     const b = this._behaviour[spawn.geId];
     if (b) b.mode = 'battling';
-    spawn.battleConfig.player.inventory = buildBattleInventory();
+    this._refreshPlayerSide(spawn.battleConfig);
     this.scene.game.events.emit('battle-start', spawn.battleConfig);
     this.scene.game.events.once('battle-complete', () => this._removeSpawn(spawn));
+  }
+
+  /**
+   * Overwrite `battleConfig.player.team` and `battleConfig.player.inventory`
+   * with fresh snapshots of the LIVE party and bag. The pre-built battleConfig
+   * is stamped at map load, so without this any level-ups, evolutions, hp
+   * changes, or new gift mons since map entry would be ignored at battle start.
+   */
+  _refreshPlayerSide(battleConfig) {
+    if (!battleConfig?.player) return;
+    battleConfig.player.team = gameState.party.map(p => ({
+      ...p,
+      moves: p.moves.map(m => ({ ...m, pp: { ...m.pp } })),
+      ivs:   { ...p.ivs },
+      evs:   { ...p.evs },
+    }));
+    battleConfig.player.inventory = buildBattleInventory();
   }
 
   /**
@@ -619,6 +637,7 @@ export default class OverworldEncounter {
     if (!b) return;
     if (b.exclaimTimer)  b.exclaimTimer.remove?.(false);
     if (b.exclaimSprite) b.exclaimSprite.destroy();
+    if (b.startTimer)    b.startTimer.remove?.(false);
     delete this._behaviour[geId];
   }
 
@@ -680,17 +699,29 @@ export default class OverworldEncounter {
         },
         charLayer: 'ground',
       });
-      this.scene.gridEngine.moveRandomly(geId, 2500, 2);
+      // Stagger each mon: random per-mon interval (1.8s–3.6s) plus a random
+      // 0..rate initial delay. Without this every spawn shares the same beat
+      // and they all step in unison after a map load.
+      const rate  = 1800 + Math.floor(rng() * 1800);
+      const delay = Math.floor(rng() * rate);
+      const startTimer = this.scene.time.delayedCall(delay, () => {
+        if (this.scene.gridEngine?.hasCharacter(geId)) {
+          this.scene.gridEngine.moveRandomly(geId, rate, 2);
+        }
+        const b = this._behaviour[geId];
+        if (b && b.startTimer === startTimer) b.startTimer = null;
+      });
       this._behaviour[geId] = {
         mode:         'neutral',
         stepsLeft:    0,
         cooldownLeft: 0,
         startedAt:    0,
         lastMoveAt:   0,
-        origRate:     2500,
+        origRate:     rate,
         origRadius:   2,
         exclaimSprite: null,
         exclaimTimer:  null,
+        startTimer,
       };
     };
 

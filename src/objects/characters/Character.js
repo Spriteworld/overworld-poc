@@ -80,6 +80,29 @@ export default class extends MovableSprite {
 
     this.initSeenRadius(identification);
     this.trackingCoords = [];
+    this._trackingCoordsMap  = null;      // "x,y" → dir, set by generateTrackingCoords
+    this._trackingCoordsStale = true;     // rebuild on first canTrackPlayer
+    this._lastSightSeq = -1;              // GameMap._tileSeq at last canSeeCharacter
+    this._lastTrackSeq = -1;              // GameMap._playerTileSeq at last canTrackPlayer
+    this._refreshHasUpdateWork();
+  }
+
+  /**
+   * Recompute whether this character has any per-frame work (auto-spin/move/
+   * follow, line-of-sight, or tracking). Static NPCs (no behavior + no sight
+   * radius) skip their update() body entirely so on-screen crowds are cheap.
+   * Called from the constructor and from setMovementBehavior.
+   */
+  _refreshHasUpdateWork() {
+    const c = this.config;
+    this._hasUpdateWork = !!(
+      c.spin ||
+      c.move ||
+      c.follow ||
+      c['track-player'] ||
+      c['avoid-character'] ||
+      (c['seen-radius'] ?? 0) > 0
+    );
   }
 
   /**
@@ -342,7 +365,7 @@ export default class extends MovableSprite {
 
   /** State callback: log the start of a jump (placeholder). */
   jumpOnEnter() {
-    console.log('JUMP START');
+    if (this.scene.game.config.debug.console.character) console.log('JUMP START');
   }
   /** State callback: tween a simple vertical arc and return to IDLE on completion. */
   jumpOnUpdate() {
@@ -360,7 +383,7 @@ export default class extends MovableSprite {
   }
   /** State callback: log the end of a jump (placeholder). */
   jumpOnExit() {
-    console.log('JUMP END');
+    if (this.scene.game.config.debug.console.character) console.log('JUMP END');
   }
 
   /**
@@ -628,106 +651,77 @@ export default class extends MovableSprite {
       return; 
     }
 
-    let radius = this.config['track-player-radius'];
-    this.trackingCoords = [];
-    let npcBounds = this.getBounds();
-    let pyramidCount = [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29];
+    const radius = this.config['track-player-radius'];
+    const pyramidCount = [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29];
+    const npcBounds = this.getBounds();
+    const baseX = parseInt(npcBounds.x / Tile.WIDTH);
+    const baseY = parseInt(npcBounds.y / Tile.HEIGHT);
 
-    let npcCoords = { 
-      x: parseInt(npcBounds.x / Tile.WIDTH), 
-      y: parseInt(npcBounds.y / Tile.HEIGHT)
+    this.trackingCoords = [];
+    this._trackingCoordsMap = new Map();
+    this._trackingCoordsStale = false;
+
+    const debugRects = !this.isMoving() && this.scene.game.config.debug.tests.rectOutlines;
+
+    const addCoord = (cx, cy, dir) => {
+      this.trackingCoords.push({ x: cx, y: cy, dir });
+      this._trackingCoordsMap.set(cx + ',' + cy, dir);
+      if (debugRects) {
+        const tile = this.config.scene.add.rectangle(
+          cx * Tile.WIDTH, cy * Tile.HEIGHT,
+          Tile.WIDTH, Tile.HEIGHT,
+          this.rectColor.normal,
+          0.5,
+        );
+        tile.setOrigin(0, 0);
+      }
     };
 
     // top pyramid
-    npcCoords.x -= 1;
-    for (let i=0; i<radius; i++) {
-      let coord = {...npcCoords};
-      coord.x -= i;
-      coord.y -= i;
-
-      for (let j=0; j<pyramidCount[i]; j++) {
-        coord.x += 1;
-        
-        this.trackingCoords.push({...coord, dir: Direction.UP});
-        if (!this.isMoving() && this.scene.game.config.debug.tests.rectOutlines) {
-          let tile = this.config.scene.add.rectangle(
-            coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
-            Tile.WIDTH, Tile.HEIGHT,
-            this.rectColor.normal,
-            0.5
-          );
-          tile.setOrigin(0,0);
-        }
+    let npcX = baseX - 1;
+    let npcY = baseY;
+    for (let i = 0; i < radius; i++) {
+      let cx = npcX - i;
+      const cy = npcY - i;
+      for (let j = 0; j < pyramidCount[i]; j++) {
+        cx += 1;
+        addCoord(cx, cy, Direction.UP);
       }
     }
 
     // bottom pyramid
-    npcCoords.x += 2;
-    npcCoords.y += 2;
-    for (let i=0; i<radius; i++) {
-      let coord = {...npcCoords};
-      coord.x += i;
-      coord.y += i;
-
-      for (let j=0; j<pyramidCount[i]; j++) {
-        coord.x -= 1;
-        
-        this.trackingCoords.push({...coord, dir: Direction.DOWN});
-        if (!this.isMoving() && this.scene.game.config.debug.tests.rectOutlines) {
-          let tile = this.config.scene.add.rectangle(
-            coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
-            Tile.WIDTH, Tile.HEIGHT,
-            this.rectColor.normal,
-            0.5
-          );
-          tile.setOrigin(0,0);
-        }
+    npcX = baseX + 1;
+    npcY = baseY + 2;
+    for (let i = 0; i < radius; i++) {
+      let cx = npcX + i;
+      const cy = npcY + i;
+      for (let j = 0; j < pyramidCount[i]; j++) {
+        cx -= 1;
+        addCoord(cx, cy, Direction.DOWN);
       }
     }
 
     // right pyramid
-    npcCoords.y -= 2;
-    for (let i=0; i<radius; i++) {
-      let coord = {...npcCoords};
-      coord.x += i;
-      coord.y -= i;
-
-      for (let j=0; j<pyramidCount[i]; j++) {
-        coord.y += 1;
-
-        this.trackingCoords.push({...coord, dir: Direction.RIGHT});
-        if (!this.isMoving() && this.scene.game.config.debug.tests.rectOutlines) {
-          let tile = this.config.scene.add.rectangle(
-            coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
-            Tile.WIDTH, Tile.HEIGHT,
-            this.rectColor.normal,
-            0.5
-          );
-          tile.setOrigin(0,0);
-        }
+    npcX = baseX + 1;
+    npcY = baseY;
+    for (let i = 0; i < radius; i++) {
+      const cx = npcX + i;
+      let cy = npcY - i;
+      for (let j = 0; j < pyramidCount[i]; j++) {
+        cy += 1;
+        addCoord(cx, cy, Direction.RIGHT);
       }
     }
 
     // left pyramid
-    npcCoords.x -= 2;
-    for (let i=0; i<radius; i++) {
-      let coord = {...npcCoords};
-      coord.x -= i;
-      coord.y -= i;
-
-      for (let j=0; j<pyramidCount[i]; j++) {
-        coord.y += 1;
-
-        this.trackingCoords.push({...coord, dir: Direction.LEFT});
-        if (!this.isMoving() && this.scene.game.config.debug.tests.rectOutlines) {
-          let tile = this.config.scene.add.rectangle(
-            coord.x * Tile.WIDTH, (coord.y * Tile.HEIGHT),
-            Tile.WIDTH, Tile.HEIGHT,
-            this.rectColor.normal,
-            0.5
-          );
-          tile.setOrigin(0,0);
-        }
+    npcX = baseX - 1;
+    npcY = baseY;
+    for (let i = 0; i < radius; i++) {
+      const cx = npcX - i;
+      let cy = npcY - i;
+      for (let j = 0; j < pyramidCount[i]; j++) {
+        cy += 1;
+        addCoord(cx, cy, Direction.LEFT);
       }
     }
   }
@@ -741,31 +735,27 @@ export default class extends MovableSprite {
       && this.config['avoid-character'] === false) {
       return;
     }
-    let radius = this.config['track-player-radius'];
+    // The player's tile must have changed (or our own pyramid must be stale
+    // from our own movement) for this check to produce a new result.
+    const playerSeq = this.config.scene._playerTileSeq ?? 0;
+    if (this._lastTrackSeq === playerSeq && !this._trackingCoordsStale) return;
+    this._lastTrackSeq = playerSeq;
 
     let player = this.config.scene.mapPlugins['player'].player;
     let playerPos = player.getPosition();
-    
-    if (this.trackingCoords.length === 0) {
-      // this.scene.mapPlugins['debug'].debugObject(this, radius);
+
+    if (this._trackingCoordsStale || this.trackingCoords.length === 0) {
       this.generateTrackingCoords();
     }
 
-    const facingDir = this.getFacingDirection().toUpperCase();
-    let coord = Object
-      .values(this.trackingCoords)
-      .find((coord) => {
-        return coord.x === parseInt(playerPos.x)
-          && coord.y === parseInt(playerPos.y);
-      })
-    ;
+    const key = parseInt(playerPos.x) + ',' + parseInt(playerPos.y);
+    const dir = this._trackingCoordsMap?.get(key);
+    if (!dir) return;
 
-    if (coord) {
-      if (typeof this.config['event-can-track-character'] === 'function') {
-        this.config['event-can-track-character'](this.config.id, coord.dir);
-      } else {
-        this.look(coord.dir.toLowerCase());
-      }
+    if (typeof this.config['event-can-track-character'] === 'function') {
+      this.config['event-can-track-character'](this.config.id, dir);
+    } else {
+      this.look(dir.toLowerCase());
     }
   }
 
@@ -779,6 +769,11 @@ export default class extends MovableSprite {
     if (this.scene.game.config.debug.noTrainerSight) { return; }
     if ((this.config['seen-radius'] ?? 0) === 0) { return; }
     if (this.config['seen-character'] === null || this.config['seen-character']?.length === 0) { return; }
+    // Skip the sight cast when no character has moved on the map since our
+    // last evaluation — the prior `isInside` result is still correct.
+    const seq = this.config.scene._tileSeq ?? 0;
+    if (this._lastSightSeq === seq) return;
+    this._lastSightSeq = seq;
 
     if (!this.gridengine.hasCharacter(this.config['seen-character'])) {
       if (this.scene.game.config.debug.tests.rectOutlines) {
@@ -874,7 +869,9 @@ export default class extends MovableSprite {
   }
 
   setMovementBehavior(movement, target) {
-    console.log('Setting movement behavior for', this.config.id, 'to', movement, 'with target', target);
+    if (this.scene.game.config.debug.console.character) {
+      console.log('Setting movement behavior for', this.config.id, 'to', movement, 'with target', target);
+    }
     this.config['movement-target'] = target;
     switch (movement) {
       case 'match-movement':
@@ -913,5 +910,6 @@ export default class extends MovableSprite {
       }
       break;
     }
+    this._refreshHasUpdateWork();
   }
 }
