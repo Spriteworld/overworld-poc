@@ -7,6 +7,7 @@ export default class {
   constructor(scene) {
     this.scene = scene;
     this._coordsText = null;
+    this._fpsText    = null;
     this._onlyIfEntries = []; // { textObj, name, onlyIf, onlyIfKey, onlyIfVal, type, op }
   }
 
@@ -35,6 +36,18 @@ export default class {
         { fontFamily: 'monospace', fontSize: '11px', color: '#ffffff', backgroundColor: '#00000088', padding: { x: 4, y: 2 } }
       )
         .setOrigin(1, 1)
+        .setScrollFactor(0)
+        .setDepth(9999999);
+    }
+
+    if (this.scene.game.config.debug.fps === true) {
+      const cam = this.scene.cameras.main;
+      this._fpsText = this.scene.add.text(
+        cam.width - 6, 6,
+        'fps —',
+        { fontFamily: 'monospace', fontSize: '11px', color: '#ffffff', backgroundColor: '#00000088', padding: { x: 4, y: 2 } }
+      )
+        .setOrigin(1, 0)
         .setScrollFactor(0)
         .setDepth(9999999);
     }
@@ -224,6 +237,10 @@ export default class {
         ? (this.scene.config?.variant ?? null)
         : null;
       this._coordsText.setText(variant ? `${pos.x}, ${pos.y} [${variant}]` : `${pos.x}, ${pos.y}`);
+    }
+    if (this._fpsText) {
+      // Phaser already smooths actualFps over the past second.
+      this._fpsText.setText(`fps ${this.scene.game.loop.actualFps.toFixed(0)}`);
     }
     for (const entry of this._onlyIfEntries) {
       entry.textObj.setText(entry.name + this.#onlyIfLabel(entry));

@@ -13,6 +13,7 @@ import Spriteworld from '@Scenes/maps/spriteworld/Spriteworld.js';
 import Test from '@Scenes/maps/random/Test.js';
 import Skyland from '@Scenes/maps/random/Skyland.js';
 import Base from '@Scenes/maps/random/Base.js';
+import SpriteViewer from '@Scenes/maps/random/SpriteViewer.js';
 import Forest from '@Scenes/maps/random/Forest.js';
 import VermillionGym from '@Scenes/maps/random/VermillionGym.js';
 import TurffieldGym from '@Scenes/maps/random/TurffieldGym.js';
@@ -67,6 +68,7 @@ export default {
   Test,
   Skyland,
   Base,
+  SpriteViewer,
   Forest,
   VermillionGym,
   TurffieldGym,

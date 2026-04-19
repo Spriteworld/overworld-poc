@@ -9,6 +9,12 @@ import { getStartScene } from '@Data/startScene.js';
 import { getGameDef } from '@Data/gameDef.js';
 import { getStartFlags, clearStartFlags } from '@Data/startFlags.js';
 import { initRng } from '@Utilities/rng.js';
+import { SHADER_ASSET_KEYS } from '@/asset-key.js';
+import shader_wipe          from '@/assets/shader/wipe.png';
+import shader_wipe_diagonal from '@/assets/shader/wipe-diagonal.png';
+import shader_wipe_vertical from '@/assets/shader/wipe-vertical.png';
+import shader_close_bars    from '@/assets/shader/close-bars.png';
+import shader_trapped       from '@/assets/shader/trapped.png';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -46,6 +52,13 @@ export default class extends Phaser.Scene {
     this.load.on('complete', () => progress.destroy());
 
     this.load.image('blank', Tileset.blank);
+
+    // Battle-transition gradients — sampled by GradientTexturePostFxPipeline.
+    this.load.image(SHADER_ASSET_KEYS.WIPE,          shader_wipe);
+    this.load.image(SHADER_ASSET_KEYS.WIPE_DIAGONAL, shader_wipe_diagonal);
+    this.load.image(SHADER_ASSET_KEYS.WIPE_VERTICAL, shader_wipe_vertical);
+    this.load.image(SHADER_ASSET_KEYS.CLOSE_BARS,    shader_close_bars);
+    this.load.image(SHADER_ASSET_KEYS.TRAPPED,       shader_trapped);
     
     this.load.spritesheet('red', Tileset.red, {frameWidth: 32, frameHeight: 48});
     this.load.spritesheet('red_bike', Tileset.red_bike, {frameWidth: 48, frameHeight: 48});

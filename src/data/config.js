@@ -5,6 +5,7 @@ import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles';
 import Scenes from '@Scenes';
 
 import { BattleScene, EvolutionScene } from '@spriteworld/battle';
+import { registerBattlePipelines } from '@/shaders';
 
 const config = {
   parent: 'game-container',
@@ -36,6 +37,7 @@ const config = {
   scene: [Scenes.Preload, BattleScene, EvolutionScene],
   callbacks: {
     postBoot: (game) => {
+      registerBattlePipelines(game);
       game.canvas.style.width = '100%';
       game.canvas.style.height = '100%';
       game.canvas.style['object-fit'] = 'contain';

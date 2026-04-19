@@ -7,6 +7,7 @@ export default {
   inspector: false,
   playerCoords: false,
   playerVariant: false,
+  fps: false,
   stateMachine: false,
   noEncounters: false,
   noTrainerSight: false,

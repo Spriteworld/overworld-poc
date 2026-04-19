@@ -27,6 +27,16 @@ const MAPS = [
         },
       },
       {
+        scene: 'SpriteViewer',
+        title: 'Sprite Viewer',
+        description: 'All 37 overworld NPC sprites in a grid. NPCs glance in a random direction every 2.5 s.',
+        color: '#374151',
+        tags: ['npcs', 'sprites'],
+        state: {
+          has_pokemon: false,
+        },
+      },
+      {
         scene: 'Base',
         title: 'Base',
         description: 'Basic open-area map. Good for testing movement, collision, and general map loading.',

@@ -1,6 +1,7 @@
 import TestMap from './random/test.json';
 import SkylandMap from './random/skyland.json';
 import BaseMap from './random/base.json';
+import SpriteViewerMap from './random/sprite_viewer.json';
 
 import SpriteworldMap from './spriteworld/spriteworld.json';
 import ForestMap from './random/forest.json';
@@ -97,7 +98,7 @@ export const WORLD_MAP_KEYS = {
 };
 
 export {
-    TestMap,SkylandMap,BaseMap,ForestMap,
+    TestMap,SkylandMap,BaseMap,SpriteViewerMap,ForestMap,
     SpriteworldMap,
     VermillionGymMap, TurffieldGymMap,
 

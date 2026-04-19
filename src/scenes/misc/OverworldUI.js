@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { textBox, toast, EventBus, createInputManager, getInputManager, Action } from '@Utilities';
+import { playBattleStartTransition } from '@Utilities/battleTransition.js';
 import ChoicePrompt from '@Utilities/ChoicePrompt.js';
 import { PauseMenu } from '@Objects';
 import { gameState, saveGame } from '@Data/gameState.js';
@@ -140,19 +141,26 @@ export default class extends Phaser.Scene {
       }
       this.registry.set('player_input', false);
 
-      // 3 white flashes, then hold white and cut to battle
-      this.tweens.add({
-        targets: this.transitionRect,
-        alpha: 1,
-        duration: 80,
-        yoyo: true,
-        repeat: 2,
-        onComplete: () => {
+      const mapScene  = this.scene.get(mapName);
+      const isTrainer = data?.enemy?.isTrainer === true;
+      console.log('[OverworldUI] battle-start: isTrainer=', isTrainer, 'enemy=', data?.enemy);
+
+      // Drive a shader-based transition on the map's camera. Wild battles get
+      // a fade-to-black; trainer battles get the Gen 3 closing-bars wipe.
+      // The post pipeline is detached before onMidpoint fires so the map can
+      // sleep cleanly without leaving FX on the camera for the next wake.
+      playBattleStartTransition(mapScene, {
+        isTrainer,
+        onMidpoint: () => {
+          // Hold a black overlay over the hand-off so the BattleScene2 init
+          // frame doesn't flash through. Switched from white (the old
+          // 3-flash effect) to black to match the shader fade endpoint.
+          this.transitionRect.setFillStyle(0x000000);
           this.transitionRect.setAlpha(1);
           this.scene.sleep(mapName);
           this.scene.launch('BattleScene2', data);
 
-          // The white overlay (alpha 1) hides everything while BattleScene2
+          // The black overlay (alpha 1) hides everything while BattleScene2
           // initialises on the next frame. Bring OverworldUI back on top now
           // so the overlay stays visible, then fade it out. The 100ms delay
           // gives BattleScene2 enough time to start before it becomes visible.
