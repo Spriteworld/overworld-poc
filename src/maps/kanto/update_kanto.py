@@ -37,51 +37,17 @@ Offset derived from pallet.json HeroHouseF1Warp:
 """
 
 import json
-import pathlib
-import re
 
-MAPS_DIR    = pathlib.Path(__file__).parent
-TILESET_DIR = MAPS_DIR.parent.parent / 'tileset'
-SRC_DIR     = MAPS_DIR.parent.parent   # src/
+import rebuild_lib as lib
 
 OFFSET_X = 2592
 OFFSET_Y = 7616
 
-def make_outdoor_tilesets(common_count):
-    return [
-        {'firstgid': 1,                'source': '../../tileset/maps/kanto_common.json'},
-        {'firstgid': common_count + 1, 'source': '../../tileset/maps/kanto_outside.json'},
-    ]
-
-# gen3_outside 0-based tile IDs used programmatically by BaseItem subclasses
-# (not placed in tilelayers) — must always be present in gid_map.json so that
-# update_kanto_insides.py can assign matching frame positions.
-ITEM_TILE_IDS = [17, 18, 35, 53]  # CutTree, Bush, StrengthBoulder, Pokeball
-
-# Explicit overrides for map names whose filename doesn't follow the default
-# snake_case convention (e.g. PalletTown → pallet.json instead of pallet_town.json).
 NAME_TO_FILE = {
-    'PalletTown':   'pallet.json',
+    'PalletTown': 'pallet.json',
 }
 
-
-def name_to_filename(name):
-    """
-    Derive a JSON filename from a CamelCase map name.
-    Checks NAME_TO_FILE first; falls back to inserting underscores before
-    each uppercase letter that follows a lowercase letter or digit.
-    Examples:
-        PalletTown   -> pallet.json        (via override)
-        ViridianCity -> viridian_city.json
-        Route1       -> route1.json
-        CeruleanCity -> cerulean_city.json
-    """
-    if name in NAME_TO_FILE:
-        return NAME_TO_FILE[name]
-    snake = re.sub(r'(?<=[a-z0-9])(?=[A-Z])', '_', name).lower()
-    return snake + '.json'
-
-
+# (layer_name, ge_charLayer_value, is_objectgroup) — render-stack order.
 LAYER_TEMPLATE = [
     ('floor',        None,     False),
     ('subground',    None,     False),
@@ -90,95 +56,41 @@ LAYER_TEMPLATE = [
     ('top',          'top',    False),
     ('interactions', None,     True),
 ]
-
-# ge_charLayer value for each known tilelayer name (None = no property).
-LAYER_CHAR = {name: char for name, char, is_obj in LAYER_TEMPLATE if not is_obj}
-
+LAYER_CHAR  = {name: char for name, char, is_obj in LAYER_TEMPLATE if not is_obj}
 LAYER_ORDER = [name for name, _, _ in LAYER_TEMPLATE]
 
-
-def sort_layers(layers):
-    """Re-order a layer list to match LAYER_TEMPLATE. Unknown layers go last."""
-    def key(l):
-        try:
-            return LAYER_ORDER.index(l['name'])
-        except ValueError:
-            return len(LAYER_ORDER)
-    layers.sort(key=key)
+# gen3_outside 0-based tile IDs used programmatically by BaseItem subclasses
+# (not placed in tilelayers) — must always be present in gid_map.json so that
+# update_kanto_insides.py can assign matching frame positions.
+ITEM_TILE_IDS = [17, 18, 35, 53]  # CutTree, Bush, StrengthBoulder, Pokeball
 
 
-# ── Helpers ────────────────────────────────────────────────────────────────
-
-def extract_region(data, src_w, src_h, ox, oy, dst_w, dst_h):
-    out = []
-    for row in range(dst_h):
-        for col in range(dst_w):
-            sx, sy = ox + col, oy + row
-            if 0 <= sx < src_w and 0 <= sy < src_h:
-                out.append(data[sy * src_w + sx])
-            else:
-                out.append(0)
-    return out
-
-
-def make_layer(name, w, h, ge_char_layer=None):
-    layer = {
-        'height': h, 'id': None, 'name': name,
-        'opacity': 1, 'type': 'tilelayer',
-        'visible': True, 'width': w, 'x': 0, 'y': 0,
-        'data': [0] * (w * h),
-    }
-    if ge_char_layer:
-        layer['properties'] = [
-            {'name': 'ge_charLayer', 'type': 'string', 'value': ge_char_layer}
-        ]
-    return layer
-
-
-def make_skeleton(w, h):
-    layers = []
-    for lid, (name, char_layer, is_obj) in enumerate(LAYER_TEMPLATE, start=1):
-        if is_obj:
-            layers.append({
-                'draworder': 'topdown', 'id': lid,
-                'name': name, 'opacity': 1,
-                'type': 'objectgroup', 'visible': True,
-                'x': 0, 'y': 0,
-                'objects': [{
-                    'height': 32, 'id': 1, 'name': 'player',
-                    'rotation': 0, 'type': 'playerSpawn',
-                    'visible': True, 'width': 32,
-                    'x': (w // 2) * 32, 'y': (h - 2) * 32,
-                }],
-            })
-        else:
-            layer = make_layer(name, w, h, char_layer)
-            layer['id'] = lid
-            layers.append(layer)
-    return {
-        'height': h, 'width': w,
-        'tilewidth': 32, 'tileheight': 32,
-        'orientation': 'orthogonal', 'renderorder': 'right-down',
-        'tiledversion': '1.11.2', 'type': 'map', 'version': '1.10',
-        'tilesets': make_outdoor_tilesets(0),  # placeholder; overwritten per-map
-        'layers': layers,
-    }
+def make_outdoor_tilesets(common_count):
+    return [
+        {'firstgid': 1,                'source': '../../tileset/maps/kanto_common.json'},
+        {'firstgid': common_count + 1, 'source': '../../tileset/maps/kanto_outside.json'},
+    ]
 
 
 # ── GID conversion ─────────────────────────────────────────────────────────
 
-def build_compact_gid_map(kanto_tilelayers, gen3_ts_json, kanto_inside_tilelayers=None, gen3_outside_firstgid_inside=None):
+def build_compact_gid_map(kanto_tilelayers, gen3_ts_json,
+                          kanto_inside_tilelayers=None,
+                          gen3_outside_firstgid_inside=None,
+                          dungeons_outside_gids=None):
     """
     Build a gap-free gen3_gid → kanto_gid mapping.
 
     Tiles are split into two groups:
     - common (GIDs 1..C): gen3_outside tiles used in both outdoor AND indoor maps,
       plus all ITEM_TILE_IDS and animation frame tiles.
-    - outdoor_only (GIDs C+1..C+O): gen3_outside tiles used only in outdoor maps.
+    - outdoor_only (GIDs C+1..C+O): gen3_outside tiles used only in outdoor maps,
+      plus any gen3_outside tile referenced by `kanto_dungeons.json` (dungeons
+      reads from the outdoor tilesets so every dungeon-referenced outdoor tile
+      must have an entry here).
 
     Returns (gen3_to_kanto, kanto_to_gen3, gid_map_path, gid_map_raw, common_count).
     """
-    # Outdoor tilelayer GIDs
     outdoor_gids = {
         gid
         for layer in kanto_tilelayers.values()
@@ -186,7 +98,6 @@ def build_compact_gid_map(kanto_tilelayers, gen3_ts_json, kanto_inside_tilelayer
         if gid != 0
     }
 
-    # Animation frame GIDs (always in outdoor)
     anim_gids = set()
     for t in gen3_ts_json.get('tiles', []):
         if 'animation' not in t:
@@ -194,13 +105,17 @@ def build_compact_gid_map(kanto_tilelayers, gen3_ts_json, kanto_inside_tilelayer
         anim_gids.add(t['id'] + 1)
         for frame in t['animation']:
             anim_gids.add(frame['tileid'] + 1)
-
     outdoor_gids |= anim_gids
 
-    # Force ITEM_TILE_IDS into common
+    # Dungeon-referenced outdoor tiles must exist in gid_map.json or the
+    # dungeons rebuild can't resolve them. They don't need to be common —
+    # dungeons output maps reference both kanto_common and kanto_outside —
+    # so just fold them into the outdoor pool.
+    if dungeons_outside_gids:
+        outdoor_gids |= dungeons_outside_gids
+
     item_gids = {tid + 1 for tid in ITEM_TILE_IDS}
 
-    # Indoor gen3_outside GIDs (convert from combined src GIDs to gen3_raw_gids)
     indoor_outside_gids = set()
     if kanto_inside_tilelayers and gen3_outside_firstgid_inside:
         for layer in kanto_inside_tilelayers.values():
@@ -209,13 +124,9 @@ def build_compact_gid_map(kanto_tilelayers, gen3_ts_json, kanto_inside_tilelayer
                     gen3_raw_gid = src_gid - gen3_outside_firstgid_inside + 1
                     indoor_outside_gids.add(gen3_raw_gid)
 
-    # All gen3_outside tiles used in indoor maps MUST be in kanto_common
-    # (indoor maps can't reference kanto_outside). Outdoor-only tiles go in
-    # kanto_outside.  The intersection is redundant — any indoor tile is common.
     common_raw   = sorted(indoor_outside_gids | item_gids)
     outdoor_only = sorted(outdoor_gids - set(common_raw))
 
-    # Assign compact GIDs: common first (1..C), outdoor_only after (C+1..C+O)
     common_count  = len(common_raw)
     gen3_to_kanto = {}
     for i, g in enumerate(common_raw):
@@ -229,36 +140,31 @@ def build_compact_gid_map(kanto_tilelayers, gen3_ts_json, kanto_inside_tilelayer
         'kanto_to_gen3': {str(k): v for k, v in kanto_to_gen3.items()},
         'common_count':  common_count,
     }
-    gid_map_path = MAPS_DIR / 'gid_map.json'
+    gid_map_path = lib.MAPS_DIR / 'gid_map.json'
     return gen3_to_kanto, kanto_to_gen3, gid_map_path, gid_map_raw, common_count
 
 
-def build_gen3_props_index(gen3_tileset_json):
-    """Return {tile_id: props_list} from gen3_outside tileset JSON."""
-    index = {}
-    for tile in gen3_tileset_json.get('tiles', []):
-        if 'properties' in tile:
-            index[tile['id']] = tile['properties']
-    return index
-
-
-def ensure_kanto_tile(ts_json, kanto_gid, gen3_gid, gen3_props_index, tile_id_offset=0):
+def ensure_kanto_tile(ts_json, kanto_gid, gen3_gid, gen3_props_index,
+                      tile_id_offset=0):
     """
-    Ensure a tileset JSON has a tile entry for the given GID.
-    tile_id_offset is subtracted from kanto_gid-1 to get the 0-based id within
-    the target tileset (0 for kanto_common, common_count for kanto_outside).
-    Copies properties from the corresponding gen3_outside tile if missing.
+    Ensure a tileset JSON has a tile entry for the given GID. Properties are
+    re-synced from the gen3_outside source on every run so that flipping a
+    flag (e.g. ge_collide) on a source tile actually propagates downstream.
     Returns True if the tileset was modified.
     """
-    tile_id = kanto_gid - 1 - tile_id_offset  # 0-based within tileset
+    tile_id = kanto_gid - 1 - tile_id_offset
     tiles   = ts_json.setdefault('tiles', [])
+
+    gen3_tile_id = gen3_gid - 1
+    props        = gen3_props_index.get(gen3_tile_id, [])
 
     existing = next((t for t in tiles if t['id'] == tile_id), None)
     if existing:
-        return False  # already has an entry
+        if existing.get('properties') == props:
+            return False
+        existing['properties'] = props
+        return True
 
-    gen3_tile_id = gen3_gid - 1
-    props = gen3_props_index.get(gen3_tile_id, [])
     tiles.append({'id': tile_id, 'properties': props})
     return True
 
@@ -270,13 +176,12 @@ def remap_data(data, gen3_to_kanto, kanto_common_ts_json, kanto_outside_ts_json,
     Convert a flat tile-data array from gen3_outside GIDs to kanto GIDs.
 
     Tiles with no existing mapping are assigned the next available kanto GID
-    (extending the appropriate tileset) and recorded in new_mappings.
-    GIDs 1..common_count go into kanto_common_ts_json; higher go into kanto_outside_ts_json.
-    Returns (converted_data, ts_modified) where ts_modified is True if any
-    new property entries were added.
+    (extending the appropriate tileset) and recorded in `new_mappings`.
+    GIDs 1..common_count → kanto_common; higher → kanto_outside.
+    Returns (converted_data, ts_modified).
     """
-    max_kanto  = max(kanto_to_gen3.keys(), default=0)
-    out        = []
+    max_kanto   = max(kanto_to_gen3.keys(), default=0)
+    out         = []
     ts_modified = False
     for gid in data:
         if gid == 0:
@@ -284,18 +189,16 @@ def remap_data(data, gen3_to_kanto, kanto_common_ts_json, kanto_outside_ts_json,
             continue
         kgid = gen3_to_kanto.get(gid)
         if kgid is None:
-            # New gen3 tile not previously mapped — assign next kanto slot.
             if gid in new_mappings:
                 kgid = new_mappings[gid]
             else:
                 max_kanto += 1
                 kgid = max_kanto
-                new_mappings[gid] = kgid
-                gen3_to_kanto[gid] = kgid
-                kanto_to_gen3[kgid] = gid
-                gid_map['gen3_to_kanto'][str(gid)]   = kgid
-                gid_map['kanto_to_gen3'][str(kgid)]  = gid
-        # Route to the correct tileset JSON based on GID range.
+                new_mappings[gid]                  = kgid
+                gen3_to_kanto[gid]                 = kgid
+                kanto_to_gen3[kgid]                = gid
+                gid_map['gen3_to_kanto'][str(gid)]  = kgid
+                gid_map['kanto_to_gen3'][str(kgid)] = gid
         if kgid <= common_count:
             if ensure_kanto_tile(kanto_common_ts_json, kgid, gid, gen3_props_index, 0):
                 ts_modified = True
@@ -312,12 +215,11 @@ def ensure_anim_tiles_in_kanto(gen3_ts_json, gen3_to_kanto, kanto_to_gen3,
                                 gid_map, new_mappings, kanto_common_ts_json,
                                 kanto_outside_ts_json, gen3_props_index, common_count):
     """
-    Guarantee that every animation frame tile from gen3_outside has a kanto GID.
-    Frame tiles are never placed directly on maps, so remap_data won't encounter
-    them.  This function fills that gap before update_split_pngs runs.
-    Returns True if any tileset JSON was modified.
+    Guarantee that every animation frame tile from gen3_outside has a kanto
+    GID. Frame tiles aren't placed directly on maps so remap_data won't see
+    them — fill that gap before update_split_pngs runs.
     """
-    max_kanto  = max(kanto_to_gen3.keys(), default=0)
+    max_kanto   = max(kanto_to_gen3.keys(), default=0)
     ts_modified = False
     for t in gen3_ts_json.get('tiles', []):
         if 'animation' not in t:
@@ -333,11 +235,11 @@ def ensure_anim_tiles_in_kanto(gen3_ts_json, gen3_to_kanto, kanto_to_gen3,
             else:
                 max_kanto += 1
                 kgid = max_kanto
-                new_mappings[gen3_gid]              = kgid
-                gen3_to_kanto[gen3_gid]             = kgid
-                kanto_to_gen3[kgid]                = gen3_gid
+                new_mappings[gen3_gid]                = kgid
+                gen3_to_kanto[gen3_gid]               = kgid
+                kanto_to_gen3[kgid]                   = gen3_gid
                 gid_map['gen3_to_kanto'][str(gen3_gid)] = kgid
-                gid_map['kanto_to_gen3'][str(kgid)]     = gen3_gid
+                gid_map['kanto_to_gen3'][str(kgid)]      = gen3_gid
             if kgid <= common_count:
                 if ensure_kanto_tile(kanto_common_ts_json, kgid, gen3_gid, gen3_props_index, 0):
                     ts_modified = True
@@ -351,12 +253,11 @@ def sync_kanto_animations(gen3_ts_json, gen3_to_kanto, common_count,
                            kanto_common_ts_json, kanto_outside_ts_json):
     """
     Write animation properties into kanto_common_ts_json or kanto_outside_ts_json
-    for every animated gen3 tile.  Frame tileids are made 0-based within the
-    target tileset (common: gid-1, outside: gid-common_count-1).
-    Returns True if any tileset was modified.
+    for every animated gen3 tile. Frame tileids are made 0-based within the
+    target tileset.
     """
-    common_tiles      = kanto_common_ts_json.setdefault('tiles', [])
-    outside_tiles     = kanto_outside_ts_json.setdefault('tiles', [])
+    common_tiles  = kanto_common_ts_json.setdefault('tiles', [])
+    outside_tiles = kanto_outside_ts_json.setdefault('tiles', [])
     common_by_id  = {t['id']: t for t in common_tiles}
     outside_by_id = {t['id']: t for t in outside_tiles}
     modified = False
@@ -370,7 +271,7 @@ def sync_kanto_animations(gen3_ts_json, gen3_to_kanto, common_count,
 
         is_common = kanto_gid <= common_count
         offset    = 0 if is_common else common_count
-        kanto_tid = kanto_gid - 1 - offset  # 0-based within target tileset
+        kanto_tid = kanto_gid - 1 - offset
 
         new_anim = []
         for frame in gen3_tile['animation']:
@@ -386,9 +287,8 @@ def sync_kanto_animations(gen3_ts_json, gen3_to_kanto, common_count,
 
         if not new_anim:
             continue
-
-        # The animatedTiles plugin uses findIndex to locate the animated tile's
-        # own frame.  Skip any animation that doesn't include the tile itself.
+        # animatedTiles plugin uses findIndex to locate the animated tile's
+        # own frame — skip animations that don't include themselves.
         if not any(f['tileid'] == kanto_tid for f in new_anim):
             continue
 
@@ -413,19 +313,16 @@ def build_anim_png(gen3_ts_json, gen3_to_kanto):
     """
     Write animation.png — a single-row sprite sheet of every animation frame
     tile, ordered by kanto tile ID, followed by frames from any standalone
-    animation tilesets (e.g. animated_grass.png).
-    This is a visual export for reference; the tiles themselves live in
-    kanto.png (or their own sheet) for the game engine.
-    Returns True if the file was written.
+    animation tilesets (e.g. animated_grass.png). Visual reference only;
+    the tiles themselves live in their canonical sheets for the engine.
     """
     try:
         from PIL import Image
     except ImportError:
         return False
 
-    # ── Section 1: gen3_outside animated tiles (mapped into kanto GIDs) ───────
-    seen      = set()
-    anim_tiles = []   # (kanto_gid, gen3_gid) sorted by kanto_gid
+    seen       = set()
+    anim_tiles = []  # (kanto_gid, gen3_gid) sorted by kanto_gid
     for t in gen3_ts_json.get('tiles', []):
         if 'animation' not in t:
             continue
@@ -438,12 +335,12 @@ def build_anim_png(gen3_ts_json, gen3_to_kanto):
                 seen.add(kanto_gid)
 
     tw, th = 32, 32
-    strips = []  # list of PIL Images to stitch horizontally
+    strips = []
 
     if anim_tiles:
         anim_tiles.sort()
         gen3_cols = gen3_ts_json['columns']
-        gen3_img  = Image.open(TILESET_DIR / gen3_ts_json['image']).convert('RGBA')
+        gen3_img  = Image.open(lib.TILESET_DIR / gen3_ts_json['image']).convert('RGBA')
         strip = Image.new('RGBA', (len(anim_tiles) * tw, th), (0, 0, 0, 0))
         for i, (_, gen3_gid) in enumerate(anim_tiles):
             gen3_tid = gen3_gid - 1
@@ -452,11 +349,10 @@ def build_anim_png(gen3_ts_json, gen3_to_kanto):
             strip.paste(gen3_img.crop((src_x, src_y, src_x + tw, src_y + th)), (i * tw, 0))
         strips.append(strip)
 
-    # ── Section 2: standalone animation tilesets (e.g. animated_grass) ────────
     EXTRA_TILESETS = ['animated_grass']
     for ts_name in EXTRA_TILESETS:
-        ts_json_path = TILESET_DIR / f'{ts_name}.json'
-        ts_png_path  = TILESET_DIR / f'{ts_name}.png'
+        ts_json_path = lib.TILESET_DIR / f'{ts_name}.json'
+        ts_png_path  = lib.TILESET_DIR / f'{ts_name}.png'
         if not ts_json_path.exists() or not ts_png_path.exists():
             continue
         ts_json = json.loads(ts_json_path.read_text(encoding='utf-8'))
@@ -467,7 +363,6 @@ def build_anim_png(gen3_ts_json, gen3_to_kanto):
             if 'animation' in t:
                 frame_tids.add(t['id'])
                 frame_tids.update(f['tileid'] for f in t['animation'])
-        # If no animation data, include every tile in the sheet.
         if not frame_tids:
             frame_tids = set(range(ts_json['tilecount']))
         frame_tids = sorted(frame_tids)
@@ -489,339 +384,154 @@ def build_anim_png(gen3_ts_json, gen3_to_kanto):
         out_img.paste(s, (x_off, 0))
         x_off += s.width
 
-    out_path = TILESET_DIR / 'maps' / 'animation.png'
+    out_path = lib.TILESET_DIR / 'maps' / 'animation.png'
     out_img.save(out_path)
     total_frames = total_w // tw
     print(f'  rebuilt animation.png ({total_frames} animation frame tile(s))')
     return True
 
 
-# ── PNG update ─────────────────────────────────────────────────────────────
+# ── Output PNG split (kanto_common + kanto_outside) ────────────────────────
 
-def update_split_pngs(gen3_to_kanto, common_count, kanto_common_ts_json, kanto_outside_ts_json,
-                      kanto_common_ts_path, kanto_outside_ts_path, gen3_ts_json):
+def update_split_pngs(gen3_to_kanto, common_count,
+                      kanto_common_ts_json, kanto_outside_ts_json,
+                      kanto_common_ts_path, kanto_outside_ts_path,
+                      gen3_ts_json):
     """
     Rebuild kanto_common.png and kanto_outside.png from scratch.
-    GIDs 1..common_count → kanto_common.png
-    GIDs common_count+1.. → kanto_outside.png
-    Returns (common_modified, outside_modified).
+    GIDs 1..common_count → kanto_common.png; higher → kanto_outside.png.
     """
-    try:
-        from PIL import Image
-    except ImportError:
-        print('  WARNING: Pillow not installed — cannot update tileset PNGs')
-        return False, False
-
     if not gen3_to_kanto:
         return False, False
 
-    gen3_cols = gen3_ts_json['columns']
-    gen3_png  = TILESET_DIR / gen3_ts_json['image']
-    gen3_img  = Image.open(gen3_png).convert('RGBA')
+    gen3_cols  = gen3_ts_json['columns']
+    gen3_png   = lib.TILESET_DIR / gen3_ts_json['image']
 
-    def write_tileset_png(entries, ts_json, ts_path):
-        """entries: list of (gen3_gid, dst_tid_0based) sorted by dst_tid"""
-        if not entries:
-            return False
-        tw   = ts_json['tilewidth']
-        th   = ts_json['tileheight']
-        cols = ts_json['columns']
-        png_path = ts_path.parent / ts_json['image']
-        max_tid = max(dst for _, dst in entries)
-        rows    = (max_tid // cols) + 1
-        img     = Image.new('RGBA', (cols * tw, rows * th), (0, 0, 0, 0))
-        for gen3_gid, dst_tid in entries:
-            gen3_tid = gen3_gid - 1
-            src_x = (gen3_tid % gen3_cols) * tw
-            src_y = (gen3_tid // gen3_cols) * th
-            dst_x = (dst_tid  % cols)       * tw
-            dst_y = (dst_tid  // cols)      * th
-            tile  = gen3_img.crop((src_x, src_y, src_x + tw, src_y + th))
-            img.paste(tile, (dst_x, dst_y))
-        img.save(png_path)
-        ts_json['imagewidth']  = cols * tw
-        ts_json['imageheight'] = rows * th
-        ts_json['tilecount']   = cols * rows
-        print(f'  rebuilt {png_path.name} ({len(entries)} tiles, {cols}x{rows} grid)')
-        return True
-
-    # Split gen3_to_kanto into common and outside entries
-    common_entries  = sorted(
-        [(g, kgid - 1) for g, kgid in gen3_to_kanto.items() if kgid <= common_count],
+    # Split: each entry is (gen3_tile_id, dst_tile_id). 0-based within target.
+    common_entries = sorted(
+        [(g - 1, kgid - 1) for g, kgid in gen3_to_kanto.items() if kgid <= common_count],
         key=lambda x: x[1]
     )
     outside_entries = sorted(
-        [(g, kgid - common_count - 1) for g, kgid in gen3_to_kanto.items() if kgid > common_count],
+        [(g - 1, kgid - common_count - 1) for g, kgid in gen3_to_kanto.items() if kgid > common_count],
         key=lambda x: x[1]
     )
 
-    c = write_tileset_png(common_entries,  kanto_common_ts_json,  kanto_common_ts_path)
-    o = write_tileset_png(outside_entries, kanto_outside_ts_json, kanto_outside_ts_path)
-    return c, o
-
-
-# ── JS registration ────────────────────────────────────────────────────────
-
-def js_insert_after_last(content, pattern, new_line):
-    """
-    Insert new_line after the last line in content that matches pattern.
-    Returns (new_content, True) on success, (content, False) if no match found.
-    """
-    lines = content.splitlines(keepends=True)
-    last_idx = -1
-    for i, line in enumerate(lines):
-        if re.search(pattern, line):
-            last_idx = i
-    if last_idx == -1:
-        return content, False
-    lines.insert(last_idx + 1, new_line + '\n')
-    return ''.join(lines), True
-
-
-def ensure_scene_file(scene_key):
-    """
-    Create src/scenes/maps/kanto/{scene_key}.js if it doesn't exist.
-    Returns True if the file was created.
-    """
-    path = SRC_DIR / 'scenes' / 'maps' / 'kanto' / f'{scene_key}.js'
-    if path.exists():
-        return False
-    map_var = scene_key + 'Map'
-    content = (
-        f"import {{ GameMap }} from '@Objects';\n"
-        f"import {{ {map_var} }} from '@Maps';\n"
-        f"\n"
-        f"export default class extends GameMap {{\n"
-        f"  constructor() {{\n"
-        f"    super({{\n"
-        f"      mapName: '{scene_key}',\n"
-        f"      map: {map_var},\n"
-        f"      active: false,\n"
-        f"      visible: false,\n"
-        f"    }});\n"
-        f"  }}\n"
-        f"\n"
-        f"  preload() {{\n"
-        f"    this.preloadMap();\n"
-        f"  }}\n"
-        f"\n"
-        f"  create() {{\n"
-        f"    this.loadMap();\n"
-        f"    this.createCharacters();\n"
-        f"  }}\n"
-        f"\n"
-        f"  update(time, delta) {{\n"
-        f"    this.updateCharacters(time, delta);\n"
-        f"  }}\n"
-        f"}}\n"
+    c = lib.write_tileset_png(
+        common_entries, gen3_png, kanto_common_ts_json,
+        kanto_common_ts_path.parent / kanto_common_ts_json['image'],
+        gen3_cols,
     )
-    path.write_text(content, encoding='utf-8')
-    print(f'  created scene {path.name}')
-    return True
-
-
-def ensure_maps_index(scene_key, fname):
-    """
-    Register a world map in src/maps/index.js.
-    Inserts the import, WORLD_MAP_KEYS entry, named export, and MAP_REGISTRY
-    entry if any are missing.  Returns True if the file was modified.
-    """
-    path = SRC_DIR / 'maps' / 'index.js'
-    content = path.read_text(encoding='utf-8')
-    map_var = scene_key + 'Map'
-    changed = False
-
-    # Import
-    if f"import {map_var} from" not in content:
-        content, ok = js_insert_after_last(
-            content,
-            r"import \w+Map from '\./kanto/[^']+\.json';",
-            f"import {map_var} from './kanto/{fname}';"
-        )
-        if ok:
-            changed = True
-            print(f"  maps/index.js: added import {map_var}")
-        else:
-            print(f"  maps/index.js: WARNING — could not find anchor for import {map_var}")
-
-    # WORLD_MAP_KEYS entry  ('filename.json': 'SceneKey', — both sides are quoted strings)
-    if f"'{fname}'" not in content:
-        pad = ' ' * max(1, 20 - len(fname))
-        content, ok = js_insert_after_last(
-            content,
-            r"  '[^']+\.json'\s*:\s*'[^']+',?",
-            f"  '{fname}':{pad}'{scene_key}',"
-        )
-        if ok:
-            changed = True
-            print(f"  maps/index.js: added WORLD_MAP_KEYS '{fname}'")
-        else:
-            print(f"  maps/index.js: WARNING — could not find anchor for WORLD_MAP_KEYS '{fname}'")
-
-    # Named export  (    SceneKeyMap,  — 4-space indent, single identifier per line)
-    if f"    {map_var}," not in content:
-        content, ok = js_insert_after_last(
-            content,
-            r"^\s{4}[A-Z]\w+Map,\s*$",
-            f"    {map_var},"
-        )
-        if ok:
-            changed = True
-            print(f"  maps/index.js: added named export {map_var}")
-        else:
-            print(f"  maps/index.js: WARNING — could not find anchor for named export {map_var}")
-
-    # MAP_REGISTRY entry  ('SceneKey': SceneKeyMap, — right side is a variable)
-    if f"'{scene_key}':" not in content:
-        pad = ' ' * max(1, 12 - len(scene_key))
-        content, ok = js_insert_after_last(
-            content,
-            r"  '[^']+':\s+\w+Map,",
-            f"  '{scene_key}':{pad}{map_var},"
-        )
-        if ok:
-            changed = True
-            print(f"  maps/index.js: added MAP_REGISTRY '{scene_key}'")
-        else:
-            print(f"  maps/index.js: WARNING — could not find anchor for MAP_REGISTRY '{scene_key}'")
-
-    if changed:
-        path.write_text(content, encoding='utf-8')
-    return changed
-
-
-def ensure_scenes_index(scene_key):
-    """
-    Register a scene in src/scenes/index.js.
-    Inserts the import and default-export entry if missing.
-    Returns True if the file was modified.
-    """
-    path = SRC_DIR / 'scenes' / 'index.js'
-    content = path.read_text(encoding='utf-8')
-    changed = False
-
-    # Import
-    if f"import {scene_key} from" not in content:
-        content, ok = js_insert_after_last(
-            content,
-            r"import \w+ from '@Scenes/maps/kanto/[^']+\.js';",
-            f"import {scene_key} from '@Scenes/maps/kanto/{scene_key}.js';"
-        )
-        if ok:
-            changed = True
-            print(f"  scenes/index.js: added import {scene_key}")
-        else:
-            print(f"  scenes/index.js: WARNING — could not find anchor for import {scene_key}")
-
-    # Default export entry  (  SceneKey,  — 2-space indent, single identifier per line)
-    if f"  {scene_key}," not in content:
-        content, ok = js_insert_after_last(
-            content,
-            r"^\s{2}[A-Z][A-Za-z0-9]+,\s*$",
-            f"  {scene_key},"
-        )
-        if ok:
-            changed = True
-            print(f"  scenes/index.js: added export {scene_key}")
-        else:
-            print(f"  scenes/index.js: WARNING — could not find anchor for export {scene_key}")
-
-    if changed:
-        path.write_text(content, encoding='utf-8')
-    return changed
+    o = lib.write_tileset_png(
+        outside_entries, gen3_png, kanto_outside_ts_json,
+        kanto_outside_ts_path.parent / kanto_outside_ts_json['image'],
+        gen3_cols,
+    )
+    return c, o
 
 
 # ── Main ────────────────────────────────────────────────────────────────────
 
 def main():
-    # ── Load source files ─────────────────────────────────────────────────
-    with open(MAPS_DIR / 'kanto.json') as f:
-        kanto = json.load(f)
-
-    kanto_w = kanto['width']
-    kanto_h = kanto['height']
-    tw = kanto['tilewidth']
-    th = kanto['tileheight']
-
-    kanto_tilelayers = {
-        l['name']: l for l in kanto['layers'] if l['type'] == 'tilelayer'
-    }
-    kanto_inter = next(
-        (l for l in kanto['layers']
-         if l['type'] == 'objectgroup' and l['name'] == 'interactions'), None
-    )
-    kanto_objs = kanto_inter['objects'] if kanto_inter else []
-
-    gen3_ts_path = TILESET_DIR / 'gen3_outside.json'
-    with open(gen3_ts_path) as f:
-        gen3_ts_json = json.load(f)
-    gen3_props_index = build_gen3_props_index(gen3_ts_json)
-
-    kanto_common_ts_path  = TILESET_DIR / 'maps' / 'kanto_common.json'
-    kanto_outside_ts_path = TILESET_DIR / 'maps' / 'kanto_outside.json'
-
-    def load_or_init_ts(path, name, image_name):
-        if path.exists():
-            with open(path) as f:
-                return json.load(f)
-        return {
-            'columns': 16, 'image': image_name,
-            'imageheight': 0, 'imagewidth': 512,
-            'margin': 0, 'name': name, 'spacing': 0,
-            'tilecount': 0, 'tiledversion': '1.12.1',
-            'tileheight': 32, 'tilewidth': 32,
-            'tiles': [], 'type': 'tileset', 'version': '1.11',
-        }
-
-    kanto_common_ts_json  = load_or_init_ts(kanto_common_ts_path,  'kanto_common',  'kanto_common.png')
-    kanto_outside_ts_json = load_or_init_ts(kanto_outside_ts_path, 'kanto_outside', 'kanto_outside.png')
-
-    # Load kanto_inside.json to determine which outdoor tiles are also used indoors.
-    kanto_inside_path = MAPS_DIR / 'kanto_inside.json'
-    kanto_inside_tilelayers = {}
-    gen3_outside_firstgid_inside = None
-    if kanto_inside_path.exists():
-        with open(kanto_inside_path) as f:
-            ki = json.load(f)
-        kanto_inside_tilelayers = {l['name']: l for l in ki.get('layers', []) if l['type'] == 'tilelayer'}
-        for ts in ki.get('tilesets', []):
-            if 'gen3_outside' in ts.get('source', ''):
-                gen3_outside_firstgid_inside = ts['firstgid']
-                break
-
-    gen3_to_kanto, kanto_to_gen3, gid_map_path, gid_map, common_count = build_compact_gid_map(
-        kanto_tilelayers, gen3_ts_json, kanto_inside_tilelayers, gen3_outside_firstgid_inside
-    )
-    print(f'Compact GID map: {len(gen3_to_kanto)} tiles ({common_count} common, {len(gen3_to_kanto)-common_count} outdoor-only)')
-
-    kanto_common_ts_modified  = False
-    kanto_outside_ts_modified = False
-
-    # ── Derive map bounds from "maps" objectgroup ─────────────────────────
-    maps_layer = next(
-        (l for l in kanto['layers']
-         if l['name'] == 'maps' and l['type'] == 'objectgroup'), None
+    master, kanto_tilelayers, kanto_objs, maps_layer = lib.load_master(
+        lib.MAPS_DIR / 'kanto.json'
     )
     if not maps_layer:
         print('ERROR: no "maps" objectgroup found in kanto.json')
         return
 
-    bounds          = {}   # fname -> world-space bounds dict
-    fname_to_key    = {}   # fname -> CamelCase scene key (obj['name'])
-    map_properties  = {}   # fname -> properties list from maps-layer object
-    for obj in maps_layer['objects']:
-        fname = name_to_filename(obj['name'])
-        bounds[fname] = {
-            'x': obj['x'] - OFFSET_X,
-            'y': obj['y'] - OFFSET_Y,
-            'width':  obj['width'],
-            'height': obj['height'],
-        }
-        fname_to_key[fname]   = obj['name']
-        map_properties[fname] = obj.get('properties', [])
+    kanto_w = master['width']
+    kanto_h = master['height']
+    tw, th  = master['tilewidth'], master['tileheight']
 
-    # ── Update kanto.world ────────────────────────────────────────────────
-    world_path = MAPS_DIR / 'kanto.world'
+    gen3_ts_path = lib.TILESET_DIR / 'gen3_outside.json'
+    with open(gen3_ts_path) as f:
+        gen3_ts_json = json.load(f)
+    gen3_props_index = lib.build_props_index(gen3_ts_json)
+
+    kanto_common_ts_path  = lib.TILESET_DIR / 'maps' / 'kanto_common.json'
+    kanto_outside_ts_path = lib.TILESET_DIR / 'maps' / 'kanto_outside.json'
+    kanto_common_ts_json  = lib.load_or_init_tileset(
+        kanto_common_ts_path,  'kanto_common',  'kanto_common.png',  columns=16, image_width=512)
+    kanto_outside_ts_json = lib.load_or_init_tileset(
+        kanto_outside_ts_path, 'kanto_outside', 'kanto_outside.png', columns=16, image_width=512)
+
+    # Read kanto_inside.json to find which gen3_outside tiles are also used indoors.
+    kanto_inside_path        = lib.MAPS_DIR / 'kanto_inside.json'
+    kanto_inside_tilelayers  = {}
+    gen3_outside_firstgid_inside = None
+    if kanto_inside_path.exists():
+        with open(kanto_inside_path) as f:
+            ki = json.load(f)
+        kanto_inside_tilelayers = {
+            l['name']: l for l in ki.get('layers', []) if l['type'] == 'tilelayer'
+        }
+        for ts in ki.get('tilesets', []):
+            if 'gen3_outside' in ts.get('source', ''):
+                gen3_outside_firstgid_inside = ts['firstgid']
+                break
+
+    # Read kanto_dungeons.json to surface every gen3_outside tile referenced
+    # by dungeons. Dungeons may register the same gen3_outside source under
+    # multiple firstgids (Tiled occasionally re-imports via a different path),
+    # so visit each tileset entry. Only `cave_dungeon` is a non-outdoor source.
+    dungeons_outside_gids = set()
+    kanto_dungeons_path = lib.MAPS_DIR / 'kanto_dungeons.json'
+    if kanto_dungeons_path.exists():
+        with open(kanto_dungeons_path) as f:
+            kd = json.load(f)
+        outside_ranges = []
+        cave_firstgid  = None
+        cave_count     = 0
+        for ts in kd.get('tilesets', []):
+            src = ts.get('source', '')
+            if 'cave_dungeon' in src:
+                cave_firstgid = ts['firstgid']
+                with open(lib.TILESET_DIR / 'cave_dungeon.json') as ctf:
+                    cave_count = json.load(ctf).get('tilecount', 0)
+            elif 'gen3_outside' in src:
+                outside_ranges.append(ts['firstgid'])
+        for layer in kd.get('layers', []):
+            if layer.get('type') != 'tilelayer':
+                continue
+            for src_gid in layer.get('data', []):
+                if src_gid == 0:
+                    continue
+                if cave_firstgid is not None and \
+                   cave_firstgid <= src_gid < cave_firstgid + cave_count:
+                    continue
+                # Resolve via the largest gen3_outside firstgid <= src_gid.
+                base = max((fg for fg in outside_ranges if fg <= src_gid), default=None)
+                if base is None:
+                    continue
+                gen3_raw_gid = src_gid - base + 1
+                dungeons_outside_gids.add(gen3_raw_gid)
+
+    gen3_to_kanto, kanto_to_gen3, gid_map_path, gid_map, common_count = build_compact_gid_map(
+        kanto_tilelayers, gen3_ts_json,
+        kanto_inside_tilelayers, gen3_outside_firstgid_inside,
+        dungeons_outside_gids=dungeons_outside_gids,
+    )
+    print(f'Compact GID map: {len(gen3_to_kanto)} tiles '
+          f'({common_count} common, {len(gen3_to_kanto)-common_count} outdoor-only)')
+
+    kanto_common_ts_modified  = False
+    kanto_outside_ts_modified = False
+
+    # ── Bounds + kanto.world ───────────────────────────────────────────────
+    bounds = {}
+    fname_to_key = {}
+    for zone in lib.iter_zones(maps_layer, name_to_file_overrides=NAME_TO_FILE):
+        bounds[zone['fname']] = {
+            'x':      zone['x'] - OFFSET_X,
+            'y':      zone['y'] - OFFSET_Y,
+            'width':  zone['width'],
+            'height': zone['height'],
+            'properties': zone['properties'],
+        }
+        fname_to_key[zone['fname']] = zone['name']
+
+    world_path = lib.MAPS_DIR / 'kanto.world'
     if world_path.exists():
         with open(world_path) as f:
             world = json.load(f)
@@ -830,19 +540,21 @@ def main():
 
     updated = []
     for fname, b in bounds.items():
-        updated.append({'fileName': fname, **b})
+        updated.append({
+            'fileName': fname,
+            'x': b['x'], 'y': b['y'], 'width': b['width'], 'height': b['height'],
+        })
     for e in world['maps']:
         if e['fileName'] not in bounds:
             updated.append(e)
     world['maps'] = updated
-
     with open(world_path, 'w') as f:
         json.dump(world, f, indent=4)
     print('Updated kanto.world')
 
-    # ── Update each map file ──────────────────────────────────────────────
+    # ── Per-zone sync ──────────────────────────────────────────────────────
     for fname, b in bounds.items():
-        route_path = MAPS_DIR / fname
+        route_path = lib.MAPS_DIR / fname
         dst_w = b['width']  // tw
         dst_h = b['height'] // th
         ox    = (b['x'] + OFFSET_X) // tw
@@ -851,27 +563,17 @@ def main():
         print(f'\n{fname}: kanto tile origin ({ox},{oy}), size {dst_w}x{dst_h}')
 
         if not route_path.exists():
-            route = make_skeleton(dst_w, dst_h)
+            route = lib.make_skeleton(dst_w, dst_h, LAYER_TEMPLATE,
+                                       make_outdoor_tilesets(0))
             print('  created skeleton')
         else:
             with open(route_path) as f:
                 route = json.load(f)
 
-        # Always use the two-tileset outdoor layout.
         route['tilesets'] = make_outdoor_tilesets(common_count)
+        lib.resize_route(route, dst_w, dst_h)
 
-        if route['width'] != dst_w or route['height'] != dst_h:
-            print(f'  resizing {route["width"]}x{route["height"]} -> {dst_w}x{dst_h}')
-            route['width']  = dst_w
-            route['height'] = dst_h
-            for layer in route['layers']:
-                if layer['type'] != 'tilelayer':
-                    continue
-                layer['width']  = dst_w
-                layer['height'] = dst_h
-                layer['data']   = [0] * (dst_w * dst_h)
-
-        # Tile layers — sync existing ones, drop empty/obsolete ones
+        # Tile layers — sync existing ones, drop empty/obsolete ones.
         remove_layers = set()
         for layer in route['layers']:
             if layer['type'] != 'tilelayer':
@@ -881,16 +583,16 @@ def main():
                 remove_layers.add(name)
                 print(f'  removed layer "{name}" (not in kanto.json)')
                 continue
-            raw = extract_region(
+            raw = lib.extract_region(
                 kanto_tilelayers[name]['data'], kanto_w, kanto_h,
-                ox, oy, dst_w, dst_h
+                ox, oy, dst_w, dst_h,
             )
             converted, modified = remap_data(
                 raw, gen3_to_kanto, kanto_common_ts_json, kanto_outside_ts_json,
-                gen3_props_index, kanto_to_gen3, gid_map, {}, common_count
+                gen3_props_index, kanto_to_gen3, gid_map, {}, common_count,
             )
             if modified:
-                kanto_common_ts_modified = True
+                kanto_common_ts_modified  = True
                 kanto_outside_ts_modified = True
             non_zero = sum(1 for t in converted if t != 0)
             if non_zero == 0:
@@ -908,34 +610,31 @@ def main():
                 if not (l['type'] == 'tilelayer' and l['name'] in remove_layers)
             ]
 
-        # Tile layers — add any layers present in kanto.json but missing from this file
+        # Tile layers — add any layers present in master but missing here.
         existing_names = {l['name'] for l in route['layers'] if l['type'] == 'tilelayer'}
-        inter_idx = next(
-            (i for i, l in enumerate(route['layers']) if l['type'] == 'objectgroup'),
-            len(route['layers'])
-        )
-        max_lid = max((l.get('id') or 0 for l in route['layers']), default=0)
+        inter_idx = lib.tilelayer_insert_index(route['layers'])
+        max_lid   = max((l.get('id') or 0 for l in route['layers']), default=0)
         for kname, klayer in kanto_tilelayers.items():
             if kname in existing_names:
                 continue
-            raw = extract_region(
+            raw = lib.extract_region(
                 klayer['data'], kanto_w, kanto_h,
-                ox, oy, dst_w, dst_h
+                ox, oy, dst_w, dst_h,
             )
             if not any(raw):
-                continue  # entirely empty in this region — skip
+                continue
             converted, modified = remap_data(
                 raw, gen3_to_kanto, kanto_common_ts_json, kanto_outside_ts_json,
-                gen3_props_index, kanto_to_gen3, gid_map, {}, common_count
+                gen3_props_index, kanto_to_gen3, gid_map, {}, common_count,
             )
             if modified:
-                kanto_common_ts_modified = True
+                kanto_common_ts_modified  = True
                 kanto_outside_ts_modified = True
             non_zero = sum(1 for t in converted if t != 0)
             if non_zero == 0:
                 continue
             max_lid += 1
-            new_layer = make_layer(kname, dst_w, dst_h, LAYER_CHAR.get(kname))
+            new_layer = lib.make_layer(kname, dst_w, dst_h, LAYER_CHAR.get(kname))
             new_layer['id']   = max_lid
             new_layer['data'] = converted
             route['layers'].insert(inter_idx, new_layer)
@@ -944,103 +643,87 @@ def main():
             print(f'  added new layer "{kname}" ({non_zero} non-zero tiles)')
 
         # Interaction objects
-        inter = next(
-            (l for l in route['layers'] if l['type'] == 'objectgroup'), None
-        )
-        if inter is None:
-            inter = {
-                'draworder': 'topdown', 'name': 'interactions',
-                'type': 'objectgroup', 'objects': [],
-                'visible': True, 'opacity': 1, 'x': 0, 'y': 0,
-            }
-            route['layers'].append(inter)
-
+        inter = lib.get_or_create_interaction_layer(route['layers'])
         kanto_px_x = ox * tw
         kanto_px_y = oy * th
         px_w = dst_w * tw
         px_h = dst_h * th
+        objects, next_oid = lib.merge_interactions(
+            kanto_objs, kanto_px_x, kanto_px_y, px_w, px_h
+        )
+        inter['objects']      = objects
+        route['nextobjectid'] = next_oid
+        for o in objects:
+            print(f'  added obj "{o["name"]}"')
 
-        inter['objects'] = []
-        max_id = 0
-
-        for obj in kanto_objs:
-            cx = obj['x'] + obj.get('width', 0) / 2
-            cy = obj['y'] + obj.get('height', 0) / 2
-            if not (kanto_px_x <= cx < kanto_px_x + px_w and
-                    kanto_px_y <= cy < kanto_px_y + px_h):
-                continue
-            local_x = obj['x'] - kanto_px_x
-            local_y = obj['y'] - kanto_px_y
-            max_id += 1
-            inter['objects'].append({**obj, 'x': local_x, 'y': local_y, 'id': max_id})
-            print(f'  added obj "{obj["name"]}"')
-
-        route['nextobjectid'] = max_id + 1
-
-        props = map_properties.get(fname, [])
+        props = b['properties']
         if props:
             route['properties'] = props
         elif 'properties' in route:
             del route['properties']
 
-        sort_layers(route['layers'])
+        lib.sort_layers(route['layers'], LAYER_ORDER)
 
         with open(route_path, 'w') as f:
             json.dump(route, f, indent=2)
         print(f'  saved {fname}')
 
-        # ── Register in JS source files ───────────────────────────────────
         scene_key = fname_to_key[fname]
-        ensure_scene_file(scene_key)
-        ensure_maps_index(scene_key, fname)
-        ensure_scenes_index(scene_key)
+        lib.ensure_scene_file(scene_key)
+        lib.ensure_maps_index(scene_key, fname)
+        lib.ensure_scenes_index(scene_key)
 
-    # ── Ensure animation frame tiles have kanto GIDs ─────────────────────────
+    # ── Animation backfill + sync ──────────────────────────────────────────
     if ensure_anim_tiles_in_kanto(gen3_ts_json, gen3_to_kanto, kanto_to_gen3,
                                    gid_map, {}, kanto_common_ts_json,
-                                   kanto_outside_ts_json, gen3_props_index, common_count):
+                                   kanto_outside_ts_json, gen3_props_index,
+                                   common_count):
         kanto_common_ts_modified  = True
         kanto_outside_ts_modified = True
 
-    # ── Sync animation properties into tileset JSONs ──────────────────────────
     if sync_kanto_animations(gen3_ts_json, gen3_to_kanto, common_count,
                               kanto_common_ts_json, kanto_outside_ts_json):
         kanto_common_ts_modified  = True
         kanto_outside_ts_modified = True
 
+    # Re-sync tile properties on every existing kanto tile entry. Tiles only
+    # appear in remap_data when touched by the master kanto.json data;
+    # per-zone sources don't round-trip through this script, so a flag
+    # flipped on a gen3_outside source tile would otherwise never propagate
+    # to its kanto_common / kanto_outside derivative.
+    for kgid_str, gen3_gid in gid_map['kanto_to_gen3'].items():
+        kgid = int(kgid_str)
+        if kgid <= common_count:
+            if ensure_kanto_tile(kanto_common_ts_json, kgid, int(gen3_gid), gen3_props_index, 0):
+                kanto_common_ts_modified = True
+        else:
+            if ensure_kanto_tile(kanto_outside_ts_json, kgid, int(gen3_gid), gen3_props_index, common_count):
+                kanto_outside_ts_modified = True
+
     with open(gid_map_path, 'w') as f:
         json.dump(gid_map, f, indent=2)
     print(f'\nUpdated gid_map.json ({len(gen3_to_kanto)} total, {common_count} common)')
 
-    # Write flat common-only map for BaseItem.js.
+    # Flat common-only map for BaseItem.js
     common_flat = {k: v for k, v in gid_map['gen3_to_kanto'].items() if int(v) <= common_count}
-    flat_path = MAPS_DIR / 'gen3_to_kanto_common.json'
+    flat_path = lib.MAPS_DIR / 'gen3_to_kanto_common.json'
     with open(flat_path, 'w') as f:
         json.dump(common_flat, f, indent=2)
     print(f'Updated gen3_to_kanto_common.json ({len(common_flat)} entries)')
 
-    kanto_common_png_modified, kanto_outside_png_modified = update_split_pngs(
+    common_png_modified, outside_png_modified = update_split_pngs(
         gen3_to_kanto, common_count, kanto_common_ts_json, kanto_outside_ts_json,
-        kanto_common_ts_path, kanto_outside_ts_path, gen3_ts_json
+        kanto_common_ts_path, kanto_outside_ts_path, gen3_ts_json,
     )
-    if kanto_common_png_modified:
-        kanto_common_ts_modified = True
-    if kanto_outside_png_modified:
-        kanto_outside_ts_modified = True
+    if common_png_modified:  kanto_common_ts_modified  = True
+    if outside_png_modified: kanto_outside_ts_modified = True
 
     build_anim_png(gen3_ts_json, gen3_to_kanto)
 
     if kanto_common_ts_modified:
-        kanto_common_ts_json['tiles'].sort(key=lambda t: t['id'])
-        with open(kanto_common_ts_path, 'w') as f:
-            json.dump(kanto_common_ts_json, f, indent=1)
-        print(f'Updated {kanto_common_ts_path.name}')
-
+        lib.write_tileset_json(kanto_common_ts_path, kanto_common_ts_json)
     if kanto_outside_ts_modified:
-        kanto_outside_ts_json['tiles'].sort(key=lambda t: t['id'])
-        with open(kanto_outside_ts_path, 'w') as f:
-            json.dump(kanto_outside_ts_json, f, indent=1)
-        print(f'Updated {kanto_outside_ts_path.name}')
+        lib.write_tileset_json(kanto_outside_ts_path, kanto_outside_ts_json)
 
 
 if __name__ == '__main__':

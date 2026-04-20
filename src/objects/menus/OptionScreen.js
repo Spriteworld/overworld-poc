@@ -17,6 +17,7 @@ const OPTIONS = [
   { key: 'bgmVolume',       label: 'BGM Vol'         },
   { key: 'sfxVolume',       label: 'SFX Vol'         },
   { key: 'followerPokemon', label: 'Follower Pokémon' },
+  { key: 'alwaysRun',       label: 'Always Run',      requires: 'has_running_shoes' },
 ];
 
 const ROW_H   = 28;
@@ -34,6 +35,11 @@ export default class OptionScreen {
     this.build();
   }
 
+  _visibleOptions() {
+    const flags = store.state.game.gameFlags ?? {};
+    return OPTIONS.filter(o => !o.requires || flags[o.requires]);
+  }
+
   build() {
     const { scene, reg } = this.menu;
 
@@ -44,7 +50,8 @@ export default class OptionScreen {
     sep.lineBetween(SX + 8, LIST_Y - 8, SX + SW - 8, LIST_Y - 8);
     reg(sep);
 
-    OPTIONS.forEach(({ key, label }, i) => {
+    const visible = this._visibleOptions();
+    visible.forEach(({ key, label }, i) => {
       const isCursor  = i === this._cursor;
       const prefix    = isCursor ? '▶ ' : '  ';
       const rowY      = LIST_Y + i * ROW_H;
@@ -94,18 +101,23 @@ export default class OptionScreen {
     if (key === 'followerPokemon') {
       return store.state.game.gameFlags.follower_pokemon ? 'On' : 'Off';
     }
+    if (key === 'alwaysRun') {
+      return store.state.game.alwaysRun ? 'On' : 'Off';
+    }
     return '';
   }
 
   nav(delta) {
-    this._cursor = (this._cursor + delta + OPTIONS.length) % OPTIONS.length;
+    const len    = this._visibleOptions().length;
+    this._cursor = (this._cursor + delta + len) % len;
     this.menu._clearSubTexts();
     this.build();
   }
 
   /** Cycle the focused option's value (left = -1, right = +1). */
   cycle(delta) {
-    const { key } = OPTIONS[this._cursor];
+    const visible = this._visibleOptions();
+    const { key } = visible[this._cursor];
     if (key === 'character') {
       const idx  = SPRITES.indexOf(store.state.game.playerSprite);
       const next = SPRITES[(idx + delta + SPRITES.length) % SPRITES.length];
@@ -129,6 +141,8 @@ export default class OptionScreen {
       const next = !store.state.game.gameFlags.follower_pokemon;
       store.commit('game/PATCH_FLAGS', { follower_pokemon: next });
       this.menu.scene.game.events.emit('follower-pokemon-change', next);
+    } else if (key === 'alwaysRun') {
+      store.commit('game/SET_ALWAYS_RUN', !store.state.game.alwaysRun);
     }
     this.menu._clearSubTexts();
     this.build();

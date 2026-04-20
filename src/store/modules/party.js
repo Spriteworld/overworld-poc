@@ -102,6 +102,7 @@ export default {
       const mon = buildMon(natDexId, lvl, {
         rng,
         game:    getGameDef().game,
+        maxIvs:  !!getGameDef().maxIvs,
         pid:     Date.now() + Math.floor(rng() * 1000),
         ability,
         // gift mons don't roll pokerus and use a lowercased gender literal

@@ -1,16 +1,16 @@
-import { getInputManager, getKeybindLabel } from './InputManager.js';
+import { getInputManager, getKeybindLabel, Action } from './InputManager.js';
 import store from '../store/index.js';
-import { Pokedex } from '@spriteworld/pokemon-data';
+import { Pokedex, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
 import { getGameDef } from '../data/gameDef.js';
 
-// Lazily-built nat_dex_id → species name map shared across all TextBox instances.
+// Lazily-built nat_dex_id → display-name map shared across all TextBox instances.
 let _speciesMap = null;
 function getSpeciesName(natDexId) {
   if (!_speciesMap) {
     const dex = new Pokedex(getGameDef().game);
     _speciesMap = {};
     for (const p of Object.values(dex.pokedex)) {
-      if (p.nat_dex_id != null) _speciesMap[p.nat_dex_id] = p.species;
+      if (p.nat_dex_id != null) _speciesMap[p.nat_dex_id] = getSpeciesDisplayName(p);
     }
   }
   return _speciesMap[Number(natDexId)] ?? `#${natDexId}`;
@@ -22,6 +22,14 @@ const BORDER_R    = 20;   // border radius
 const PAD_X       = 16;   // horizontal inner padding
 const PAD_Y       = 14;   // vertical inner padding
 const DEPTH       = Number.MAX_SAFE_INTEGER - 10;
+
+// Hold-to-fastforward: after the player keeps CONFIRM held for this long,
+// the textbox starts auto-advancing (one tick per FF_TICK_MS). Single-tap
+// confirms are unaffected because the threshold is only checked while held.
+// Yes/no prompts run on a separate ChoicePrompt component that listens for
+// edge-triggered confirm events, so this never auto-selects a choice.
+const FF_HOLD_MS = 1000;
+const FF_TICK_MS = 80;
 
 class TextBox {
   /**
@@ -97,6 +105,27 @@ class TextBox {
     getInputManager()?.on('confirm', this._keyHandler);
     getInputManager()?.on('cancel',  this._keyHandler);
 
+    // Hold-to-fastforward: when text speed is "instant" AND CONFIRM has been
+    // held > FF_HOLD_MS, the textbox pumps itself once every FF_TICK_MS (skip
+    // typing → next page → close). Gated on text speed because the feature is
+    // meant for players who already opted into the no-typing-animation mode.
+    // Yes/no choice prompts intercept via 'textbox-ready' and set
+    // `_intercepted`; the tick bails early in that case so a held key never
+    // auto-picks an option.
+    this._lastFastForwardAt = 0;
+    this._onSceneUpdate = () => {
+      if (!this._textObj.visible || this._intercepted) return;
+      if ((store.state.game.textSpeed ?? 'normal') !== 'instant') return;
+      const im = getInputManager();
+      if (!im) return;
+      if (im.getDuration(Action.CONFIRM) < FF_HOLD_MS) return;
+      const now = Date.now();
+      if (now - this._lastFastForwardAt < FF_TICK_MS) return;
+      this._lastFastForwardAt = now;
+      this._fastForwardStep();
+    };
+    this._scene.events.on('update', this._onSceneUpdate);
+
     // Hidden by default
     this._setChildrenVisible(false);
   }
@@ -148,9 +177,28 @@ class TextBox {
     this._cancelPending();
     getInputManager()?.off('confirm', this._keyHandler);
     getInputManager()?.off('cancel',  this._keyHandler);
+    if (this._onSceneUpdate) {
+      this._scene.events?.off('update', this._onSceneUpdate);
+      this._onSceneUpdate = null;
+    }
     this._bg.destroy();
     this._textObj.destroy();
     this._arrow.destroy();
+  }
+
+  /**
+   * One step of hold-to-fastforward: skip the current typing animation,
+   * advance to the next page, or invoke the pending close listener if we
+   * are sitting on the final page waiting for the player.
+   */
+  _fastForwardStep() {
+    if (this._typing) {
+      this._skipTyping();
+    } else if (!this._isLastPage()) {
+      this._typeNextPage();
+    } else if (this._closeOnce) {
+      this._closeOnce();
+    }
   }
 
   // ─── Internal ─────────────────────────────────────────────────────────────

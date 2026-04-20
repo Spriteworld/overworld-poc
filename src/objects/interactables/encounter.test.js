@@ -143,6 +143,7 @@ jest.mock('@spriteworld/pokemon-data', () => {
 import Encounter from './encounter.js';
 import store from '../../store/index.js';
 import { rng } from '../../utilities/rng.js';
+import { setGameDef } from '@Data/gameDef.js';
 
 // ─── Test party fixture (used in place of a real defaultParty) ────────────────
 
@@ -160,24 +161,27 @@ const TEST_PARTY = [
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function makeEncounter() {
-  const enc = new Encounter({ game: { config: { debug: { console: { interactableShout: false } } } } });
-  enc._encounterTable = {
+  return makeEncounterWithTable({
     zone: [{ species: 'bulbasaur', rarity: 1, 'level-range-min': 5, 'level-range-max': 5 }],
-  };
-  return enc;
+  });
 }
 
-const ZONE_TILE = { tableId: 'zone' };
+const ZONE_TILE = { tableId: 'zone', section: 'grass' };
 
 /**
  * Creates an Encounter with a pre-parsed encounter table injected directly,
  * bypassing init() — entries use the Tiled encounter-pokemon shape:
  *   { species, rarity, 'level-range-min', 'level-range-max' }
- * @param {object} tables - Map of tableId → encounter entry array.
+ * Pass a flat `{ tableId: [entries] }` shape; entries land in the default
+ * `grass` slot of the matching table, which mirrors what the parser produces
+ * from a single-table map.
+ * @param {Object<string, object[]>} tables - Map of tableId → encounter entry array.
  */
 function makeEncounterWithTable(tables) {
   const enc = new Encounter({ game: { config: { debug: { console: { interactableShout: false } } } } });
-  enc._encounterTable = tables;
+  enc._encounterTable = Object.fromEntries(
+    Object.entries(tables).map(([name, entries]) => [name, { name, slots: { grass: entries } }])
+  );
   return enc;
 }
 
@@ -206,6 +210,16 @@ function makeInitScene(properties = [], locationObjects = []) {
 }
 
 describe('encounter table from maps-layer location objects', () => {
+  // Helper to build the Tiled list shape: a list of `encounterTable` class
+  // wrappers, each `{ name, grass: [entry-pokemon wrappers], … }`.
+  const wrapTable = (name, slot, entries) => [{
+    propertytype: 'encounterTable', type: 'class',
+    value: {
+      name,
+      [slot]: entries.map(value => ({ propertytype: 'encounter-pokemon', type: 'class', value })),
+    },
+  }];
+
   test('merges encounter tables from location objects into _encounterTable', () => {
     const locationObjects = [
       {
@@ -214,12 +228,9 @@ describe('encounter table from maps-layer location objects', () => {
         properties: [{
           name: 'map-settings', type: 'class',
           value: {
-            'encounter-table': {
-              ROUTE_1: [
-                { propertytype: 'encounter-pokemon', type: 'class',
-                  value: { species: 'pidgey', rarity: 50, 'level-range-min': 2, 'level-range-max': 5 } },
-              ],
-            },
+            'encounter-table': wrapTable('ROUTE_1', 'grass', [
+              { species: 'pidgey', rarity: 50, 'level-range-min': 2, 'level-range-max': 5 },
+            ]),
           },
         }],
       },
@@ -229,12 +240,9 @@ describe('encounter table from maps-layer location objects', () => {
         properties: [{
           name: 'map-settings', type: 'class',
           value: {
-            'encounter-table': {
-              ROUTE_2: [
-                { propertytype: 'encounter-pokemon', type: 'class',
-                  value: { species: 'rattata', rarity: 50, 'level-range-min': 3, 'level-range-max': 5 } },
-              ],
-            },
+            'encounter-table': wrapTable('ROUTE_2', 'grass', [
+              { species: 'rattata', rarity: 50, 'level-range-min': 3, 'level-range-max': 5 },
+            ]),
           },
         }],
       },
@@ -243,25 +251,23 @@ describe('encounter table from maps-layer location objects', () => {
     enc.init();
     expect(enc._encounterTable).toHaveProperty('ROUTE_1');
     expect(enc._encounterTable).toHaveProperty('ROUTE_2');
-    expect(enc._encounterTable.ROUTE_1[0].species).toBe('pidgey');
-    expect(enc._encounterTable.ROUTE_2[0].species).toBe('rattata');
+    expect(enc._encounterTable.ROUTE_1.slots.grass[0].species).toBe('pidgey');
+    expect(enc._encounterTable.ROUTE_2.slots.grass[0].species).toBe('rattata');
   });
 
   test('top-level encounter-table and location-object tables are merged', () => {
     const enc = new Encounter(makeInitScene(
       [{ name: 'map-settings', type: 'class', value: {
-        'encounter-table': {
-          ZONE_A: [{ propertytype: 'encounter-pokemon', type: 'class',
-            value: { species: 'bulbasaur', rarity: 10, 'level-range-min': 5, 'level-range-max': 5 } }],
-        },
+        'encounter-table': wrapTable('ZONE_A', 'grass', [
+          { species: 'bulbasaur', rarity: 10, 'level-range-min': 5, 'level-range-max': 5 },
+        ]),
       }}],
       [{
         type: 'location', name: 'Area',
         properties: [{ name: 'map-settings', type: 'class', value: {
-          'encounter-table': {
-            ZONE_B: [{ propertytype: 'encounter-pokemon', type: 'class',
-              value: { species: 'charmander', rarity: 10, 'level-range-min': 5, 'level-range-max': 5 } }],
-          },
+          'encounter-table': wrapTable('ZONE_B', 'grass', [
+            { species: 'charmander', rarity: 10, 'level-range-min': 5, 'level-range-max': 5 },
+          ]),
         }}],
       }],
     ));
@@ -406,6 +412,34 @@ describe('_buildWildBattle battle config', () => {
   test('textSpeed matches the store default of "normal"', () => {
     const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
     expect(battle.textSpeed).toBe('normal');
+  });
+});
+
+// ─── catchingGivesExp passthrough ─────────────────────────────────────────────
+
+describe('_buildWildBattle catchingGivesExp passthrough', () => {
+  afterEach(() => { setGameDef({}); });  // reset to kanto defaults
+
+  test('defaults to false (Gen 1–5 behavior) from the kanto gameDef', () => {
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
+    expect(battle.catchingGivesExp).toBe(false);
+  });
+
+  test('forwards true when the active gameDef sets catchingGivesExp: true', () => {
+    setGameDef({ catchingGivesExp: true });
+    const battle = makeEncounter()._buildWildBattle(ZONE_TILE);
+    expect(battle.catchingGivesExp).toBe(true);
+  });
+
+  test('is always a boolean regardless of truthy/falsy gameDef value', () => {
+    setGameDef({ catchingGivesExp: 1 });
+    expect(makeEncounter()._buildWildBattle(ZONE_TILE).catchingGivesExp).toBe(true);
+
+    setGameDef({ catchingGivesExp: 0 });
+    expect(makeEncounter()._buildWildBattle(ZONE_TILE).catchingGivesExp).toBe(false);
+
+    setGameDef({ catchingGivesExp: undefined });
+    expect(makeEncounter()._buildWildBattle(ZONE_TILE).catchingGivesExp).toBe(false);
   });
 });
 

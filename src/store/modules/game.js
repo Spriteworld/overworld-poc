@@ -23,6 +23,7 @@ export default {
     textSpeed:    'normal',    // 'normal' | 'fast' | 'instant'
     bgmVolume:    10,          // 0–20 (each step = 5%)
     sfxVolume:    10,          // 0–20 (each step = 5%)
+    alwaysRun:    false,       // move at run speed without holding B (requires Running Shoes)
   }),
 
   getters: {
@@ -55,6 +56,9 @@ export default {
     },
     SET_SFX_VOLUME(state, v) {
       state.sfxVolume = v;
+    },
+    SET_ALWAYS_RUN(state, v) {
+      state.alwaysRun = !!v;
     },
 
     SET_ON_BIKE(state, value) {
@@ -104,9 +108,11 @@ export default {
       if (saved.playtime     != null) state.playtime     = saved.playtime;
       if (saved.money        != null) state.money        = saved.money;
       if (saved.healLocation != null) state.healLocation = saved.healLocation;
+      if (saved.lastOutdoorLocation != null) state.lastOutdoorLocation = saved.lastOutdoorLocation;
       if (saved.textSpeed    != null) state.textSpeed    = saved.textSpeed;
       if (saved.bgmVolume    != null) state.bgmVolume    = saved.bgmVolume;
       if (saved.sfxVolume    != null) state.sfxVolume    = saved.sfxVolume;
+      if (saved.alwaysRun    != null) state.alwaysRun    = saved.alwaysRun;
       state.sessionStart = Date.now();
     },
 
@@ -130,6 +136,7 @@ export default {
       state.textSpeed           = 'normal';
       state.bgmVolume           = 10;
       state.sfxVolume           = 10;
+      state.alwaysRun           = false;
     },
   },
 };

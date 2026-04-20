@@ -81,4 +81,23 @@ export default {
    * `highestTeamLevel × 50 × prizeMoneyMultiplier`. 1.0 = standard Gen 1 rate.
    */
   prizeMoneyMultiplier: 1.0,
+
+  /**
+   * When true, teaching a TM does not consume it (Gen 5+ reusable TMs).
+   * When false, TMs are single-use and removed from the bag after teaching.
+   */
+  infiniteTMs: false,
+
+  /**
+   * When true, catching a wild Pokémon awards exp to the active battler
+   * (Gen 6+ behavior). When false, captures give no exp (Gen 1–5 behavior).
+   */
+  catchingGivesExp: false,
+
+  /**
+   * When true, every newly generated Pokémon (wild, trainer, starter, gift)
+   * is rolled with 31 in all six IV slots. Does not retroactively update
+   * Pokémon already in the save — only affects freshly built ones.
+   */
+  maxIvs: false,
 };

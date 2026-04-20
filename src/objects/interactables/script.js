@@ -32,7 +32,6 @@ export default class Script {
       ...this.scene.findInteractions('trigger'),
       ...this.scene.findInteractions('on-interact').map(o => ({ ...o, _forceInteract: true })),
     ];
-    if (!objs.length) return;
 
     for (const obj of objs) {
       const script = this.scene.getPropertyFromTile(obj, 'script');

@@ -32,6 +32,17 @@
             "valuesAsFlags": false
         },
         {
+            "id": 107,
+            "name": "battle-type",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "wild",
+                "trainer"
+            ],
+            "valuesAsFlags": false
+        },
+        {
             "color": "#ffa0a0a4",
             "drawFill": true,
             "id": 101,
@@ -878,7 +889,7 @@
         {
             "color": "#ffa0a0a4",
             "drawFill": true,
-            "id": 69,
+            "id": 113,
             "members": [
                 {
                     "name": "character1",
@@ -893,7 +904,7 @@
                 {
                     "name": "cmd",
                     "type": "string",
-                    "value": "movement-behavior"
+                    "value": "movement_behavior"
                 },
                 {
                     "name": "value",
@@ -902,7 +913,7 @@
                     "value": "none"
                 }
             ],
-            "name": "cmd-movement-behavior",
+            "name": "cmd-movement_behavior",
             "type": "class",
             "useAs": [
                 "property"
@@ -1188,6 +1199,83 @@
                 }
             ],
             "name": "cmd-spawn_pkmn",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 108,
+            "members": [
+                {
+                    "name": "battle-texture",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "start_battle"
+                },
+                {
+                    "name": "force_catch",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "mid_fight_text",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "name",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "post_defeat_text",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "team",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "trainer-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "tutorial",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "type",
+                    "propertyType": "battle-type",
+                    "type": "string",
+                    "value": "wild"
+                },
+                {
+                    "name": "use-ai",
+                    "propertyType": "ai-list",
+                    "type": "string",
+                    "value": "trainer"
+                },
+                {
+                    "name": "won_fight_text",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "cmd-start_battle",
             "type": "class",
             "useAs": [
                 "property"
@@ -1582,7 +1670,8 @@
                 "bgm_stop",
                 "spawn_pkmn",
                 "give_starter",
-                "start_battle"
+                "start_battle",
+                "flock"
             ],
             "valuesAsFlags": false
         },
@@ -1665,6 +1754,11 @@
             "id": 1,
             "members": [
                 {
+                    "name": "section",
+                    "type": "string",
+                    "value": "grass"
+                },
+                {
                     "name": "table-id",
                     "type": "string",
                     "value": ""
@@ -1673,7 +1767,7 @@
             "name": "encounters",
             "type": "class",
             "useAs": [
-                "object"
+                "property"
             ]
         },
         {
@@ -1759,6 +1853,28 @@
                 "variant"
             ],
             "valuesAsFlags": false
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 111,
+            "members": [
+                {
+                    "name": "name",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "qty",
+                    "type": "int",
+                    "value": 1
+                }
+            ],
+            "name": "inventory-entry",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
         },
         {
             "color": "#ffaa0000",
@@ -1900,24 +2016,16 @@
                 },
                 {
                     "name": "encounter-table",
-                    "propertyType": "encounterTable",
-                    "type": "class",
-                    "value": {
-                        "good-rod": [
-                        ],
-                        "grass": [
-                        ],
-                        "headbutt": [
-                        ],
-                        "old-rod": [
-                        ],
-                        "rock-smash": [
-                        ],
-                        "super-rod": [
-                        ],
-                        "surf": [
-                        ]
-                    }
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "encounterTable",
+                            "type": "class",
+                            "value": {
+                                "name": "grass"
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "ow-encounter-rate",
@@ -2135,6 +2243,47 @@
             ]
         },
         {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 112,
+            "members": [
+                {
+                    "name": "inventory",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "inventory-entry",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "name",
+                    "type": "string",
+                    "value": "Tutor"
+                },
+                {
+                    "name": "team",
+                    "type": "list",
+                    "value": [
+                        {
+                            "propertyType": "trainer-pokemon",
+                            "type": "class",
+                            "value": {
+                            }
+                        }
+                    ]
+                }
+            ],
+            "name": "player-override",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
             "color": "#ffffff00",
             "drawFill": true,
             "id": 6,
@@ -2150,6 +2299,45 @@
             "useAs": [
                 "object"
             ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 110,
+            "members": [
+                {
+                    "name": "itemName",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "move",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "type",
+                    "propertyType": "scripted-action-type",
+                    "type": "string",
+                    "value": "attack"
+                }
+            ],
+            "name": "scripted-action",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "id": 109,
+            "name": "scripted-action-type",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "attack",
+                "use_item"
+            ],
+            "valuesAsFlags": false
         },
         {
             "color": "#ffffa0a0",
@@ -2233,6 +2421,11 @@
                     "value": ""
                 },
                 {
+                    "name": "text-won-fight",
+                    "type": "string",
+                    "value": ""
+                },
+                {
                     "name": "track-player",
                     "type": "bool",
                     "value": true
@@ -2258,11 +2451,6 @@
                             }
                         }
                     ]
-                },
-                {
-                    "name": "trainer-won-text",
-                    "type": "string",
-                    "value": ""
                 },
                 {
                     "name": "use-ai",
@@ -2408,6 +2596,11 @@
                     "value": ""
                 },
                 {
+                    "name": "warp-location",
+                    "type": "string",
+                    "value": ""
+                },
+                {
                     "name": "warp-variant",
                     "type": "string",
                     "value": ""
@@ -2448,23 +2641,12 @@
             ]
         },
         {
-            "id": 107,
-            "name": "battle-type",
-            "storageType": "string",
-            "type": "enum",
-            "values": [
-                "wild",
-                "trainer"
-            ],
-            "valuesAsFlags": false
-        },
-        {
-            "color": "#ffa0a0a4",
+            "color": "#ff0080ff",
             "drawFill": true,
-            "id": 108,
+            "id": 114,
             "members": [
                 {
-                    "name": "battle-texture",
+                    "name": "anchor",
                     "type": "string",
                     "value": ""
                 },
@@ -2472,166 +2654,46 @@
                     "name": "cmd",
                     "propertyType": "command-list",
                     "type": "string",
-                    "value": "start_battle"
+                    "value": "flock"
                 },
                 {
-                    "name": "force_catch",
-                    "type": "bool",
-                    "value": false
-                },
-                {
-                    "name": "mid_fight_text",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "name",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "post_defeat_text",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "team",
-                    "type": "list",
-                    "value": [
-                        {
-                            "propertyType": "trainer-pokemon",
-                            "type": "class",
-                            "value": {
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "trainer_won_text",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "tutorial",
-                    "type": "bool",
-                    "value": false
-                },
-                {
-                    "name": "type",
-                    "propertyType": "battle-type",
-                    "type": "string",
-                    "value": "wild"
-                },
-                {
-                    "name": "use-ai",
-                    "propertyType": "ai-list",
-                    "type": "string",
-                    "value": "trainer"
-                }
-            ],
-            "name": "cmd-start_battle",
-            "type": "class",
-            "useAs": [
-                "property"
-            ]
-        },
-        {
-            "id": 109,
-            "name": "scripted-action-type",
-            "storageType": "string",
-            "type": "enum",
-            "values": [
-                "attack",
-                "use_item"
-            ],
-            "valuesAsFlags": false
-        },
-        {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 110,
-            "members": [
-                {
-                    "name": "itemName",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "move",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "type",
-                    "propertyType": "scripted-action-type",
-                    "type": "string",
-                    "value": "attack"
-                }
-            ],
-            "name": "scripted-action",
-            "type": "class",
-            "useAs": [
-                "property"
-            ]
-        },
-        {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 111,
-            "members": [
-                {
-                    "name": "name",
-                    "type": "string",
-                    "value": ""
-                },
-                {
-                    "name": "qty",
+                    "name": "count",
                     "type": "int",
-                    "value": 1
-                }
-            ],
-            "name": "inventory-entry",
-            "type": "class",
-            "useAs": [
-                "property"
-            ]
-        },
-        {
-            "color": "#ffa0a0a4",
-            "drawFill": true,
-            "id": 112,
-            "members": [
-                {
-                    "name": "inventory",
-                    "type": "list",
-                    "value": [
-                        {
-                            "propertyType": "inventory-entry",
-                            "type": "class",
-                            "value": {
-                            }
-                        }
-                    ]
+                    "value": 5
                 },
                 {
-                    "name": "name",
+                    "name": "direction",
+                    "propertyType": "facing-direction",
                     "type": "string",
-                    "value": "Tutor"
+                    "value": "right"
                 },
                 {
-                    "name": "team",
-                    "type": "list",
-                    "value": [
-                        {
-                            "propertyType": "trainer-pokemon",
-                            "type": "class",
-                            "value": {
-                            }
-                        }
-                    ]
+                    "name": "spacing",
+                    "type": "int",
+                    "value": 16
+                },
+                {
+                    "name": "species",
+                    "type": "string",
+                    "value": "pidgey"
+                },
+                {
+                    "name": "speed",
+                    "type": "int",
+                    "value": 200
+                },
+                {
+                    "name": "x",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "y",
+                    "type": "int",
+                    "value": 0
                 }
             ],
-            "name": "player-override",
+            "name": "cmd-flock",
             "type": "class",
             "useAs": [
                 "property"

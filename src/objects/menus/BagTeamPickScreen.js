@@ -1,7 +1,7 @@
 import { gameState } from '@Data/gameState.js';
 import store from '../../store/index.js';
 import { applyRareCandy } from '@Data/items/rareCandyEffect.js';
-import { Pokedex } from '@spriteworld/pokemon-data';
+import { Pokedex, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
 import { getGameDef } from '@Data/gameDef.js';
 import {
   SX, SY, SW, SH, PAD,
@@ -42,7 +42,7 @@ export default class BagTeamPickScreen {
       const y          = START_Y + i * ROW_H;
       const isSelected = i === this.cursor;
       const entry      = dex.getPokemonById(mon.species);
-      const name       = entry ? entry.species.toUpperCase() : `#${mon.species}`;
+      const name       = entry ? getSpeciesDisplayName(entry).toUpperCase() : `#${mon.species}`;
       const fainted    = (mon.currentHp ?? 1) <= 0;
       const color      = fainted ? '#888888' : '#181818';
 
@@ -101,7 +101,7 @@ export default class BagTeamPickScreen {
 
     // Show level-up toast.
     const entry    = this.menu.dex?.getPokemonById(mon.species);
-    const monName  = entry ? entry.species.replace(/\b\w/g, c => c.toUpperCase()) : `Pokémon`;
+    const monName  = entry ? getSpeciesDisplayName(entry) : `Pokémon`;
     this.menu.scene.game.events.emit('toast', `${monName} ${result.message}`);
 
     // If evolution triggered, signal OverworldUI to launch EvolutionScene.

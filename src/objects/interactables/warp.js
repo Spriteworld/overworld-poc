@@ -224,6 +224,23 @@ export default class {
    * @param {string} warpLocationName - Name of the warpLocation object on the destination map.
    */
   warpPlayerToMap(char, warpTarget, warpLocationName, warpVariant = null) {
+    // `_lastmap_` sentinel — resolve from the Vuex-persisted last-outdoor
+    // location so exit doors don't each need their own hard-coded destination.
+    // Ignores `warp-location` / `warp-variant` on the triggering warp object;
+    // the player lands on the exact tile they last stood on outside.
+    let playerLocationOverride = null;
+    if (warpTarget === '_lastmap_') {
+      const out = store.state.game.lastOutdoorLocation;
+      if (!out?.map) {
+        console.warn('[Warp] _lastmap_ used but no lastOutdoorLocation is recorded — skipping');
+        return;
+      }
+      warpTarget             = out.map;
+      warpLocationName       = null;
+      warpVariant            = null;
+      playerLocationOverride = { x: out.x, y: out.y, charLayer: out.charLayer };
+    }
+
     console.log('[Warp] warpPlayerToMap — from:', this.scene.config.mapName, '→', warpTarget, '| location:', warpLocationName);
 
     // Same map — resolve the warpLocation on this scene and teleport in place
@@ -270,7 +287,9 @@ export default class {
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
         this.scene.registry.set('map', warpTarget);
-        const startParams = { warpLocationName };
+        const startParams = playerLocationOverride
+          ? { playerLocation: playerLocationOverride }
+          : { warpLocationName };
         if (warpVariant) startParams.variant = warpVariant;
         if (pendingScript) startParams._pendingScript = pendingScript;
         this.scene.scene.start(warpTarget, startParams);

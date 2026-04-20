@@ -353,7 +353,7 @@ export default class {
         trainerBattleSprite:   battleSprite ?? null,
         midFightText:          getPropertyValue(obj.properties, 'text-mid-fight') ?? null,
         postDefeatText:        getPropertyValue(obj.properties, 'text-post-defeat') ?? null,
-        trainerWonText:        getPropertyValue(obj.properties, 'trainer-won-text') ?? null,
+        wonFightText:          getPropertyValue(obj.properties, 'text-won-fight') ?? null,
       },
     };
   }
@@ -427,6 +427,7 @@ export default class {
         game,
         movePool,
         movesMode: getGameDef().learnsets,
+        maxIvs:    !!getGameDef().maxIvs,
         pid:       spec.pid ?? rng(),
       };
       if (spec.nature  != null) overrides.nature  = spec.nature;

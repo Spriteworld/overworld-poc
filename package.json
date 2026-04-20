@@ -9,7 +9,7 @@
     "build:live": "vite build --mode live",
     "preview": "vite preview",
     "test": "jest",
-    "maps:update": "python3 src/maps/kanto/update_kanto.py && python3 src/maps/kanto/update_kanto_insides.py",
+    "maps:update": "python3 src/maps/kanto/update_kanto.py && python3 src/maps/kanto/update_kanto_insides.py && python3 src/maps/kanto/update_kanto_dungeons.py",
     "maps:watch": "bun scripts/watch-maps.js"
   },
   "dependencies": {

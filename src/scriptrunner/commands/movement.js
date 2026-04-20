@@ -145,17 +145,33 @@ export default {
   },
 
   warp_player(runner, cmd) {
+    // `_lastmap_` sentinel — resolve via the Vuex-persisted outdoor location.
+    let targetMap = cmd.map;
+    let overrideLocation = null;
+    if (targetMap === '_lastmap_') {
+      const out = store.state.game.lastOutdoorLocation;
+      if (!out?.map) {
+        console.warn('[ScriptRunner] warp_player: _lastmap_ used but no lastOutdoorLocation is recorded — skipping');
+        runner._step();
+        return;
+      }
+      targetMap        = out.map;
+      overrideLocation = { x: out.x, y: out.y, charLayer: out.charLayer };
+    }
+
     const player = runner._scene.characters?.get('player');
     store.commit('game/SET_PLAYER_FACING', player?.getFacingDirection() ?? 'down');
     player?.disableMovement?.();
-    runner._scene.registry.set('map', cmd.map);
+    runner._scene.registry.set('map', targetMap);
     runner._scene.game.events.emit('script-runner-end');
     runner._scene.cameras.main.fadeOut(500, 0, 0, 0);
     runner._scene.cameras.main.once('camerafadeoutcomplete', () => {
-      const params = cmd.anchor
-        ? { warpLocationName: cmd.anchor }
-        : { playerLocation: { x: cmd.x ?? 0, y: cmd.y ?? 0, charLayer: cmd.layer ?? 'ground' } };
-      runner._startScene(cmd.map, params);
+      const params = overrideLocation
+        ? { playerLocation: overrideLocation }
+        : (cmd.anchor
+          ? { warpLocationName: cmd.anchor }
+          : { playerLocation: { x: cmd.x ?? 0, y: cmd.y ?? 0, charLayer: cmd.layer ?? 'ground' } });
+      runner._startScene(targetMap, params);
     });
     // no _step() — scene is changing
   },
@@ -164,17 +180,34 @@ export default {
     const targetId = cmd.target ?? 'player';
     const char     = resolveChar(runner._scene, targetId);
 
+    // `_lastmap_` sentinel — resolved up front so the same warn/bail shape as
+    // `warp_player` applies before we start the walk-then-warp dance.
+    let targetMap = cmd.map;
+    let overrideLocation = null;
+    if (targetMap === '_lastmap_') {
+      const out = store.state.game.lastOutdoorLocation;
+      if (!out?.map) {
+        console.warn('[ScriptRunner] walk_warp_continue: _lastmap_ used but no lastOutdoorLocation is recorded — skipping');
+        runner._step();
+        return;
+      }
+      targetMap        = out.map;
+      overrideLocation = { x: out.x, y: out.y, charLayer: out.charLayer };
+    }
+
     const doWarp = () => {
       const player = runner._scene.characters?.get('player');
       store.commit('game/SET_PLAYER_FACING', player?.getFacingDirection() ?? 'down');
       player?.disableMovement?.();
-      runner._scene.registry.set('map', cmd.map);
+      runner._scene.registry.set('map', targetMap);
       runner._scene.game.events.emit('script-runner-end');
-      const params = cmd.anchor
-        ? { warpLocationName: cmd.anchor }
-        : { playerLocation: { x: cmd.x ?? 0, y: cmd.y ?? 0, charLayer: cmd.layer ?? 'ground' } };
+      const params = overrideLocation
+        ? { playerLocation: overrideLocation }
+        : (cmd.anchor
+          ? { warpLocationName: cmd.anchor }
+          : { playerLocation: { x: cmd.x ?? 0, y: cmd.y ?? 0, charLayer: cmd.layer ?? 'ground' } });
       runner._scene.cameras.main.fadeOut(500, 0, 0, 0);
-      runner._scene.cameras.main.once('camerafadeoutcomplete', () => runner._startScene(cmd.map, params));
+      runner._scene.cameras.main.once('camerafadeoutcomplete', () => runner._startScene(targetMap, params));
     };
 
     const hasWalkTarget = cmd.walk_x != null && cmd.walk_y != null;

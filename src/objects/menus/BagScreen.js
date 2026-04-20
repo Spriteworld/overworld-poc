@@ -1,5 +1,6 @@
 import store from '../../store/index.js';
 import { gameState } from '@Data/gameState.js';
+import { getGameDef } from '@Data/gameDef.js';
 import {
   SX, SY, SW, SH,
   TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT,
@@ -90,10 +91,12 @@ export default class BagScreen {
         if (isKeyTab) {
           line = `${prefix}${(entry.name ?? 'Item') + suffix}`;
         } else {
-          const usable = OVERWORLD_USABLE.has(entry.name ?? '');
-          const color  = usable ? '#181818' : '#666666';
-          const style  = { ...TEXT_STYLE_BODY, color };
-          line = `${prefix}${(entry.name ?? 'Item').padEnd(16)}  x${entry.quantity ?? 1}`;
+          const usable   = OVERWORLD_USABLE.has(entry.name ?? '');
+          const color    = usable ? '#181818' : '#666666';
+          const style    = { ...TEXT_STYLE_BODY, color };
+          const hideQty  = key === 'tms' && getGameDef().infiniteTMs;
+          const qtySuffix = hideQty ? '' : `  x${entry.quantity ?? 1}`;
+          line = `${prefix}${(entry.name ?? 'Item').padEnd(16)}${qtySuffix}`;
           reg(scene.add.text(SX + 16, LIST_Y + i * ROW_H, line, style));
           return;
         }

@@ -1,5 +1,6 @@
 import { Character, Tile, Direction } from '@Objects';
 import { EventBus, getInputManager, Action } from '@Utilities';
+import store from '../../store/index.js';
 
 export default class extends Character {
   /**
@@ -138,7 +139,10 @@ export default class extends Character {
     const im = getInputManager();
 
     let moveSpeed = 4;
-    if (this.config.scene.game.config.gameFlags.has_running_shoes && im?.isDown(Action.RUN)) {
+    const hasShoes = this.config.scene.game.config.gameFlags.has_running_shoes;
+    const runHeld  = !!im?.isDown(Action.RUN);
+    // alwaysRun on → runs by default, B walks. Off → walks by default, B runs.
+    if (hasShoes && (store.state.game.alwaysRun ? !runHeld : runHeld)) {
       moveSpeed = 8;
     }
 

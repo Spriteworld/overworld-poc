@@ -95,6 +95,11 @@ export const WORLD_MAP_KEYS = {
   'route23.json':        'Route23',
   'route24.json':        'Route24',
   'route25.json':        'Route25',
+  'hero_house_floor1.json': 'HeroHouseF1',
+  'hero_house_floor2.json': 'HeroHouseF2',
+  'prof_lab.json':       'ProfessorLab',
+  'pokemon_center.json': 'PokemonCenter',
+  'viridian_forest.json': 'ViridianForest',
 };
 
 export {

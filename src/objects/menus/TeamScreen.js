@@ -1,6 +1,6 @@
 import { gameState } from '@Data/gameState.js';
 import store from '../../store/index.js';
-import { Pokedex } from '@spriteworld/pokemon-data';
+import { Pokedex, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
 import { getGameDef } from '@Data/gameDef.js';
 import PokemonSprite from '../PokemonSprite.js';
 import {
@@ -163,7 +163,7 @@ export default class TeamScreen {
     const { entry, maxHp, types } = resolveMonData(this.menu.dex, mon);
     const currentHp   = mon.currentHp ?? maxHp;
     const hpRatio     = Math.max(0, currentHp / maxHp);
-    const speciesName = entry ? entry.species.toUpperCase() : `#${mon.species}`;
+    const speciesName = entry ? getSpeciesDisplayName(entry).toUpperCase() : `#${mon.species}`;
     const gender      = mon.gender === 'male' ? ' ♂' : mon.gender === 'female' ? ' ♀' : '';
     const tx          = x + HERO_TEXT_X;
 
@@ -202,7 +202,7 @@ export default class TeamScreen {
     const { entry, maxHp } = resolveMonData(this.menu.dex, mon);
     const currentHp   = mon.currentHp ?? maxHp;
     const hpRatio     = Math.max(0, currentHp / maxHp);
-    const speciesName = entry ? entry.species.toUpperCase() : `#${mon.species}`;
+    const speciesName = entry ? getSpeciesDisplayName(entry).toUpperCase() : `#${mon.species}`;
     const gender      = mon.gender === 'male' ? ' ♂' : mon.gender === 'female' ? ' ♀' : '';
 
     const { bg, border, lw } = slotColors(state);

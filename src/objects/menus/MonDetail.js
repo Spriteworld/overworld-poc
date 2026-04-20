@@ -1,4 +1,4 @@
-import { Pokedex } from '@spriteworld/pokemon-data';
+import { Pokedex, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
 import { getGameDef } from '@Data/gameDef.js';
 import { drawStatsPanel } from '../common/pokemonStats.js';
 import { gameState } from '@Data/gameState.js';
@@ -57,7 +57,7 @@ export function drawMonDetail(menu, { mon, entry, x, y, w, h, tab = 0 }) {
 
   const types       = entry?.types ?? [];
   const dexNum      = entry ? `#${String(entry.nat_dex_id).padStart(3, '0')}` : '';
-  const speciesName = entry ? entry.species.toUpperCase() : (mon ? `#${mon.species}` : '???');
+  const speciesName = entry ? getSpeciesDisplayName(entry).toUpperCase() : (mon ? `#${mon.species}` : '???');
   const gender      = mon?.gender === 'male' ? ' ♂' : mon?.gender === 'female' ? ' ♀' : '';
 
   const { scene, reg } = menu;
@@ -194,7 +194,7 @@ function _evoSprite(scene, reg, menu, id, x, y, size, isActive) {
 
   let name = '???';
   if (seen) {
-    try { name = menu.dex.getPokemonById(id)?.species?.toUpperCase() ?? '???'; }
+    try { name = getSpeciesDisplayName(menu.dex.getPokemonById(id)).toUpperCase() || '???'; }
     catch (_) { /* unknown id */ }
   }
   const nameT = scene.add.text(x + size / 2, y + size + 2, name, TEXT_STYLE_SM);

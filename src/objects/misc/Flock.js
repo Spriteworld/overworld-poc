@@ -13,16 +13,17 @@ export default class extends Phaser.GameObjects.Container {
 
     this.active = true;
 
+    console.log('Creating flock', this.name, 'with direction', this.direction);
     let pkmnObj = {
       scene: this.scene,
       'facing-direction': this.direction.toLowerCase(),
       'spin': false,
-      'char-layer': 'sky',
+      'char-layer': 'top',
       'can-run': false,
       collides: false,
     };
 
-    if (pkmnObj['char-layer'] === 'sky') {
+    if (pkmnObj['char-layer'] === 'top') {
       this.setDepth(10000);
     }
 
@@ -35,15 +36,27 @@ export default class extends Phaser.GameObjects.Container {
   update(time, delta) {
     if (!this.scene.ge_init) { return; }
 
+    const w = this.scene.config.tilemap.width;
+    const h = this.scene.config.tilemap.height;
+    // Only hide at the edge the flock is travelling *toward* — otherwise
+    // a flock spawned near the opposite edge would hide on frame 1.
+    const atExitEdge = (pos) => {
+      switch (this.direction) {
+        case Direction.RIGHT: return pos.x >= w - 1;
+        case Direction.LEFT:  return pos.x <= 0;
+        case Direction.DOWN:  return pos.y >= h - 1;
+        case Direction.UP:    return pos.y <= 0;
+        default:              return false;
+      }
+    };
+    const firstTick = !this._ticked;
+    this._ticked = true;
+
     Object.values(this.list)
       .forEach(mon => {
         if (!mon.visible) { return; }
 
-        let pos = mon.getPosition();
-
-        if ([0, this.scene.config.tilemap.width-1].includes(pos.x)
-          || [0, this.scene.config.tilemap.height-1].includes(pos.y)) {
-
+        if (!firstTick && atExitEdge(mon.getPosition())) {
           mon.setVisible(false);
           mon.move(this.direction);
 

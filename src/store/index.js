@@ -26,6 +26,7 @@ export default createStore({
         playtime:     state.game.playtime,
         money:        state.game.money,
         healLocation: state.game.healLocation,
+        lastOutdoorLocation: state.game.lastOutdoorLocation,
         textSpeed:    state.game.textSpeed,
         bgmVolume:    state.game.bgmVolume,
         sfxVolume:    state.game.sfxVolume,

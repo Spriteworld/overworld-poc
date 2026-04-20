@@ -23,6 +23,9 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "//dev/www/linky/spriteworld-claude/character/src/tileset/cave_dungeon.json": {
+            "scaleInDock": 3
+        },
         "//dev/www/linky/spriteworld-claude/character/src/tileset/gen3_outside.json": {
             "scaleInDock": 1
         },
@@ -39,6 +42,14 @@
         "//dev/www/spriteworld.dev.xlink.cybershade.org/character-claude/src/tileset/rse_inside.json": {
             "scaleInDock": 1
         },
+        "public/maps/kanto/kanto_dungeons.json": {
+            "scale": 1,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 960,
+                "y": 1440.5
+            }
+        },
         "public/maps/kanto/route22.json": {
             "scale": 2,
             "selectedLayer": 0,
@@ -47,16 +58,38 @@
                 "y": 349.5
             }
         },
+        "public/src/tileset/cave_dungeon.json": {
+            "scaleInDock": 1
+        },
+        "public/tileset/cave_dungeon.json": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "public/tileset/gen3_inside.json": {
+            "scaleInDock": 1
+        },
+        "public/tileset/gen3_outside.json": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
         "src/maps/kanto/animated_grass.json": {
             "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "src/maps/kanto/celadon_city.json": {
+            "scale": 0.7568333333333332,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 25.10460251046038,
+                "y": 585.994274388901
+            }
         },
         "src/maps/kanto/cerulean_city.json": {
             "scale": 0.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 1066,
-                "y": 533
+                "x": 960,
+                "y": 755
             }
         },
         "src/maps/kanto/hero_house_floor1.json": {
@@ -85,23 +118,30 @@
             "expandedObjectLayers": [
                 12
             ],
-            "scale": 1.5,
+            "scale": 2,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 2442,
+                "y": 5518.25
+            }
+        },
+        "src/maps/kanto/kanto_dungeons.json": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 2,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 2743.333333333333,
-                "y": 7881.666666666666
+                "x": 1136.5,
+                "y": 440.25
             }
         },
         "src/maps/kanto/kanto_inside.json": {
-            "expandedObjectLayers": [
-                3,
-                2
-            ],
-            "scale": 1,
+            "scale": 0.75,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 1664,
-                "y": 1216.5
+                "x": 963.9999999999999,
+                "y": 939.3333333333333
             }
         },
         "src/maps/kanto/pallet.json": {
@@ -124,6 +164,14 @@
             "viewCenter": {
                 "x": 871,
                 "y": 6017
+            }
+        },
+        "src/maps/kanto/pokemon_center.json": {
+            "scale": 3.7126838235294115,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 272.04040203990695,
+                "y": 176.01822052780113
             }
         },
         "src/maps/kanto/prof_lab.json": {
@@ -224,7 +272,7 @@
             "scale": 0.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1377,
+                "x": 1376,
                 "y": 953
             }
         },
@@ -353,11 +401,11 @@
             }
         },
         "src/maps/kanto/viridian_forest.json": {
-            "scale": 0.8206473214285713,
-            "selectedLayer": 2,
+            "scale": 0.75,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 1171.0267917856659,
-                "y": 1213.0667754657964
+                "x": 1221.333333333333,
+                "y": 1198
             }
         },
         "src/maps/kanto/world.json": {
@@ -427,8 +475,8 @@
             "scale": 1.5,
             "selectedLayer": 9,
             "viewCenter": {
-                "x": 641.3333333333333,
-                "y": 536.3333333333333
+                "x": 128,
+                "y": 191.66666666666663
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -469,6 +517,9 @@
         "src/tileset/animated_grass.json": {
             "scaleInDock": 1
         },
+        "src/tileset/cave_dungeon.json": {
+            "scaleInDock": 1
+        },
         "src/tileset/gen3_inside.json": {
             "scaleInDock": 2,
             "scaleInEditor": 2
@@ -482,6 +533,9 @@
             "scaleInEditor": 1
         },
         "src/tileset/maps/kanto_common.json": {
+            "scaleInDock": 1
+        },
+        "src/tileset/maps/kanto_dungeons.json": {
             "scaleInDock": 1
         },
         "src/tileset/maps/kanto_inside.json": {
@@ -526,20 +580,20 @@
         "src/maps/kanto/kanto.json"
     ],
     "project": "spriteworld.tiled-project",
-    "property.type": "bool",
+    "property.type": "string",
     "recentFiles": [
-        "src/tileset/gen3_inside.json",
-        "src/tileset/gen3_outside.json",
-        "src/maps/kanto/kanto_inside.json",
-        "src/maps/kanto/prof_lab.json",
-        "src/maps/kanto/kanto.json",
-        "src/maps/kanto/pallet.json",
+        "src/maps/kanto/celadon_city.json",
+        "src/maps/kanto/cerulean_city.json",
         "src/maps/kanto/viridian_forest.json",
-        "src/maps/kanto/route2.json",
-        "src/maps/kanto/route3.json",
-        "src/maps/kanto/route18.json",
-        "src/maps/kanto/route17.json",
-        "src/maps/kanto/route16.json"
+        "public/tileset/gen3_outside.json",
+        "public/tileset/cave_dungeon.json",
+        "src/maps/random/test.json",
+        "src/maps/kanto/pokemon_center.json",
+        "src/tileset/gen3_outside.json",
+        "src/maps/kanto/route22.json",
+        "src/tileset/gen3_inside.json",
+        "src/maps/kanto/kanto_inside.json",
+        "src/maps/kanto/prof_lab.json"
     ],
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFilter": "All Files (*)",

@@ -12,12 +12,11 @@ import { buildBattleInventory } from './encounter.js';
 const DEFAULT_DENSITY = 3; // 3 %
 
 /**
- * Manhattan-distance radius (in tiles) within which a pending spawn has its
- * sprite created and texture lazy-loaded.  Keeps textures from being queued
- * all at once at map load; instead each sprite is created only when the player
- * is close enough that it could become visible.
+ * Extra margin (in tiles) added around the camera viewport when deciding
+ * whether to keep an OW encounter spawned. Large enough that no sprite can
+ * ever appear or vanish on-screen — spawns happen strictly off-camera.
  */
-const SPAWN_RADIUS = 10;
+const SPAWN_MARGIN_TILES = 4;
 
 const WILD_LEVEL_MIN = 3;
 const WILD_LEVEL_MAX = 8;
@@ -165,10 +164,7 @@ export default class OverworldEncounter {
       }
     }
 
-    const mergedTable    = Object.assign({}, ...tableFragments);
-    const encounterTable = this._parseEncounterTable(
-      Object.keys(mergedTable).length ? mergedTable : null
-    );
+    const encounterTable = this._parseEncounterTable(tableFragments);
 
     const allTiles = this._collectEncounterTiles();
     if (allTiles.length === 0) return;
@@ -186,7 +182,40 @@ export default class OverworldEncounter {
     }
   }
 
-  update() {}
+  update() {
+    const ge = this.scene.gridEngine;
+    const playerPos = ge?.hasCharacter('player') ? ge.getPosition('player') : null;
+
+    for (const spawn of this._active) {
+      const b = this._behaviour[spawn.geId];
+      if (!b) continue;
+
+      // Pin any active `!` sprite to the visual top of its mon. The mon is
+      // tweened by GridEngine each frame, so a static placement at exclaim-
+      // creation time would lag behind a moving sprite.
+      if (b.exclaimSprite && spawn.sprite?.active) {
+        const bounds = spawn.sprite.getBounds();
+        b.exclaimSprite.x = bounds.centerX;
+        b.exclaimSprite.y = bounds.top - 2;
+      }
+
+      // Per-frame collision check. Symmetric with the player-side trigger
+      // (which fires when the player steps onto a mon's tile): if the mon
+      // ends up colliding with the player it starts the battle, regardless
+      // of which side moved or what GridEngine fired. Tolerance differs by
+      // mode — a chaser counts as having caught up at adjacency (dist ≤ 1),
+      // a wandering mon must literally land on the player's tile (dist == 0)
+      // because we don't want every passing mon to trigger from one tile away.
+      if (b.mode !== 'battling' && playerPos && ge?.hasCharacter(spawn.geId)) {
+        const monPos = ge.getPosition(spawn.geId);
+        if (monPos) {
+          const dist  = Math.abs(playerPos.x - monPos.x) + Math.abs(playerPos.y - monPos.y);
+          const limit = b.mode === 'chase' ? 1 : 0;
+          if (dist <= limit) this._triggerBattleFromChase(spawn);
+        }
+      }
+    }
+  }
 
   event() {
     if (this._pending.length === 0 && this._active.length === 0) return;
@@ -264,12 +293,18 @@ export default class OverworldEncounter {
    * @param {{ x:number, y:number }} playerTile
    */
   _syncSpawns(playerTile) {
-    const inSet = this._locations.length > 0
-      ? (() => {
-          const active = this._activeLocations(playerTile);
-          return (tx, ty) => this._tileInLocations(tx, ty, active);
-        })()
-      : (tx, ty) => Math.abs(tx - playerTile.x) + Math.abs(ty - playerTile.y) <= SPAWN_RADIUS;
+    // Screen-sized + 4-tile-margin bounding box around the player. Using per-
+    // axis half-extents (Chebyshev-style, not Manhattan) so the active region
+    // matches the camera's visible rectangle instead of a diamond, which is
+    // what caused sprites to pop in/out along the screen edges.
+    const cam      = this.scene.cameras?.main;
+    const halfW    = cam ? Math.ceil(cam.width  / Tile.WIDTH  / 2) : 13;
+    const halfH    = cam ? Math.ceil(cam.height / Tile.HEIGHT / 2) : 10;
+    const maxDX    = halfW + SPAWN_MARGIN_TILES;
+    const maxDY    = halfH + SPAWN_MARGIN_TILES;
+    const inSet    = (tx, ty) =>
+      Math.abs(tx - playerTile.x) <= maxDX &&
+      Math.abs(ty - playerTile.y) <= maxDY;
 
     // Despawn anything outside the active set — move back to _pending.
     const stillActive = [];
@@ -426,13 +461,24 @@ export default class OverworldEncounter {
 
   /**
    * Pathfind toward the player's current tile. Re-issued each step-finished
-   * so the chaser keeps re-targeting as the player moves.
+   * so the chaser keeps re-targeting as the player moves. If the mon is
+   * already adjacent (or on the player's tile) trigger the battle directly,
+   * because moveTo with CLOSEST_REACHABLE would just resolve to the mon's
+   * current tile and never fire another positionChangeFinished event.
    */
   _chaseStep(spawn) {
     const ge = this.scene.gridEngine;
     if (!ge?.hasCharacter(spawn.geId)) return;
     const playerPos = ge.getPosition('player');
     if (!playerPos) return;
+    const monPos = ge.getPosition(spawn.geId);
+    if (monPos) {
+      const dist = Math.abs(playerPos.x - monPos.x) + Math.abs(playerPos.y - monPos.y);
+      if (dist <= 1) {
+        this._triggerBattleFromChase(spawn);
+        return;
+      }
+    }
     ge.moveTo(spawn.geId, playerPos, {
       noPathFoundStrategy: 'CLOSEST_REACHABLE',
       pathBlockedStrategy: 'WAIT',
@@ -500,9 +546,10 @@ export default class OverworldEncounter {
       });
     }
     const b = this._behaviour[spawn.geId];
+    const bounds = spawn.sprite.getBounds();
     const ex = scene.add.sprite(
-      spawn.sprite.x,
-      spawn.sprite.y - spawn.sprite.displayHeight / 2 - 2,
+      bounds.centerX,
+      bounds.top - 2,
       'animation',
       13,
     ).setOrigin(0.5, 1).setDepth(9999);
@@ -519,9 +566,10 @@ export default class OverworldEncounter {
 
   /**
    * Called on every OW mon's positionChangeFinished. Decrements reaction step
-   * budgets and, for chasers that landed on the player's tile, fires the
-   * battle-start handoff that `positionChangeStarted` (player side) usually
-   * handles for stationary-player collisions.
+   * budgets and, for chasers that reached the player (same tile or adjacent),
+   * fires the battle-start handoff. GridEngine pathfinding treats the player
+   * as a tile obstacle, so a chaser typically stops on the adjacent tile
+   * rather than landing exactly on the player — both cases trigger here.
    */
   _onMonStepFinished(charId, enterTile) {
     const b = this._behaviour[charId];
@@ -533,9 +581,12 @@ export default class OverworldEncounter {
 
     if (b.mode === 'chase') {
       const playerPos = this.scene.gridEngine.getPosition('player');
-      if (playerPos && playerPos.x === enterTile.x && playerPos.y === enterTile.y) {
-        this._triggerBattleFromChase(spawn);
-        return;
+      if (playerPos) {
+        const dist = Math.abs(playerPos.x - enterTile.x) + Math.abs(playerPos.y - enterTile.y);
+        if (dist <= 1) {
+          this._triggerBattleFromChase(spawn);
+          return;
+        }
       }
       b.stepsLeft--;
       if (b.stepsLeft <= 0) { this._endReaction(spawn); return; }
@@ -773,23 +824,25 @@ export default class OverworldEncounter {
   /**
    * Expand all encounter-zone objects on this map into a flat tile list.
    * Handles both rectangle and polygon zone shapes.
-   * @returns {{ x:number, y:number, tableId:string|null }[]}
+   * @returns {{ x:number, y:number, tableId:string|null, section:string }[]}
    */
   _collectEncounterTiles() {
     const tiles = [];
     const zones = this.scene.findInteractions('encounters');
     for (const obj of zones) {
       const tableId = this.scene.getPropertyFromTile(obj, 'table-id') || null;
-      if (typeof obj.polygon === 'undefined') {
+      const section = this.scene.getPropertyFromTile(obj, 'section') || 'grass';
+      const shape   = obj.polygon ?? obj.polyline ?? null;
+      if (shape === null) {
         const w = parseInt(obj.width  / Tile.WIDTH);
         const h = parseInt(obj.height / Tile.HEIGHT);
         for (let x = 0; x < w; x++) {
           for (let y = 0; y < h; y++) {
-            tiles.push({ x: obj.x / Tile.WIDTH + x, y: obj.y / Tile.HEIGHT + y, tableId });
+            tiles.push({ x: obj.x / Tile.WIDTH + x, y: obj.y / Tile.HEIGHT + y, tableId, section });
           }
         }
       } else {
-        const abs  = obj.polygon.map(pt => ({ x: obj.x + pt.x, y: obj.y + pt.y }));
+        const abs  = shape.map(pt => ({ x: obj.x + pt.x, y: obj.y + pt.y }));
         const minTx = Math.floor(Math.min(...abs.map(p => p.x)) / Tile.WIDTH);
         const maxTx = Math.floor(Math.max(...abs.map(p => p.x)) / Tile.WIDTH);
         const minTy = Math.floor(Math.min(...abs.map(p => p.y)) / Tile.HEIGHT);
@@ -799,7 +852,7 @@ export default class OverworldEncounter {
             const cx = tx * Tile.WIDTH  + Tile.WIDTH  / 2;
             const cy = ty * Tile.HEIGHT + Tile.HEIGHT / 2;
             if (pointInPolygon(cx, cy, abs)) {
-              tiles.push({ x: tx, y: ty, tableId });
+              tiles.push({ x: tx, y: ty, tableId, section });
             }
           }
         }
@@ -809,17 +862,38 @@ export default class OverworldEncounter {
   }
 
   /**
-   * Normalise a raw `encounterTable` class value from map-settings.
-   * @param {object|null} raw
-   * @returns {Record<string, object[]>|null}
+   * Normalises raw `encounter-table` list values from Tiled map-settings into a
+   * `{ [tableName]: { name, slots: { grass, surf, good-rod, … } } }` map.
+   *
+   * Zones reference a specific table via `table-id` and a slot inside that
+   * table via `section`; the resolver looks up `tables[tableId].slots[section]`.
+   *
+   * @param {Array|null} raw - Array of fragments, each a list of `encounterTable`
+   *   class wrappers `[{ propertytype, type, value: { name, grass, surf, … } }]`.
+   * @returns {Record<string, { name: string, slots: Record<string, object[]> }>|null}
    */
   _parseEncounterTable(raw) {
-    if (!raw || typeof raw !== 'object') return null;
+    if (raw == null) return null;
+    const fragments = Array.isArray(raw) ? raw : [raw];
     const result = {};
-    for (const [key, list] of Object.entries(raw)) {
-      if (!Array.isArray(list) || list.length === 0) continue;
-      const entries = list.map(e => e.value ?? e).filter(e => e.species);
-      if (entries.length > 0) result[key] = entries;
+
+    const unwrapEntries = (list) =>
+      list.map(e => e?.value ?? e).filter(e => e?.species);
+
+    for (const fragment of fragments) {
+      if (!Array.isArray(fragment)) continue;
+      for (const item of fragment) {
+        const entry = item?.value ?? item;
+        if (!entry || typeof entry !== 'object') continue;
+        const name = entry.name;
+        if (!name) continue;
+        const table = result[name] ?? (result[name] = { name, slots: {} });
+        for (const [slot, list] of Object.entries(entry)) {
+          if (slot === 'name' || !Array.isArray(list) || list.length === 0) continue;
+          const entries = unwrapEntries(list);
+          if (entries.length > 0) table.slots[slot] = entries;
+        }
+      }
     }
     return Object.keys(result).length > 0 ? result : null;
   }
@@ -850,7 +924,9 @@ export default class OverworldEncounter {
       levelMin = WILD_LEVEL_MIN;
       levelMax = WILD_LEVEL_MAX;
     } else {
-      const entries = tile.tableId ? encounterTable?.[tile.tableId] : null;
+      const section = tile.section ?? 'grass';
+      const table   = tile.tableId ? encounterTable?.[tile.tableId] : null;
+      const entries = table?.slots?.[section] ?? null;
       if (entries?.length > 0) {
         const picked = pickWeighted(entries);
         const name   = picked.species?.toLowerCase();
@@ -874,17 +950,19 @@ export default class OverworldEncounter {
       rng,
       game:      def.game,
       movesMode: def.learnsets,
+      maxIvs:    !!def.maxIvs,
     });
 
     return {
       tilesetBaseUrl: '/',
       textSpeed:      store.state.game.textSpeed ?? 'normal',
-      expRate:        def.expRateMultiplier,
-      deferEvolution: def.deferEvolution,
+      expRate:          def.expRateMultiplier,
+      catchingGivesExp: !!def.catchingGivesExp,
+      deferEvolution:   def.deferEvolution,
       nuzlocke: def.gameMode === 'nuzlocke' ? {
         zone:       tile.tableId ?? null,
         zoneCaught: tile.tableId
-          ? !!store.state.game.gameFlags[`nuzlocke_caught_${tile.tableId}`]
+          ? !!store.state.game.gameFlags[`nuzlocke_caught_${tile.tableId}_${tile.section ?? 'grass'}`]
           : false,
       } : null,
       field:  { weather: null, terrain: 'normal' },

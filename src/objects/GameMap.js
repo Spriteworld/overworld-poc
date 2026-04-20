@@ -856,7 +856,7 @@ export default class extends Phaser.Scene {
     // that NPC sight / tracking checks read to decide whether to re-evaluate.
     this._playerTileSub = this.gridEngine
       .positionChangeStarted()
-      .subscribe(({ charId, enterTile }) => {
+      .subscribe(({ charId, enterTile, exitTile }) => {
         this._tileSeq++;
         if (charId === 'player') {
           this._playerTileSeq++;
@@ -866,10 +866,14 @@ export default class extends Phaser.Scene {
             charLayer: this.gridEngine.getCharLayer('player'),
           };
           if (!this.config?.inside) {
+            // Record the tile the player just LEFT (not the one they're
+            // stepping onto). If the step lands on a door/warp tile, we still
+            // need a safe "outside" spot to return them to via `_lastmap_` —
+            // the warp tile itself would re-trigger the warp immediately.
             store.commit('game/SET_LAST_OUTDOOR_LOCATION', {
               map:       this.config.mapName,
-              x:         enterTile.x,
-              y:         enterTile.y,
+              x:         exitTile.x,
+              y:         exitTile.y,
               charLayer: this.gridEngine.getCharLayer('player'),
             });
           }

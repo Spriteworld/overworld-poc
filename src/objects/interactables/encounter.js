@@ -154,18 +154,17 @@ export default class {
       }
     }
 
-    const merged = Object.assign({}, ...tableFragments);
-    this._encounterTable = this._parseEncounterTable(
-      Object.keys(merged).length ? merged : null
-    );
+    this._encounterTable = this._parseEncounterTable(tableFragments);
 
     const encounterZones = this.scene.findInteractions('encounters');
     if (encounterZones.length === 0) { return; }
 
     encounterZones.forEach(obj => {
       const tableId = this.scene.getPropertyFromTile(obj, 'table-id') || null;
+      const section = this.scene.getPropertyFromTile(obj, 'section') || 'grass';
+      const shape   = obj.polygon ?? obj.polyline ?? null;
 
-      if (typeof obj.polygon === 'undefined') {
+      if (shape === null) {
         const width  = parseInt(obj.width  / Tile.WIDTH);
         const height = parseInt(obj.height / Tile.HEIGHT);
         for (let x = 0; x < width; x++) {
@@ -174,11 +173,12 @@ export default class {
               x: (obj.x / Tile.WIDTH) + x,
               y: (obj.y / Tile.HEIGHT) + y,
               tableId,
+              section,
             });
           }
         }
       } else {
-        const abs = obj.polygon.map(pt => ({ x: obj.x + pt.x, y: obj.y + pt.y }));
+        const abs = shape.map(pt => ({ x: obj.x + pt.x, y: obj.y + pt.y }));
         const minTx = Math.floor(Math.min(...abs.map(p => p.x)) / Tile.WIDTH);
         const maxTx = Math.floor(Math.max(...abs.map(p => p.x)) / Tile.WIDTH);
         const minTy = Math.floor(Math.min(...abs.map(p => p.y)) / Tile.HEIGHT);
@@ -188,7 +188,7 @@ export default class {
             const cx = tx * Tile.WIDTH  + Tile.WIDTH  / 2;
             const cy = ty * Tile.HEIGHT + Tile.HEIGHT / 2;
             if (pointInPolygon(cx, cy, abs)) {
-              this.encounterTiles.push({ x: tx, y: ty, tableId });
+              this.encounterTiles.push({ x: tx, y: ty, tableId, section });
             }
           }
         }
@@ -220,9 +220,10 @@ export default class {
 
       // Nuzlocke: record the first catch in this zone.
       if (getGameDef().gameMode === 'nuzlocke' && tile.tableId) {
+        const flagKey = `nuzlocke_caught_${tile.tableId}_${tile.section ?? 'grass'}`;
         this.scene.game.events.once('battle-complete', ({ result }) => {
           if (result === 'caught') {
-            store.commit('game/PATCH_FLAGS', { [`nuzlocke_caught_${tile.tableId}`]: true });
+            store.commit('game/PATCH_FLAGS', { [flagKey]: true });
           }
         });
       }
@@ -234,23 +235,40 @@ export default class {
   }
 
   /**
-   * Normalises a raw `encounterTable` class value from Tiled map-settings into
-   * a keyed object of entry arrays ready for `pickWeighted`.
-   * Each Tiled list entry is unwrapped from its `{ propertytype, type, value }`
-   * wrapper and filtered to only those with a non-empty `species` field.
+   * Normalises raw `encounter-table` list values from Tiled map-settings into a
+   * `{ [tableName]: { name, slots: { grass, surf, good-rod, … } } }` map.
    *
-   * @param {object|null} raw - The `encounter-table` value from map-settings.
-   * @returns {Record<string, object[]>|null}
+   * Each zone tile references a specific table via `table-id` and a slot inside
+   * that table via `section`, so the resolver's job is just a two-step lookup.
+   *
+   * @param {Array|null} raw - Each fragment is a list of `encounterTable` class
+   *   wrappers `[{ propertytype, type, value: { name, grass[], surf[], … } }]`.
+   *   The outer `raw` is an array of such fragments (one per `map-settings`
+   *   scope that declared `encounter-table`).
+   * @returns {Record<string, { name: string, slots: Record<string, object[]> }>|null}
    */
   _parseEncounterTable(raw) {
-    if (!raw || typeof raw !== 'object') { return null; }
+    if (raw == null) return null;
+    const fragments = Array.isArray(raw) ? raw : [raw];
     const result = {};
-    for (const [key, list] of Object.entries(raw)) {
-      if (!Array.isArray(list) || list.length === 0) { continue; }
-      const entries = list
-        .map(e => e.value ?? e)
-        .filter(e => e.species);
-      if (entries.length > 0) { result[key] = entries; }
+
+    const unwrapEntries = (list) =>
+      list.map(e => e?.value ?? e).filter(e => e?.species);
+
+    for (const fragment of fragments) {
+      if (!Array.isArray(fragment)) continue;
+      for (const item of fragment) {
+        const entry = item?.value ?? item;
+        if (!entry || typeof entry !== 'object') continue;
+        const name = entry.name;
+        if (!name) continue;
+        const table = result[name] ?? (result[name] = { name, slots: {} });
+        for (const [slot, list] of Object.entries(entry)) {
+          if (slot === 'name' || !Array.isArray(list) || list.length === 0) continue;
+          const entries = unwrapEntries(list);
+          if (entries.length > 0) table.slots[slot] = entries;
+        }
+      }
     }
     return Object.keys(result).length > 0 ? result : null;
   }
@@ -291,10 +309,12 @@ export default class {
       levelMin = WILD_LEVEL_MIN;
       levelMax = WILD_LEVEL_MAX;
     } else {
-      // Vanilla: use the map's encounter-table from map-settings.
-      const entries = tableId ? this._encounterTable?.[tableId] : null;
+      // Vanilla: pick from the zone's table-id + section.
+      const section = tile?.section ?? 'grass';
+      const table   = tableId ? this._encounterTable?.[tableId] : null;
+      const entries = table?.slots?.[section] ?? null;
       if (!entries?.length) {
-        console.warn(`Encounter::buildWildBattle::noTableFound for tableId='${tableId}' — skipping encounter`);
+        console.warn(`Encounter::buildWildBattle::noTableFound for tableId='${tableId}' section='${section}' — skipping encounter`);
         return null;
       }
       const picked = pickWeighted(entries);
@@ -316,17 +336,19 @@ export default class {
       rng,
       game:      def.game,
       movesMode: def.learnsets,
+      maxIvs:    !!def.maxIvs,
     });
 
     return {
       tilesetBaseUrl:  '/',
       textSpeed:       store.state.game.textSpeed ?? 'normal',
-      expRate:         def.expRateMultiplier,
-      deferEvolution:  def.deferEvolution,
+      expRate:          def.expRateMultiplier,
+      catchingGivesExp: !!def.catchingGivesExp,
+      deferEvolution:   def.deferEvolution,
       nuzlocke: def.gameMode === 'nuzlocke' ? {
         zone:       tableId ?? null,
         zoneCaught: tableId
-          ? !!store.state.game.gameFlags[`nuzlocke_caught_${tableId}`]
+          ? !!store.state.game.gameFlags[`nuzlocke_caught_${tableId}_${tile?.section ?? 'grass'}`]
           : false,
       } : null,
       field:  { weather: null, terrain: 'normal' },

@@ -35,6 +35,17 @@ import defaultDef from './gameDefs/kanto.js';
  * @property {boolean}               owEncounters
  *   When true, visible overworld Pokémon are spawned on encounter-zone tiles.
  *   Individual maps can still opt out via map-settings['ow-encounters'] = false.
+ * @property {boolean}               infiniteTMs
+ *   When true, teaching a TM does not consume it from the bag (Gen 5+ behavior).
+ *   When false, TMs are single-use (Gen 1–4 behavior).
+ * @property {boolean}               catchingGivesExp
+ *   When true, successfully catching a wild Pokémon awards the active battler
+ *   experience as if it had been defeated (Gen 6+ behavior).
+ *   When false, no exp is awarded for a capture (Gen 1–5 behavior).
+ * @property {boolean}               maxIvs
+ *   When true, every newly generated Pokémon (wild, trainer, starter, gift)
+ *   is rolled with 31s across all IV slots. Does not retroactively update
+ *   mons already in the save — only affects freshly built ones.
  */
 
 let _active = defaultDef;

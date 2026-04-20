@@ -79,9 +79,21 @@ export default class {
       ...(charLayer ? { 'char-layer': charLayer } : {}),
     });
     this.scene.registry.set('player', this.player);
-    this.scene.cameras.main.startFollow(this.player, true, 1);
+    const smoothCam = !!this.scene.game.config.debug?.smoothCam;
+    const lerp = smoothCam ? 0.3 : 1;
+    this.scene.cameras.main.startFollow(this.player, true, lerp, lerp);
     this.scene.cameras.main.setFollowOffset(-(this.player.width/2), -(this.player.height/2));
     this.scene.cameras.main.setSize(25 * Tile.WIDTH, 19 * Tile.HEIGHT);
+    if (smoothCam) {
+      // Snap to the player on scene entry so the lerp doesn't pan in from (0,0).
+      // `this.player.x/y` are still tile indices here — GridEngine moves the sprite to
+      // real pixel coords later in GameMap.createCharacters(), so we compute the pixel
+      // position directly from the tile coords passed in.
+      this.scene.cameras.main.centerOn(
+        x * Tile.WIDTH  + this.player.width  / 2,
+        y * Tile.HEIGHT + this.player.height / 2
+      );
+    }
 
     // debug for time overlay stuffs
     if (this.scene.game.config.debug.tests.timeOverlay === true) {

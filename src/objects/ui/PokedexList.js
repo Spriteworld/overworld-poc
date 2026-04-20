@@ -1,4 +1,4 @@
-import { Pokedex } from '@spriteworld/pokemon-data';
+import { Pokedex, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
 import { drawMiniBall } from '@Objects/menus/helpers.js';
 import { DEX_LIST_W, DEX_ITEM_H, DEX_VISIBLE, TEXT_STYLE_HINT } from '@Objects/common/constants.js';
@@ -71,7 +71,7 @@ export default class PokedexList {
       const color  = isSelected ? '#ffffff' : record ? '#181818' : '#888888';
       const style  = { fontFamily: 'Gen3', fontSize: '12px', color };
       const numStr = `#${String(dexId).padStart(3, '0')}`;
-      const nameStr = record ? entry.species.toUpperCase() : '???';
+      const nameStr = record ? getSpeciesDisplayName(entry).toUpperCase() : '???';
 
       const numT  = scene.add.text(x,      rowY + 2, numStr,  style);
       const nameT = scene.add.text(x + 38, rowY + 2, nameStr, style);

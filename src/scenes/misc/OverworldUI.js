@@ -6,7 +6,7 @@ import { PauseMenu } from '@Objects';
 import { gameState, saveGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
 import { KEY_ITEMS } from '../../store/modules/bag.js';
-import { Pokedex, GENDERS } from '@spriteworld/pokemon-data';
+import { Pokedex, GENDERS, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
 import { getGameDef } from '@Data/gameDef.js';
 
 export default class extends Phaser.Scene {
@@ -214,7 +214,7 @@ export default class extends Phaser.Scene {
               let toName;
               try {
                 const entry = new Pokedex(p.game ?? getGameDef().game).getPokemonById(targetId);
-                toName = (entry.species ?? `#${targetId}`).replace(/\b\w/g, c => c.toUpperCase());
+                toName = getSpeciesDisplayName(entry) || `#${targetId}`;
               } catch {
                 toName = `#${targetId}`;
               }
@@ -279,7 +279,7 @@ export default class extends Phaser.Scene {
 
               // On a lost trainer battle, show the trainer's loss line (if any)
               // before the screen fades to white and we warp to the heal point.
-              const wonText = battleScene?.config?.enemy?.trainerWonText;
+              const wonText = battleScene?.config?.enemy?.wonFightText;
               const isTrainerLoss = !isTutorial && result === 'lost' && battleScene?.config?.enemy?.isTrainer;
               if (isTrainerLoss && wonText) {
                 this.game.events.emit('textbox-changedata', wonText);
@@ -379,7 +379,7 @@ export default class extends Phaser.Scene {
       let monName = 'Pokémon';
       try {
         const entry = new Pokedex(getGameDef().game).getPokemonById(mon.species);
-        monName = (entry?.species ?? monName).replace(/\b\w/g, c => c.toUpperCase());
+        monName = getSpeciesDisplayName(entry) || monName;
       } catch { /* keep default */ }
 
       if (this.pauseMenu.visible) this.pauseMenu.close();

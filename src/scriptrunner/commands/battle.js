@@ -109,6 +109,7 @@ function buildTeam(specs) {
       game,
       movesMode: getGameDef().learnsets,
       movePool:  pool,
+      maxIvs:    !!getGameDef().maxIvs,
       pid:       spec.pid ?? (i + 1),
     };
     if (spec.nature  != null) overrides.nature  = spec.nature;
@@ -151,7 +152,7 @@ export default {
           trainerBattleSprite: cmd.battle_texture ?? cmd['battle-texture'] ?? null,
           midFightText:        cmd.mid_fight_text ?? null,
           postDefeatText:      cmd.post_defeat_text ?? null,
-          trainerWonText:      cmd.trainer_won_text ?? null,
+          wonFightText:        cmd.won_fight_text ?? null,
         }
       : {
           isTrainer:    false,

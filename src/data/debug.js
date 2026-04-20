@@ -11,6 +11,7 @@ export default {
   stateMachine: false,
   noEncounters: false,
   noTrainerSight: false,
+  smoothCam: false,
   tests: {
     timeOverlay: false,
     outlineColliders: false,
