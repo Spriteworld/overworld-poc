@@ -1,7 +1,7 @@
 import { Tile } from '@Objects';
 import { Pokedex, Items, buildMon } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
-import { getPropertyValue } from '@Utilities';
+import { getPropertyValue, getBattleTheme } from '@Utilities';
 import { getGameDef, filterByAvailablePokemon, seededRng } from '@Data/gameDef.js';
 import store from '../../store/index.js';
 import { rng } from '@Utilities/rng.js';
@@ -351,7 +351,7 @@ export default class {
           ? !!store.state.game.gameFlags[`nuzlocke_caught_${tableId}_${tile?.section ?? 'grass'}`]
           : false,
       } : null,
-      field:  { weather: null, terrain: 'normal' },
+      field:  { weather: null, terrain: 'normal', scene: getBattleTheme(this.scene) },
       player: {
         name: 'Red',
         team: gameState.party.map(p => ({

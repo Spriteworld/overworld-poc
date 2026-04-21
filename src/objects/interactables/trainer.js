@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import * as Tile from '@Objects/Tile.js';
 import { Items, buildMon, buildMovePool, resolveSpecies } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
-import { getPropertyValue, remapProps, Vector2, checkOnlyIf, assertNotReservedId } from '@Utilities';
+import { getPropertyValue, getBattleTheme, remapProps, Vector2, checkOnlyIf, assertNotReservedId } from '@Utilities';
 import { getGameDef } from '@Data/gameDef.js';
 import { resolveAiType, DEFAULT_TRAINER_AI } from '@Data/aiTypes.js';
 import { rng } from '@Utilities/rng.js';
@@ -333,7 +333,7 @@ export default class {
       tilesetBaseUrl:  '/',
       expRate:         getGameDef().expRateMultiplier,
       deferEvolution:  getGameDef().deferEvolution,
-      field:           { weather: null, terrain: 'normal' },
+      field:           { weather: null, terrain: 'normal', scene: getBattleTheme(this.scene) },
       player: {
         name:      'Red',
         team:      gameState.party.map(p => ({

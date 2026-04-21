@@ -8,6 +8,21 @@ function getPropertyValue(props, id, defValue) {
   return typeof property === 'undefined' ? defValue : property.value;
 }
 
+/**
+ * Read the current map's `map-settings['battle-theme']` and return a string
+ * suitable for the battle scene's `field.scene` (e.g. 'field', 'cave1',
+ * 'forest', 'water', 'indoor1'). Defaults to 'field' when unset so maps
+ * that don't opt in get the standard grassy backdrop.
+ *
+ * @param {Phaser.Scene} scene - the active GameMap scene
+ * @returns {string}
+ */
+function getBattleTheme(scene) {
+  const mapProps    = scene?.config?.tilemap?.properties ?? [];
+  const mapSettings = getPropertyValue(mapProps, 'map-settings') ?? {};
+  return mapSettings['battle-theme'] || 'field';
+}
+
 function getValue(obj, value, defValue) {
   return Phaser.Utils.Objects.GetValue(obj, value, defValue);
 }
@@ -150,6 +165,7 @@ function checkOnlyIf(onlyIf, gameFlags = {}, variant = null, mapVars = {}) {
 
 export {
   getPropertyValue,
+  getBattleTheme,
   getValue,
   remapProps,
   generateTileCoords,

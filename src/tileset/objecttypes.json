@@ -2021,6 +2021,11 @@
         "id": 17,
         "members": [
             {
+                "name": "battle-theme",
+                "type": "string",
+                "value": "field"
+            },
+            {
                 "name": "bgm",
                 "type": "string",
                 "value": ""

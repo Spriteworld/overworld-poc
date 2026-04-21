@@ -4,6 +4,7 @@ import { getGameDef } from '../../data/gameDef.js';
 import { resolveAiType, DEFAULT_WILD_AI, DEFAULT_TRAINER_AI } from '../../data/aiTypes.js';
 import store from '../../store/index.js';
 import { rng } from '../../utilities/rng.js';
+import { getBattleTheme } from '../../utilities/tiles.js';
 
 const ITEM_REGISTRY = {
   'Potion':        Items.Potion,
@@ -188,7 +189,7 @@ export default {
       expRate:         def.expRateMultiplier,
       deferEvolution:  def.deferEvolution,
       nuzlocke:        null,
-      field:           { weather: null, terrain: 'normal' },
+      field:           { weather: null, terrain: 'normal', scene: getBattleTheme(runner._scene) },
       tutorial:        cmd.tutorial === true,
       forceCatch:      cmd.force_catch === true,
       scriptedActions: Array.isArray(cmd.scripted_actions) ? unwrapList(cmd.scripted_actions) : null,
