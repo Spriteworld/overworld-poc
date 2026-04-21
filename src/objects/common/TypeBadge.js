@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
+import { makeTypeIcon, TYPE_ICON_W, TYPE_ICON_H } from './iconSheets.js';
 
+// Legacy colour table kept for callers that still need a colour per type
+// (header gradients, bar tints, etc.).
 export const TYPE_COLORS = {
   normal:   0xA8A878, fire:     0xF08030, water:    0x6890F0,
   grass:    0x78C850, electric: 0xF8D030, ice:      0x98D8D8,
@@ -9,39 +12,31 @@ export const TYPE_COLORS = {
   dark:     0x705848, steel:    0xB8B8D0,
 };
 
-const W = 44;
-const H = 14;
-
 /**
- * A coloured pill badge displaying a Pokémon type name.
- * Extends Container so it can be added to any scene or parent container.
+ * Container that renders a single type icon from the `types` spritesheet.
+ * Kept as a class for backward-compat with existing call sites and for the
+ * static WIDTH / HEIGHT used by layout code.
  *
- * Usage:
- *   const badge = new TypeBadge(scene, x, y, 'grass');
- *   parentContainer.add(badge);
+ * @param {object}  [opts]
+ * @param {boolean} [opts.circle=false] - When true, draws a white circle
+ *                                        behind the icon (used on the Pokédex
+ *                                        screen so the badge reads clearly
+ *                                        over the gradient header).
  */
 export default class TypeBadge extends Phaser.GameObjects.Container {
-  static WIDTH  = W;
-  static HEIGHT = H;
+  static WIDTH  = TYPE_ICON_W;
+  static HEIGHT = TYPE_ICON_H;
 
-  constructor(scene, x, y, type) {
+  constructor(scene, x, y, type, opts = {}) {
     super(scene, x, y);
-
-    const color = TYPE_COLORS[type.toLowerCase()] ?? 0x999999;
-
-    const bg = scene.add.graphics();
-    bg.fillStyle(color, 1);
-    bg.fillRoundedRect(0, 0, W, H, 3);
-    this.add(bg);
-
-    const label = scene.add.text(W / 2, H / 2, type.toUpperCase(), {
-      fontFamily: 'Gen3',
-      fontSize: '11px',
-      color: '#f8f8f8',
-    });
-    label.setOrigin(0.5, 0.5);
-    this.add(label);
-
+    if (opts.circle) {
+      const r = Math.min(TYPE_ICON_W, TYPE_ICON_H) / 2;
+      const bg = scene.add.graphics();
+      bg.fillStyle(0xffffff, 1);
+      bg.fillCircle(TYPE_ICON_W / 2, TYPE_ICON_H / 2, r);
+      this.add(bg);
+    }
+    this.add(makeTypeIcon(scene, 0, 0, type));
     scene.add.existing(this);
   }
 }

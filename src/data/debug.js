@@ -12,6 +12,7 @@ export default {
   noEncounters: false,
   noTrainerSight: false,
   smoothCam: false,
+  toasts: true,
   tests: {
     timeOverlay: false,
     outlineColliders: false,

@@ -1997,16 +1997,46 @@
          "id":216,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
-                 "value":true
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":217,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
                  "type":"bool",
                  "value":true
                 }]
@@ -2015,9 +2045,24 @@
          "id":218,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
-                 "value":true
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
@@ -2071,7 +2116,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2080,7 +2125,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2089,7 +2134,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2143,7 +2188,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -2161,7 +2206,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -6146,27 +6191,72 @@
          "id":677,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
-                 "value":true
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":678,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":679,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
-                 "value":true
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
@@ -6227,9 +6317,24 @@
          "id":686,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -6292,7 +6397,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -6310,7 +6415,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {

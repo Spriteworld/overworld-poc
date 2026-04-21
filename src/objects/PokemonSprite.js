@@ -1,11 +1,19 @@
 import Phaser from 'phaser';
 
 /**
+ * Species whose icon set ships a distinct `<id>-female.png` file. Every other
+ * species shares one icon across genders, so asking for a `-female` variant
+ * would 404 and waste a load round-trip.
+ */
+const HAS_FEMALE_ICON = new Set([521, 592, 593]);
+
+/**
  * Reusable Phaser Container that displays a Pokémon icon from
  * src/tileset/pokemon/icons/ (32×32 static PNGs).
  *
  * Handles lazy texture loading, shiny variants (front/shiny/),
- * female variants (-female suffix), and formes (-<forme> suffix).
+ * female variants (-female suffix for species that ship one), and
+ * formes (-<forme> suffix).
  *
  * Usage:
  *   const sprite = new PokemonSprite(scene, x, y, { species: 4, size: 64 });
@@ -17,9 +25,11 @@ import Phaser from 'phaser';
  *   gender  {string}  - 'male' | 'female' — uses -female suffix when available
  *   forme   {string}  - Forme name, e.g. 'plant' — uses -<forme> suffix when available
  *   size    {number}  - Display size in pixels (square, default 64)
+ *   variant {'icon'|'front'} - 'icon' = 32×32 menu icon (default),
+ *                              'front' = full front-facing battle sprite
  */
 export default class PokemonSprite extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, { species, shiny = false, gender = null, forme = null, size = 64 } = {}) {
+  constructor(scene, x, y, { species, shiny = false, gender = null, forme = null, size = 64, variant = 'icon' } = {}) {
     super(scene, x, y);
 
     this._size = size;
@@ -27,17 +37,31 @@ export default class PokemonSprite extends Phaser.GameObjects.Container {
     // Build the variant-aware filename stem — icons use plain dex number ('1', '4')
     const base   = String(species);
     const suffix = forme ? `-${forme}`
-                 : gender === 'female' ? '-female'
+                 : (gender === 'female' && HAS_FEMALE_ICON.has(Number(species))) ? '-female'
                  : '';
-    this._key  = `pkmn-icon-${base}${suffix}${shiny ? '-shiny' : ''}`;
+    // Directory picker: front sprites come from /tileset/pokemon/front/{,shiny/},
+    // menu icons come from /tileset/pokemon/icons/{,shiny/}.
+    const dir = variant === 'front' ? 'front' : 'icons';
+    this._key  = `pkmn-${dir}-${base}${suffix}${shiny ? '-shiny' : ''}`;
     const tilesetBaseUrl = import.meta.env.VITE_ASSETS_URL;
     this._path = shiny
-      ? new URL(tilesetBaseUrl + '/tileset/pokemon/front/shiny/' + base + suffix + '.png', import.meta.url).href
-      : new URL(tilesetBaseUrl + '/tileset/pokemon/icons/'       + base + suffix + '.png', import.meta.url).href;
+      ? new URL(tilesetBaseUrl + `/tileset/pokemon/${dir}/shiny/` + base + suffix + '.png', import.meta.url).href
+      : new URL(tilesetBaseUrl + `/tileset/pokemon/${dir}/`       + base + suffix + '.png', import.meta.url).href;
 
-    // Fallback (base, no variant) used if the specific variant file is missing
-    this._fallbackKey  = `pkmn-icon-${base}`;
-    this._fallbackPath = new URL(tilesetBaseUrl + '/tileset/pokemon/icons/' + base + '.png', import.meta.url).href;
+    // Fallback (base, no variant) used if the specific variant file is missing.
+    // For shinies, fall back to the shiny base first, then the non-shiny base.
+    this._fallbackKey  = `pkmn-${dir}-${base}${shiny ? '-shiny' : ''}`;
+    this._fallbackPath = shiny
+      ? new URL(tilesetBaseUrl + `/tileset/pokemon/${dir}/shiny/` + base + '.png', import.meta.url).href
+      : new URL(tilesetBaseUrl + `/tileset/pokemon/${dir}/`       + base + '.png', import.meta.url).href;
+
+    // Cross-variant fallback: if the requested variant doesn't ship this
+    // species at all (e.g. icons/ is missing Mr. Mime #122 but front/ has it),
+    // fall back to the opposite variant rather than jumping to the unknown
+    // silhouette.
+    const altDir = dir === 'front' ? 'icons' : 'front';
+    this._altKey  = `pkmn-${altDir}-${base}`;
+    this._altPath = new URL(tilesetBaseUrl + `/tileset/pokemon/${altDir}/` + base + '.png', import.meta.url).href;
 
     // Ultimate fallback: unknown Pokémon silhouette (species 0)
     this._unknownKey  = 'pkmn-icon-unknown';
@@ -55,47 +79,37 @@ export default class PokemonSprite extends Phaser.GameObjects.Container {
   }
 
   _loadAndShow(scene) {
-    if (scene.textures.exists(this._key)) {
-      this._show(scene, this._key);
-      return;
-    }
-    if (this._key !== this._fallbackKey && scene.textures.exists(this._fallbackKey)) {
-      this._show(scene, this._fallbackKey);
-      return;
-    }
-    if (scene.textures.exists(this._unknownKey)) {
-      this._show(scene, this._unknownKey);
-      return;
-    }
+    // Cascade: primary variant → variant base → cross-variant base → unknown.
+    // Dedupe so we don't try the same key twice (e.g. when the primary IS the
+    // base because no gender/forme/shiny suffix applies).
+    const tiers = [];
+    const push = (key, path) => {
+      if (key && path && !tiers.some(t => t.key === key)) tiers.push({ key, path });
+    };
+    push(this._key,         this._path);
+    push(this._fallbackKey, this._fallbackPath);
+    push(this._altKey,      this._altPath);
 
-    scene.load.image(this._key, this._path);
-    scene.load.once('filecomplete-image-' + this._key, () => this._show(scene, this._key));
+    // Any tier already in the texture cache? Show it synchronously.
+    for (const { key } of tiers) {
+      if (scene.textures.exists(key)) return this._show(scene, key);
+    }
+    if (scene.textures.exists(this._unknownKey)) return this._show(scene, this._unknownKey);
 
-    // If the variant file is missing fall back to the base icon, then to the unknown sprite
-    if (this._key !== this._fallbackKey) {
+    // Otherwise load each tier in order, moving down on error.
+    const tryTier = (i) => {
+      if (i >= tiers.length) return this._showUnknown(scene);
+      const { key, path } = tiers[i];
+      if (scene.textures.exists(key)) return this._show(scene, key);
+      scene.load.image(key, path);
+      scene.load.once('filecomplete-image-' + key, () => this._show(scene, key));
       scene.load.once('loaderror', (file) => {
-        if (file.key !== this._key) return;
-        if (!scene.textures.exists(this._fallbackKey)) {
-          scene.load.image(this._fallbackKey, this._fallbackPath);
-          scene.load.once('filecomplete-image-' + this._fallbackKey, () => this._show(scene, this._fallbackKey));
-          scene.load.once('loaderror', (f) => {
-            if (f.key !== this._fallbackKey) return;
-            this._showUnknown(scene);
-          });
-          scene.load.start();
-        } else {
-          this._show(scene, this._fallbackKey);
-        }
+        if (file.key !== key) return;
+        tryTier(i + 1);
       });
-    } else {
-      // primary IS the base — if it fails, go straight to unknown
-      scene.load.once('loaderror', (file) => {
-        if (file.key !== this._key) return;
-        this._showUnknown(scene);
-      });
-    }
-
-    scene.load.start();
+      scene.load.start();
+    };
+    tryTier(0);
   }
 
   _showUnknown(scene) {
@@ -117,7 +131,14 @@ export default class PokemonSprite extends Phaser.GameObjects.Container {
     }
     const img = scene.add.image(this._size / 2, this._size / 2, key);
     img.setOrigin(0.5, 0.5);
-    img.setDisplaySize(this._size, this._size);
+
+    // Scale to fit within size×size, preserving the texture's aspect ratio.
+    const src = img.texture?.source?.[0];
+    const tw  = src?.width  || this._size;
+    const th  = src?.height || this._size;
+    const scale = this._size / Math.max(tw, th);
+    img.setDisplaySize(tw * scale, th * scale);
+
     this.add(img);
   }
 }

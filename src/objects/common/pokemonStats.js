@@ -34,6 +34,19 @@ export function drawStatsPanel(menu, { mon, entry, x, y, w }) {
   const natInc = natureData?.increase;
   const natDec = natureData?.decrease;
 
+  // Rounded light-grey panel behind the stat rows — shared by team detail
+  // and pokédex. Kept inside the caller's x..x+w bounds so it doesn't bleed
+  // past whatever container wraps the panel.
+  const ROW_H  = 26;
+  const PAD    = 8;
+  const panelH = STAT_ROWS.length * ROW_H + PAD;
+  const panelBg = scene.add.graphics();
+  panelBg.fillStyle(0xeeeeee, 1);
+  panelBg.lineStyle(1, 0xdddddd, 1);
+  panelBg.fillRoundedRect(x, y - PAD / 2, w, panelH, 6);
+  panelBg.strokeRoundedRect(x, y - PAD / 2, w, panelH, 6);
+  reg(panelBg);
+
   const LABEL_W = 32;
   const VAL_W   = 32;
   const barX    = x + LABEL_W;

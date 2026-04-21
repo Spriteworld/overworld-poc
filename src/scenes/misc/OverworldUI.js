@@ -8,6 +8,7 @@ import store from '../../store/index.js';
 import { KEY_ITEMS } from '../../store/modules/bag.js';
 import { Pokedex, GENDERS, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
 import { getGameDef } from '@Data/gameDef.js';
+import { getStartPauseScreen, clearStartPauseScreen } from '@Data/startPauseScreen.js';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -68,6 +69,24 @@ export default class extends Phaser.Scene {
     this._scriptDepth = 0;
 
     this.handleEvents();
+
+    // Test-harness hook: if a scenario requested a specific pause-menu screen,
+    // open the menu and jump straight to that sub-screen once everything is up.
+    const startScreen = getStartPauseScreen();
+    if (startScreen) {
+      clearStartPauseScreen();
+      this.time.delayedCall(0, () => this._openPauseMenuAt(startScreen));
+    }
+  }
+
+  /** Open the pause menu and transition directly to a named sub-screen. */
+  _openPauseMenuAt(name) {
+    this.pauseMenu.open();
+    // team-detail needs a preselected slot; default to the first party member.
+    if (name === 'team-detail') {
+      this.pauseMenu.teamScreen.subMenuSlot = 0;
+    }
+    this.pauseMenu.showSubScreen(name);
   }
 
   /** Clean up the textbox and pause menu when the scene is destroyed. */
@@ -89,12 +108,14 @@ export default class extends Phaser.Scene {
     });
 
     this.game.events.on('toast', (value) => {
+      if (!this.game.config.debug.toasts) return;
       this.toast.showMessage(value);
     });
 
     this.game.events.on('map-enter', (mapName) => {
       // KantoWorld uses location-zone detection instead of scene-name toasts.
       if (mapName === 'KantoWorld') return;
+      if (!this.game.config.debug.toasts) return;
       const display = mapName
         .replace(/([a-z])([A-Z])/g, '$1 $2')
         .replace(/([A-Za-z])(\d)/g, '$1 $2');
@@ -434,6 +455,29 @@ export default class extends Phaser.Scene {
     im.on(Action.DOWN,  () => { if (this.pauseMenu.visible) this.pauseMenu.moveDown(); });
     im.on(Action.LEFT,  () => { if (this.pauseMenu.visible) this.pauseMenu.moveLeft(); });
     im.on(Action.RIGHT, () => { if (this.pauseMenu.visible) this.pauseMenu.moveRight(); });
+
+    // Hold-to-scroll: after a 400ms initial delay, re-fire UP/DOWN every 80ms
+    // while either key is held and the pause menu is open (Pokédex list etc.).
+    this._menuHeld       = null;
+    this._menuRepeatAt   = 0;
+    this.events.on('update', () => {
+      if (!this.pauseMenu.visible) { this._menuHeld = null; return; }
+      const held = im.isDown(Action.UP) ? Action.UP
+                 : im.isDown(Action.DOWN) ? Action.DOWN
+                 : null;
+      if (held !== this._menuHeld) {
+        this._menuHeld     = held;
+        this._menuRepeatAt = held ? Date.now() + 400 : 0;
+        return;
+      }
+      if (!held) return;
+      const now = Date.now();
+      if (now >= this._menuRepeatAt) {
+        if (held === Action.UP)   this.pauseMenu.moveUp();
+        if (held === Action.DOWN) this.pauseMenu.moveDown();
+        this._menuRepeatAt = now + 80;
+      }
+    });
     im.on(Action.CONFIRM, () => {
       if (this.pauseMenu.visible) {
         // Suppress MENU action that may fire in the same keydown event (Enter = CONFIRM + MENU)
@@ -504,7 +548,7 @@ export default class extends Phaser.Scene {
           store.commit('game/SET_PLAYER_FACING', _player.getFacingDirection());
         }
         saveGame();
-        this.toast.showMessage('Progress saved!');
+        if (this.game.config.debug.toasts) this.toast.showMessage('Progress saved!');
         this.pauseMenu.close();
         this.registry.set('player_input', true);
         break;

@@ -88,6 +88,6 @@ export default class PokedexScreen {
     const numStr = `#${String(entry.nat_dex_id).padStart(3, '0')}`;
     reg(scene.add.text(dx, dy, numStr, TEXT_STYLE_HINT));
     reg(scene.add.text(dx + 44, dy, '???', TEXT_STYLE_BOLD));
-    reg(new PokemonSprite(scene, dx, dy + 22, { species: 0, size: 80 }));
+    reg(new PokemonSprite(scene, dx, dy + 22, { species: 0, size: 80, variant: 'front' }));
   }
 }

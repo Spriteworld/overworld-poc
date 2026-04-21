@@ -7,7 +7,10 @@ import PokemonSprite from '../PokemonSprite.js';
 import {
   TEXT_STYLE_BODY, TEXT_STYLE_HINT, TEXT_STYLE_SM,
 } from './layout.js';
-import { resolveMonData, drawHpRow, drawExpRow, drawTypeBadges } from './helpers.js';
+import { drawTypePills, measureTypePillsWidth, TYPE_PILL_H } from '../common/TypePill.js';
+import {
+  resolveMonData, drawHpRow, drawExpRow, drawTypeBadges,
+} from './helpers.js';
 import TypeBadge, { TYPE_COLORS } from '../common/TypeBadge.js';
 
 export const BALL_COLORS = {
@@ -67,7 +70,7 @@ export function drawMonDetail(menu, { mon, entry, x, y, w, h, tab = 0 }) {
   const BALL_CX   = Math.round(x + w * 0.2);
   const BALL_CY   = y + HEADER_H;
   const BALL_R    = 68;
-  const SPRITE_SZ = 90;
+  const SPRITE_SZ = 180;
   const HP_X      = BALL_CX + BALL_R + 20;
   const HP_W      = (x + w) - HP_X - 20;
   const HP_Y      = y + HEADER_H + 10;
@@ -78,6 +81,19 @@ export function drawMonDetail(menu, { mon, entry, x, y, w, h, tab = 0 }) {
   const CONTENT_X = x + 16;
   const CONTENT_W = w - 32;
 
+  // ── Outer container (team-detail only) ─────────────────────────────
+  // Pokédex keeps the original flat layout; team/party detail gets a rounded
+  // white card so the stats/moves/info body reads as a distinct panel.
+  const OUTER_RADIUS = mon ? 10 : 0;
+  if (mon) {
+    const outerBg = scene.add.graphics();
+    outerBg.fillStyle(0xffffff, 1);
+    outerBg.fillRoundedRect(x, y, w, h, OUTER_RADIUS);
+    outerBg.lineStyle(1, 0xcccccc, 1);
+    outerBg.strokeRoundedRect(x, y, w, h, OUTER_RADIUS);
+    reg(outerBg);
+  }
+
   // ── Gradient header ────────────────────────────────────────────────
   const c1   = TYPE_COLORS[types[0]?.toLowerCase()] ?? 0x888888;
   const c2   = TYPE_COLORS[types[1]?.toLowerCase()] ?? c1;
@@ -85,7 +101,13 @@ export function drawMonDetail(menu, { mon, entry, x, y, w, h, tab = 0 }) {
 
   const gradBg = scene.add.graphics();
   gradBg.fillGradientStyle(midC, c2, c1, midC, 1);
-  gradBg.fillRect(x, y, w, HEADER_H);
+  if (mon) {
+    gradBg.fillRoundedRect(x, y, w, HEADER_H, {
+      tl: OUTER_RADIUS, tr: OUTER_RADIUS, bl: 0, br: 0,
+    });
+  } else {
+    gradBg.fillRect(x, y, w, HEADER_H);
+  }
   reg(gradBg);
 
   _addBouncingBalls(scene, reg, { x, y, w, h: HEADER_H });
@@ -93,15 +115,25 @@ export function drawMonDetail(menu, { mon, entry, x, y, w, h, tab = 0 }) {
   const hStyle = { fontFamily: 'Gen3', fontSize: '14px', color: '#ffffff', fontStyle: 'bold' };
 
   // ── Title ─────────────────────────────────────────────────────────
-  const title = mon ? `${speciesName}${gender} (Lv.${mon.level})` : speciesName + gender;
+  // Header shows the nickname when present, else the species name. Gender and
+  // the (bracketed, all-caps) species lookup live on the INFO tab's top line.
+  const displayName = mon?.nickname || speciesName;
+  const title = mon ? `${displayName} (Lv.${mon.level})` : displayName;
   const nameT = scene.add.text(x + w / 2, y + 10, title, hStyle);
   nameT.setOrigin(0.5, 0);
   reg(nameT);
 
-  // ── Type badges ───────────────────────────────────────────────────
-  const typeCount  = Math.min(2, types.length);
-  const typeBlockW = typeCount * (TypeBadge.WIDTH + 4) - 4;
-  drawTypeBadges(menu, (x + w) - typeBlockW - 20, y + HEADER_H - TypeBadge.HEIGHT - 8, types);
+  // ── Type badges / pills ──────────────────────────────────────────
+  // Pokédex (no `mon`) gets the bolder pill treatment; team/party slots
+  // keep the compact icon badges because rows are tight.
+  const typeCount = Math.min(2, types.length);
+  if (!mon) {
+    const pillBlockW = measureTypePillsWidth(scene, types);
+    drawTypePills(menu, (x + w) - pillBlockW - 20, y + HEADER_H - TYPE_PILL_H - 8, types);
+  } else {
+    const typeBlockW = typeCount * (TypeBadge.WIDTH + 4) - 4;
+    drawTypeBadges(menu, (x + w) - typeBlockW - 20, y + HEADER_H - TypeBadge.HEIGHT - 8, types);
+  }
 
   // ── Horizontal divider ────────────────────────────────────────────
   const hDiv = scene.add.graphics();
@@ -136,6 +168,7 @@ export function drawMonDetail(menu, { mon, entry, x, y, w, h, tab = 0 }) {
     gender:  mon?.gender ?? null,
     forme:   mon?.forme  ?? null,
     size:    SPRITE_SZ,
+    variant: 'front',
   }));
 
   // ── Tab bar ───────────────────────────────────────────────────────
@@ -147,7 +180,7 @@ export function drawMonDetail(menu, { mon, entry, x, y, w, h, tab = 0 }) {
   switch (tabs[activeTab]) {
     case 'MOVES':      _drawMovesTab(scene, reg, mon, CONTENT_X, CONTENT_Y, CONTENT_W); break;
     case 'STATS':      drawStatsPanel(menu, { mon, entry, x: CONTENT_X, y: CONTENT_Y, w: CONTENT_W }); break;
-    case 'INFO':       _drawInfoTab(scene, reg, mon, entry, CONTENT_X, CONTENT_Y, CONTENT_W); break;
+    case 'INFO':       _drawInfoTab(scene, reg, mon, entry, speciesName, CONTENT_X, CONTENT_Y, CONTENT_W); break;
     case 'EVOLUTIONS': _drawEvolutionsTab(scene, reg, menu, entry, CONTENT_X, CONTENT_Y, CONTENT_W); break;
   }
 }
@@ -333,12 +366,17 @@ function _drawTabBar(scene, reg, tabs, activeTab, x, y, totalW, tabH) {
 }
 
 function _drawMovesTab(scene, reg, mon, x, y, w) {
+  // One blue tile per populated move slot. Empty slots are skipped so there's
+  // no bg for "no move here".
   (mon?.moves ?? []).forEach((m, i) => {
+    if (!m?.name) return;
     const my = y + i * 42;
 
     const bg = scene.add.graphics();
-    bg.fillStyle(0xeef2f8, 1);
-    bg.fillRoundedRect(x, my, w, 34, 4);
+    bg.fillStyle(0xbfdbfe, 1);       // tailwind blue-200
+    bg.lineStyle(1, 0x60a5fa, 1);    // blue-400 border
+    bg.fillRoundedRect(x, my, w, 34, 6);
+    bg.strokeRoundedRect(x, my, w, 34, 6);
     reg(bg);
 
     reg(scene.add.text(x + 10, my + 9, m.name, TEXT_STYLE_BODY));
@@ -351,20 +389,39 @@ function _drawMovesTab(scene, reg, mon, x, y, w) {
   });
 }
 
-function _drawInfoTab(scene, reg, mon, entry, x, y, w) {
+function _drawInfoTab(scene, reg, mon, entry, speciesName, x, y, w) {
   let rowY = y;
   const ROW = 22;
 
+  /** Render a rounded pill with "Label | Value" layout. */
+  const drawPill = (rowX, rowY, rowW, label, value, opts = {}) => {
+    const H = 26;
+    const bg = scene.add.graphics();
+    bg.fillStyle(opts.fill ?? 0xf3f4f6, 1);        // gray-100
+    bg.lineStyle(1, opts.stroke ?? 0xd1d5db, 1);   // gray-300
+    bg.fillRoundedRect(rowX, rowY, rowW, H, 8);
+    bg.strokeRoundedRect(rowX, rowY, rowW, H, 8);
+    reg(bg);
+    reg(scene.add.text(rowX + 10, rowY + (H - 14) / 2, label, TEXT_STYLE_HINT));
+    reg(scene.add.text(rowX + 80, rowY + (H - 12) / 2, value, { ...TEXT_STYLE_SM, color: opts.valueColor ?? '#181818' }));
+    return H + 6;
+  };
+
   if (mon) {
+    // Top line: nickname (if set) + gender symbol + species in caps/brackets.
+    // No nickname → just the species name in caps plus gender.
+    const gender = mon.gender === 'male' ? ' ♂' : mon.gender === 'female' ? ' ♀' : '';
+    const nameLine = mon.nickname
+      ? `${mon.nickname}${gender} (${speciesName})`
+      : `${speciesName}${gender}`;
+    reg(scene.add.text(x, rowY, nameLine, TEXT_STYLE_BODY));
+    rowY += ROW;
+
     if (mon.nature) {
-      reg(scene.add.text(x, rowY, 'Nature', TEXT_STYLE_HINT));
-      reg(scene.add.text(x + 80, rowY, mon.nature, TEXT_STYLE_SM));
-      rowY += ROW;
+      rowY += drawPill(x, rowY, w, 'Nature', mon.nature);
     }
     if (mon.ability?.name && mon.ability.name !== 'none') {
-      reg(scene.add.text(x, rowY, 'Ability', TEXT_STYLE_HINT));
-      reg(scene.add.text(x + 80, rowY, mon.ability.name, TEXT_STYLE_SM));
-      rowY += ROW;
+      rowY += drawPill(x, rowY, w, 'Ability', mon.ability.name);
     }
     if (mon.shiny) {
       reg(scene.add.text(x, rowY, '✦ Shiny', { ...TEXT_STYLE_SM, color: '#ddaa00' }));

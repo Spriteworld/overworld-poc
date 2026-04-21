@@ -3630,15 +3630,6 @@
                                     }
                                 }, 
                                 {
-                                 "propertytype":"cmd-face_char",
-                                 "type":"class",
-                                 "value":
-                                    {
-                                     "character1":"player",
-                                     "character2":"Oak"
-                                    }
-                                }, 
-                                {
                                  "propertytype":"cmd-spawn_npc",
                                  "type":"class",
                                  "value":
@@ -3647,6 +3638,15 @@
                                      "facing":"up",
                                      "name":"Oak",
                                      "texture":"professor_oak"
+                                    }
+                                }, 
+                                {
+                                 "propertytype":"cmd-face_char",
+                                 "type":"class",
+                                 "value":
+                                    {
+                                     "character1":"player",
+                                     "character2":"Oak"
                                     }
                                 }, 
                                 {
@@ -3689,7 +3689,7 @@
                                  "type":"class",
                                  "value":
                                     {
-                                     "anchor":"ProfessorLabExit",
+                                     "anchor":"ProfessorLabWarp",
                                      "character":"Oak"
                                     }
                                 }, 
@@ -3710,24 +3710,7 @@
                                      "anchor":"oakAway",
                                      "character":"Oak"
                                     }
-                                }, 
-                                {
-                                 "propertytype":"cmd-movement_behavior",
-                                 "type":"class",
-                                 "value":
-                                    {
-                                     "character1":"player",
-                                     "value":"none"
-                                    }
-                                }, 
-                                {
-                                 "propertytype":"cmd-remove_npc",
-                                 "type":"class",
-                                 "value":
-                                    {
-                                     "name":"Oak"
-                                    }
-                                }, 
+                                },
                                 {
                                  "propertytype":"cmd-set_var",
                                  "type":"class",
@@ -3813,8 +3796,8 @@
                  "type":"location-anchor",
                  "visible":true,
                  "width":32,
-                 "x":3296,
-                 "y":9312
+                 "x":2752,
+                 "y":9376
                 }, 
                 {
                  "height":32,

@@ -1,6 +1,21 @@
 import { BasePokemon, EXPERIENCE_TABLES, GROWTH } from '@spriteworld/pokemon-data';
 import TypeBadge from '../common/TypeBadge.js';
+import { makeStatusIcon, STATUS_ICON_W, STATUS_ICON_H } from '../common/iconSheets.js';
 import { TEXT_STYLE_SM } from './layout.js';
+
+// Re-export pieces that have moved into dedicated common/ modules, so existing
+// callers importing from this file keep working.
+export { getMoveMeta } from '../common/moveMeta.js';
+export {
+  drawTypePills, measureTypePillWidth, measureTypePillsWidth,
+  TYPE_PILL_H, TYPE_PILL_GAP,
+} from '../common/TypePill.js';
+export {
+  drawTypeCategoryPill, TYPE_CAT_PILL_W, TYPE_CAT_PILL_H,
+} from '../common/TypeCategoryPill.js';
+export {
+  drawMovesPanel, drawMoveRow, MOVES_PANEL_ROW_H,
+} from '../common/MovesPanel.js';
 
 /** Returns slot bg/border colors for a given interaction state. */
 export function slotColors(state) {
@@ -14,13 +29,13 @@ export function slotColors(state) {
 
 /** Resolve species entry, maxHp, and types from a party mon config. */
 export function resolveMonData(dex, mon) {
-  try {
-    const entry = dex.getPokemonById(mon.species);
-    const bp    = new BasePokemon({ ...mon });
-    return { entry, maxHp: bp.getMaxHp(), types: entry.types ?? [] };
-  } catch {
-    return { entry: null, maxHp: mon.level * 3 + 10, types: [] };
-  }
+  let entry = null;
+  try { entry = dex.getPokemonById(mon.species); } catch { /* unknown species id */ }
+
+  let maxHp = mon.level * 3 + 10;
+  try { maxHp = new BasePokemon({ ...mon }).getMaxHp(); } catch { /* invalid mon — fall back */ }
+
+  return { entry, maxHp, types: entry?.types ?? [] };
 }
 
 /** Draw an HP bar row into the menu container. */
@@ -29,9 +44,13 @@ export function drawHpRow(menu, x, y, width, currentHp, maxHp, hpRatio) {
   const labelW  = 20;
   const hpColor = hpRatio > 0.5 ? 0x48c050 : hpRatio > 0.25 ? 0xf0c040 : 0xe04040;
 
-  const barMidY = y + 3 + 4; // vertical centre of the 8px bar
+  // Text keeps its original optical centre; the bar graphic shifts down by
+  // 3px to land on the Gen3 glyph's visual mid-line (the font has extra
+  // whitespace above the glyph).
+  const textCy = y + 7;
+  const barTop = y + 6;
 
-  const hpLabel = scene.add.text(x, barMidY, 'HP', { ...TEXT_STYLE_SM, color: '#444444' });
+  const hpLabel = scene.add.text(x, textCy, 'HP', { ...TEXT_STYLE_SM, color: '#444444' });
   hpLabel.setOrigin(0, 0.5);
   reg(hpLabel);
 
@@ -39,12 +58,12 @@ export function drawHpRow(menu, x, y, width, currentHp, maxHp, hpRatio) {
   const barW = width - labelW - 2 - 52;
   const track = scene.add.graphics();
   track.fillStyle(0xaaaaaa, 1);
-  track.fillRoundedRect(barX, y + 3, barW, 8, 3);
+  track.fillRoundedRect(barX, barTop, barW, 8, 3);
   track.fillStyle(hpColor, 1);
-  track.fillRoundedRect(barX, y + 3, Math.max(2, barW * hpRatio), 8, 3);
+  track.fillRoundedRect(barX, barTop, Math.max(2, barW * hpRatio), 8, 3);
   reg(track);
 
-  const hpNums = scene.add.text(x + width, barMidY, `${currentHp}/${maxHp}`, { ...TEXT_STYLE_SM, align: 'right' });
+  const hpNums = scene.add.text(x + width, textCy, `${currentHp}/${maxHp}`, { ...TEXT_STYLE_SM, align: 'right' });
   hpNums.setOrigin(1, 0.5);
   reg(hpNums);
 }
@@ -81,10 +100,72 @@ export function drawExpRow(menu, x, y, width, mon, entry) {
   reg(track);
 }
 
+/** Return the first active status key on a mon, or null. */
+export function getActiveStatus(mon) {
+  const s = mon?.status;
+  if (!s) return null;
+  for (const [k, v] of Object.entries(s)) if (v > 0) return k;
+  return null;
+}
+
+/**
+ * Draw a status icon (from the `statuses` spritesheet) centred vertically at `cy`
+ * with its left edge at `x`. Returns the width drawn.
+ */
+export function drawStatusBadge(menu, x, cy, statusKey) {
+  const { scene, reg } = menu;
+  const icon = makeStatusIcon(scene, x, Math.round(cy - STATUS_ICON_H / 2), statusKey);
+  if (!icon) return 0;
+  reg(icon);
+  return STATUS_ICON_W;
+}
+
+/** Draw a 5-point star graphic centred at (cx, cy). */
+function _drawStar(scene, cx, cy, rOuter, color) {
+  const rInner = rOuter * 0.45;
+  const points = [];
+  for (let i = 0; i < 10; i++) {
+    const r = i % 2 === 0 ? rOuter : rInner;
+    const a = -Math.PI / 2 + i * Math.PI / 5;
+    points.push({ x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r });
+  }
+  const g = scene.add.graphics();
+  g.fillStyle(color, 1);
+  g.fillPoints(points, true);
+  g.lineStyle(1, 0x8a6400, 1);
+  g.strokePoints(points, true);
+  return g;
+}
+
+/**
+ * Draw inline shiny (gold star) + pokerus (PKRS sheet icon) centred vertically at `cy`.
+ * Left edge starts at `x`. Returns total width consumed.
+ */
+export function drawMonIndicators(menu, x, cy, mon) {
+  const { scene, reg } = menu;
+  let dx = x;
+
+  if (mon?.shiny) {
+    const R = 6;
+    reg(_drawStar(scene, dx + R, cy, R, 0xf0c020));
+    dx += R * 2 + 4;
+  }
+
+  if (mon?.pokerus) {
+    const icon = makeStatusIcon(scene, dx, Math.round(cy - STATUS_ICON_H / 2), 'PKRS');
+    if (icon) {
+      reg(icon);
+      dx += STATUS_ICON_W + 4;
+    }
+  }
+
+  return dx - x;
+}
+
 /** Draw type badge(s) into the menu container. */
-export function drawTypeBadges(menu, x, y, types) {
+export function drawTypeBadges(menu, x, y, types, opts = {}) {
   (types ?? []).slice(0, 2).forEach((type, ti) => {
-    menu.reg(new TypeBadge(menu.scene, x + ti * (TypeBadge.WIDTH + 4), y, type));
+    menu.reg(new TypeBadge(menu.scene, x + ti * (TypeBadge.WIDTH + 4), y, type, opts));
   });
 }
 

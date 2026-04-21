@@ -386,7 +386,7 @@ def main():
         print(f'  saved {fname}')
 
         lib.ensure_scene_file(scene_key, inside=True)
-        lib.ensure_maps_index(scene_key, fname)
+        lib.ensure_maps_index(scene_key, fname, inside=True)
         lib.ensure_scenes_index(scene_key)
 
     # ── Item-tile report (informational) ──────────────────────────────────

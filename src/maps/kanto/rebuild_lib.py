@@ -410,11 +410,17 @@ def ensure_scene_file(scene_key, *, inside=False):
     return True
 
 
-def ensure_maps_index(scene_key, fname):
+def ensure_maps_index(scene_key, fname, inside=False):
     """Register a map in `src/maps/index.js`. If the file is already
     imported under a different variable name (e.g. ProfessorLabMap for a
     file authored elsewhere), re-use that variable for the registry entry
-    rather than adding a duplicate import."""
+    rather than adding a duplicate import.
+
+    `inside=True` marks indoor/dungeon scenes so they are NOT added to
+    `WORLD_MAP_KEYS` — that dict is strictly for maps listed in
+    `kanto.world`, and KantoWorld's merge step strips warps targeting
+    anything in it.
+    """
     path    = SRC_DIR / 'maps' / 'index.js'
     content = path.read_text(encoding='utf-8')
     map_var = scene_key + 'Map'
@@ -438,8 +444,11 @@ def ensure_maps_index(scene_key, fname):
         m = re.search(r"import (\w+) from '\./kanto/" + re.escape(fname) + r"'", content)
         map_var = m.group(1) if m else map_var
 
-    # WORLD_MAP_KEYS entry (only present in outdoor — quoted-filename → quoted-scene-key)
-    if f"'{fname}'" not in content:
+    # WORLD_MAP_KEYS — outdoor maps only. Indoor/dungeon scenes must NOT
+    # appear here; KantoWorld._buildWorldTilemap drops every warp whose
+    # target is in this set, so adding an indoor scene silently breaks
+    # every door-entry warp targeting it.
+    if not inside and f"'{fname}'" not in content:
         pad = ' ' * max(1, 20 - len(fname))
         content, ok = js_insert_after_last(
             content,
@@ -449,7 +458,8 @@ def ensure_maps_index(scene_key, fname):
         if ok:
             changed = True
             print(f"  maps/index.js: added WORLD_MAP_KEYS '{fname}'")
-        # No anchor → no WORLD_MAP_KEYS section (insides/dungeons), silently skip.
+        else:
+            print(f"  maps/index.js: WARNING — could not find anchor for WORLD_MAP_KEYS '{fname}'")
 
     # Word-boundary regex so we match `Foo,` regardless of whether it's on
     # its own line or sharing one with `Bar, Foo,` etc.

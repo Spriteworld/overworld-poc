@@ -24,6 +24,10 @@ import * as ow_pokemon_dimensions from '@Tileset/overworld/pokemon/files.json';
 import * as ow_pokemon_shiny_dimensions from '@Tileset/overworld/pokemon_shiny/files.json';
 import * as bs_normal_dimensions from '@Tileset/battlescene/normal/files.json';
 
+// Status icons spritesheet — laid out top-to-bottom, one frame per row.
+// Types and categories moved to per-icon PNGs under public/tileset/ui/.
+import statuses_sheet from '@Tileset/statuses.png';
+
 // Player sprites needed synchronously by Preload.js (eagerly bundled).
 import red          from '@Tileset/characters/sprites/red.png';
 import red_bike     from '@Tileset/characters/sprites/red_bike.png';
@@ -97,5 +101,7 @@ export default {
   ow_pokemon_shiny_dimensions,
   bs_normal_dimensions,
   pokemon,
-  pokemon_shiny
+  pokemon_shiny,
+
+  statuses_sheet,
 };

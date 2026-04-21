@@ -130,18 +130,81 @@ export default {
       return;
     }
     const npcId    = warpNpc.config.id;
-    const npcLayer = runner._scene.gridEngine.getCharLayer(npcId) ?? 'ground';
+    const ge       = runner._scene.gridEngine;
+    const npcLayer = ge.getCharLayer(npcId) ?? 'ground';
     const dest     = cmd.anchor
       ? (() => { const a = runner._resolveAnchor(cmd.anchor); return a ? { x: a.x, y: a.y } : null; })()
       : { x: cmd.x ?? 0, y: cmd.y ?? 0 };
-    if (dest) {
-      runner._scene.gridEngine.setPosition(npcId, dest, npcLayer);
+
+    if (!dest) {
+      console.warn(`[ScriptRunner] warp_npc: anchor "${cmd.anchor}" not found`);
+      runner._step();
+      return;
+    }
+
+    // Grid-engine's tile blocker cache leaves a zombie entry at the
+    // "from-tile" of a cancelled mid-step that no public API clears
+    // (see docs/grid-engine-ticket.md). Work around it by letting any
+    // in-flight step finish first, so the teleport only ever runs from
+    // a clean tile-aligned state.
+    const teleport = () => {
+      ge.setPosition(npcId, dest, npcLayer);
+
+      // GameMap's own tile index (isCharacterOnTile) is fed by
+      // positionChangeFinished, which setPosition doesn't emit. Sweep any
+      // stale entries for this NPC and re-register at the destination.
+      const tileIndex = runner._scene._charTileIndex;
+      if (tileIndex) {
+        for (const [key, set] of tileIndex) {
+          if (!set.has(npcId)) continue;
+          set.delete(npcId);
+          if (set.size === 0) tileIndex.delete(key);
+        }
+      }
+      runner._scene._charLastTile?.delete(npcId);
+      runner._scene._updateCharTileIndex?.(npcId, dest.x + ',' + dest.y);
+
+      // setPosition updates grid-engine's tile tracking but doesn't resync
+      // the sprite's Phaser pixel position (only animated moves do).
+      warpNpc.setPosition?.(dest.x * 32, dest.y * 32);
       warpNpc.setVisible(true);
       warpNpc.look(warpNpc.getFacingDirection());
-    } else {
-      console.warn(`[ScriptRunner] warp_npc: anchor "${cmd.anchor}" not found`);
+      runner._step();
+    };
+
+    if (ge.isMoving?.(npcId)) {
+      // Let the current step finish naturally — do NOT call stopMovement
+      // first, that fires movementStopped synchronously and we'd teleport
+      // while still mid-step, seeding the zombie blocker all over again.
+      // Wait for positionChangeFinished (char lands on next tile), then
+      // stop any remaining path and teleport from a tile-aligned state.
+      let settled  = false;
+      let posSub   = null;
+      let stopSub  = null;
+      let timeout  = null;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        posSub?.unsubscribe?.();
+        stopSub?.unsubscribe?.();
+        if (timeout) clearTimeout(timeout);
+        try { ge.stopMovement(npcId); } catch (_) {}
+        teleport();
+      };
+      posSub = ge.positionChangeFinished?.().subscribe(({ charId }) => {
+        if (charId === npcId) finish();
+      });
+      // Safety net: if the character is actually idle but isMoving() said
+      // otherwise, fall back to movementStopped. It can also fire if the
+      // path gets externally cancelled — still a tile-aligned state.
+      stopSub = ge.movementStopped?.().subscribe(({ charId }) => {
+        if (charId === npcId) finish();
+      });
+      // Ultimate fallback — don't hang the script runner if no event fires.
+      timeout = setTimeout(finish, 1000);
+      return;
     }
-    runner._step();
+    teleport();
   },
 
   warp_player(runner, cmd) {

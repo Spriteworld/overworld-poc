@@ -79,6 +79,89 @@ const MAPS = [
     ],
   },
   {
+    category: 'Menu Screens',
+    maps: [
+      {
+        scene: 'Test',
+        pauseScreen: 'pokedex',
+        title: 'Pokédex Screen',
+        description: 'Opens the Pokédex directly on the Test map. Requires has_pokedex.',
+        color: '#7c2d12',
+        tags: ['menu', 'pokedex'],
+        state: {
+          has_pokemon: true,
+          has_pokedex: true,
+        },
+      },
+      {
+        scene: 'Test',
+        pauseScreen: 'team',
+        title: 'Team Screen',
+        description: 'Opens the party / POKÉMON screen. Party is auto-seeded with a Pikachu if empty.',
+        color: '#365314',
+        tags: ['menu', 'team'],
+        state: {
+          has_pokemon: true,
+        },
+      },
+      {
+        scene: 'Test',
+        pauseScreen: 'team-detail',
+        title: 'Team — Mon Detail',
+        description: 'Jumps straight into the first party member\'s detail view (stats / moves / info tabs).',
+        color: '#365314',
+        tags: ['menu', 'team', 'detail'],
+        state: {
+          has_pokemon: true,
+        },
+      },
+      {
+        scene: 'Test',
+        pauseScreen: 'bag',
+        title: 'Bag Screen',
+        description: 'Opens the BAG with tab switching across Items / Balls / TMs / Key.',
+        color: '#7c2d12',
+        tags: ['menu', 'bag'],
+        state: {
+          has_pokemon: true,
+        },
+      },
+      {
+        scene: 'Test',
+        pauseScreen: 'user',
+        title: 'Trainer Card',
+        description: 'Opens the user / trainer card screen — player name, money, playtime, badges.',
+        color: '#1e3a5f',
+        tags: ['menu', 'user'],
+        state: {
+          has_pokemon: true,
+        },
+      },
+      {
+        scene: 'Test',
+        pauseScreen: 'option',
+        title: 'Options Screen',
+        description: 'Opens the OPTIONS menu (text speed, volumes, character sprite, always-run toggle when shoes owned).',
+        color: '#374151',
+        tags: ['menu', 'option'],
+        state: {
+          has_running_shoes: true,
+        },
+      },
+      {
+        scene: 'Test',
+        pauseScreen: 'debug',
+        title: 'Debug Screen',
+        description: 'Opens the DEBUG menu directly (bypasses the VITE_DEBUG gate on the main pause-menu entry).',
+        color: '#111827',
+        tags: ['menu', 'debug'],
+        state: {
+          has_pokemon: true,
+        },
+      },
+    ],
+  },
+  {
     category: 'Kanto',
     maps: [
       {

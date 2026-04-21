@@ -3473,11 +3473,6 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
-                }, 
-                {
-                 "name":"sw_jump",
-                 "type":"bool",
-                 "value":true
                 }]
         }, 
         {

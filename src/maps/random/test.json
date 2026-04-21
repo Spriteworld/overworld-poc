@@ -1622,8 +1622,8 @@
                  "type":"playerSpawn",
                  "visible":true,
                  "width":32,
-                 "x":512,
-                 "y":320
+                 "x":960,
+                 "y":1024
                 }, 
                 {
                  "height":32,
@@ -2689,6 +2689,54 @@
                  "width":0,
                  "x":128,
                  "y":192
+                }, 
+                {
+                 "height":32,
+                 "id":196,
+                 "name":"npcAnchor1",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"location-anchor",
+                 "visible":true,
+                 "width":32,
+                 "x":960,
+                 "y":1120
+                }, 
+                {
+                 "height":32,
+                 "id":197,
+                 "name":"npcAnchor2",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"location-anchor",
+                 "visible":true,
+                 "width":32,
+                 "x":1088,
+                 "y":1120
+                }, 
+                {
+                 "height":32,
+                 "id":198,
+                 "name":"npcAnchor3",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"location-anchor",
+                 "visible":true,
+                 "width":32,
+                 "x":1216,
+                 "y":1120
+                }, 
+                {
+                 "height":32,
+                 "id":199,
+                 "name":"npcAnchor4",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"location-anchor",
+                 "visible":true,
+                 "width":32,
+                 "x":1344,
+                 "y":1120
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -2697,7 +2745,7 @@
          "y":0
         }],
  "nextlayerid":20,
- "nextobjectid":196,
+ "nextobjectid":200,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -2853,7 +2901,44 @@
                                 }],
                          "name":"area4"
                         }
-                    }]
+                    }],
+             "script":
+                {
+                 "script":[
+                        {
+                         "propertytype":"cmd-spawn_npc",
+                         "type":"class",
+                         "value":
+                            {
+                             "anchor":"npcAnchor1",
+                             "name":"Oak",
+                             "texture":"professor_oak",
+                             "trigger":
+                                {
+                                 "trigger":"map_enter"
+                                }
+                            }
+                        }, 
+                        {
+                         "propertytype":"cmd-move_npc",
+                         "type":"class",
+                         "value":
+                            {
+                             "anchor":"npcAnchor2",
+                             "character":"Oak"
+                            }
+                        }, 
+                        {
+                         "propertytype":"cmd-warp_npc",
+                         "type":"class",
+                         "value":
+                            {
+                             "anchor":"npcAnchor3",
+                             "character":"Oak"
+                            }
+                        }],
+                 "trigger":"map_enter"
+                }
             }
         }],
  "renderorder":"right-down",

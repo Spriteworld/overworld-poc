@@ -16,7 +16,7 @@ export default class UserScreen {
     const map  = this.menu.scene.registry.get('map') ?? gameState.currentMap;
 
     const lines = [
-      gameState.playerName.toUpperCase(),
+      gameState.game.playerName.toUpperCase(),
       '',
       `Playtime:  ${h}:${m}:${s}`,
       `Location:  ${map}`,

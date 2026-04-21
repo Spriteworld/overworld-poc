@@ -89,6 +89,8 @@ import PhaserGame from '@/PhaserGame.vue';
 import MobileControls from '@/components/MobileControls.vue';
 import { setStartScene, clearStartScene } from '@/data/startScene.js';
 import { setStartFlags, clearStartFlags } from '@/data/startFlags.js';
+import { setStartPauseScreen, clearStartPauseScreen } from '@/data/startPauseScreen.js';
+import { setTestMode, clearTestMode } from '@/data/testMode.js';
 import MAPS from './maps.js';
 
 const allMaps = MAPS.flatMap(g => g.maps);
@@ -104,40 +106,50 @@ function formatKey(key) {
 
 const active = ref(null);
 
+/** Hash format: "Scene" or "Scene/pauseScreen" (e.g. "Test/team"). */
+function hashFor(map) {
+  return map.pauseScreen ? `${map.scene}/${map.pauseScreen}` : map.scene;
+}
+
+function findMap(hash) {
+  const [scene, pauseScreen = null] = hash.split('/');
+  return allMaps.find(m => m.scene === scene && (m.pauseScreen ?? null) === pauseScreen);
+}
+
 function launch(map) {
+  setTestMode(true);
   setStartFlags(liveState[map.scene]);
   setStartScene(map.scene);
+  setStartPauseScreen(map.pauseScreen ?? null);
   active.value = map;
-  window.location.hash = map.scene;
+  window.location.hash = hashFor(map);
 }
 
 function close() {
   active.value = null;
   clearStartFlags();
   clearStartScene();
+  clearStartPauseScreen();
+  clearTestMode();
   history.replaceState(null, '', window.location.pathname + window.location.search);
 }
 
 function onHashChange() {
-  const scene = window.location.hash.slice(1);
-  if (!scene) {
+  const hash = window.location.hash.slice(1);
+  if (!hash) {
     if (active.value) close();
     return;
   }
-  if (active.value?.scene === scene) return;
-  const map = allMaps.find(m => m.scene === scene);
-  if (map) {
-    setStartFlags(liveState[map.scene]);
-    setStartScene(map.scene);
-    active.value = map;
-  }
+  if (active.value && hashFor(active.value) === hash) return;
+  const map = findMap(hash);
+  if (map) launch(map);
 }
 
 onMounted(() => {
   window.addEventListener('hashchange', onHashChange);
-  const scene = window.location.hash.slice(1);
-  if (scene) {
-    const map = allMaps.find(m => m.scene === scene);
+  const hash = window.location.hash.slice(1);
+  if (hash) {
+    const map = findMap(hash);
     if (map) launch(map);
   }
 });

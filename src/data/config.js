@@ -19,7 +19,6 @@ const config = {
   },
   fps: {
     target: 30,
-    forceSetTimeOut: true,
   },
   physics: {
     default: 'arcade',

@@ -4,12 +4,16 @@ import party    from './modules/party.js';
 import bag      from './modules/bag.js';
 import pokedex  from './modules/pokedex.js';
 import overworld from './modules/overworld.js';
+import { isTestMode } from '@Data/testMode.js';
 
 export default createStore({
   modules: { game, party, bag, pokedex, overworld },
 
   actions: {
     saveGame({ state, commit }) {
+      // Test-harness scenarios run with synthetic state (random parties, flipped
+      // flags). Never let those writes reach localStorage and overwrite a real save.
+      if (isTestMode()) return;
       commit('game/FLUSH_PLAYTIME');
       const savedAt = Date.now();
       localStorage.setItem('sw_game',     JSON.stringify({

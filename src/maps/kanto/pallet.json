@@ -4504,14 +4504,6 @@
                   }
                 },
                 {
-                  "propertytype": "cmd-face_char",
-                  "type": "class",
-                  "value": {
-                    "character1": "player",
-                    "character2": "Oak"
-                  }
-                },
-                {
                   "propertytype": "cmd-spawn_npc",
                   "type": "class",
                   "value": {
@@ -4519,6 +4511,14 @@
                     "facing": "up",
                     "name": "Oak",
                     "texture": "professor_oak"
+                  }
+                },
+                {
+                  "propertytype": "cmd-face_char",
+                  "type": "class",
+                  "value": {
+                    "character1": "player",
+                    "character2": "Oak"
                   }
                 },
                 {
@@ -4556,7 +4556,7 @@
                   "propertytype": "cmd-move_npc",
                   "type": "class",
                   "value": {
-                    "anchor": "ProfessorLabExit",
+                    "anchor": "ProfessorLabWarp",
                     "character": "Oak"
                   }
                 },
@@ -4574,21 +4574,6 @@
                   "value": {
                     "anchor": "oakAway",
                     "character": "Oak"
-                  }
-                },
-                {
-                  "propertytype": "cmd-movement_behavior",
-                  "type": "class",
-                  "value": {
-                    "character1": "player",
-                    "value": "none"
-                  }
-                },
-                {
-                  "propertytype": "cmd-remove_npc",
-                  "type": "class",
-                  "value": {
-                    "name": "Oak"
                   }
                 },
                 {
@@ -4670,8 +4655,8 @@
           "type": "location-anchor",
           "visible": true,
           "width": 32,
-          "x": 1632,
-          "y": 384
+          "x": 1088,
+          "y": 448
         },
         {
           "height": 32,

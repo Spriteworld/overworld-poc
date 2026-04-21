@@ -2,6 +2,7 @@ import { Pokedex, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
 import { drawMiniBall } from '@Objects/menus/helpers.js';
 import { DEX_LIST_W, DEX_ITEM_H, DEX_VISIBLE, TEXT_STYLE_HINT } from '@Objects/common/constants.js';
+import PokemonSprite from '@Objects/PokemonSprite.js';
 
 export default class PokedexList {
   constructor({ width = DEX_LIST_W, itemH = DEX_ITEM_H, visible = DEX_VISIBLE } = {}) {
@@ -73,13 +74,31 @@ export default class PokedexList {
       const numStr = `#${String(dexId).padStart(3, '0')}`;
       const nameStr = record ? getSpeciesDisplayName(entry).toUpperCase() : '???';
 
-      const numT  = scene.add.text(x,      rowY + 2, numStr,  style);
-      const nameT = scene.add.text(x + 38, rowY + 2, nameStr, style);
+      const ICON_SZ = 30;
+      const NUM_X   = x;
+      const ICON_X  = x + 34;
+      const NAME_X  = ICON_X + ICON_SZ + 4;
+
+      // Vertically centre text against the row (and the icon, which sits at
+      // rowY + itemH/2 via its own centred image).
+      const textCy = rowY + itemH / 2;
+      const numT  = scene.add.text(NUM_X,  textCy, numStr,  style);
+      const nameT = scene.add.text(NAME_X, textCy, nameStr, style);
+      numT.setOrigin(0, 0.5);
+      nameT.setOrigin(0, 0.5);
       reg(numT);
       reg(nameT);
 
+      // Per-row icon: show the menu icon for seen species, silhouette for unseen.
+      const iconSpecies = record ? dexId : 0;
+      reg(new PokemonSprite(scene, ICON_X, rowY + (itemH - ICON_SZ) / 2, {
+        species: iconSpecies,
+        size:    ICON_SZ,
+        variant: 'icon',
+      }));
+
       if (caught) {
-        reg(drawMiniBall(scene, x + 38 + nameT.width + 8, rowY + itemH / 2, 5));
+        reg(drawMiniBall(scene, NAME_X + nameT.width + 8, rowY + itemH / 2, 5));
       }
     });
 
