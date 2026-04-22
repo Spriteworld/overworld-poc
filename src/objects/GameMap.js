@@ -9,6 +9,7 @@ import { gameState } from '@Data/gameState.js';
 import store from '../store/index.js';
 import Tileset from '@Tileset';
 import { MAP_REGISTRY } from '@Maps';
+import RoomSync from '@/multiplayer/RoomSync.js';
 
 /**
  * Maps the tileset name (derived from the map JSON source filename) to the
@@ -107,6 +108,7 @@ export default class extends Phaser.Scene {
     this.mapPlugins['script']             = new Interactables.Script(this);
     // must be after 'pokemon' so addToScene() is available during init()
     this.mapPlugins['overworld_encounter'] = new Interactables.OverworldEncounter(this);
+    this.mapPlugins['roomsync']            = new RoomSync(this);
 
     // Cache the subset of plugins that actually define update() so the
     // per-frame loop doesn't re-filter every tick.
@@ -829,10 +831,26 @@ export default class extends Phaser.Scene {
     if (this.game.config.debug.console.gameMap) {
       console.log(['GameMap::initGEEvents']);
     }
-    if (this.config._pendingScript?.length) {
-      const queue = [...this.config._pendingScript];
+    // Resume a script queued by the previous scene's warp — only if its
+    // expectedMap matches *this* map. Protects against two cases:
+    //   (a) the script errored out, left a stale queue around, and the
+    //       player subsequently walked into an unrelated tile warp;
+    //   (b) something warped the player to a different destination than
+    //       the one the script was aiming for.
+    const pending = this.config._pendingScript;
+    if (pending) {
       delete this.config._pendingScript;
-      new ScriptRunner(this, queue).run();
+      // Back-compat: older callers may have passed a plain array.
+      const queue       = Array.isArray(pending) ? pending : pending.queue;
+      const expectedMap = Array.isArray(pending) ? null    : pending.expectedMap;
+      const mapMatches  = !expectedMap || expectedMap === this.config.mapName;
+      if (queue?.length && mapMatches) {
+        new ScriptRunner(this, queue).run();
+      } else if (queue?.length && this.game.config.debug?.console?.scriptRunner) {
+        console.warn(
+          `[GameMap] dropping pending script — expected "${expectedMap}", arrived at "${this.config.mapName}"`,
+        );
+      }
     }
 
     Object.entries(this.mapPlugins)

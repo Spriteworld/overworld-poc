@@ -3721,13 +3721,15 @@
                                     }
                                 }, 
                                 {
-                                 "propertytype":"cmd-move_player",
+                                 "propertytype":"cmd-warp_player",
                                  "type":"class",
                                  "value":
                                     {
-                                     "anchor":"ProfessorLabWarp"
+                                     "anchor":"PalletTownEntry",
+                                     "map":"ProfessorLab",
+                                     "variant":"oak_gives_mon"
                                     }
-                                }, 
+                                },
                                 {
                                  "propertytype":"cmd-move_player",
                                  "type":"class",
@@ -4445,7 +4447,7 @@
                                                      "level-range-max":5,
                                                      "level-range-min":2,
                                                      "rarity":50,
-                                                     "species":"ratatta"
+                                                     "species":"rattata"
                                                     }
                                                 }],
                                          "name":"ROUTE_1"

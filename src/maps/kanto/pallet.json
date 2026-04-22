@@ -4585,10 +4585,12 @@
                   }
                 },
                 {
-                  "propertytype": "cmd-move_player",
+                  "propertytype": "cmd-warp_player",
                   "type": "class",
                   "value": {
-                    "anchor": "ProfessorLabWarp"
+                    "anchor": "PalletTownEntry",
+                    "map": "ProfessorLab",
+                    "variant": "oak_gives_mon"
                   }
                 },
                 {

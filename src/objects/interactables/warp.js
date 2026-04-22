@@ -196,24 +196,74 @@ export default class {
    * @param {Character} char - The character to teleport.
    * @param {{x:number,y:number,dir:string,layer:string}} playerLocation - Target tile and direction.
    */
-  warpPlayerInMap(char, playerLocation) {
-    let pos = {
-      x: playerLocation.x,
-      y: playerLocation.y
-    };
+  async warpPlayerInMap(char, playerLocation) {
+    const pos = { x: playerLocation.x, y: playerLocation.y };
 
-    // move the player, preserving their current facing direction
-    this.scene.gridEngine.setPosition(char.name, pos, playerLocation.layer);
+    const playerPlugin = this.scene.mapPlugins?.['player'];
+    const followerId = playerPlugin?.hasPlayerMon
+      ? playerPlugin.playerMon?.config?.id
+      : null;
+
+    // handleWarps fires on positionChangeStarted, so the char (and the
+    // player's follower, which trails one step behind) may be mid-step here.
+    // Calling setPosition mid-step seeds grid-engine's zombie blocker on the
+    // from-tile (see docs/grid-engine-ticket.md) — it survives every public
+    // API we have and permanently blocks the tile. Wait for both characters
+    // to land before teleporting.
+    await Promise.all([
+      this._waitTileAligned(char.name),
+      followerId ? this._waitTileAligned(followerId) : Promise.resolve(),
+    ]);
+
+    // The scene may have torn down during the await (e.g. the player hit a
+    // cross-map warp in the meantime); bail if gridEngine is gone.
+    const ge = this.scene?.gridEngine;
+    if (!ge?.hasCharacter?.(char.name)) return;
+
+    ge.setPosition(char.name, pos, playerLocation.layer);
     char.look(char.getFacingDirection());
 
-    if (this.scene.mapPlugins['player'].hasPlayerMon) {
-      // get the pokemon to be in the right spot
-      this.scene.gridEngine.setPosition(
-        this.scene.mapPlugins['player'].playerMon.config.id,
-        char.getPosInBehindDirection(),
-        playerLocation.layer
-      );
+    if (followerId && ge.hasCharacter(followerId)) {
+      ge.setPosition(followerId, char.getPosInBehindDirection(), playerLocation.layer);
     }
+  }
+
+  /**
+   * Resolve once the given grid-engine character is tile-aligned (not in the
+   * middle of an animated step). If the character is already idle, resolves
+   * synchronously on the next microtask. Has a 1s fallback so a lost event
+   * doesn't hang the warp.
+   * @param {string} charId
+   * @param {number} [timeoutMs=1000]
+   * @returns {Promise<void>}
+   */
+  _waitTileAligned(charId, timeoutMs = 1000) {
+    return new Promise(resolve => {
+      const ge = this.scene?.gridEngine;
+      if (!ge?.hasCharacter?.(charId) || !ge.isMoving?.(charId)) {
+        resolve();
+        return;
+      }
+      let settled = false;
+      let posSub = null;
+      let stopSub = null;
+      let timeout = null;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        posSub?.unsubscribe?.();
+        stopSub?.unsubscribe?.();
+        if (timeout) clearTimeout(timeout);
+        resolve();
+      };
+      posSub = ge.positionChangeFinished?.().subscribe(({ charId: id }) => {
+        if (id === charId) finish();
+      });
+      stopSub = ge.movementStopped?.().subscribe(({ charId: id }) => {
+        if (id === charId) finish();
+      });
+      timeout = setTimeout(finish, timeoutMs);
+    });
   }
 
   /**
@@ -251,8 +301,8 @@ export default class {
       if (!loc) { return; }
       char.disableMovement();
       this.scene.cameras.main.fadeOut(500, 0, 0, 0);
-      this.scene.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-        this.warpPlayerInMap(char, loc);
+      this.scene.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, async () => {
+        await this.warpPlayerInMap(char, loc);
         this.scene.cameras.main.fadeIn(500, 0, 0, 0);
         char.enableMovement();
       });
@@ -291,7 +341,10 @@ export default class {
           ? { playerLocation: playerLocationOverride }
           : { warpLocationName };
         if (warpVariant) startParams.variant = warpVariant;
-        if (pendingScript) startParams._pendingScript = pendingScript;
+        // expectedMap guards against replaying this queue on an unrelated
+        // destination (see GameMap.initGEEvents). For a tile warp that's
+        // always the tile's own target.
+        if (pendingScript) startParams._pendingScript = { queue: pendingScript, expectedMap: warpTarget };
         this.scene.scene.start(warpTarget, startParams);
       }
     );

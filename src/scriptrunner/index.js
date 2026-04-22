@@ -109,12 +109,39 @@ export default class ScriptRunner {
     if (this._debug()) console.log('[ScriptRunner] exec:', cmd.cmd, cmd);
 
     const handler = HANDLERS[cmd.cmd];
-    if (handler) {
-      handler(this, cmd);
-    } else {
+    if (!handler) {
       console.warn(`[ScriptRunner] Unknown command "${cmd.cmd}" — skipping.`, cmd);
       this._step();
+      return;
     }
+    try {
+      handler(this, cmd);
+    } catch (e) {
+      // Abort the whole run. Leaving a half-finished queue behind is
+      // dangerous: if the player then walks into an unrelated tile warp,
+      // warp.js would capture the stale queue and replay it on the wrong
+      // map. Scrub state so no outside observer picks us back up.
+      console.error(`[ScriptRunner] Handler for "${cmd.cmd}" threw:`, e);
+      this._abort();
+    }
+  }
+
+  /**
+   * Shut the runner down cleanly on error. Caller already logged the
+   * cause. Drops the remaining queue, detaches from the scene, fires
+   * script-runner-end so listeners can re-enable input.
+   */
+  _abort() {
+    this._queue.length = 0;
+    if (this._inspectorText) {
+      this._inspectorText.destroy();
+      this._inspectorText = null;
+    }
+    if (this._scene?._activeScriptRunner === this) {
+      delete this._scene._activeScriptRunner;
+    }
+    this._scene?.game?.events?.emit?.('script-runner-end');
+    this._onDone?.();
   }
 
   // ─── Helpers (used by command handlers via runner._*) ─────────────────────
@@ -212,11 +239,15 @@ export default class ScriptRunner {
 
   /**
    * Start a new Phaser scene, forwarding any remaining queued commands as
-   * `_pendingScript` so they resume in the destination scene.
+   * `_pendingScript` so they resume in the destination scene. The pending
+   * payload carries `expectedMap` so the destination can refuse to resume
+   * if the player happened to land somewhere else first (e.g. a tile warp
+   * fired before this scene-start reached initGEEvents, or someone's
+   * debug tooling yanked them to a different map).
    */
   _startScene(mapKey, params) {
     if (this._queue.length) {
-      params._pendingScript = [...this._queue];
+      params._pendingScript = { queue: [...this._queue], expectedMap: mapKey };
       this._queue.length = 0;
     }
     this._scene.scene.start(mapKey, params);

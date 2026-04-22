@@ -6,6 +6,7 @@ import { getPropertyValue, getBattleTheme, getValue, remapProps, generateTileCoo
 import { EventBus } from './EventBus.js';
 import InputManager, { Action, createInputManager, getInputManager } from './InputManager.js';
 import { RESERVED_CHARACTER_IDS, assertNotReservedId } from './reservedIds.js';
+import { generateTid, formatTid } from './tid.js';
 
 export {
   debugDraw,
@@ -26,4 +27,6 @@ export {
   getInputManager,
   RESERVED_CHARACTER_IDS,
   assertNotReservedId,
+  generateTid,
+  formatTid,
 };

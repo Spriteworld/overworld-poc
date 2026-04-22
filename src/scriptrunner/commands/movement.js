@@ -234,6 +234,7 @@ export default {
         : (cmd.anchor
           ? { warpLocationName: cmd.anchor }
           : { playerLocation: { x: cmd.x ?? 0, y: cmd.y ?? 0, charLayer: cmd.layer ?? 'ground' } });
+      if (cmd.variant) params.variant = cmd.variant;
       runner._startScene(targetMap, params);
     });
     // no _step() — scene is changing

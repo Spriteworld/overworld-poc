@@ -13,12 +13,13 @@ import BagTeamPickScreen from './menus/BagTeamPickScreen.js';
 import UserScreen        from './menus/UserScreen.js';
 import OptionScreen      from './menus/OptionScreen.js';
 import DebugScreen       from './menus/DebugScreen.js';
+import OnlineScreen      from './menus/OnlineScreen.js';
 
 
 const MENU_DEPTH = Number.MAX_SAFE_INTEGER - 100;
 
-const MENU_KEYS   = ['pokedex', 'team', 'bag', 'user', 'option', 'save', 'debug', 'close'];
-const MENU_LABELS = ['POKÉDEX', 'POKÉMON', 'BAG', null /* playerName */, 'OPTION', 'SAVE', 'DEBUG', 'CLOSE'];
+const MENU_KEYS   = ['pokedex', 'team', 'bag', 'user', 'option', 'online', 'save', 'debug', 'close'];
+const MENU_LABELS = ['POKÉDEX', 'POKÉMON', 'BAG', null /* playerName */, 'OPTION', 'ONLINE', 'SAVE', 'DEBUG', 'CLOSE'];
 
 /**
  * Classic Pokémon-style pause menu living in OverworldUI's display list.
@@ -53,6 +54,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     this.userScreen        = new UserScreen(this);
     this.optionScreen      = new OptionScreen(this);
     this.debugScreen       = new DebugScreen(this);
+    this.onlineScreen      = new OnlineScreen(this);
 
     /** Set by BagScreen.confirm() before transitioning to bag-team-pick. */
     this.pendingUseItem = null;
@@ -103,7 +105,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
   _rebuildMainPanel() {
     this._mainBg?.destroy();
     this._cursorText?.destroy();
-    this._mainTexts.forEach(t => t.destroy());
+    this._mainTexts.forEach(t => t?.destroy?.());
     this._mainTexts = [];
 
     const items  = this._activeItems();
@@ -160,7 +162,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
 
   /** Destroy and reset all sub-screen display objects. */
   _clearSubTexts() {
-    this._subTexts.forEach(t => t.destroy());
+    this._subTexts.forEach(t => t?.destroy?.());
     this._subTexts = [];
   }
 
@@ -208,6 +210,9 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
         break;
       case 'debug':
         this.debugScreen.build();
+        break;
+      case 'online':
+        this.onlineScreen.show();
         break;
       default:
         this._buildPlaceholderScreen(name);
@@ -258,6 +263,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       case 'bag-team-pick': this.bagTeamPickScreen.nav(-1);  return;
       case 'option':      this.optionScreen.nav(-1);         return;
       case 'debug':       this.debugScreen.nav(-1);          return;
+      case 'online':      this.onlineScreen.nav(-1);         return;
       case null: break;
       default: return;
     }
@@ -277,6 +283,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       case 'bag-team-pick': this.bagTeamPickScreen.nav(1);   return;
       case 'option':      this.optionScreen.nav(1);          return;
       case 'debug':       this.debugScreen.nav(1);           return;
+      case 'online':      this.onlineScreen.nav(1);          return;
       case null: break;
       default: return;
     }
@@ -340,6 +347,8 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
       case 'bag-team-pick':  this.bagTeamPickScreen.confirm();   return null;
       case 'option':         this.optionScreen.confirm();        return null;
       case 'debug':          this.debugScreen.confirm();         return null;
+      case 'online':         this.onlineScreen.confirm();        return null;
+      case 'user':           this.userScreen.confirm();          return null;
       case null:             return this._activeItems()[this._selectedIndex].key;
       default:             return null;
     }

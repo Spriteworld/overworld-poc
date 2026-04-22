@@ -177,7 +177,10 @@ export default class extends Phaser.Scene {
           const nickname = Math.random() < 0.5
             ? NICKNAMES[Math.floor(Math.random() * NICKNAMES.length)]
             : undefined;
-          store.commit('party/ADD_POKEMON', { natDexId, level, shiny, nickname });
+          store.commit('party/ADD_POKEMON', {
+            natDexId, level, shiny, nickname,
+            tid: store.state.game.trainerId,
+          });
 
           const mon = store.state.party.list[store.state.party.list.length - 1];
           if (!mon) continue;
@@ -191,7 +194,10 @@ export default class extends Phaser.Scene {
           }
         }
       } else {
-        store.commit('party/ADD_POKEMON', { natDexId: 25, level: 15 });
+        store.commit('party/ADD_POKEMON', {
+          natDexId: 25, level: 15,
+          tid: store.state.game.trainerId,
+        });
       }
     }
 
@@ -202,9 +208,34 @@ export default class extends Phaser.Scene {
       }
     }
 
-    const loadMap = import.meta.env.VITE_LOAD_MAP || '';
-    const skipIntro = loadMap || getStartScene() || import.meta.env.VITE_SKIP_INTRO === 'true';
+    // VITE_LOAD_SLOT=1|2|3 — dev shortcut: hydrate from the given slot and
+    // boot straight into its saved map, skipping the title screen. Ignored
+    // under test mode (tests control their own state). If the slot is empty
+    // or malformed, fall through to the normal boot path.
+    const loadSlotRaw = import.meta.env.VITE_LOAD_SLOT;
+    let envLoadedSlot = false;
+    if (!isTestMode() && loadSlotRaw) {
+      const slot = parseInt(loadSlotRaw, 10);
+      if (Number.isFinite(slot) && slot >= 1 && slot <= 3) {
+        if (localStorage.getItem(`sw_game_slot${slot}`)) {
+          // Vuex action handlers run synchronously; by the time dispatch
+          // returns here the store is already hydrated and gameDef has been
+          // applied, even though dispatch formally returns a Promise.
+          store.dispatch('loadGame', slot);
+          console.log('Loaded save slot from env variable:', slot);
+          envLoadedSlot = true;
+        } else {
+          console.warn(`VITE_LOAD_SLOT=${slot} but that slot is empty — showing title screen.`);
+        }
+      } else {
+        console.warn(`VITE_LOAD_SLOT=${loadSlotRaw} is not a valid slot (1, 2, or 3) — showing title screen.`);
+      }
+    }
 
+    const loadMap   = import.meta.env.VITE_LOAD_MAP || '';
+    const testScene = getStartScene();
+
+    // Fast-path into a specific map (VITE_LOAD_MAP).
     if (loadMap !== '') {
       console.log('Loading map from env variable:', loadMap);
       this.scene.start(loadMap);
@@ -213,17 +244,14 @@ export default class extends Phaser.Scene {
       return;
     }
 
-
-    if (skipIntro) {
-      const testScene = getStartScene();
-      // When launching a test scenario, ignore the saved player tile so the
-      // target map uses its own default spawn rather than coordinates from a
-      // different map's save file.
+    // Direct-launch paths: a test harness scene or a hydrated save slot
+    // both bypass the title screen and drop you straight into the game.
+    if (testScene || envLoadedSlot) {
       const savedTile = testScene ? null : store.state.game.playerTile;
       const playerLocation = (savedTile && (savedTile.x || savedTile.y))
         ? { x: savedTile.x, y: savedTile.y, charLayer: savedTile.charLayer }
         : {};
-      const startScene = loadMap || testScene || store.state.game.currentMap || getGameDef().overworldScene;
+      const startScene = testScene || store.state.game.currentMap || getGameDef().overworldScene;
       const startParams = { playerLocation };
       // Restore the map variant that was active when the game was saved.
       // Don't apply variant when launching a test scene — it sets its own.
@@ -237,9 +265,19 @@ export default class extends Phaser.Scene {
 
       this.scene.start('OverworldUI');
       this.scene.bringToTop('OverworldUI');
-    } else {
-      this.scene.start('NintendoLogo');
+      return;
     }
+
+    // VITE_SKIP_INTRO: skip the Nintendo + Copyright splash chain but still
+    // show the title screen — and jump it straight to the main menu so the
+    // dev doesn't have to press-start every reload.
+    if (import.meta.env.VITE_SKIP_INTRO === 'true') {
+      this.scene.start('TitleScreen', { skipIdle: true });
+      return;
+    }
+
+    // Full intro chain (default production-style boot).
+    this.scene.start('NintendoLogo');
   }
 
   preloadTrainers() {

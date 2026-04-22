@@ -77,6 +77,7 @@ export default class {
       y: y,
       scene: this.scene,
       reflect: true,
+      tid: store.state.game.trainerId,
       ...(charLayer ? { 'char-layer': charLayer } : {}),
     });
     this.scene.registry.set('player', this.player);
@@ -278,14 +279,32 @@ export default class {
     let layerTransitions = this.scene.findInteractions('layerTransition');
     if (layerTransitions.length === 0) { return; }
 
+    const debug = this.scene.game.config.debug?.console?.gameMap;
     layerTransitions.forEach(tile => {
       let from = getPropertyValue(tile.properties, 'from');
-      let to = getPropertyValue(tile.properties, 'to');
+      let to   = getPropertyValue(tile.properties, 'to');
+      // Tiled rectangle objects use top-left x/y. For tile-aligned transition
+      // markers `tile.x / Tile.WIDTH` is integer; floor anyway in case Tiled
+      // ever exports a half-tile offset that would otherwise key the
+      // transition at e.g. 24.5 and never match the character's integer pos.
+      const x = Math.floor(tile.x / Tile.WIDTH);
+      const y = Math.floor(tile.y / Tile.HEIGHT);
+      if (debug) {
+        console.log(`[layerTransition] (${x}, ${y}) ${from} ↔ ${to}`);
+      }
+      if (!from || !to) {
+        console.warn(`[layerTransition] missing from/to at (${x}, ${y})`, tile);
+        return;
+      }
 
-      this.scene.gridEngine.setTransition({
-        x: tile.x / Tile.WIDTH,
-        y: tile.y / Tile.HEIGHT,
-      }, from, to);
+      const layer = this.scene.gridEngine.getCharLayer?.('player');
+      console.log('[layerTransition] player layer:', layer);
+      if (layer === from) {
+        this.scene.gridEngine.setTransition({ x, y }, from, to);
+      }
+      if (layer === to) {
+        this.scene.gridEngine.setTransition({ x, y }, to, from);
+      }
     });
   }
 

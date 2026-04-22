@@ -84,11 +84,14 @@ export default {
     },
 
     /**
-     * Add a gift Pokémon to the party (up to 6 members).
-     * Called by ScriptRunner's `give_pokemon` command.
-     * Does nothing if the party is already full.
+     * Add a gift or caught Pokémon to the party (up to 6 members).
+     * Called by ScriptRunner's `give_pokemon` / `give_starter` commands and
+     * (eventually) by the post-battle catch handler.
+     * `tid` is the original-trainer id to stamp on the mon. Callers should
+     * pass the current player's tid (`store.state.game.trainerId`) — or an
+     * NPC's tid for in-game trades. Does nothing if the party is already full.
      */
-    ADD_POKEMON(state, { natDexId, level, nickname, shiny }) {
+    ADD_POKEMON(state, { natDexId, level, nickname, shiny, tid }) {
       if (state.list.length >= 6) return;
       const lvl         = level ?? 5;
       const speciesData = getDex().getPokemonById(natDexId);
@@ -109,6 +112,10 @@ export default {
         isShiny: shiny ?? false,
         pokerus: false,
         gender:  rng() < 0.5 ? 'male' : 'female',
+        // Original-trainer id — passes through buildMon's extras as-is.
+        // Clamp to the 16-bit range expected for TIDs; leave null untouched
+        // so callers who explicitly pass null can opt out (rare).
+        ...(tid == null ? {} : { tid: (tid | 0) & 0xffff }),
       });
       if (!mon) return;
 

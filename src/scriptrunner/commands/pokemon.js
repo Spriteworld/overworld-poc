@@ -32,6 +32,9 @@ export default {
       level:    cmd.level    ?? 5,
       nickname: cmd.nickname ?? null,
       shiny:    cmd.shiny    ?? false,
+      // Default OT to the player. Scripts can override (e.g., in-game trade
+      // NPCs that should stamp their own tid on the mon pre-trade).
+      tid:      cmd.tid ?? store.state.game.trainerId,
     });
     maybeSpawnFollower(runner, partyWasEmpty);
     runner._step();
@@ -52,7 +55,11 @@ export default {
       return;
     }
     const partyWasEmpty = store.state.party.list.length === 0;
-    store.commit('party/ADD_POKEMON', { natDexId, level: cmd.level ?? 5 });
+    store.commit('party/ADD_POKEMON', {
+      natDexId,
+      level: cmd.level ?? 5,
+      tid:   store.state.game.trainerId,
+    });
     maybeSpawnFollower(runner, partyWasEmpty);
     runner._step();
   },

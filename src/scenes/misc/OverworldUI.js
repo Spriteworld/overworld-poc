@@ -9,6 +9,7 @@ import { KEY_ITEMS } from '../../store/modules/bag.js';
 import { Pokedex, GENDERS, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
 import { getGameDef } from '@Data/gameDef.js';
 import { getStartPauseScreen, clearStartPauseScreen } from '@Data/startPauseScreen.js';
+import { multiplayerClient } from '@/multiplayer/Client.js';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -69,6 +70,24 @@ export default class extends Phaser.Scene {
     this._scriptDepth = 0;
 
     this.handleEvents();
+
+    // Kick off the multiplayer relay connection on gameplay entry so peers
+    // see us as soon as we load into the world — no need to open the Online
+    // menu first. Fire-and-forget; reconnect logic inside the client
+    // handles intermittent failures. Opting out requires an env flag.
+    if (import.meta.env.VITE_MULTIPLAYER_AUTOCONNECT !== 'false') {
+      const lead = gameState.party[0];
+      multiplayerClient.autoJoin({
+        name:     store.state.game.playerName,
+        sprite:   store.state.game.playerSprite,
+        tid:      store.state.game.trainerId,
+        follower: (store.state.game.gameFlags.follower_pokemon && lead)
+          ? { species: String(lead.species).padStart(3, '0') }
+          : null,
+      }).catch(() => {
+        // Server unreachable → stay in single-player mode silently.
+      });
+    }
 
     // Test-harness hook: if a scenario requested a specific pause-menu screen,
     // open the menu and jump straight to that sub-screen once everything is up.
@@ -198,6 +217,9 @@ export default class extends Phaser.Scene {
             // Tutorial battles run on a stand-in trainer + synthetic inventory.
             // Skip every mutation that would touch the real save — party sync,
             // bag sync, prize money, and any future caught-flow side-effects.
+            // NOTE: when the caught-flow is wired up, commit party/ADD_POKEMON
+            // with `tid: store.state.game.trainerId` so the mon is stamped
+            // with the player as its original trainer.
             const isTutorial = tutorial === true || battleScene?.tutorial === true;
 
             if (!isTutorial && prizeMoney > 0) { store.commit('game/ADD_MONEY', prizeMoney); }
@@ -532,6 +554,7 @@ export default class extends Phaser.Scene {
     switch (option) {
       case 'pokedex':
       case 'option':
+      case 'online':
       case 'debug':
         this.pauseMenu.showSubScreen(option);
         break;

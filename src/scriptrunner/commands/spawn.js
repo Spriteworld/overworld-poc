@@ -107,54 +107,88 @@ export default {
     }
     const npcId = npc.config.id;
     const ge    = runner._scene.gridEngine;
-    // Capture the NPC's current tile BEFORE remove() destroys the sprite —
-    // we need it to clean any tile-level collision state that persists beyond
-    // GridEngine's own character tracking.
-    const lastTile = (ge?.hasCharacter?.(npcId))
-      ? (() => { try { return ge.getPosition(npcId); } catch (_) { return null; } })()
-      : null;
 
-    npc.remove();
+    const doRemove = () => {
+      // Capture the NPC's current tile BEFORE remove() destroys the sprite —
+      // we need it to clean any tile-level collision state that persists beyond
+      // GridEngine's own character tracking.
+      const lastTile = (ge?.hasCharacter?.(npcId))
+        ? (() => { try { return ge.getPosition(npcId); } catch (_) { return null; } })()
+        : null;
 
-    // Defensive second pass — npc.remove() *should* handle all of this, but
-    // a scripted remove is easy to call while the NPC is mid-move or across
-    // a scene transition, which can leave state half-torn. Re-run the cleanup
-    // here; each step is idempotent on already-cleared state.
-    if (ge?.hasCharacter?.(npcId)) {
-      try { ge.stopMovement(npcId); }    catch (_) {}
-      try { ge.removeCharacter(npcId); } catch (_) {}
-    }
-    runner._scene._unindexCharacter?.(npcId);
-    runner._scene.removeInteraction?.(npcId);
+      npc.remove();
 
-    // Belt-and-braces: if we still hold the NPC's last tile, scrub it out of
-    // the tile index directly. Guards against the case where _charLastTile
-    // was stale (e.g. the NPC was teleported via setPosition earlier without
-    // the tile index being refreshed, so _unindexCharacter cleared the wrong
-    // tile).
-    const tileIndex = runner._scene._charTileIndex;
-    if (lastTile && tileIndex) {
-      const key = lastTile.x + ',' + lastTile.y;
-      const set = tileIndex.get(key);
-      if (set) {
-        set.delete(npcId);
-        if (set.size === 0) tileIndex.delete(key);
+      // Defensive second pass — npc.remove() *should* handle all of this, but
+      // a scripted remove is easy to call across a scene transition, which
+      // can leave state half-torn. Re-run the cleanup here; each step is
+      // idempotent on already-cleared state.
+      if (ge?.hasCharacter?.(npcId)) {
+        try { ge.stopMovement(npcId); }    catch (_) {}
+        try { ge.removeCharacter(npcId); } catch (_) {}
       }
-    }
-    // Final pass: sweep the entire tile index and drop `npcId` from every
-    // entry. The NPC should only appear once, but earlier bugs (e.g. a warp
-    // that didn't update the index) could have double-registered the id at
-    // multiple tiles. Empty sets are deleted so `isCharacterOnTile` short-
-    // circuits cleanly.
-    if (tileIndex) {
-      for (const [key, set] of tileIndex) {
-        if (!set.has(npcId)) continue;
-        set.delete(npcId);
-        if (set.size === 0) tileIndex.delete(key);
+      runner._scene._unindexCharacter?.(npcId);
+      runner._scene.removeInteraction?.(npcId);
+
+      // Belt-and-braces: if we still hold the NPC's last tile, scrub it out of
+      // the tile index directly. Guards against the case where _charLastTile
+      // was stale (e.g. the NPC was teleported via setPosition earlier without
+      // the tile index being refreshed, so _unindexCharacter cleared the wrong
+      // tile).
+      const tileIndex = runner._scene._charTileIndex;
+      if (lastTile && tileIndex) {
+        const key = lastTile.x + ',' + lastTile.y;
+        const set = tileIndex.get(key);
+        if (set) {
+          set.delete(npcId);
+          if (set.size === 0) tileIndex.delete(key);
+        }
       }
+      // Final pass: sweep the entire tile index and drop `npcId` from every
+      // entry. The NPC should only appear once, but earlier bugs (e.g. a warp
+      // that didn't update the index) could have double-registered the id at
+      // multiple tiles. Empty sets are deleted so `isCharacterOnTile` short-
+      // circuits cleanly.
+      if (tileIndex) {
+        for (const [key, set] of tileIndex) {
+          if (!set.has(npcId)) continue;
+          set.delete(npcId);
+          if (set.size === 0) tileIndex.delete(key);
+        }
+      }
+
+      runner._step();
+    };
+
+    // Same grid-engine zombie-blocker workaround as warp_npc
+    // (see docs/grid-engine-ticket.md): calling stopMovement mid-step leaves
+    // a permanent blocker on the from-tile that survives removeCharacter.
+    // npc.remove() calls stopMovement internally, so we have to let the
+    // in-flight step land first. Only then is the removal safe.
+    if (ge?.isMoving?.(npcId)) {
+      let settled = false;
+      let posSub  = null;
+      let stopSub = null;
+      let timeout = null;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        posSub?.unsubscribe?.();
+        stopSub?.unsubscribe?.();
+        if (timeout) clearTimeout(timeout);
+        doRemove();
+      };
+      posSub = ge.positionChangeFinished?.().subscribe(({ charId }) => {
+        if (charId === npcId) finish();
+      });
+      stopSub = ge.movementStopped?.().subscribe(({ charId }) => {
+        if (charId === npcId) finish();
+      });
+      // Ultimate fallback — don't hang the script runner if no event fires.
+      timeout = setTimeout(finish, 1000);
+      return;
     }
 
-    runner._step();
+    doRemove();
   },
 
   spawn_pkmn(runner, cmd) {

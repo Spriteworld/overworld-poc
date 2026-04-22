@@ -1,10 +1,12 @@
 import defaultFlags from '@Data/gameFlags.js';
+import { generateTid } from '@Utilities';
 
 export default {
   namespaced: true,
 
   state: () => ({
     seed:         Math.floor(Math.random() * 0x100000000) >>> 0,
+    trainerId:    generateTid(),
     playerName:   'Red',
     rivalName:    'Blue',
     playerSprite: 'red',
@@ -24,6 +26,7 @@ export default {
     bgmVolume:    10,          // 0–20 (each step = 5%)
     sfxVolume:    10,          // 0–20 (each step = 5%)
     alwaysRun:    false,       // move at run speed without holding B (requires Running Shoes)
+    activeSlot:   1,           // transient — which save slot is currently loaded; not persisted
   }),
 
   getters: {
@@ -65,6 +68,24 @@ export default {
       state.onBike = value;
     },
 
+    SET_ACTIVE_SLOT(state, slot) {
+      state.activeSlot = slot;
+    },
+
+    /**
+     * Patch the global option fields (textSpeed, bgmVolume, sfxVolume,
+     * alwaysRun). Called from the options loader at store init and from the
+     * Options screen on change. These fields live globally — they are
+     * intentionally NOT touched by per-slot LOAD / RESET.
+     */
+    APPLY_OPTIONS(state, opts) {
+      if (opts == null) return;
+      if (opts.textSpeed != null) state.textSpeed = opts.textSpeed;
+      if (opts.bgmVolume != null) state.bgmVolume = opts.bgmVolume;
+      if (opts.sfxVolume != null) state.sfxVolume = opts.sfxVolume;
+      if (opts.alwaysRun != null) state.alwaysRun = !!opts.alwaysRun;
+    },
+
     SET_PLAYER_FACING(state, direction) {
       state.playerFacing = direction;
     },
@@ -96,6 +117,9 @@ export default {
 
     LOAD(state, saved) {
       if (saved.seed        != null) state.seed        = saved.seed;
+      // Pre-TID saves won't carry a trainerId — generate one on first load
+      // and it'll get persisted on the next saveGame().
+      state.trainerId = saved.trainerId ?? generateTid();
       if (saved.playerName   != null) state.playerName   = saved.playerName;
       if (saved.playerSprite != null) state.playerSprite = saved.playerSprite;
       if (saved.onBike        != null) state.onBike        = saved.onBike;
@@ -109,15 +133,15 @@ export default {
       if (saved.money        != null) state.money        = saved.money;
       if (saved.healLocation != null) state.healLocation = saved.healLocation;
       if (saved.lastOutdoorLocation != null) state.lastOutdoorLocation = saved.lastOutdoorLocation;
-      if (saved.textSpeed    != null) state.textSpeed    = saved.textSpeed;
-      if (saved.bgmVolume    != null) state.bgmVolume    = saved.bgmVolume;
-      if (saved.sfxVolume    != null) state.sfxVolume    = saved.sfxVolume;
-      if (saved.alwaysRun    != null) state.alwaysRun    = saved.alwaysRun;
+      // textSpeed / bgmVolume / sfxVolume / alwaysRun are global options,
+      // not per-slot — loaded from sw_options at store init and preserved
+      // across per-slot LOAD / RESET.
       state.sessionStart = Date.now();
     },
 
     RESET(state) {
       state.seed                = Math.floor(Math.random() * 0x100000000) >>> 0;
+      state.trainerId           = generateTid();
       state.playerName          = 'Red';
       state.rivalName           = 'Blue';
       state.playerSprite        = 'red';
@@ -133,10 +157,9 @@ export default {
       state.money               = 3000;
       state.healLocation        = null;
       state.lastOutdoorLocation = null;
-      state.textSpeed           = 'normal';
-      state.bgmVolume           = 10;
-      state.sfxVolume           = 10;
-      state.alwaysRun           = false;
+      // textSpeed / bgmVolume / sfxVolume / alwaysRun are global options
+      // and intentionally NOT reset here. They persist across new-game and
+      // slot switches.
     },
   },
 };

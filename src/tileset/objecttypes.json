@@ -1582,6 +1582,11 @@
                 "value": ""
             },
             {
+                "name": "variant",
+                "type": "string",
+                "value": ""
+            },
+            {
                 "name": "x",
                 "type": "int",
                 "value": 0

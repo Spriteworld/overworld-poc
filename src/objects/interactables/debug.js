@@ -96,7 +96,11 @@ export default class {
     const world = this.scene.cameras.main.getWorldPoint(gameX, gameY);
     const tileX = Math.floor(world.x / Tile.WIDTH);
     const tileY = Math.floor(world.y / Tile.HEIGHT);
-    this.scene.gridEngine.setPosition('player', { x: tileX, y: tileY });
+    // Preserve the current char layer — without the third arg setPosition
+    // resets the player to the default char layer, which would silently
+    // dump them off a bridge / mountain / overworld upper level.
+    const layer = this.scene.gridEngine.getCharLayer?.('player');
+    this.scene.gridEngine.setPosition('player', { x: tileX, y: tileY }, layer);
   }
 
   showGrid() {
@@ -129,6 +133,14 @@ export default class {
           .substr(-6);
         let label = obj.name;
         let onlyIfEntry = null;
+        if (obj.type === 'layerTransition') {
+          // Show the toggle endpoints next to the marker so authors can read
+          // the bridge layout without opening Tiled. Falls back gracefully
+          // if either field was forgotten.
+          const from = this.scene.getPropertyFromTile(obj, 'from') ?? '?';
+          const to   = this.scene.getPropertyFromTile(obj, 'to')   ?? '?';
+          label += `\n${from} ↔ ${to}`;
+        }
         if (obj.type === 'trigger' || obj.type === 'on-interact') {
           const onlyIf = this.scene.getPropertyFromTile(obj, 'only_if') ?? null;
           const onlyIfKey = onlyIf?.key ?? null;
@@ -232,11 +244,15 @@ export default class {
 
   update() {
     if (this._coordsText) {
-      const pos = this.scene.gridEngine.getPosition('player');
+      const pos     = this.scene.gridEngine.getPosition('player');
+      const layer   = this.scene.gridEngine.getCharLayer?.('player') ?? null;
       const variant = this.scene.game.config.debug.playerVariant
         ? (this.scene.config?.variant ?? null)
         : null;
-      this._coordsText.setText(variant ? `${pos.x}, ${pos.y} [${variant}]` : `${pos.x}, ${pos.y}`);
+      const parts = [`${pos.x}, ${pos.y}`];
+      if (layer) parts.push(`@${layer}`);
+      if (variant) parts.push(`[${variant}]`);
+      this._coordsText.setText(parts.join(' '));
     }
     if (this._fpsText) {
       // Phaser already smooths actualFps over the past second.

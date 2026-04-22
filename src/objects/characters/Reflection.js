@@ -32,6 +32,7 @@ export default class Reflection {
     this.sprite.setName((parent.name || 'character') + '-reflection');
 
     this._ready = false;
+    this._destroyed = false;
   }
 
   /**
@@ -48,7 +49,16 @@ export default class Reflection {
     this.sprite.setDepth(floor.depth + DEPTH_OFFSET);
 
     const mask = Reflection._getOrCreateWaterMask(this.scene);
-    if (mask) this.sprite.setMask(mask);
+    if (mask) {
+      this.sprite.setMask(mask);
+    } else {
+      // No water tiles on this map — there's nothing for the reflection to
+      // land on. Without a mask the sprite would render over every non-water
+      // surface (common on indoor maps). Hide it and flag so update() skips
+      // the per-frame pose sync until the scene tears down.
+      this.sprite.setVisible(false);
+      this._noWater = true;
+    }
 
     this._ready = true;
   }
@@ -87,6 +97,7 @@ export default class Reflection {
     if (!p || !p.active) return;
 
     this._initRendering();
+    if (this._noWater) return;
 
     if (this.sprite.texture.key !== p.texture.key) {
       this.sprite.setTexture(p.texture.key, p.frame.name);
@@ -107,8 +118,24 @@ export default class Reflection {
   }
 
   destroy() {
-    this.sprite?.destroy();
+    if (this._destroyed) return;
+    this._destroyed = true;
+
+    // Skip explicit sprite.destroy() when the scene is already tearing down:
+    // Phaser's DisplayList.shutdown sweeps the list backwards with a cached
+    // index, and our parent's 'destroy' handler fires mid-sweep. Destroying
+    // our sprite here would splice a sibling out of the same list Phaser is
+    // iterating, leaving a hole that crashes the next `list[i].destroy()`.
+    // Settings.status is flipped to SHUTDOWN (8) / DESTROYED (9) before
+    // Phaser emits the SHUTDOWN event, so we can detect it synchronously.
+    const status = this.scene?.sys?.settings?.status;
+    const sceneDown = typeof status === 'number' && status >= 8;
+
+    if (!sceneDown) {
+      this.sprite?.destroy();
+    }
     this.sprite = null;
     this.parent = null;
+    this.scene  = null;
   }
 }

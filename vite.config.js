@@ -46,6 +46,9 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 8085,
     allowedHosts: true,
+    watch: {
+      ignored: ['!**/src/**'],
+    },
   },
   define: {
     'process.env': {}

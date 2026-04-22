@@ -4,7 +4,7 @@ import MovableSprite from '@Objects/characters/MovableSprite';
 import Reflection from '@Objects/characters/Reflection';
 import * as Tile from '../Tile.js';
 import * as Direction from '../Direction.js';
-import { Vector2, getPropertyValue, getInputManager, Action } from '@Utilities';
+import { Vector2, getPropertyValue, getInputManager, Action, generateTid } from '@Utilities';
 
 export default class extends MovableSprite {
   /**
@@ -44,9 +44,15 @@ export default class extends MovableSprite {
       'track-player': false,
       'track-player-radius': 0,
       reflect: false,
+      tid: null,
     }, ...config};
     super(config);
     this.config = config;
+    // Every character has a trainer ID generated the same way Pokémon
+    // trainer IDs are (16-bit public TID). For the player this is provided
+    // via config from the store so it's stable across saves; NPCs and
+    // trainers get a fresh random one per construction.
+    this.tid = (this.config.tid != null) ? (this.config.tid | 0) & 0xffff : generateTid();
 
     this.rectColor = {
       normal: 0x1d7196,

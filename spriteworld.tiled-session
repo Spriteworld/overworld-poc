@@ -117,11 +117,11 @@
             "expandedObjectLayers": [
                 12
             ],
-            "scale": 2,
+            "scale": 1,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 2829.5,
-                "y": 9253.25
+                "x": 2592,
+                "y": 8976.5
             }
         },
         "src/maps/kanto/kanto_dungeons.json": {
