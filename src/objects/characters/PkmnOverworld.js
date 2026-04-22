@@ -60,6 +60,7 @@ export default class extends Character {
   update(time, delta) {
     if (!this.config.scene.ge_init) { return; }
     this.stateMachine.update(time);
+    this.reflection?.update();
     this.canSeeCharacter();
     this.canTrackPlayer();
     this.addAutoSpin(delta);

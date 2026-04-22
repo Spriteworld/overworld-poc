@@ -76,6 +76,7 @@ export default class {
       x: x,
       y: y,
       scene: this.scene,
+      reflect: true,
       ...(charLayer ? { 'char-layer': charLayer } : {}),
     });
     this.scene.registry.set('player', this.player);
@@ -115,7 +116,7 @@ export default class {
       cam4.setFollowOffset(-this.player.width, -this.player.height);
     }
 
-    if (this.scene.game.config.gameFlags.follower_pokemon) {
+    if (store.state.game.gameFlags.follower_pokemon && !store.state.game.onBike) {
       this._spawnFollowerMon({ x, y });
     }
 
@@ -124,7 +125,10 @@ export default class {
   _spawnFollowerMon(pos) {
     const lead = gameState.party[0];
     if (!lead) return;
-    const spawnPos = pos ?? this.scene.gridEngine?.getPosition('player') ?? { x: 0, y: 0 };
+    const playerPos = pos ?? this.scene.gridEngine?.getPosition('player') ?? { x: 0, y: 0 };
+    const facing = store.state.game.playerFacing ?? 'down';
+    const behind = { up: { x: 0, y: 1 }, down: { x: 0, y: -1 }, left: { x: 1, y: 0 }, right: { x: -1, y: 0 } }[facing];
+    const spawnPos = { x: playerPos.x + behind.x, y: playerPos.y + behind.y };
     this.hasPlayerMon = true;
     this.playerMon = this.scene.mapPlugins.pokemon.addToScene(
       'playerMon',
@@ -132,9 +136,11 @@ export default class {
       spawnPos,
       {
         id: 'playerMon',
-        collides: false,
+        collides: { collidesWithTiles: true, collisionGroups: [] },
         move: false,
         spin: false,
+        reflect: true,
+        'facing-direction': facing,
       }
     );
   }
@@ -177,13 +183,15 @@ export default class {
     }
 
     // Trail subscription: when the player moves, step the follower into the
-    // tile the player just vacated (Gen 3 "walk-behind" behavior).
+    // tile the player just vacated (Gen 3 "walk-behind" behavior). Match the
+    // player's current speed so the follower keeps up when running.
     this._followerTrailSub = this.scene.gridEngine
       .positionChangeStarted()
       .subscribe(({ charId, exitTile }) => {
         if (charId !== 'player' || !this.hasPlayerMon || !this.playerMon) return;
         const followerId = this.playerMon.config?.id ?? 'playerMon';
         if (!this.scene.gridEngine.hasCharacter(followerId)) return;
+        this.scene.gridEngine.setSpeed(followerId, this.scene.gridEngine.getSpeed('player'));
         this.scene.gridEngine.moveTo(followerId, exitTile, {
           noPathFoundStrategy: 'STOP',
           pathBlockedStrategy: 'STOP',
@@ -192,12 +200,21 @@ export default class {
 
     this._onFollowerChange = (enabled) => {
       if (enabled) {
-        if (!this.hasPlayerMon) this._spawnFollowerMon();
+        if (!this.hasPlayerMon && !store.state.game.onBike) this._spawnFollowerMon();
       } else {
         this._despawnFollowerMon();
       }
     };
     this.scene.game.events.on('follower-pokemon-change', this._onFollowerChange);
+
+    this._onBikeChange = (onBike) => {
+      if (onBike) {
+        this._despawnFollowerMon();
+      } else if (store.state.game.gameFlags.follower_pokemon && !this.hasPlayerMon) {
+        this._spawnFollowerMon();
+      }
+    };
+    this.scene.game.events.on('player-bike-change', this._onBikeChange);
 
     let layerTransitions = this.scene.findInteractions('layerTransition');
     if (layerTransitions.length === 0) { return; }
@@ -220,6 +237,9 @@ export default class {
     }
     if (this._onFollowerChange) {
       this.scene.game.events.off('follower-pokemon-change', this._onFollowerChange);
+    }
+    if (this._onBikeChange) {
+      this.scene.game.events.off('player-bike-change', this._onBikeChange);
     }
   }
 };

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import StateMachine from '@Objects/StateMachine';
 import MovableSprite from '@Objects/characters/MovableSprite';
+import Reflection from '@Objects/characters/Reflection';
 import * as Tile from '../Tile.js';
 import * as Direction from '../Direction.js';
 import { Vector2, getPropertyValue, getInputManager, Action } from '@Utilities';
@@ -42,6 +43,7 @@ export default class extends MovableSprite {
       'ignore-warp': false,
       'track-player': false,
       'track-player-radius': 0,
+      reflect: false,
     }, ...config};
     super(config);
     this.config = config;
@@ -77,6 +79,11 @@ export default class extends MovableSprite {
 
     this.config.scene.add.existing(this);
     this.config.scene.addCharacter(this);
+
+    if (this.config.reflect) {
+      this.reflection = new Reflection({ parent: this });
+      this.once('destroy', () => this.reflection?.destroy());
+    }
 
     this.initSeenRadius(identification);
     this.trackingCoords = [];

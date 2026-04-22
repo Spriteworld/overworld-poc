@@ -103,6 +103,7 @@ export default class extends Character {
    */
   update(time, delta) {
     this.stateMachine.update(time);
+    this.reflection?.update();
 
     if (this.config.scene.game.config.debug.tests.playerBlockers) {
       this.debugBlockers();

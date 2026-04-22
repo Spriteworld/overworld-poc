@@ -329,6 +329,7 @@ export default class extends Phaser.Scene {
       const nextState = inBike ? player.stateDef.IDLE : player.stateDef.BIKE;
       player.stateMachine.setState(nextState);
       store.commit('game/SET_ON_BIKE', !inBike);
+      this.game.events.emit('player-bike-change', !inBike);
     });
 
     // ─── Player sprite change (Options screen) ────────────────────────────

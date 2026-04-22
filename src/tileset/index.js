@@ -22,7 +22,6 @@ import rse_outside_json from '@Tileset/rse_outside.json';
 
 import * as ow_pokemon_dimensions from '@Tileset/overworld/pokemon/files.json';
 import * as ow_pokemon_shiny_dimensions from '@Tileset/overworld/pokemon_shiny/files.json';
-import * as bs_normal_dimensions from '@Tileset/battlescene/normal/files.json';
 
 // Status icons spritesheet — laid out top-to-bottom, one frame per row.
 // Types and categories moved to per-icon PNGs under public/tileset/ui/.
@@ -99,7 +98,6 @@ export default {
 
   ow_pokemon_dimensions,
   ow_pokemon_shiny_dimensions,
-  bs_normal_dimensions,
   pokemon,
   pokemon_shiny,
 

@@ -204,8 +204,8 @@ export default class extends Phaser.Scene {
         this.tilemaps[layer.name] = tilemap
           .createLayer(layer.name, tilesets)
           .setName(layer.name)
-          .setAlpha(layer.visible 
-            ? layer.alpha || 1 
+          .setAlpha(layer.visible
+            ? layer.alpha || 1
             : 0
           )
         ;
