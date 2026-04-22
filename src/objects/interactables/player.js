@@ -145,6 +145,31 @@ export default class {
     );
   }
 
+  _behindPlayerTile(playerTile) {
+    const ge = this.scene.gridEngine;
+    const facing = ge.getFacingDirection('player');
+    const offset = { up: { x: 0, y: 1 }, down: { x: 0, y: -1 }, left: { x: 1, y: 0 }, right: { x: -1, y: 0 } }[facing] ?? { x: 0, y: 1 };
+    return { x: playerTile.x + offset.x, y: playerTile.y + offset.y };
+  }
+
+  _teleportFollowerBehind(playerTile) {
+    const ge = this.scene.gridEngine;
+    const followerId = this.playerMon?.config?.id ?? 'playerMon';
+    if (!ge?.hasCharacter(followerId)) return;
+    ge.setPosition(followerId, this._behindPlayerTile(playerTile), ge.getCharLayer('player'));
+  }
+
+  _walkFollowerBehind(playerTile) {
+    const ge = this.scene.gridEngine;
+    const followerId = this.playerMon?.config?.id ?? 'playerMon';
+    if (!ge?.hasCharacter(followerId)) return;
+    ge.setSpeed(followerId, ge.getSpeed('player'));
+    ge.moveTo(followerId, this._behindPlayerTile(playerTile), {
+      noPathFoundStrategy: 'CLOSEST_REACHABLE',
+      pathBlockedStrategy: 'STOP',
+    });
+  }
+
   _despawnFollowerMon() {
     if (this.playerMon) {
       this.playerMon.remove();
@@ -184,18 +209,52 @@ export default class {
 
     // Trail subscription: when the player moves, step the follower into the
     // tile the player just vacated (Gen 3 "walk-behind" behavior). Match the
-    // player's current speed so the follower keeps up when running.
+    // player's current speed so the follower keeps up when running. If the
+    // follower falls too far behind (warp, long sprint), snap it in behind.
     this._followerTrailSub = this.scene.gridEngine
       .positionChangeStarted()
-      .subscribe(({ charId, exitTile }) => {
+      .subscribe(({ charId, exitTile, enterTile }) => {
         if (charId !== 'player' || !this.hasPlayerMon || !this.playerMon) return;
+        const ge = this.scene.gridEngine;
         const followerId = this.playerMon.config?.id ?? 'playerMon';
-        if (!this.scene.gridEngine.hasCharacter(followerId)) return;
-        this.scene.gridEngine.setSpeed(followerId, this.scene.gridEngine.getSpeed('player'));
-        this.scene.gridEngine.moveTo(followerId, exitTile, {
+        if (!ge.hasCharacter(followerId)) return;
+
+        const followerPos = ge.getPosition(followerId);
+        const dist = Math.max(
+          Math.abs(followerPos.x - exitTile.x),
+          Math.abs(followerPos.y - exitTile.y),
+        );
+        if (dist > 3) {
+          this._teleportFollowerBehind(enterTile);
+          return;
+        }
+        const onPlayerTarget = followerPos.x === enterTile.x && followerPos.y === enterTile.y;
+        if (onPlayerTarget) {
+          this._walkFollowerBehind(enterTile);
+          return;
+        }
+
+        ge.setSpeed(followerId, ge.getSpeed('player'));
+        ge.moveTo(followerId, exitTile, {
           noPathFoundStrategy: 'STOP',
           pathBlockedStrategy: 'STOP',
         });
+      });
+
+    // Safety net: after any player move settles, if the follower is overlapping
+    // the player, snap it behind. Covers races where the follower's own moveTo
+    // completed onto the player's new tile or any warp/teleport edge case.
+    this._followerSettleSub = this.scene.gridEngine
+      .positionChangeFinished()
+      .subscribe(({ charId, enterTile }) => {
+        if (charId !== 'player' || !this.hasPlayerMon || !this.playerMon) return;
+        const ge = this.scene.gridEngine;
+        const followerId = this.playerMon.config?.id ?? 'playerMon';
+        if (!ge.hasCharacter(followerId)) return;
+        const followerPos = ge.getPosition(followerId);
+        if (followerPos.x === enterTile.x && followerPos.y === enterTile.y) {
+          this._walkFollowerBehind(enterTile);
+        }
       });
 
     this._onFollowerChange = (enabled) => {
@@ -234,6 +293,10 @@ export default class {
     if (this._followerTrailSub) {
       this._followerTrailSub.unsubscribe();
       this._followerTrailSub = null;
+    }
+    if (this._followerSettleSub) {
+      this._followerSettleSub.unsubscribe();
+      this._followerSettleSub = null;
     }
     if (this._onFollowerChange) {
       this.scene.game.events.off('follower-pokemon-change', this._onFollowerChange);
