@@ -28,6 +28,7 @@ import * as ow_pokemon_shiny_dimensions from '@Tileset/overworld/pokemon_shiny/f
 import statuses_sheet from '@Tileset/statuses.png';
 
 // Player sprites needed synchronously by Preload.js (eagerly bundled).
+import base_surf    from '@Tileset/characters/sprites/base_surf.png';
 import red          from '@Tileset/characters/sprites/red.png';
 import red_bike     from '@Tileset/characters/sprites/red_bike.png';
 import red_run      from '@Tileset/characters/sprites/red_run.png';
@@ -38,8 +39,10 @@ import leaf_run     from '@Tileset/characters/sprites/leaf_run.png';
 import leaf_surf    from '@Tileset/characters/sprites/leaf_surf.png';
 import brendan      from '@Tileset/characters/sprites/brendan.png';
 import brendan_bike from '@Tileset/characters/sprites/brendan_bike.png';
+import brendan_surf from '@Tileset/characters/sprites/brendan_surf.png';
 import may          from '@Tileset/characters/sprites/may.png';
 import may_bike     from '@Tileset/characters/sprites/may_bike.png';
+import may_surf     from '@Tileset/characters/sprites/may_surf.png';
 
 // NPC/trainer sprites: lazy factories — only bundled when actually needed.
 import trainers, { sprites } from '@Tileset/characters';
@@ -80,6 +83,8 @@ export default {
   rse_outside,
   rse_outside_json,
 
+  base_surf,
+
   red,
   red_bike,
   red_run,
@@ -90,8 +95,10 @@ export default {
   leaf_surf,
   brendan,
   brendan_bike,
+  brendan_surf,
   may,
   may_bike,
+  may_surf,
 
   sprites,
   trainers,

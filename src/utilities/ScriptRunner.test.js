@@ -858,9 +858,9 @@ describe('warp commands forward remaining commands as _pendingScript', () => {
     scene.cameras.main.emit('camerafadeoutcomplete');
 
     expect(scene.scene.start).toHaveBeenCalledWith('Route1', expect.any(Object));
-    expect(startedWith._pendingScript).toHaveLength(2);
-    expect(startedWith._pendingScript[0].cmd).toBe('heal_party');
-    expect(startedWith._pendingScript[1].cmd).toBe('enable_input');
+    expect(startedWith._pendingScript.queue).toHaveLength(2);
+    expect(startedWith._pendingScript.queue[0].cmd).toBe('heal_party');
+    expect(startedWith._pendingScript.queue[1].cmd).toBe('enable_input');
   });
 
   test('warp_player with no trailing commands sets no _pendingScript', () => {
@@ -889,8 +889,8 @@ describe('warp commands forward remaining commands as _pendingScript', () => {
 
     scene.cameras.main.emit('camerafadeoutcomplete');
 
-    expect(startedWith._pendingScript).toHaveLength(1);
-    expect(startedWith._pendingScript[0].cmd).toBe('heal_party');
+    expect(startedWith._pendingScript.queue).toHaveLength(1);
+    expect(startedWith._pendingScript.queue[0].cmd).toBe('heal_party');
   });
 });
 

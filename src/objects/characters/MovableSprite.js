@@ -68,7 +68,27 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
       return false;
     }
 
-    return this.gridengine.turnTowards(this.config.id, dir.toLowerCase());
+    // Guard against turning a sprite whose texture isn't fully initialised yet.
+    // Happens mostly to just-spawned remote players: grid-engine's
+    // setStandingFrame reaches Phaser's setFrame, which crashes with
+    // "this.frame is undefined" when the texture has no frames loaded or is a
+    // 1-frame placeholder that lacks the 16 frames the walking mapping needs.
+    // Skip silently — facing self-corrects on the next move / turn once the
+    // sprite is ready.
+    const tex = this.texture;
+    const ok = !!this.frame
+      && !!tex
+      && tex.key !== '__MISSING'
+      && tex.key !== '__DEFAULT'
+      && (tex.frameTotal ?? (tex.frames ? Object.keys(tex.frames).length : 0)) >= 16;
+    if (!ok) return false;
+
+    try {
+      return this.gridengine.turnTowards(this.config.id, dir.toLowerCase());
+    } catch (e) {
+      console.warn('[MovableSprite] look failed', this.config?.id, e?.message);
+      return false;
+    }
   }
 
   /**

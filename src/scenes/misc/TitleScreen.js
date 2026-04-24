@@ -68,6 +68,11 @@ const OPTION_FIELDS = [
     values: [false, true],
     format: (v) => v ? 'On' : 'Off',
   },
+  {
+    key: 'autoSurf', label: 'Auto surf',
+    values: [false, true],
+    format: (v) => v ? 'On' : 'Off',
+  },
 ];
 
 export default class TitleScreen extends Phaser.Scene {
@@ -311,6 +316,7 @@ export default class TitleScreen extends Phaser.Scene {
       bgmVolume: g.bgmVolume,
       sfxVolume: g.sfxVolume,
       alwaysRun: g.alwaysRun,
+      autoSurf:  g.autoSurf,
     };
     this._caption = this.add.text(CX, 140,
       '◀ ▶ to change · X to return', CAPTION_FONT)

@@ -115,33 +115,38 @@
         },
         "src/maps/kanto/kanto.json": {
             "expandedObjectLayers": [
-                12
-            ],
-            "scale": 1,
-            "selectedLayer": 5,
-            "viewCenter": {
-                "x": 2592,
-                "y": 8976.5
-            }
-        },
-        "src/maps/kanto/kanto_dungeons.json": {
-            "expandedObjectLayers": [
-                3,
-                2
+                12,
+                13
             ],
             "scale": 2,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 1136.5,
-                "y": 440.25
+                "x": 2647.25,
+                "y": 9248.75
+            }
+        },
+        "src/maps/kanto/kanto_dungeons.json": {
+            "expandedObjectLayers": [
+                2,
+                3
+            ],
+            "scale": 1,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 3930.5,
+                "y": 454.5
             }
         },
         "src/maps/kanto/kanto_inside.json": {
-            "scale": 4,
-            "selectedLayer": 1,
+            "expandedObjectLayers": [
+                6,
+                7
+            ],
+            "scale": 1,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 197.5,
-                "y": 596.125
+                "x": 460.5,
+                "y": 1171.5
             }
         },
         "src/maps/kanto/pallet.json": {
@@ -472,11 +477,11 @@
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 1.5,
-            "selectedLayer": 9,
+            "scale": 1,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 931.3333333333333,
-                "y": 859
+                "x": 753.5,
+                "y": 959.5
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -518,7 +523,8 @@
             "scaleInDock": 1
         },
         "src/tileset/cave_dungeon.json": {
-            "scaleInDock": 1
+            "scaleInDock": 3,
+            "scaleInEditor": 1
         },
         "src/tileset/gen3_inside.json": {
             "scaleInDock": 2,
@@ -580,9 +586,10 @@
     "project": "spriteworld.tiled-project",
     "property.type": "bool",
     "recentFiles": [
+        "src/tileset/gen3_outside.json",
+        "src/tileset/cave_dungeon.json",
         "src/maps/spriteworld/spriteworld.json",
         "src/maps/random/test.json",
-        "src/tileset/gen3_outside.json",
         "src/maps/kanto/kanto_dungeons.json",
         "src/maps/kanto/kanto.json",
         "src/maps/kanto/kanto_inside.json",
@@ -590,8 +597,7 @@
         "src/maps/kanto/celadon_city.json",
         "src/maps/kanto/cerulean_city.json",
         "src/maps/kanto/viridian_forest.json",
-        "public/tileset/gen3_outside.json",
-        "public/tileset/cave_dungeon.json"
+        "public/tileset/gen3_outside.json"
     ],
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFilter": "All Files (*)",

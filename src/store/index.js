@@ -10,7 +10,7 @@ import { getGameDef, setGameDef } from '@Data/gameDef.js';
 export const SLOT_COUNT = 3;
 const SLOT_KEYS = ['sw_game', 'sw_party', 'sw_bag', 'sw_pokedex', 'sw_overworld'];
 const OPTIONS_KEY = 'sw_options';
-const OPTION_FIELDS = ['textSpeed', 'bgmVolume', 'sfxVolume', 'alwaysRun'];
+const OPTION_FIELDS = ['textSpeed', 'bgmVolume', 'sfxVolume', 'alwaysRun', 'autoSurf'];
 
 const keyFor = (base, slot) => `${base}_slot${slot}`;
 
@@ -129,6 +129,7 @@ const store = createStore({
         playerName:   state.game.playerName,
         playerSprite: state.game.playerSprite,
         onBike:        state.game.onBike,
+        onSurf:        state.game.onSurf,
         playerFacing:  state.game.playerFacing,
         currentMap:   state.game.currentMap,
         playerTile:   state.game.playerTile,
@@ -140,8 +141,8 @@ const store = createStore({
         healLocation: state.game.healLocation,
         lastOutdoorLocation: state.game.lastOutdoorLocation,
         // gameDef is per-slot (which ruleset the slot is playing). Options
-        // (textSpeed, bgmVolume, sfxVolume, alwaysRun) are global and live
-        // in sw_options — they're intentionally omitted here.
+        // (textSpeed, bgmVolume, sfxVolume, alwaysRun, autoSurf) are global
+        // and live in sw_options — they're intentionally omitted here.
         gameDef:      getGameDef(),
         savedAt,
       }));
@@ -238,6 +239,7 @@ const PERSISTING_MUTATIONS = new Set([
   'game/SET_BGM_VOLUME',
   'game/SET_SFX_VOLUME',
   'game/SET_ALWAYS_RUN',
+  'game/SET_AUTO_SURF',
   'game/APPLY_OPTIONS',
 ]);
 store.subscribe((mutation) => {

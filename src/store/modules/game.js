@@ -1,5 +1,5 @@
 import defaultFlags from '@Data/gameFlags.js';
-import { generateTid } from '@Utilities';
+import { generateTid } from '@Utilities/tid.js';
 
 export default {
   namespaced: true,
@@ -11,6 +11,7 @@ export default {
     rivalName:    'Blue',
     playerSprite: 'red',
     onBike:        false,
+    onSurf:        false,
     playerFacing:  'down',
     currentMap:   'HeroHouseF2',
     playerTile:   { x: 2, y: 6, charLayer: 'ground' },
@@ -23,9 +24,10 @@ export default {
     healLocation:        null,  // { map, x, y, charLayer } — set when player heals at a Pokémon Center
     lastOutdoorLocation: null, // { map, x, y, charLayer } — updated on every step on outdoor maps
     textSpeed:    'normal',    // 'normal' | 'fast' | 'instant'
-    bgmVolume:    10,          // 0–20 (each step = 5%)
-    sfxVolume:    10,          // 0–20 (each step = 5%)
+    bgmVolume:    2,           // 0–20 (each step = 5%)
+    sfxVolume:    2,           // 0–20 (each step = 5%)
     alwaysRun:    false,       // move at run speed without holding B (requires Running Shoes)
+    autoSurf:     false,       // walking into water auto-mounts surf (requires has_surf)
     activeSlot:   1,           // transient — which save slot is currently loaded; not persisted
   }),
 
@@ -63,9 +65,16 @@ export default {
     SET_ALWAYS_RUN(state, v) {
       state.alwaysRun = !!v;
     },
+    SET_AUTO_SURF(state, v) {
+      state.autoSurf = !!v;
+    },
 
     SET_ON_BIKE(state, value) {
       state.onBike = value;
+    },
+
+    SET_ON_SURF(state, value) {
+      state.onSurf = value;
     },
 
     SET_ACTIVE_SLOT(state, slot) {
@@ -74,9 +83,9 @@ export default {
 
     /**
      * Patch the global option fields (textSpeed, bgmVolume, sfxVolume,
-     * alwaysRun). Called from the options loader at store init and from the
-     * Options screen on change. These fields live globally — they are
-     * intentionally NOT touched by per-slot LOAD / RESET.
+     * alwaysRun, autoSurf). Called from the options loader at store init and
+     * from the Options screen on change. These fields live globally — they
+     * are intentionally NOT touched by per-slot LOAD / RESET.
      */
     APPLY_OPTIONS(state, opts) {
       if (opts == null) return;
@@ -84,6 +93,7 @@ export default {
       if (opts.bgmVolume != null) state.bgmVolume = opts.bgmVolume;
       if (opts.sfxVolume != null) state.sfxVolume = opts.sfxVolume;
       if (opts.alwaysRun != null) state.alwaysRun = !!opts.alwaysRun;
+      if (opts.autoSurf  != null) state.autoSurf  = !!opts.autoSurf;
     },
 
     SET_PLAYER_FACING(state, direction) {
@@ -123,6 +133,7 @@ export default {
       if (saved.playerName   != null) state.playerName   = saved.playerName;
       if (saved.playerSprite != null) state.playerSprite = saved.playerSprite;
       if (saved.onBike        != null) state.onBike        = saved.onBike;
+      if (saved.onSurf        != null) state.onSurf        = saved.onSurf;
       if (saved.playerFacing  != null) state.playerFacing  = saved.playerFacing;
       if (saved.currentMap  != null) state.currentMap  = saved.currentMap;
       if (saved.playerTile  != null) state.playerTile  = saved.playerTile;
@@ -133,9 +144,9 @@ export default {
       if (saved.money        != null) state.money        = saved.money;
       if (saved.healLocation != null) state.healLocation = saved.healLocation;
       if (saved.lastOutdoorLocation != null) state.lastOutdoorLocation = saved.lastOutdoorLocation;
-      // textSpeed / bgmVolume / sfxVolume / alwaysRun are global options,
-      // not per-slot — loaded from sw_options at store init and preserved
-      // across per-slot LOAD / RESET.
+      // textSpeed / bgmVolume / sfxVolume / alwaysRun / autoSurf are global
+      // options, not per-slot — loaded from sw_options at store init and
+      // preserved across per-slot LOAD / RESET.
       state.sessionStart = Date.now();
     },
 
@@ -146,6 +157,7 @@ export default {
       state.rivalName           = 'Blue';
       state.playerSprite        = 'red';
       state.onBike              = false;
+      state.onSurf              = false;
       state.playerFacing        = 'down';
       state.currentMap          = 'HeroHouseF2';
       state.playerTile          = { x: 2, y: 6, charLayer: 'ground' };
@@ -157,9 +169,9 @@ export default {
       state.money               = 3000;
       state.healLocation        = null;
       state.lastOutdoorLocation = null;
-      // textSpeed / bgmVolume / sfxVolume / alwaysRun are global options
-      // and intentionally NOT reset here. They persist across new-game and
-      // slot switches.
+      // textSpeed / bgmVolume / sfxVolume / alwaysRun / autoSurf are global
+      // options and intentionally NOT reset here. They persist across
+      // new-game and slot switches.
     },
   },
 };

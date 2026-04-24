@@ -63,12 +63,17 @@ export default class extends Phaser.Scene {
     
     this.load.spritesheet('red', Tileset.red, {frameWidth: 32, frameHeight: 48});
     this.load.spritesheet('red_bike', Tileset.red_bike, {frameWidth: 48, frameHeight: 48});
+    this.load.spritesheet('red_surf', Tileset.red_surf, {frameWidth: 32, frameHeight: 48});
     this.load.spritesheet('leaf', Tileset.leaf, {frameWidth: 32, frameHeight: 48});
     this.load.spritesheet('leaf_bike', Tileset.leaf_bike, {frameWidth: 48, frameHeight: 48});
+    this.load.spritesheet('leaf_surf', Tileset.leaf_surf, {frameWidth: 32, frameHeight: 48});
     this.load.spritesheet('brendan', Tileset.brendan, {frameWidth: 32, frameHeight: 48});
     this.load.spritesheet('brendan_bike', Tileset.brendan_bike, {frameWidth: 48, frameHeight: 48});
+    this.load.spritesheet('brendan_surf', Tileset.brendan_surf, {frameWidth: 32, frameHeight: 48});
     this.load.spritesheet('may', Tileset.may, {frameWidth: 32, frameHeight: 48});
     this.load.spritesheet('may_bike', Tileset.may_bike, {frameWidth: 48, frameHeight: 48});
+    this.load.spritesheet('may_surf', Tileset.may_surf, {frameWidth: 32, frameHeight: 48});
+    this.load.spritesheet('base_surf', Tileset.base_surf, {frameWidth: 64, frameHeight: 64});
 
     // Menu UI icons — per-icon PNGs from public/tileset/ui/ (types + categories)
     // plus the remaining status spritesheet.

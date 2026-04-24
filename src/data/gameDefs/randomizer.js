@@ -8,7 +8,7 @@ export default {
   ...kanto,
   id: 'randomizer',
   name: 'Kanto Randomizer',
-  gameMode: 'map_randomizer',
   encounterTables: 'random',
   learnsets: 'random',
+  entranceRandomizer: 'random',
 };

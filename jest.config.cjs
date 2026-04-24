@@ -7,6 +7,7 @@ module.exports = {
     '^phaser$': '<rootDir>/__mocks__/phaser.js',
     '^phaser3-rex-plugins(.*)$': '<rootDir>/__mocks__/phaser3-rex-plugins.js',
     '^@$': '<rootDir>/src/index.js',
+    '^@/multiplayer/.*': '<rootDir>/__mocks__/multiplayer.js',
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@Data(.*)$': '<rootDir>/src/data$1',
     '^@Maps(.*)$': '<rootDir>/src/maps$1',

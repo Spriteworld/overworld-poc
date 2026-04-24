@@ -16,12 +16,11 @@ import defaultDef from './gameDefs/kanto.js';
  *   When false, the evolution sequence interrupts combat immediately.
  *   Item-triggered evolutions (Rare Candy, Evolution Stones) are always deferred
  *   regardless of this setting.
- * @property {'vanilla'|'nuzlocke'|'map_randomizer'} gameMode
+ * @property {'vanilla'|'nuzlocke'} gameMode
  *   Controls ruleset enforcement.
  *   'vanilla'        — standard rules, no restrictions.
  *   'nuzlocke'       — only the first Pokémon caught per zone may be kept;
  *                      subsequent Pokéball throws in that zone are blocked.
- *   'map_randomizer' — encounter tables are seeded-randomly generated.
  * @property {'vanilla'|'random'}    learnsets
  *   Move source for wild and trainer Pokémon with no explicit moveset.
  *   'vanilla' — most recently learnable moves from the FRLG level-up learnset.
@@ -32,6 +31,11 @@ import defaultDef from './gameDefs/kanto.js';
  * @property {number[]}               [starterMon]
  *   Ordered list of nat_dex_ids offered as starter Pokémon (e.g. in Oak's lab).
  *   Index 0/1/2 maps to pokeball1/2/3. Referenced via the `give_starter` script command.
+ * @property {'vanilla'|'random'}    entranceRandomizer
+ *   'vanilla' — warps go to their authored destinations.
+ *   'random'  — warp destinations are shuffled using a seeded RNG so the
+ *               mapping is deterministic per save. Multi-tile warps (e.g.
+ *               doorways) are shuffled as a group.
  * @property {boolean}               owEncounters
  *   When true, visible overworld Pokémon are spawned on encounter-zone tiles.
  *   Individual maps can still opt out via map-settings['ow-encounters'] = false.

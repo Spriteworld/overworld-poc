@@ -132,16 +132,9 @@ export default class RoomSync {
             const layer = ge.getCharLayer(remote.config.id);
             ge.stopMovement?.(remote.config.id);
             ge.setPosition(remote.config.id, spawn, layer);
-            // Snap facing too, but defensively: the sprite may not have fully
-            // initialised its frame data yet (e.g. the peer sprite texture is
-            // still loading / is a 1-frame placeholder), and grid-engine's
-            // setStandingFrame will crash on an undefined frame. Skip silently
-            // — the next PLAYER_MOVE from the peer will realign facing anyway.
-            if (facing && this._spriteHasFrames(remote)) {
-              try { remote.look(facing.toUpperCase()); } catch (e) {
-                console.warn('[RoomSync] remote.look skipped', sessionId, e?.message);
-              }
-            }
+            // MovableSprite.look is self-guarding against uninitialised frame
+            // data, so this is safe to call on a just-spawned remote peer.
+            if (facing) remote.look(facing.toUpperCase());
           }
           const follower = this._remoteFollowers.get(sessionId);
           if (ge && follower) {
@@ -231,19 +224,6 @@ export default class RoomSync {
   _behindTile(tile, facing) {
     const offset = ({ up: { x: 0, y: 1 }, down: { x: 0, y: -1 }, left: { x: 1, y: 0 }, right: { x: -1, y: 0 } })[facing] ?? { x: 0, y: 1 };
     return { x: tile.x + offset.x, y: tile.y + offset.y };
-  }
-
-  // Guard against calling grid-engine's turnTowards on a sprite whose texture
-  // hasn't fully wired up its frames yet (missing key / 1-frame placeholder /
-  // mid-load spritesheet). In that state Phaser's setFrame bails with
-  // "this.frame is undefined" and crashes the handler.
-  _spriteHasFrames(sprite) {
-    const tex = sprite?.texture;
-    if (!tex || tex.key === '__MISSING' || tex.key === '__DEFAULT') return false;
-    const count = tex.frameTotal ?? (tex.frames ? Object.keys(tex.frames).length : 0);
-    // Standard 16-frame character sheet; anything less can't satisfy the
-    // walkingAnimationMapping indices (up=12/13/15, left=4/5/7, etc.).
-    return count >= 16 && !!sprite.frame;
   }
 
   _remove(sessionId) {

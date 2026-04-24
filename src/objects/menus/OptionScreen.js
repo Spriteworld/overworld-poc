@@ -18,6 +18,7 @@ const OPTIONS = [
   { key: 'sfxVolume',       label: 'SFX Vol'         },
   { key: 'followerPokemon', label: 'Follower Pokémon' },
   { key: 'alwaysRun',       label: 'Always Run',      requires: 'has_running_shoes' },
+  { key: 'autoSurf',        label: 'Auto Surf',       requires: 'has_surf' },
 ];
 
 const ROW_H   = 28;
@@ -104,6 +105,9 @@ export default class OptionScreen {
     if (key === 'alwaysRun') {
       return store.state.game.alwaysRun ? 'On' : 'Off';
     }
+    if (key === 'autoSurf') {
+      return store.state.game.autoSurf ? 'On' : 'Off';
+    }
     return '';
   }
 
@@ -143,6 +147,8 @@ export default class OptionScreen {
       this.menu.scene.game.events.emit('follower-pokemon-change', next);
     } else if (key === 'alwaysRun') {
       store.commit('game/SET_ALWAYS_RUN', !store.state.game.alwaysRun);
+    } else if (key === 'autoSurf') {
+      store.commit('game/SET_AUTO_SURF', !store.state.game.autoSurf);
     }
     this.menu._clearSubTexts();
     this.build();

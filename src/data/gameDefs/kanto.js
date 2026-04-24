@@ -44,7 +44,6 @@ export default {
    *   'vanilla'        — standard rules
    *   'nuzlocke'       — only the first Pokémon caught per zone may be kept;
    *                      Pokéball throws in already-caught zones are blocked
-   *   'map_randomizer' — encounter tables are generated from the available pool
    */
   gameMode:         'vanilla',
 
@@ -81,6 +80,13 @@ export default {
    * `highestTeamLevel × 50 × prizeMoneyMultiplier`. 1.0 = standard Gen 1 rate.
    */
   prizeMoneyMultiplier: 1.0,
+
+  /**
+   * Entrance randomizer.
+   *   'vanilla' — warps go to their authored destinations
+   *   'random'  — warp destinations are shuffled (seeded by save seed)
+   */
+  entranceRandomizer: 'vanilla',
 
   /**
    * When true, teaching a TM does not consume it (Gen 5+ reusable TMs).

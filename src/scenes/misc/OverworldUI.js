@@ -303,9 +303,20 @@ export default class extends Phaser.Scene {
                   if (!isTutorial && result === 'lost') {
                     // White-out: restore party and warp to last heal location.
                     store.commit('party/RESTORE_ALL');
-                    const healLoc = store.state.game.healLocation ?? { map: 'KantoWorld', x: 74, y: 278, charLayer: 'ground' };
-                    this.scene.stop(mapName);
-                    this.scene.start(healLoc.map, { playerLocation: { x: healLoc.x, y: healLoc.y, charLayer: healLoc.charLayer } });
+                    const healLoc = store.state.game.healLocation ?? { map: 'KantoWorld', x: 74, y: 287, charLayer: 'ground' };
+                    // Drive the scene swap from the outgoing map's own
+                    // ScenePlugin (mirrors warp.js's pattern). Using
+                    // `this.scene.start(...)` here would stop OverworldUI as
+                    // a side effect — tearing down the toast / textbox / the
+                    // transitionRect itself — while our `this.game.events`
+                    // listeners stay attached and fire on a dead scene. The
+                    // map's own ScenePlugin.start auto-stops the map and
+                    // starts the heal destination without touching us.
+                    const outgoing = this.scene.get(mapName);
+                    outgoing.scene.start(healLoc.map, { playerLocation: { x: healLoc.x, y: healLoc.y, charLayer: healLoc.charLayer } });
+                    // Keep OverworldUI on top of the freshly-started heal
+                    // map so the fade-out tween below actually draws over it.
+                    this.scene.bringToTop('OverworldUI');
                   } else {
                     this.scene.wake(mapName);
                   }
@@ -338,20 +349,38 @@ export default class extends Phaser.Scene {
       });
     });
 
-    // ─── Key item self-use (e.g. Bicycle) ────────────────────────────────
+    // ─── Key item self-use (e.g. Bicycle, Surf) ──────────────────────────
     this.game.events.on('use-key-item', (itemName) => {
-      if (itemName !== 'Bicycle') return;
       const mapName  = this.registry.get('map');
       const mapScene = mapName ? this.scene.get(mapName) : null;
       const player   = mapScene?.mapPlugins?.player?.player;
       if (!player) return;
-      if (mapScene?.config?.inside) return;
 
-      const inBike = player.stateMachine.currentState?.name === player.stateDef.BIKE;
-      const nextState = inBike ? player.stateDef.IDLE : player.stateDef.BIKE;
-      player.stateMachine.setState(nextState);
-      store.commit('game/SET_ON_BIKE', !inBike);
-      this.game.events.emit('player-bike-change', !inBike);
+      if (itemName === 'Bicycle') {
+        if (mapScene?.config?.inside) return;
+        const inBike = player.stateMachine.currentState?.name === player.stateDef.BIKE;
+        const nextState = inBike ? player.stateDef.IDLE : player.stateDef.BIKE;
+        player.stateMachine.setState(nextState);
+        store.commit('game/SET_ON_BIKE', !inBike);
+        this.game.events.emit('player-bike-change', !inBike);
+        return;
+      }
+
+      if (itemName === 'Surf (HM03)') {
+        if (!store.state.game.gameFlags.has_surf) return;
+        const inSurf = player.stateMachine.currentState?.name === player.stateDef.SURF;
+        if (inSurf) {
+          // Dismount if currently surfing.
+          player.stateMachine.setState(player.stateDef.IDLE);
+          store.commit('game/SET_ON_SURF', false);
+          return;
+        }
+        const facing = player.getPosInFacingDirection();
+        if (!mapScene.isWaterTile?.(facing.x, facing.y)) return;
+        player.stateMachine.setState(player.stateDef.SURF);
+        store.commit('game/SET_ON_SURF', true);
+        return;
+      }
     });
 
     // ─── Player sprite change (Options screen) ────────────────────────────

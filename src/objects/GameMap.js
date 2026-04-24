@@ -188,7 +188,10 @@ export default class extends Phaser.Scene {
    * Call this from the subclass `create()` hook after assets are loaded.
    */
   loadMap() {
-    this.registry.set('player_input', true);
+    const isWarpArrival = !!(this.config.warpLocationName || Object.keys(this.config.playerLocation ?? {}).length > 0);
+    if (!isWarpArrival) {
+      this.registry.set('player_input', true);
+    }
     var tilemap = this.make.tilemap({ key: this.config.mapName });
     this.config.tilemap = tilemap;
 
@@ -243,8 +246,11 @@ export default class extends Phaser.Scene {
     // Start a camera fade-in here so the screen stays dark until map_enter
     // scripts have had a chance to run (they fire in the first update tick,
     // before the first render).
-    if (this.config.warpLocationName || Object.keys(this.config.playerLocation ?? {}).length > 0) {
+    if (isWarpArrival) {
       this.cameras.main.fadeIn(500, 0, 0, 0);
+      this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, () => {
+        this.registry.set('player_input', true);
+      });
     }
 
     EventBus.emit('current-scene-ready', this);
@@ -472,6 +478,42 @@ export default class extends Phaser.Scene {
   isCharacterOnTile(x, y) {
     const set = this._charTileIndex.get(x + ',' + y);
     return !!(set && set.size);
+  }
+
+  /**
+   * Returns true if any tile layer at (x, y) has the `water: true` custom property.
+   * @param {number} x - Tile x coordinate.
+   * @param {number} y - Tile y coordinate.
+   * @returns {boolean}
+   */
+  isWaterTile(x, y) {
+    const map = this.config.tilemap;
+    if (!map) return false;
+    for (const layer of map.layers) {
+      const t = map.getTileAt(x, y, true, layer.name);
+      if (t?.properties?.sw_water) return true;
+    }
+    return false;
+  }
+
+  /**
+   * True if the tile has a ge_collide source that isn't the water tile itself.
+   * Used by _surfMove to catch rocks, cliffs, and other obstacles sitting on
+   * water — while surfing we turn off collidesWithTiles so grid-engine will
+   * happily move the character through them otherwise.
+   * @param {number} x
+   * @param {number} y
+   * @returns {boolean}
+   */
+  hasNonWaterCollision(x, y) {
+    const map = this.config.tilemap;
+    if (!map) return false;
+    for (const layer of map.layers) {
+      const t = map.getTileAt(x, y, true, layer.name);
+      const p = t?.properties;
+      if (p?.ge_collide && !p?.sw_water) return true;
+    }
+    return false;
   }
 
   /**

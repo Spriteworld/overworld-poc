@@ -156,6 +156,11 @@ export default class {
 
     this._encounterTable = this._parseEncounterTable(tableFragments);
 
+    // Cache implicit table IDs for zone-free sections (surf, cave).
+    this._implicitSurf = this._findImplicitTableId('surf');
+    this._implicitCave = this._findImplicitTableId('cave');
+    this._isCave       = !!mapSettings['isCave'];
+
     const encounterZones = this.scene.findInteractions('encounters');
     if (encounterZones.length === 0) { return; }
 
@@ -202,16 +207,43 @@ export default class {
   update() {}
 
   event() {
-    if (this.encounterTiles.length === 0) { return; }
+    const hasZones    = this.encounterTiles.length > 0;
+    const hasImplicit = this._implicitSurf !== null || this._implicitCave !== null;
+    if (!hasZones && !hasImplicit) { return; }
 
     this._sub = this.scene.gridEngine.positionChangeStarted().subscribe(({ charId, enterTile }) => {
       if (charId !== 'player') { return; }
-
       if (this.scene.game.config.debug.noEncounters) { return; }
-      const tile = this.encounterTiles.find(
+
+      // Zone-based encounter takes priority.
+      let tile = this.encounterTiles.find(
         t => t.x === enterTile.x && t.y === enterTile.y
       );
+
+      // Surfing overrides the zone section to 'surf' so water encounters
+      // use the surf table even when the zone was drawn as 'grass'.
+      if (tile && store.state.game.onSurf && tile.section !== 'surf') {
+        const surfTableId = tile.tableId ?? this._implicitSurf;
+        if (surfTableId && this._encounterTable?.[surfTableId]?.slots?.['surf']?.length) {
+          tile = { ...tile, tableId: surfTableId, section: 'surf' };
+        } else if (this._implicitSurf !== null) {
+          tile = { x: enterTile.x, y: enterTile.y, tableId: this._implicitSurf, section: 'surf' };
+        }
+      }
+
+      // Implicit surf: any water tile while surfing, no zone required.
+      if (!tile && store.state.game.onSurf && this._implicitSurf !== null) {
+        tile = { x: enterTile.x, y: enterTile.y, tableId: this._implicitSurf, section: 'surf' };
+      }
+
+      // Implicit cave: every step in a cave map (isCave: true in map-settings), no zone required.
+      if (!tile && !store.state.game.onSurf && this._isCave && this._implicitCave !== null) {
+        tile = { x: enterTile.x, y: enterTile.y, tableId: this._implicitCave, section: 'cave' };
+      }
+
       if (!tile) { return; }
+      // Zone-declared surf sections still respect the surf-state guard.
+      if (tile.section === 'surf' && !store.state.game.onSurf) { return; }
       if (rng() > this._encounterRate) { return; }
 
       const battleConfig = this._buildWildBattle(tile);
@@ -232,6 +264,21 @@ export default class {
 
   destroy() {
     this._sub?.unsubscribe();
+  }
+
+  /**
+   * Returns the first tableId in `_encounterTable` that has a non-empty slot for
+   * the given section, or null if none exists. Used to activate implicit encounters
+   * (surf, cave) without needing zones drawn in Tiled.
+   * @param {string} section
+   * @returns {string|null}
+   */
+  _findImplicitTableId(section) {
+    if (!this._encounterTable) return null;
+    for (const [id, table] of Object.entries(this._encounterTable)) {
+      if (table.slots?.[section]?.length) return id;
+    }
+    return null;
   }
 
   /**

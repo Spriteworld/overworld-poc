@@ -16,13 +16,14 @@ export default class Reflection {
    * @param {object} config
    * @param {Phaser.GameObjects.Sprite} config.parent - Character sprite to mirror.
    */
-  constructor({ parent }) {
-    this.parent = parent;
-    this.scene  = parent.scene;
+  constructor({ parent, offsetY = 0 }) {
+    this.parent   = parent;
+    this.scene    = parent.scene;
+    this._offsetY = offsetY;
 
     this.sprite = this.scene.add.sprite(
       parent.x,
-      parent.y + parent.displayHeight,
+      parent.y + (Tile.HEIGHT + parent.displayHeight) / 2,
       parent.texture.key,
       parent.frame.name
     );
@@ -113,7 +114,7 @@ export default class Reflection {
     }
 
     this.sprite.x     = p.x;
-    this.sprite.y     = p.y + p.displayHeight;
+    this.sprite.y     = p.y + (Tile.HEIGHT + p.displayHeight) / 2 + this._offsetY;
     this.sprite.flipX = p.flipX;
   }
 

@@ -59,6 +59,7 @@ import CinnabarIsland from '@Scenes/maps/kanto/CinnabarIsland.js';
 import Route23 from '@Scenes/maps/kanto/Route23.js';
 import ViridianForest from '@Scenes/maps/kanto/ViridianForest.js';
 import PokemonCenter from '@Scenes/maps/kanto/PokemonCenter.js';
+import MtMoonF1 from '@Scenes/maps/kanto/MtMoonF1.js';
 
 export default {
   OverworldUI, TimeOverlay, Preload, NintendoLogo, CopyrightScene, TitleScreen,
@@ -114,4 +115,5 @@ export default {
   Route23,
   ViridianForest,
   PokemonCenter,
+  MtMoonF1,
 };

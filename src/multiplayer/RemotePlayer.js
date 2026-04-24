@@ -30,7 +30,17 @@ export default class RemotePlayer extends NPC {
       .setOrigin(0.5, 1);
 
     this._updateLabelPos();
-    this.once('destroy', () => this._nameLabel?.destroy());
+    this.once('destroy', () => {
+      // Skip the label destroy during scene shutdown: Phaser's DisplayList
+      // sweep iterates backwards with a cached index, and destroying the
+      // label here would splice a sibling out of the same list mid-sweep,
+      // leaving a hole that crashes the next `list[i].destroy()`. Phaser
+      // destroys every DisplayList child on shutdown anyway.
+      const status = this.config.scene?.sys?.settings?.status;
+      const sceneDown = typeof status === 'number' && status >= 8;
+      if (sceneDown) return;
+      this._nameLabel?.destroy();
+    });
   }
 
   update(time, delta) {

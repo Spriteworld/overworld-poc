@@ -302,7 +302,7 @@ export default {
 
   teleport_to_pokecenter(runner) {
     const healLoc = store.state.game.healLocation
-      ?? { map: 'KantoWorld', x: 74, y: 278, charLayer: 'ground' };
+      ?? { map: 'KantoWorld', x: 74, y: 287, charLayer: 'ground' };
     const player = runner._scene.characters?.get('player');
     store.commit('game/SET_PLAYER_FACING', 'down');
     player?.disableMovement?.();
@@ -317,7 +317,7 @@ export default {
   escape_rope(runner) {
     const outdoor = store.state.game.lastOutdoorLocation
       ?? store.state.game.healLocation
-      ?? { map: 'KantoWorld', x: 74, y: 278, charLayer: 'ground' };
+      ?? { map: 'KantoWorld', x: 74, y: 287, charLayer: 'ground' };
     const player = runner._scene.characters?.get('player');
     store.commit('game/SET_PLAYER_FACING', 'down');
     player?.disableMovement?.();

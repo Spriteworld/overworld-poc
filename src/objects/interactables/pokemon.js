@@ -86,7 +86,8 @@ export default class {
       x: coords.x,
       y: coords.y,
       scene: this.scene,
-      'char-layer': 'ground'
+      'char-layer': 'ground',
+      'reflect-offset-y': 5,
     }, ...config };
 
     // Always create immediately so GridEngine can manage this character from scene init.

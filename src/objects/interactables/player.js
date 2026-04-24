@@ -77,6 +77,7 @@ export default class {
       y: y,
       scene: this.scene,
       reflect: true,
+      'reflect-offset-y': 5,
       tid: store.state.game.trainerId,
       ...(charLayer ? { 'char-layer': charLayer } : {}),
     });
@@ -117,7 +118,7 @@ export default class {
       cam4.setFollowOffset(-this.player.width, -this.player.height);
     }
 
-    if (store.state.game.gameFlags.follower_pokemon && !store.state.game.onBike) {
+    if (store.state.game.gameFlags.follower_pokemon && !store.state.game.onBike && !store.state.game.onSurf) {
       this._spawnFollowerMon({ x, y });
     }
 
@@ -200,13 +201,29 @@ export default class {
       // for the restored direction is drawn immediately.
       const frameDef = store.state.game.onBike
         ? this.player.characterFramesBikeDef()
-        : this.player.characterFramesDef();
+        : store.state.game.onSurf
+          ? this.player.characterFramesSurfDef()
+          : this.player.characterFramesDef();
       this.player.gridengine.setWalkingAnimationMapping(this.player.config.id, frameDef);
     }
 
     if (store.state.game.onBike && this.player?.stateMachine) {
       this.player.stateMachine.setState(this.player.stateDef.BIKE);
     }
+
+    if (store.state.game.onSurf && this.player?.stateMachine) {
+      this.player.stateMachine.setState(this.player.stateDef.SURF);
+    }
+
+    // Reset blocked-sound state whenever the player successfully moves.
+    // Player.handleMove uses this timestamp to detect walls.
+    this._moveSuccessSub = this.scene.gridEngine
+      .positionChangeStarted()
+      .subscribe(({ charId }) => {
+        if (charId !== 'player' || !this.player) return;
+        this.player._lastMoveSucceededAt = Date.now();
+        this.player._moveBlockedSoundPlayed = false;
+      });
 
     // Trail subscription: when the player moves, step the follower into the
     // tile the player just vacated (Gen 3 "walk-behind" behavior). Match the
@@ -258,9 +275,27 @@ export default class {
         }
       });
 
+    // autoSurf: when the player finishes a step onto a water tile, mount surf.
+    // Gated on BOTH has_surf and the autoSurf option. This intentionally fires
+    // on tile-entry (not on the push-into-water attempt) so mid-move boundary
+    // races can't trigger a mount, and so any path that puts the player on a
+    // water tile (warp, ledge, script) correctly mounts.
+    this._autoSurfSub = this.scene.gridEngine
+      .positionChangeFinished()
+      .subscribe(({ charId, enterTile }) => {
+        if (charId !== 'player' || !this.player?.stateMachine) return;
+        if (!store.state.game.autoSurf) return;
+        if (!store.state.game.gameFlags?.has_surf) return;
+        if (this.player.stateMachine.currentState?.name === this.player.stateDef.SURF) return;
+        if (!this.scene.isWaterTile?.(enterTile.x, enterTile.y)) return;
+
+        this.player.stateMachine.setState(this.player.stateDef.SURF);
+        store.commit('game/SET_ON_SURF', true);
+      });
+
     this._onFollowerChange = (enabled) => {
       if (enabled) {
-        if (!this.hasPlayerMon && !store.state.game.onBike) this._spawnFollowerMon();
+        if (!this.hasPlayerMon && !store.state.game.onBike && !store.state.game.onSurf) this._spawnFollowerMon();
       } else {
         this._despawnFollowerMon();
       }
@@ -275,6 +310,15 @@ export default class {
       }
     };
     this.scene.game.events.on('player-bike-change', this._onBikeChange);
+
+    this._onSurfChange = (onSurf) => {
+      if (onSurf) {
+        this._despawnFollowerMon();
+      } else if (store.state.game.gameFlags.follower_pokemon && !this.hasPlayerMon && !store.state.game.onBike) {
+        this._spawnFollowerMon();
+      }
+    };
+    this.scene.game.events.on('player-surf-change', this._onSurfChange);
 
     let layerTransitions = this.scene.findInteractions('layerTransition');
     if (layerTransitions.length === 0) { return; }
@@ -309,6 +353,10 @@ export default class {
   }
 
   destroy() {
+    if (this._moveSuccessSub) {
+      this._moveSuccessSub.unsubscribe();
+      this._moveSuccessSub = null;
+    }
     if (this._followerTrailSub) {
       this._followerTrailSub.unsubscribe();
       this._followerTrailSub = null;
@@ -317,11 +365,18 @@ export default class {
       this._followerSettleSub.unsubscribe();
       this._followerSettleSub = null;
     }
+    if (this._autoSurfSub) {
+      this._autoSurfSub.unsubscribe();
+      this._autoSurfSub = null;
+    }
     if (this._onFollowerChange) {
       this.scene.game.events.off('follower-pokemon-change', this._onFollowerChange);
     }
     if (this._onBikeChange) {
       this.scene.game.events.off('player-bike-change', this._onBikeChange);
+    }
+    if (this._onSurfChange) {
+      this.scene.game.events.off('player-surf-change', this._onSurfChange);
     }
   }
 };

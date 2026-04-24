@@ -23,6 +23,7 @@ function makeScene({ charExists = true } = {}) {
         debug: { console: { interactableShout: false } },
       },
     },
+    cache: { audio: { has: () => false } },
     removeInteraction: jest.fn(),
     characters:        new Map(charExists ? [['tree1', char]] : []),
     _char:             char,

@@ -7,6 +7,7 @@ import Tileset from '@Tileset';
 import { rng } from '@Utilities/rng.js';
 import store from '../../store/index.js';
 import { buildBattleInventory } from './encounter.js';
+import Reflection from '@Objects/characters/Reflection.js';
 
 /** Default percentage of encounter-zone tiles that spawn a visible OW Pokémon. */
 const DEFAULT_DENSITY = 3; // 3 %
@@ -123,8 +124,9 @@ export default class OverworldEncounter {
     this._active    = []; // [{ x, y, sprite, battleConfig }]       — sprite live
     this._sub       = null; // positionChangeStarted — battle trigger
     this._spawnSub  = null; // positionChangeFinished — spawn/despawn by route
-    this._locations = []; // [{ name, x, y, width, height }]         — map location objects (pixels)
-    this._movePool  = null;
+    this._locations     = []; // [{ name, x, y, width, height, tableNames }] — map location objects (pixels)
+    this._mapTableNames = []; // table names from map-level encounter-table
+    this._movePool      = null;
     /**
      * Per-mon reaction state, keyed by GridEngine id.
      * { mode: 'neutral'|'chase'|'flee'|'battling',
@@ -144,32 +146,40 @@ export default class OverworldEncounter {
     // Per-map opt-out
     if (mapSettings['ow-encounters'] === false) return;
 
-    const density = (mapSettings['ow-encounter-rate'] ?? DEFAULT_DENSITY) / 100;
+    const mapDensity = (mapSettings['ow-encounter-rate'] ?? DEFAULT_DENSITY) / 100;
 
     // Build encounter table (mirrors encounter.js logic)
     const tableFragments = [];
+    this._mapTableNames = [];
     if (mapSettings['encounter-table']) {
       tableFragments.push(mapSettings['encounter-table']);
+      this._mapTableNames = this._extractTableNames(mapSettings['encounter-table']);
     }
     if (this.scene.config.tilemap.getObjectLayer('maps')) {
       const locationObjs = this.scene.config.tilemap.filterObjects(
         'maps', obj => obj.type === 'location'
       ) ?? [];
       for (const obj of locationObjs) {
-        this._locations.push({ name: obj.name, x: obj.x, y: obj.y, width: obj.width, height: obj.height });
         const objSettings = getPropertyValue(obj.properties ?? [], 'map-settings');
+        this._locations.push({
+          name: obj.name, x: obj.x, y: obj.y, width: obj.width, height: obj.height,
+          tableNames: [],
+          owEncounterRate: objSettings?.['ow-encounter-rate'] ?? null,
+        });
         if (objSettings?.['encounter-table']) {
           tableFragments.push(objSettings['encounter-table']);
+          this._locations[this._locations.length - 1].tableNames = this._extractTableNames(objSettings['encounter-table']);
         }
       }
     }
 
     const encounterTable = this._parseEncounterTable(tableFragments);
 
-    const allTiles = this._collectEncounterTiles();
+    const allTiles = this._collectEncounterTiles(encounterTable);
     if (allTiles.length === 0) return;
 
     for (const tile of allTiles) {
+      const density = this._tileDensity(tile, mapDensity);
       if (rng() >= density) continue;
 
       const battleConfig = this._buildBattleConfig(tile, encounterTable);
@@ -178,7 +188,13 @@ export default class OverworldEncounter {
       const mon = battleConfig.enemy.team[0];
       const speciesId = String(mon.species).padStart(3, '0');
       const texture   = mon.isShiny ? speciesId + 's' : speciesId;
-      this._pending.push({ x: tile.x, y: tile.y, texture, battleConfig });
+      this._pending.push({
+        x: tile.x,
+        y: tile.y,
+        texture,
+        battleConfig,
+        isWater: tile.section === 'surf',
+      });
     }
   }
 
@@ -189,6 +205,8 @@ export default class OverworldEncounter {
     for (const spawn of this._active) {
       const b = this._behaviour[spawn.geId];
       if (!b) continue;
+
+      spawn.sprite?._reflection?.update();
 
       // Pin any active `!` sprite to the visual top of its mon. The mon is
       // tweened by GridEngine each frame, so a static placement at exclaim-
@@ -275,6 +293,7 @@ export default class OverworldEncounter {
       if (b.exclaimTimer)  b.exclaimTimer.remove?.(false);
       if (b.exclaimSprite) b.exclaimSprite.destroy();
       if (b.startTimer)    b.startTimer.remove?.(false);
+      if (b.wanderTimer)   b.wanderTimer.remove?.(false);
     }
     this._behaviour = {};
   }
@@ -329,6 +348,7 @@ export default class OverworldEncounter {
         sprite: result.sprite,
         geId:   result.geId,
         battleConfig: p.battleConfig,
+        isWater: !!p.isWater,
       });
     }
     this._pending = stillPending;
@@ -368,6 +388,9 @@ export default class OverworldEncounter {
     const pos   = ge.getPosition(geId);
     const layer = ge.getCharLayer?.(geId) ?? 'ground';
 
+    const self    = this._active.find(s => s.geId === geId);
+    const isWater = !!self?.isWater;
+
     const others = [];
     for (const s of this._active) {
       if (s.geId === geId || !s.geId) continue;
@@ -386,7 +409,15 @@ export default class OverworldEncounter {
 
     for (const c of candidates) {
       const t = { x: pos.x + c.dx, y: pos.y + c.dy };
-      if (ge.isBlocked(t, layer) !== false) continue;
+      if (isWater) {
+        // Water mons have collidesWithTiles off — isBlocked would let them
+        // slide onto land. Gate the nudge through the same water filter used
+        // by _waterWanderStep so they stay in their region.
+        if (!this.scene.isWaterTile?.(t.x, t.y)) continue;
+        if (this.scene.hasNonWaterCollision?.(t.x, t.y)) continue;
+      } else {
+        if (ge.isBlocked(t, layer) !== false) continue;
+      }
       if (others.some(o => o.x === t.x && o.y === t.y)) continue;
       ge.move(geId, c.dir);
       return;
@@ -418,6 +449,10 @@ export default class OverworldEncounter {
 
       if (b.cooldownLeft > 0) b.cooldownLeft--;
       if (b.mode !== 'neutral' || b.cooldownLeft > 0) continue;
+      // Water mons can't leave their water region, so chase/flee are skipped —
+      // pathfinding would either land them on unreachable land or grind against
+      // the shoreline.
+      if (spawn.isWater) continue;
       if (leadLvl == null) continue;
       if (!ge?.hasCharacter(spawn.geId)) continue;
 
@@ -651,6 +686,48 @@ export default class OverworldEncounter {
     b.cooldownLeft = REACTION_COOLDOWN_STEPS;
   }
 
+  /**
+   * One tick of water-restricted wandering for an OW mon on water. Picks a
+   * random cardinal neighbour that is (a) within radius 2 of the spawn origin
+   * and (b) an actual water tile free of non-water obstacles (rocks, cliffs).
+   * Always reschedules itself after `rate` ms so rhythm persists even when no
+   * step was possible.
+   *
+   * Water mons have `collidesWithTiles: false` (otherwise GE would refuse to
+   * put them on water), so this filter is the only thing keeping them inside
+   * the water area.
+   */
+  _waterWanderStep(geId, entry, rate) {
+    const ge = this.scene.gridEngine;
+    if (!ge?.hasCharacter(geId)) return;
+    const b = this._behaviour[geId];
+    if (!b) return;
+    if (b.mode === 'battling') return;
+
+    const pos = ge.getPosition(geId);
+    if (pos) {
+      const candidates = [
+        { dir: 'up',    dx:  0, dy: -1 },
+        { dir: 'down',  dx:  0, dy:  1 },
+        { dir: 'left',  dx: -1, dy:  0 },
+        { dir: 'right', dx:  1, dy:  0 },
+      ].sort(() => rng() - 0.5);
+      for (const c of candidates) {
+        const tx = pos.x + c.dx;
+        const ty = pos.y + c.dy;
+        if (Math.abs(tx - entry.x) > 2 || Math.abs(ty - entry.y) > 2) continue;
+        if (!this.scene.isWaterTile?.(tx, ty)) continue;
+        if (this.scene.hasNonWaterCollision?.(tx, ty)) continue;
+        ge.move(geId, c.dir);
+        break;
+      }
+    }
+
+    b.wanderTimer = this.scene.time.delayedCall(rate, () => {
+      this._waterWanderStep(geId, entry, rate);
+    });
+  }
+
   _tileInLocations(tx, ty, locations) {
     const px = tx * Tile.WIDTH  + Tile.WIDTH  / 2;
     const py = ty * Tile.HEIGHT + Tile.HEIGHT / 2;
@@ -673,6 +750,7 @@ export default class OverworldEncounter {
         this.scene.gridEngine.stopMovement(spawn.geId);
         this.scene.gridEngine.removeCharacter(spawn.geId);
       }
+      spawn.sprite?._reflection?.destroy();
       spawn.sprite?.destroy();
     } catch (_) {}
     this._pending.push({
@@ -680,6 +758,7 @@ export default class OverworldEncounter {
       y: spawn.y,
       texture: texture && texture !== '__DEFAULT' ? texture : String(spawn.battleConfig?.enemy?.team?.[0]?.species ?? '').padStart(3, '0'),
       battleConfig: spawn.battleConfig,
+      isWater: !!spawn.isWater,
     });
   }
 
@@ -689,6 +768,7 @@ export default class OverworldEncounter {
     if (b.exclaimTimer)  b.exclaimTimer.remove?.(false);
     if (b.exclaimSprite) b.exclaimSprite.destroy();
     if (b.startTimer)    b.startTimer.remove?.(false);
+    if (b.wanderTimer)   b.wanderTimer.remove?.(false);
     delete this._behaviour[geId];
   }
 
@@ -741,11 +821,13 @@ export default class OverworldEncounter {
           right: { leftFoot:  9, standing:  8, rightFoot: 11 },
         },
         startPosition: { x: entry.x, y: entry.y },
-        // Collide with tile obstacles (walls, unwalkable terrain) but not
-        // with any other character — empty collisionGroups means the player
-        // can still step onto the Pokémon's tile to trigger the battle.
         collides: {
-          collidesWithTiles: true,
+          // Water mons live on tiles ground-layer characters would be blocked
+          // from (water carries ge_collide). Turn off tile collision so GE
+          // will actually put them there, then constrain them to water in the
+          // custom wander step below. Land mons stay blocked by walls/terrain.
+          // Empty collisionGroups in both cases so the player can walk through.
+          collidesWithTiles: !entry.isWater,
           collisionGroups:   [],
         },
         charLayer: 'ground',
@@ -757,7 +839,11 @@ export default class OverworldEncounter {
       const delay = Math.floor(rng() * rate);
       const startTimer = this.scene.time.delayedCall(delay, () => {
         if (this.scene.gridEngine?.hasCharacter(geId)) {
-          this.scene.gridEngine.moveRandomly(geId, rate, 2);
+          if (entry.isWater) {
+            this._waterWanderStep(geId, entry, rate);
+          } else {
+            this.scene.gridEngine.moveRandomly(geId, rate, 2);
+          }
         }
         const b = this._behaviour[geId];
         if (b && b.startTimer === startTimer) b.startTimer = null;
@@ -770,9 +856,11 @@ export default class OverworldEncounter {
         lastMoveAt:   0,
         origRate:     rate,
         origRadius:   2,
+        isWater:      !!entry.isWater,
         exclaimSprite: null,
         exclaimTimer:  null,
         startTimer,
+        wanderTimer:   null,
       };
     };
 
@@ -788,6 +876,9 @@ export default class OverworldEncounter {
       }
       sprite.setTexture(texture, 0);
       sprite.setAlpha(1);
+      if (entry.isWater) {
+        sprite._reflection = new Reflection({ parent: sprite });
+      }
       registerWithGE();
     };
 
@@ -816,29 +907,43 @@ export default class OverworldEncounter {
         this.scene.gridEngine.stopMovement(spawn.geId);
         this.scene.gridEngine.removeCharacter(spawn.geId);
       }
+      spawn.sprite?._reflection?.destroy();
       spawn.sprite?.destroy();
     } catch (_) {}
     this._active = this._active.filter(s => s !== spawn);
   }
 
   /**
-   * Expand all encounter-zone objects on this map into a flat tile list.
-   * Handles both rectangle and polygon zone shapes.
+   * Expand all encounter-zone objects on this map into a flat tile list,
+   * then auto-detect water tiles and add them as surf encounters when an
+   * encounter table with a 'surf' slot exists for their location.
+   *
+   * @param {Record<string, object>|null} encounterTable - Parsed encounter tables.
    * @returns {{ x:number, y:number, tableId:string|null, section:string }[]}
    */
-  _collectEncounterTiles() {
+  _collectEncounterTiles(encounterTable) {
     const tiles = [];
     const zones = this.scene.findInteractions('encounters');
     for (const obj of zones) {
       const tableId = this.scene.getPropertyFromTile(obj, 'table-id') || null;
       const section = this.scene.getPropertyFromTile(obj, 'section') || 'grass';
       const shape   = obj.polygon ?? obj.polyline ?? null;
+      // Surf zones authored as rectangles/polygons can overhang non-water
+      // edges; gate each tile through isWaterTile so surf mons only ever
+      // spawn on actual water.
+      const accept = (tx, ty) => {
+        if (section !== 'surf') return true;
+        return this.scene.isWaterTile?.(tx, ty) === true;
+      };
       if (shape === null) {
         const w = parseInt(obj.width  / Tile.WIDTH);
         const h = parseInt(obj.height / Tile.HEIGHT);
         for (let x = 0; x < w; x++) {
           for (let y = 0; y < h; y++) {
-            tiles.push({ x: obj.x / Tile.WIDTH + x, y: obj.y / Tile.HEIGHT + y, tableId, section });
+            const tx = obj.x / Tile.WIDTH  + x;
+            const ty = obj.y / Tile.HEIGHT + y;
+            if (!accept(tx, ty)) continue;
+            tiles.push({ x: tx, y: ty, tableId, section });
           }
         }
       } else {
@@ -851,14 +956,177 @@ export default class OverworldEncounter {
           for (let ty = minTy; ty <= maxTy; ty++) {
             const cx = tx * Tile.WIDTH  + Tile.WIDTH  / 2;
             const cy = ty * Tile.HEIGHT + Tile.HEIGHT / 2;
-            if (pointInPolygon(cx, cy, abs)) {
-              tiles.push({ x: tx, y: ty, tableId, section });
-            }
+            if (!pointInPolygon(cx, cy, abs)) continue;
+            if (!accept(tx, ty)) continue;
+            tiles.push({ x: tx, y: ty, tableId, section });
           }
         }
       }
     }
+
+    // Auto-detect water tiles and add surf encounters. Any water tile not
+    // already covered by a hand-drawn surf zone gets a virtual encounter
+    // entry when its location's encounter table has a 'surf' slot.
+    this._autoCollectWaterTiles(tiles, encounterTable);
+
     return tiles;
+  }
+
+  /**
+   * Scan every tilemap cell for `sw_water`, group contiguous water into
+   * regions, trace a boundary polygon around each region, and push tiles
+   * with `section: 'surf'` into the provided array. Tiles already present
+   * as surf in `tiles` are skipped to avoid duplicates.
+   */
+  _autoCollectWaterTiles(tiles, encounterTable) {
+    if (!encounterTable) return;
+    const map = this.scene.config.tilemap;
+    if (!map) return;
+
+    const existingSurf = new Set(
+      tiles.filter(t => t.section === 'surf').map(t => `${t.x},${t.y}`)
+    );
+
+    // Collect all water tile positions
+    const waterSet = new Set();
+    for (let x = 0; x < map.width; x++) {
+      for (let y = 0; y < map.height; y++) {
+        if (this.scene.isWaterTile(x, y)) waterSet.add(`${x},${y}`);
+      }
+    }
+    if (waterSet.size === 0) return;
+
+    // Flood-fill into contiguous regions
+    const visited = new Set();
+    for (const key of waterSet) {
+      if (visited.has(key)) continue;
+      const [sx, sy] = key.split(',').map(Number);
+      const region = [];
+      const stack = [[sx, sy]];
+      while (stack.length) {
+        const [cx, cy] = stack.pop();
+        const ck = `${cx},${cy}`;
+        if (visited.has(ck)) continue;
+        visited.add(ck);
+        region.push({ x: cx, y: cy });
+        for (const [dx, dy] of [[0, -1], [0, 1], [-1, 0], [1, 0]]) {
+          const nk = `${cx + dx},${cy + dy}`;
+          if (waterSet.has(nk) && !visited.has(nk)) stack.push([cx + dx, cy + dy]);
+        }
+      }
+
+      // Find a table with a 'surf' slot that covers this region
+      const tableId = this._findSurfTableForRegion(region, encounterTable);
+      if (!tableId) continue;
+
+      for (const t of region) {
+        const k = `${t.x},${t.y}`;
+        if (existingSurf.has(k)) continue;
+        tiles.push({ x: t.x, y: t.y, tableId, section: 'surf' });
+      }
+    }
+  }
+
+  /**
+   * Find the first encounter table with a 'surf' slot whose owning location
+   * contains at least one tile from the region. Falls back to map-level tables.
+   */
+  _findSurfTableForRegion(region, encounterTable) {
+    // Check location-level tables first
+    for (const loc of this._locations) {
+      if (!loc.tableNames?.length) continue;
+      const hit = region.some(t => {
+        const px = t.x * Tile.WIDTH  + Tile.WIDTH  / 2;
+        const py = t.y * Tile.HEIGHT + Tile.HEIGHT / 2;
+        return px >= loc.x && px <= loc.x + loc.width
+            && py >= loc.y && py <= loc.y + loc.height;
+      });
+      if (!hit) continue;
+      for (const name of loc.tableNames) {
+        if (encounterTable[name]?.slots?.surf) return name;
+      }
+    }
+    // Fall back to map-level tables
+    for (const name of (this._mapTableNames ?? [])) {
+      if (encounterTable[name]?.slots?.surf) return name;
+    }
+    return null;
+  }
+
+  _tileDensity(tile, mapDensity) {
+    const px = tile.x * Tile.WIDTH  + Tile.WIDTH  / 2;
+    const py = tile.y * Tile.HEIGHT + Tile.HEIGHT / 2;
+    for (const loc of this._locations) {
+      if (loc.owEncounterRate == null) continue;
+      if (px >= loc.x && px <= loc.x + loc.width &&
+          py >= loc.y && py <= loc.y + loc.height) {
+        return loc.owEncounterRate / 100;
+      }
+    }
+    return mapDensity;
+  }
+
+  /**
+   * Extract table names from a raw encounter-table fragment.
+   * @param {Array} fragment
+   * @returns {string[]}
+   */
+  _extractTableNames(fragment) {
+    const names = [];
+    if (!Array.isArray(fragment)) return names;
+    for (const item of fragment) {
+      const entry = item?.value ?? item;
+      if (entry?.name) names.push(entry.name);
+    }
+    return names;
+  }
+
+  /**
+   * Trace the outer boundary of a contiguous tile region as a clockwise
+   * polygon in pixel coordinates. Collects directed boundary edges (edges
+   * between water and non-water tiles) and chains them head-to-tail.
+   *
+   * @param {Set<string>} regionSet - "x,y" keys of tiles in the region.
+   * @param {{ x:number, y:number }[]} region - tile coordinate list.
+   * @returns {{ x:number, y:number }[]} Ordered polygon vertices (pixels).
+   */
+  _traceWaterPolygon(region, regionSet) {
+    const TW = Tile.WIDTH;
+    const TH = Tile.HEIGHT;
+    const edgeMap = new Map();
+
+    const addEdge = (fx, fy, tx, ty) => {
+      const key = `${fx},${fy}`;
+      if (!edgeMap.has(key)) edgeMap.set(key, []);
+      edgeMap.get(key).push({ x: tx, y: ty });
+    };
+
+    for (const { x, y } of region) {
+      if (!regionSet.has(`${x},${y - 1}`))  addEdge(x * TW,       y * TH,       (x + 1) * TW, y * TH);
+      if (!regionSet.has(`${x + 1},${y}`))  addEdge((x + 1) * TW, y * TH,       (x + 1) * TW, (y + 1) * TH);
+      if (!regionSet.has(`${x},${y + 1}`))  addEdge((x + 1) * TW, (y + 1) * TH, x * TW,       (y + 1) * TH);
+      if (!regionSet.has(`${x - 1},${y}`))  addEdge(x * TW,       (y + 1) * TH, x * TW,       y * TH);
+    }
+
+    if (edgeMap.size === 0) return [];
+
+    const startKey = edgeMap.keys().next().value;
+    const [sx, sy] = startKey.split(',').map(Number);
+    const points = [];
+    let cx = sx, cy = sy;
+
+    do {
+      points.push({ x: cx, y: cy });
+      const key = `${cx},${cy}`;
+      const nexts = edgeMap.get(key);
+      if (!nexts?.length) break;
+      const next = nexts.shift();
+      if (nexts.length === 0) edgeMap.delete(key);
+      cx = next.x;
+      cy = next.y;
+    } while (cx !== sx || cy !== sy);
+
+    return points;
   }
 
   /**

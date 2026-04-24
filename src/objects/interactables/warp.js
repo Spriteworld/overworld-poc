@@ -1,7 +1,14 @@
 import Phaser from 'phaser';
 import { Tile, Interactables, GameMap, Direction } from '@Objects';
 import { getPropertyValue, checkOnlyIf } from '@Utilities';
+import { getGameDef, seededRng } from '@Data/gameDef.js';
 import store from '../../store/index.js';
+
+function hashStr(s) {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(h, 33) ^ s.charCodeAt(i)) >>> 0;
+  return h;
+}
 
 export default class {
   /**
@@ -55,6 +62,10 @@ export default class {
       }
     });
     this.warps = this.scene.registry.get('warps');
+
+    if (getGameDef().entranceRandomizer === 'random') {
+      this._shuffleDestinations();
+    }
   }
 
   /**
@@ -88,7 +99,7 @@ export default class {
     }
     if (this.warps.length === 0) return;
 
-    // handle warp tiles
+    // handle warp tiles — triggered when the player steps onto a warp tile
     this._sub = this.scene.gridEngine
       .positionChangeStarted()
       .subscribe(({ charId, exitTile, enterTile }) => {
@@ -98,11 +109,22 @@ export default class {
 
         this.handleWarps(char, exitTile, enterTile);
       });
+
+    // handle wall warps — triggered when the player walks into a blocked tile
+    this._blockedHandler = (target) => {
+      const char = this.scene.characters.get('player');
+      if (!char) return;
+      this.handleWarps(char, char.getPosition(), target);
+    };
+    this.scene.game.events.on('player-blocked-tile', this._blockedHandler);
   }
 
   /** Unsubscribe from GridEngine events to prevent memory leaks. */
   destroy() {
     this._sub?.unsubscribe();
+    if (this._blockedHandler) {
+      this.scene.game.events.off('player-blocked-tile', this._blockedHandler);
+    }
   }
 
   /**
@@ -351,11 +373,67 @@ export default class {
   }
 
   /**
-   * Immediately switch to a different map scene without a camera fade.
-   * @param {Character} char - The character to warp.
-   * @param {string} warpTarget - Scene key of the destination map.
-   * @param {string} [warpLocationName] - Name of the warpLocation object on the destination map.
+   * Shuffle warp destinations using a seeded RNG so the mapping is
+   * deterministic per save. Multi-tile warps (same Tiled object expanded
+   * into several registry entries) are grouped and shuffled together so
+   * every tile of a doorway leads to the same new destination.
    */
+  _shuffleDestinations() {
+    const DEST_KEYS = ['warp', 'warp-location', 'warp-variant', 'warp-x', 'warp-y'];
+
+    // Group warps by their source Tiled object name so multi-tile warps
+    // stay together. Warps without a destination are excluded.
+    const groups = new Map();
+    for (const w of this.warps) {
+      const target = getPropertyValue(w.obj.properties, 'warp', null);
+      if (!target) continue;
+      const key = w.obj.name || w.obj.id;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(w);
+    }
+
+    const groupKeys = [...groups.keys()];
+    if (groupKeys.length < 2) return;
+
+    // Snapshot each group's destination properties.
+    const dests = groupKeys.map(k => {
+      const rep = groups.get(k)[0];
+      const snap = {};
+      for (const dk of DEST_KEYS) {
+        snap[dk] = getPropertyValue(rep.obj.properties, dk, undefined);
+      }
+      return snap;
+    });
+
+    // Fisher-Yates shuffle with seeded RNG.
+    const mapName = this.scene.config?.mapName ?? '';
+    const baseSeed = store.state.game.seed ?? 0;
+    const seed = (baseSeed + hashStr(mapName)) >>> 0;
+    const rng = seededRng(seed);
+    for (let i = dests.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [dests[i], dests[j]] = [dests[j], dests[i]];
+    }
+
+    // Write the shuffled destinations back onto the warp objects.
+    groupKeys.forEach((k, idx) => {
+      const snap = dests[idx];
+      for (const w of groups.get(k)) {
+        for (const dk of DEST_KEYS) {
+          if (snap[dk] === undefined) continue;
+          const prop = w.obj.properties?.find(p => p.name === dk);
+          if (prop) {
+            prop.value = snap[dk];
+          } else {
+            (w.obj.properties ??= []).push({ name: dk, type: typeof snap[dk] === 'number' ? 'int' : 'string', value: snap[dk] });
+          }
+        }
+      }
+    });
+
+    console.log(`[Warp] Entrance randomizer: shuffled ${groupKeys.length} warp groups on ${mapName}`);
+  }
+
   /**
    * If the character is on the bike, transition them back to IDLE and update the store.
    * @param {Character} char

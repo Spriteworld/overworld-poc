@@ -31,7 +31,7 @@ export default {
   has_strength: false,
   // has_waterfall: false,
   // has_diving: false,
-  // has_surf: false,
+  has_surf: false,
   // has_whirlpool: false,
 
   // pokedex

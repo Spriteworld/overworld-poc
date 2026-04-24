@@ -2,9 +2,11 @@ import Phaser from 'phaser';
 import StateMachine from '@Objects/StateMachine';
 import MovableSprite from '@Objects/characters/MovableSprite';
 import Reflection from '@Objects/characters/Reflection';
+import SurfMount from '@Objects/characters/SurfMount';
 import * as Tile from '../Tile.js';
 import * as Direction from '../Direction.js';
 import { Vector2, getPropertyValue, getInputManager, Action, generateTid } from '@Utilities';
+import { playSfx } from '@Utilities/AudioManager.js';
 
 export default class extends MovableSprite {
   /**
@@ -70,6 +72,7 @@ export default class extends MovableSprite {
       IDLE: 'idle',
       MOVE: 'move',
       BIKE: 'bike',
+      SURF: 'surf',
       LOOK: 'look',
       SPIN: 'spin',
       SLIDE: 'slide',
@@ -87,7 +90,10 @@ export default class extends MovableSprite {
     this.config.scene.addCharacter(this);
 
     if (this.config.reflect) {
-      this.reflection = new Reflection({ parent: this });
+      this.reflection = new Reflection({
+        parent: this,
+        offsetY: this.config['reflect-offset-y'] ?? 0,
+      });
       this.once('destroy', () => this.reflection?.destroy());
     }
 
@@ -205,6 +211,8 @@ export default class extends MovableSprite {
     this.spinningDir = null;
     this.slidingDir = null;
     this.jumpingDir = null;
+    this._moveDebounceUntil = 0;
+    this._lastBlockedTile = null;
   }
   /** State callback: called when leaving the IDLE state. */
   idleOnExit() {}
@@ -223,7 +231,19 @@ export default class extends MovableSprite {
    */
   idleOnUpdate() {
     const im = getInputManager();
-    if (im && (im.isDown(Action.LEFT) || im.isDown(Action.RIGHT) || im.isDown(Action.UP) || im.isDown(Action.DOWN))) {
+    if (!im) { this.updateCharacterRect(); return; }
+
+    let dir = null;
+    if      (im.isDown(Action.LEFT))  dir = 'left';
+    else if (im.isDown(Action.RIGHT)) dir = 'right';
+    else if (im.isDown(Action.UP))    dir = 'up';
+    else if (im.isDown(Action.DOWN))  dir = 'down';
+
+    if (dir) {
+      if (this.getFacingDirection() !== dir) {
+        this.look(dir);
+        this._moveDebounceUntil = Date.now() + 100;
+      }
       this.stateMachine.setState(this.stateDef.MOVE);
     }
     this.updateCharacterRect();
@@ -264,16 +284,32 @@ export default class extends MovableSprite {
    * @param {string} dir - Direction constant (up | down | left | right).
    */
   handleMove(dir) {
-    const duration = 150;
-    // Action values ('up','down','left','right') match the lowercased Direction constants.
     dir = dir.toLowerCase();
-    if (this.getFacingDirection() === dir) {
-      this.move(dir);
-    } else {
-      const im = getInputManager();
-      const held = im ? im.getDuration(dir) : 0;
-      held >= duration ? this.move(dir) : this.look(dir);
+
+    if (this.getFacingDirection() !== dir) {
+      this.look(dir);
+      this._moveDebounceUntil = Date.now() + 100;
+      return;
     }
+
+    if (this._moveDebounceUntil && Date.now() < this._moveDebounceUntil) {
+      return;
+    }
+    this._moveDebounceUntil = 0;
+
+    if (!this.canMove(dir.toUpperCase())) {
+      if (this.config.type === 'player') {
+        const target = this.getPosInDirection(dir.toUpperCase());
+        const key = `${target.x},${target.y}`;
+        if (this._lastBlockedTile !== key) {
+          this._lastBlockedTile = key;
+          this.config.scene.game.events.emit('player-blocked-tile', target);
+        }
+      }
+      return;
+    }
+    this._lastBlockedTile = null;
+    this.move(dir);
   }
 
   /** State callback: start the spin animation and lock the spin direction. */
@@ -368,6 +404,83 @@ export default class extends MovableSprite {
     this.look(this.getFacingDirection());
   }
 
+  characterFramesSurfDef() {
+    return this.characterFramesDef();
+  }
+
+  /** State callback: swap to the surf texture and frame mapping when entering the SURF state. */
+  surfOnEnter() {
+    this._baseMovementState = this.stateDef.SURF;
+    const surfTexture = this.config.texture + '_surf';
+    if (this.config.scene.textures.exists(surfTexture)) {
+      this.setTexture(surfTexture);
+    }
+    this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesSurfDef());
+    this.look(this.getFacingDirection());
+
+    this.scene.game.events.emit('player-surf-change', true, this);
+
+    // Two ways to enter SURF:
+    //   1. Pressing A while facing water (handleInteractables) — we're on
+    //      land, hop forward onto the water tile.
+    //   2. autoSurf: the player just walked onto a water tile — already
+    //      there, skip the hop so we don't land two tiles deep.
+    const pos = this.getPosition();
+    const alreadyOnWater = !!this.config.scene.isWaterTile?.(pos.x, pos.y);
+    const spawnMount = () => {
+      if (!this._surfMount) {
+        this._surfMount = new SurfMount({ parent: this });
+        this.once('destroy', () => this._surfMount?.destroy());
+      }
+    };
+
+    if (alreadyOnWater) {
+      spawnMount();
+      return;
+    }
+
+    const delta = this._tileDeltaForDir(this.getFacingDirection(), 1);
+    this._hopToTile({
+      dx: delta.dx,
+      dy: delta.dy,
+      onComplete: () => {
+        // _hopToTile swaps to static frames during the arc — restore the
+        // surf walk mapping so subsequent _surfMove() plays surf anims.
+        this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesSurfDef());
+        spawnMount();
+      },
+    });
+  }
+
+  /** State callback: restore the base texture and frame mapping when leaving the SURF state. */
+  surfOnExit() {
+    this._baseMovementState = this.stateDef.IDLE;
+    this.setTexture(this.config.texture);
+    this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesDef());
+    this.look(this.getFacingDirection());
+
+    if (this._surfMount) {
+      this._surfMount.destroy();
+      this._surfMount = null;
+    }
+    this.scene.game.events.emit('player-surf-change', false, this);
+  }
+
+  /**
+   * Flip this character's tile-collision flag at runtime. Grid-engine v2.48
+   * doesn't expose a public setter. The real GridCharacter lives on the
+   * headless engine — `gridEngine.gridCharacters` on the Phaser plugin holds
+   * a sprite/offset wrapper that does NOT carry `setCollidesWithTiles`, so
+   * reaching through `geHeadless.gridCharacters` is required. Wrapped so
+   * callers fail soft if that ever changes. Used by Player._surfMove to
+   * briefly disable collision around each water step so grid-engine accepts
+   * moves onto water tiles (which carry ge_collide).
+   */
+  _setCollidesWithTiles(collides) {
+    const gc = this.gridengine?.geHeadless?.gridCharacters?.get?.(this.config.id);
+    gc?.setCollidesWithTiles?.(collides);
+  }
+
   /**
    * Transition back to whichever base movement state is active (IDLE or BIKE).
    * Use this instead of hardcoding setState(IDLE) after ledge jumps and slides.
@@ -400,51 +513,54 @@ export default class extends MovableSprite {
   }
 
   /**
-   * State callback: initiate a ledge-hop animation using a GridEngine offset tween.
-   * Teleports the character two tiles forward in the facing direction via GridEngine,
-   * then animates the sprite back to (0, 0) offset with an arc to create the illusion
-   * of a jump.
+   * Resolve a (dx, dy) tile delta for a facing direction and distance (in tiles).
+   * @param {string} dir - Direction ('up' | 'down' | 'left' | 'right'; any case).
+   * @param {number} [tiles=1]
    */
-  jumpLedgeOnEnter() {
-    // bikeOnExit() runs before this and resets _baseMovementState to IDLE.
-    // Restore it so _returnToBaseMovement() returns to BIKE after the jump.
-    if (this.stateMachine.previousState?.name === this.stateDef.BIKE) {
-      this._baseMovementState = this.stateDef.BIKE;
-      const bikeTexture = this.config.texture + '_bike';
-      if (this.config.scene.textures.exists(bikeTexture)) {
-        this.setTexture(bikeTexture);
-      }
-    }
+  _tileDeltaForDir(dir, tiles = 1) {
+    const d = (dir || Direction.DOWN).toUpperCase();
+    const unit = {
+      [Direction.DOWN]:  { dx: 0,  dy: 1  },
+      [Direction.UP]:    { dx: 0,  dy: -1 },
+      [Direction.LEFT]:  { dx: -1, dy: 0  },
+      [Direction.RIGHT]: { dx: 1,  dy: 0  },
+    }[d] || { dx: 0, dy: 0 };
+    return { dx: unit.dx * tiles, dy: unit.dy * tiles };
+  }
 
-    const faceDir = this.getFacingDirection();
-    // GridEngine returns directions in lowercase; Direction constants are uppercase.
-    const faceDirUpper = faceDir.toUpperCase();
-    this.jumpingDir = faceDirUpper;
-    const currentTile  = this.getPosition();
+  /**
+   * Hop the character from its current tile to (currentTile + dx, currentTile + dy)
+   * with an arc. GridEngine is anchored to the landing tile up-front and the
+   * sprite's visual offset is tweened back to (0, 0), so GE's per-frame
+   * `updatePixelPos()` carries the sprite along the arc.
+   *
+   * Sets `this._isHopping` for the duration so per-tick state logic (e.g. the
+   * auto-dismount in `Player.surfOnUpdate`) can skip mid-arc. Callers are
+   * responsible for restoring the walking-animation mapping in `onComplete`
+   * — this helper swaps to static frames while in flight.
+   *
+   * @param {object} opts
+   * @param {number} opts.dx - Tile delta X.
+   * @param {number} opts.dy - Tile delta Y.
+   * @param {() => void} [opts.onComplete]
+   */
+  _hopToTile({ dx, dy, onComplete }) {
+    const currentTile = this.getPosition();
+    const landingTile = { x: currentTile.x + dx, y: currentTile.y + dy };
 
+    this._isHopping = true;
     this.gridengine.stopMovement(this.config.id);
     this.gridengine.setWalkingAnimationMapping(this.config.id, this.characterFramesStaticDef());
-
-    const delta = {
-      [Direction.DOWN]:  { dx: 0,  dy: 2  },
-      [Direction.UP]:    { dx: 0,  dy: -2 },
-      [Direction.LEFT]:  { dx: -2, dy: 0  },
-      [Direction.RIGHT]: { dx: 2,  dy: 0  },
-    }[faceDirUpper] || { dx: 0, dy: 0 };
-
-    const landingTile = {
-      x: currentTile.x + delta.dx,
-      y: currentTile.y + delta.dy,
-    };
+    playSfx(this.config.scene, 'ledge_jump');
 
     // GridEngine updates sprite.x/y every frame via updatePixelPos().
     // Tweening this.x/y directly fights that and loses.
     // Instead: anchor GE to landingTile immediately, then tween a visual
     // offset from (startPixels - landingPixels) back to (0, 0) so GE's
     // own update carries the sprite to the correct position each frame.
-    const pixelDX  = delta.dx * Tile.WIDTH;
-    const pixelDY  = delta.dy * Tile.HEIGHT;
-    const arcHeight = Tile.HEIGHT; // 32px upward arc
+    const pixelDX  = dx * Tile.WIDTH;
+    const pixelDY  = dy * Tile.HEIGHT;
+    const arcHeight = Tile.HEIGHT;
 
     this.gridengine.setPosition(
       this.config.id,
@@ -452,7 +568,18 @@ export default class extends MovableSprite {
       this.config['char-layer'] || 'ground'
     );
 
-    // Start offset: sprite appears at exitTile visually
+    // Ledge jumps triggered from positionChangeStarted can leave grid-engine's
+    // last-movement-direction stale, so the standing frame picked from the
+    // static mapping renders the default (frame 0 = down) during left/right
+    // hops. Derive the hop direction from the delta and turn the character
+    // towards it to force the standing frame to the correct facing.
+    let hopDir = null;
+    if      (dx < 0) hopDir = Direction.LEFT;
+    else if (dx > 0) hopDir = Direction.RIGHT;
+    else if (dy < 0) hopDir = Direction.UP;
+    else if (dy > 0) hopDir = Direction.DOWN;
+    if (hopDir) this.look(hopDir);
+
     this.gridengine.setOffsetX(this.config.id, -pixelDX);
     this.gridengine.setOffsetY(this.config.id, -pixelDY);
 
@@ -488,16 +615,41 @@ export default class extends MovableSprite {
           onComplete: () => {
             this.gridengine.setOffsetX(this.config.id, 0);
             this.gridengine.setOffsetY(this.config.id, 0);
-            this.jumpingDir = null;
-            this.gridengine.setWalkingAnimationMapping(
-              this.config.id,
-              this._baseMovementState === this.stateDef.BIKE
-                ? this.characterFramesBikeDef()
-                : this.characterFramesDef()
-            );
-            this._returnToBaseMovement();
+            this._isHopping = false;
+            onComplete?.();
           },
         });
+      },
+    });
+  }
+
+  /** State callback: hop two tiles forward in the facing direction (ledge jump). */
+  jumpLedgeOnEnter() {
+    // bikeOnExit() runs before this and resets _baseMovementState to IDLE.
+    // Restore it so _returnToBaseMovement() returns to BIKE after the jump.
+    if (this.stateMachine.previousState?.name === this.stateDef.BIKE) {
+      this._baseMovementState = this.stateDef.BIKE;
+      const bikeTexture = this.config.texture + '_bike';
+      if (this.config.scene.textures.exists(bikeTexture)) {
+        this.setTexture(bikeTexture);
+      }
+    }
+
+    this.jumpingDir = this.getFacingDirection().toUpperCase();
+    const delta = this._tileDeltaForDir(this.jumpingDir, 2);
+
+    this._hopToTile({
+      dx: delta.dx,
+      dy: delta.dy,
+      onComplete: () => {
+        this.jumpingDir = null;
+        this.gridengine.setWalkingAnimationMapping(
+          this.config.id,
+          this._baseMovementState === this.stateDef.BIKE
+            ? this.characterFramesBikeDef()
+            : this.characterFramesDef()
+        );
+        this._returnToBaseMovement();
       },
     });
   }

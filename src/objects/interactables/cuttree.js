@@ -1,4 +1,5 @@
 import { Items, Tile } from '@Objects';
+import { playSfx } from '@Utilities/AudioManager.js';
 import store from '../../store/index.js';
 
 export default class {
@@ -12,10 +13,12 @@ export default class {
     }
     const trees = this.scene.findInteractions('cutTree');
     trees.forEach(obj => {
+      // Tiled tile objects (gid) anchor at bottom-left, so subtract height to
+      // get the top-left tile coord that Items.CutTree positions from.
       new Items.CutTree({
         scene: this.scene,
         x: obj.x / Tile.WIDTH,
-        y: obj.y / Tile.HEIGHT,
+        y: (obj.y - obj.height) / Tile.HEIGHT,
       });
     });
   }
@@ -38,6 +41,7 @@ export default class {
       if (!hasCut) { return; }
 
       this.scene.game.events.once('textbox-disable', () => {
+        playSfx(this.scene, 'cut');
         this.scene.removeInteraction(tile.obj.id);
         let char = this.scene.characters.get(tile.obj.id);
         if (typeof char === 'undefined') { return; }

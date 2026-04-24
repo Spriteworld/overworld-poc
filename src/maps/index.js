@@ -48,6 +48,7 @@ import Route24Map from './kanto/route24.json';
 import Route25Map from './kanto/route25.json';
 import ViridianForestMap from './kanto/viridian_forest.json';
 import PokemonCenterMap from './kanto/pokemon_center.json';
+import MtMoonF1Map from './kanto/mt_moon_floor1.json';
 
 // import StarterTownMap from './region/StarterTown.json';
 
@@ -124,6 +125,7 @@ export {
     FuchsiaCityMap,
     VermillionCityMap,
     PokemonCenterMap,
+    MtMoonF1Map,
     Route19Map, Route20Map,
     CinnabarIslandMap, LavenderTownMap, Route23Map,
     Route24Map, Route25Map, ViridianForestMap,
@@ -182,4 +184,5 @@ export const MAP_REGISTRY = {
   'Route25':         Route25Map,
   'ViridianForest':  ViridianForestMap,
   'PokemonCenter': PokemonCenterMap,
+  'MtMoonF1':    MtMoonF1Map,
 };
