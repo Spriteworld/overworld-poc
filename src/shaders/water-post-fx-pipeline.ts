@@ -57,7 +57,8 @@ void main() {
     return;
   }
 
-  // Wave displacement in screen pixels — divide by uResolution to get UV delta.
+  // Wave displacement in world pixels — divide by uResolution (also world
+  // pixels) to get the corresponding UV delta on the post-FX target.
   float t = uTime;
   vec2 wave;
   wave.x = sin(worldPx.y * 0.10 + t * 1.6) * 0.8;
@@ -136,11 +137,9 @@ export class WaterPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXP
     const sx  = cam ? cam.scrollX : this._scrollX;
     const sy  = cam ? cam.scrollY : this._scrollY;
 
-    // Same matching-render-target rule as the darkness pipeline — uResolution
-    // must reflect the post-FX pass's actual surface, not the camera viewport.
-    const rt = this.renderTargets?.[0];
-    const rw = rt?.width  ?? this.renderer.width  ?? this._resW;
-    const rh = rt?.height ?? this.renderer.height ?? this._resH;
+    // World-pixel uResolution — see the darkness pipeline for the rationale.
+    const rw = this._resW || this.renderTargets?.[0]?.width  || this.renderer.width;
+    const rh = this._resH || this.renderTargets?.[0]?.height || this.renderer.height;
 
     this.set2f('uResolution', rw, rh);
     this.set2f('uScroll',     sx, sy);

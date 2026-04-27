@@ -130,9 +130,9 @@ export class FogPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPip
     const cam = this._cam;
     const sx  = cam ? cam.scrollX : this._scrollX;
     const sy  = cam ? cam.scrollY : this._scrollY;
-    const rt  = this.renderTargets?.[0];
-    const rw  = rt?.width  ?? this.renderer.width  ?? this._resW;
-    const rh  = rt?.height ?? this.renderer.height ?? this._resH;
+    // World-pixel uResolution — see the darkness pipeline for the rationale.
+    const rw = this._resW || this.renderTargets?.[0]?.width  || this.renderer.width;
+    const rh = this._resH || this.renderTargets?.[0]?.height || this.renderer.height;
 
     this.set2f('uResolution', rw, rh);
     this.set2f('uScroll',     sx, sy);

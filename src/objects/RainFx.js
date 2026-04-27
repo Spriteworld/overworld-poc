@@ -82,7 +82,9 @@ export default class RainFx {
     // Total baseline amplitude is ~±15 px; windScale scales it (light <1, heavy >1).
 
     this.pipeline.setTime?.(this._timeSec);
-    this.pipeline.setResolution?.(this.camera.width, this.camera.height);
+    // World-pixel uResolution — see Darkness.js for the rationale.
+    const zoom = this.camera.zoom || 1;
+    this.pipeline.setResolution?.(this.camera.width / zoom, this.camera.height / zoom);
     this.pipeline.setScroll?.(this.camera.scrollX, this.camera.scrollY);
     this.pipeline.setWind?.(wind);
   }

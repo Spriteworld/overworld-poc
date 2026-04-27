@@ -130,15 +130,14 @@ export class DarknessPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.Post
     const sx = cam ? cam.scrollX : this._scrollX;
     const sy = cam ? cam.scrollY : this._scrollY;
 
-    // uResolution must match the post-FX render target, not the camera viewport.
-    // When the camera is sized larger than the canvas (e.g. setSize(800, 608)
-    // inside an 800x600 canvas), Phaser still allocates a canvas-sized render
-    // target for the post-FX pass, and outTexCoord runs 0..1 over THAT. Using
-    // the camera's own size here would over-scale outTexCoord on the mismatched
-    // axis and the metaball field would drift relative to scroll on that axis.
-    const rt = this.renderTargets?.[0];
-    const rw = rt?.width  ?? this.renderer.width  ?? this._resW;
-    const rh = rt?.height ?? this.renderer.height ?? this._resH;
+    // uResolution is the WORLD-pixel size of the visible camera area. The FX
+    // class is expected to call setResolution(camera.width / zoom, camera.height / zoom)
+    // every frame so that `worldPx = uv * uResolution + uScroll` (where uScroll
+    // is in world pixels) gives correct world-pixel coords. The renderer/RT
+    // fallback below is in screen pixels — only used if the FX class never set
+    // a resolution.
+    const rw = this._resW || this.renderTargets?.[0]?.width  || this.renderer.width;
+    const rh = this._resH || this.renderTargets?.[0]?.height || this.renderer.height;
 
     this.set3fv('uLights', this._lightData);
     this.set1i('uLightCount', this._lightCount);

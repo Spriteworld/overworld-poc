@@ -136,9 +136,9 @@ export class TimeOverlayPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.P
     const cam = this._cam;
     const sx  = cam ? cam.scrollX : this._scrollX;
     const sy  = cam ? cam.scrollY : this._scrollY;
-    const rt  = this.renderTargets?.[0];
-    const rw  = rt?.width  ?? this.renderer.width  ?? this._resW;
-    const rh  = rt?.height ?? this.renderer.height ?? this._resH;
+    // World-pixel uResolution — see the darkness pipeline for the rationale.
+    const rw = this._resW || this.renderTargets?.[0]?.width  || this.renderer.width;
+    const rh = this._resH || this.renderTargets?.[0]?.height || this.renderer.height;
 
     this.set3f('uTint',             this._tint[0], this._tint[1], this._tint[2]);
     this.set1f('uAlpha',            this._alpha);

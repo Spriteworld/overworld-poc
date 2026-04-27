@@ -69,6 +69,9 @@ export default class extends Phaser.Scene {
 
     this._scriptDepth = 0;
 
+    this._updateUILayout();
+    this.scale.on('resize', () => this._updateUILayout());
+
     this.handleEvents();
 
     // Kick off the multiplayer relay connection on gameplay entry so peers
@@ -95,6 +98,27 @@ export default class extends Phaser.Scene {
     if (startScreen) {
       clearStartPauseScreen();
       this.time.delayedCall(0, () => this._openPauseMenuAt(startScreen));
+    }
+  }
+
+  _updateUILayout() {
+    const { width, height } = this.scale;
+    if (this.transitionRect) {
+      this.transitionRect.setPosition(width / 2, height / 2);
+      this.transitionRect.setSize(width, height);
+    }
+    if (this.pauseMenu) {
+      const menuScale = width >= 1024 ? Math.min(width / 800, height / 600)
+        : width < 768 ? 0.5
+        : 1;
+      this.pauseMenu.setScale(menuScale);
+      this.pauseMenu.setPosition(
+        Math.max(0, (width - 800 * menuScale) / 2),
+        Math.max(0, (height - 600 * menuScale) / 2),
+      );
+    }
+    if (this.textbox) {
+      this.textbox.reposition();
     }
   }
 

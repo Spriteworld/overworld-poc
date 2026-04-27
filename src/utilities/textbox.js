@@ -51,10 +51,11 @@ class TextBox {
     const bx   = Math.floor((scene.scale.width  - boxW) / 2);
     const by   = scene.scale.height - boxH - 20;
 
-    this._bx   = bx;
-    this._by   = by;
-    this._boxW = boxW;
-    this._boxH = boxH;
+    this._bx      = bx;
+    this._by      = by;
+    this._boxW    = boxW;
+    this._boxH    = boxH;
+    this._maxBoxW = boxW;
 
     // Background
     this._bg = scene.add.graphics()
@@ -153,6 +154,23 @@ class TextBox {
     this._pages   = this._paginate(str);
     this._pageIdx = 0;
     this._typeCurrentPage();
+  }
+
+  reposition() {
+    const sw = this._scene.scale.width;
+    const sh = this._scene.scale.height;
+    this._boxW = Math.min(this._maxBoxW, sw - 40);
+    const fw = this._boxW - PAD_X * 2;
+    this._bx = Math.floor((sw - this._boxW) / 2);
+    this._by = sh - this._boxH - 20;
+    this._drawBg();
+    this._textObj.setFixedSize(fw, this._boxH - PAD_Y * 2);
+    this._textObj.setWordWrapWidth(fw);
+    this._textObj.setPosition(this._bx + PAD_X, this._by + PAD_Y);
+    this._arrow.setPosition(
+      this._bx + this._boxW - PAD_X - 4,
+      this._by + this._boxH - PAD_Y - 2,
+    );
   }
 
   /**

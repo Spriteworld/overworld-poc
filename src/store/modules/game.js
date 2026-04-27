@@ -1,5 +1,6 @@
 import defaultFlags from '@Data/gameFlags.js';
 import { generateTid } from '@Utilities/tid.js';
+import { getGameDef } from '@Data/gameDef.js';
 
 export default {
   namespaced: true,
@@ -13,8 +14,8 @@ export default {
     onBike:        false,
     onSurf:        false,
     playerFacing:  'down',
-    currentMap:   'HeroHouseF2',
-    playerTile:   { x: 2, y: 6, charLayer: 'ground' },
+    currentMap:   getGameDef().startScene,
+    playerTile:   { ...getGameDef().startTile },
     gameFlags:    { ...defaultFlags },
     mapVars:      {},          // per-scene temporary variables: { [sceneName]: { [key]: value } }
     mapVariant:   null,        // variant string of the current map (passed via warp-variant)
@@ -159,8 +160,8 @@ export default {
       state.onBike              = false;
       state.onSurf              = false;
       state.playerFacing        = 'down';
-      state.currentMap          = 'HeroHouseF2';
-      state.playerTile          = { x: 2, y: 6, charLayer: 'ground' };
+      state.currentMap          = getGameDef().startScene;
+      state.playerTile          = { ...getGameDef().startTile };
       state.gameFlags           = { ...defaultFlags };
       state.mapVars             = {};
       state.mapVariant          = null;

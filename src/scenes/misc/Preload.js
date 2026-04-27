@@ -55,7 +55,7 @@ export default class extends Phaser.Scene {
     this.load.on('progress', (value) => {
       progress.clear();
       progress.fillStyle(0xffffff, 1);
-      progress.fillRect(0, 270, 800 * value, 60);
+      progress.fillRect(0, this.scale.height / 2 - 30, this.scale.width * value, 60);
     });
 
     this.load.on('complete', () => progress.destroy());

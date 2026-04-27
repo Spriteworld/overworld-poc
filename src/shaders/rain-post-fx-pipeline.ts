@@ -297,15 +297,12 @@ export class RainPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPi
   }
 
   onPreRender(): void {
-    // Same render-target sizing rule as the darkness/water pipelines —
-    // uResolution must match the post-FX render target, not the camera
-    // viewport, which can differ when camera.setSize() doesn't match canvas.
+    // World-pixel uResolution — see the darkness pipeline for the rationale.
     const cam = this._cam;
     const sx  = cam ? cam.scrollX : this._scrollX;
     const sy  = cam ? cam.scrollY : this._scrollY;
-    const rt  = this.renderTargets?.[0];
-    const rw  = rt?.width  ?? this.renderer.width  ?? this._resW;
-    const rh  = rt?.height ?? this.renderer.height ?? this._resH;
+    const rw = this._resW || this.renderTargets?.[0]?.width  || this.renderer.width;
+    const rh = this._resH || this.renderTargets?.[0]?.height || this.renderer.height;
 
     this.set2f('uResolution', rw, rh);
     this.set2f('uScroll',     sx, sy);

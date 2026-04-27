@@ -97,7 +97,9 @@ export default class TimeOverlayDebug {
     for (let i = 0; i < this._pipelines.length; i++) {
       const { cam, pipe } = this._pipelines[i];
       pipe.setLights?.(this._lightBuf);
-      pipe.setResolution?.(cam.width, cam.height);
+      // World-pixel uResolution — see Darkness.js for the rationale.
+      const zoom = cam.zoom || 1;
+      pipe.setResolution?.(cam.width / zoom, cam.height / zoom);
       pipe.setScroll?.(cam.scrollX, cam.scrollY);
     }
   }

@@ -111,7 +111,12 @@ export default class Darkness {
       this._lightBuf.push({ x, y, radius: r });
     }
     this.pipeline.setLights(this._lightBuf);
-    this.pipeline.setResolution(this.camera.width, this.camera.height);
+    // Pass the WORLD-pixel size visible through the camera, not the screen-pixel
+    // viewport size. Shaders compute `worldPx = uv * uResolution + uScroll` and
+    // uScroll is in world pixels — passing the screen size would over-scale by
+    // the zoom factor and offset world-anchored effects (e.g. light positions).
+    const zoom = this.camera.zoom || 1;
+    this.pipeline.setResolution(this.camera.width / zoom, this.camera.height / zoom);
     this.pipeline.setScroll(this.camera.scrollX, this.camera.scrollY);
   }
 

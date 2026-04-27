@@ -87,7 +87,9 @@ export default class {
     const lerp = smoothCam ? 0.3 : 1;
     this.scene.cameras.main.startFollow(this.player, true, lerp, lerp);
     this.scene.cameras.main.setFollowOffset(-(this.player.width/2), -(this.player.height/2));
-    this.scene.cameras.main.setSize(25 * Tile.WIDTH, 19 * Tile.HEIGHT);
+    this._updateCameraZoom();
+    this._resizeHandler = () => this._updateCameraZoom();
+    this.scene.scale.on('resize', this._resizeHandler);
     if (smoothCam) {
       // Snap to the player on scene entry so the lerp doesn't pan in from (0,0).
       // `this.player.x/y` are still tile indices here — GridEngine moves the sprite to
@@ -110,6 +112,19 @@ export default class {
       this._spawnFollowerMon({ x, y });
     }
 
+  }
+
+  _updateCameraZoom() {
+    const w = this.scene.scale.width;
+    let targetTiles;
+    if (w >= 2560) targetTiles = 42;
+    else if (w >= 1920) targetTiles = 32;
+    else if (w >= 1366) targetTiles = 26;
+    else if (w >= 1024) targetTiles = 20;
+    else if (w >= 768) targetTiles = 16;
+    else targetTiles = 12;
+    const zoom = w / (targetTiles * Tile.WIDTH);
+    this.scene.cameras.main.setZoom(zoom);
   }
 
   _spawnFollowerMon(pos) {
@@ -341,6 +356,10 @@ export default class {
   }
 
   destroy() {
+    if (this._resizeHandler) {
+      this.scene.scale.off('resize', this._resizeHandler);
+      this._resizeHandler = null;
+    }
     if (this._moveSuccessSub) {
       this._moveSuccessSub.unsubscribe();
       this._moveSuccessSub = null;

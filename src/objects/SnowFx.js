@@ -71,7 +71,9 @@ export default class SnowFx {
     // Wrap time to keep mediump GPUs from drifting after long sessions.
     this._timeSec = (time / 1000) % 1024;
     this.pipeline.setTime?.(this._timeSec);
-    this.pipeline.setResolution?.(this.camera.width, this.camera.height);
+    // World-pixel uResolution — see Darkness.js for the rationale.
+    const zoom = this.camera.zoom || 1;
+    this.pipeline.setResolution?.(this.camera.width / zoom, this.camera.height / zoom);
   }
 
   destroy() {

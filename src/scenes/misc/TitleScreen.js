@@ -5,8 +5,6 @@ import * as gameDefPresets from '@Data/gameDefs/index.js';
 import { initRng } from '@Utilities/rng.js';
 import { getInputManager } from '@Utilities';
 
-const CX = 400;
-const CY = 260;
 const BALL_R = 110;
 
 const NAVY     = 0x1a1a2e;
@@ -80,6 +78,9 @@ export default class TitleScreen extends Phaser.Scene {
   constructor() {
     super({ key: 'TitleScreen' });
   }
+
+  get _cx() { return this.scale.width / 2; }
+  get _cy() { return Math.min(this.scale.height * 0.38, 260); }
 
   /** Scene init data: `{ skipIdle: true }` jumps straight to the main menu. */
   init(data) {
@@ -195,10 +196,11 @@ export default class TitleScreen extends Phaser.Scene {
   _drawIdleScreen() {
     const ball = this._drawBall();
     this._idleGroup.push(...ball);
+    const titleY = this._cy + BALL_R + 30;
     this._idleGroup.push(
-      this.add.text(CX, 400, 'POKÉMON SPRITEWORLD', TITLE_FONT).setOrigin(0.5, 0.5)
+      this.add.text(this._cx, titleY, 'POKÉMON SPRITEWORLD', TITLE_FONT).setOrigin(0.5, 0.5)
     );
-    this._pressText = this.add.text(CX, 448, '— Press any button —', {
+    this._pressText = this.add.text(this._cx, titleY + 48, '— Press any button —', {
       fontFamily: 'Gen3', fontSize: '14px', color: YELLOW,
     }).setOrigin(0.5, 0.5);
     this._idleGroup.push(this._pressText);
@@ -221,7 +223,7 @@ export default class TitleScreen extends Phaser.Scene {
     this._idleGroup = [];
     this._pressText = null;
     if (!this._menuHeader) {
-      this._menuHeader = this.add.text(CX, 96, 'POKÉMON SPRITEWORLD', {
+      this._menuHeader = this.add.text(this._cx, 96, 'POKÉMON SPRITEWORLD', {
         fontFamily: 'Gen3', fontSize: '22px', color: COL_NORM,
       }).setOrigin(0.5, 0.5);
     }
@@ -279,7 +281,7 @@ export default class TitleScreen extends Phaser.Scene {
     this._state = 'overwriteConfirm';
     this._clearMenu();
     this._cursorIdx = 1; // default to NO
-    const label = this.add.text(CX, 220, 'Overwrite this save?', {
+    const label = this.add.text(this._cx, 220, 'Overwrite this save?', {
       fontFamily: 'Gen3', fontSize: '16px', color: COL_NORM,
     }).setOrigin(0.5, 0.5);
     this._menuGroup.push(label);
@@ -294,7 +296,7 @@ export default class TitleScreen extends Phaser.Scene {
     this._cursorIdx = 0;
     this._selectedSlot = slot;
     this._wizardValues = this._presetValues('kanto');
-    this._caption = this.add.text(CX, 140, `NEW GAME — Slot ${slot}`, CAPTION_FONT)
+    this._caption = this.add.text(this._cx, 140, `NEW GAME — Slot ${slot}`, CAPTION_FONT)
       .setOrigin(0.5, 0.5);
     this._menuGroup.push(this._caption);
     this._renderSettingsScreen(WIZARD_FIELDS, this._wizardValues, { extraRow: 'START' });
@@ -324,14 +326,17 @@ export default class TitleScreen extends Phaser.Scene {
     }
     setGameDef(effective);
 
-    // Fresh-start the slot: wipe its keys, reset modules, mark it active,
-    // persist the slot (captures the new gameDef), then launch HeroHouseF2.
+    const startScene = effective.startScene;
+    const startTile  = { ...effective.startTile };
+
     store.dispatch('clearSave', slot).then(() => {
       store.commit('game/SET_ACTIVE_SLOT', slot);
       localStorage.setItem('sw_active_slot', String(slot));
       initRng(store.state.game.seed);
+      store.commit('game/SET_MAP', startScene);
+      store.commit('game/SET_PLAYER_TILE', startTile);
       store.dispatch('saveGame');
-      this._launch('HeroHouseF2', { x: 2, y: 6, charLayer: 'ground' });
+      this._launch(startScene, startTile);
     });
   }
 
@@ -349,7 +354,7 @@ export default class TitleScreen extends Phaser.Scene {
       alwaysRun: g.alwaysRun,
       autoSurf:  g.autoSurf,
     };
-    this._caption = this.add.text(CX, 140,
+    this._caption = this.add.text(this._cx, 140,
       '◀ ▶ to change · X to return', CAPTION_FONT)
       .setOrigin(0.5, 0.5);
     this._menuGroup.push(this._caption);
@@ -382,8 +387,9 @@ export default class TitleScreen extends Phaser.Scene {
 
     const startY  = 180;
     const spacing = 26;
-    const labelX  = CX - 110;
-    const valueX  = CX + 40;
+    const cx = this._cx;
+    const labelX  = cx - 110;
+    const valueX  = cx + 40;
 
     fields.forEach((f, i) => {
       const y = startY + i * spacing;
@@ -399,7 +405,7 @@ export default class TitleScreen extends Phaser.Scene {
 
     if (this._extraRow) {
       const y = startY + fields.length * spacing + 8;
-      const action = this.add.text(CX, y, this._extraRow, {
+      const action = this.add.text(cx, y, this._extraRow, {
         ...MENU_FONT, color: COL_NORM,
       }).setOrigin(0.5, 0.5);
       this._menuGroup.push(action);
@@ -440,7 +446,7 @@ export default class TitleScreen extends Phaser.Scene {
   _buildMenu(items, startY, spacing) {
     this._menuItems = items;
     this._itemTexts = items.map((label, i) => {
-      return this.add.text(CX, startY + i * spacing, label, {
+      return this.add.text(this._cx, startY + i * spacing, label, {
         ...MENU_FONT,
         color: i === this._cursorIdx ? COL_SEL : COL_NORM,
       }).setOrigin(0.5, 0.5);
@@ -533,12 +539,12 @@ export default class TitleScreen extends Phaser.Scene {
     this._cursorIdx = savedCursor;
     this._state = savedState;
     if (savedState === 'wizard') {
-      this._caption = this.add.text(CX, 140, `NEW GAME — Slot ${this._selectedSlot}`, CAPTION_FONT)
+      this._caption = this.add.text(this._cx, 140, `NEW GAME — Slot ${this._selectedSlot}`, CAPTION_FONT)
         .setOrigin(0.5, 0.5);
       this._menuGroup.push(this._caption);
       this._renderSettingsScreen(WIZARD_FIELDS, this._wizardValues, { extraRow: 'START' });
     } else {
-      this._caption = this.add.text(CX, 140, '◀ ▶ to change · X to return', CAPTION_FONT)
+      this._caption = this.add.text(this._cx, 140, '◀ ▶ to change · X to return', CAPTION_FONT)
         .setOrigin(0.5, 0.5);
       this._menuGroup.push(this._caption);
       this._renderSettingsScreen(OPTION_FIELDS, this._optionValues);
@@ -663,28 +669,31 @@ export default class TitleScreen extends Phaser.Scene {
   /** Draws the premier ball and returns every graphics object so the
    *  caller can destroy them when leaving idle. */
   _drawBall() {
+    const cx = this._cx;
+    const cy = this._cy;
+
     const base = this.add.graphics();
     base.fillStyle(WHITE, 1);
-    base.fillCircle(CX, CY, BALL_R);
+    base.fillCircle(cx, cy, BALL_R);
 
     const band = this.add.graphics();
     band.fillStyle(ORANGE, 1);
-    band.fillRect(CX - BALL_R, CY - 17, BALL_R * 2, 34);
+    band.fillRect(cx - BALL_R, cy - 17, BALL_R * 2, 34);
 
     const maskShape = this.make.graphics({ add: false });
     maskShape.fillStyle(WHITE, 1);
-    maskShape.fillCircle(CX, CY, BALL_R);
+    maskShape.fillCircle(cx, cy, BALL_R);
     band.setMask(maskShape.createGeometryMask());
 
     const fg = this.add.graphics();
     fg.lineStyle(5, BLACK, 1);
-    fg.strokeCircle(CX, CY, BALL_R);
+    fg.strokeCircle(cx, cy, BALL_R);
     fg.lineStyle(3, BLACK, 1);
-    fg.lineBetween(CX - BALL_R, CY, CX + BALL_R, CY);
+    fg.lineBetween(cx - BALL_R, cy, cx + BALL_R, cy);
     fg.fillStyle(WHITE, 1);
-    fg.fillCircle(CX, CY, 14);
+    fg.fillCircle(cx, cy, 14);
     fg.lineStyle(4, BLACK, 1);
-    fg.strokeCircle(CX, CY, 14);
+    fg.strokeCircle(cx, cy, 14);
 
     return [base, band, fg, maskShape];
   }

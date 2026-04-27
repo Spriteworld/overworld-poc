@@ -10,10 +10,13 @@ import { registerBattlePipelines } from '@/shaders';
 const config = {
   parent: 'game-container',
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: 1920,
+  height: 1024,
   pixelArt: true,
   disableContextMenu: true,
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+  },
   input: {
     gamepad: true,
     touch: {
@@ -42,7 +45,6 @@ const config = {
       registerBattlePipelines(game);
       game.canvas.style.width = '100%';
       game.canvas.style.height = '100%';
-      game.canvas.style['object-fit'] = 'contain';
       window.dispatchEvent(new Event('resize'));
     }
   }

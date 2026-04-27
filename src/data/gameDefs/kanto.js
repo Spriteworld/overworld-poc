@@ -17,6 +17,10 @@ export default {
   /** Overworld scene key launched when no saved game is present. */
   overworldScene:   'KantoWorld',
 
+  /** Scene key + tile for a brand-new save (new-game wizard). */
+  startScene: 'KantoHeroHouseF2',
+  startTile:  { x: 2, y: 6, charLayer: 'ground' },
+
   /**
    * Wild encounter species pool.
    *   'gen_1'    → nat_dex_id 1–151

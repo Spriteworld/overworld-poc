@@ -19595,7 +19595,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "ViridianForest"
+              "value": "KantoViridianForest"
             },
             {
               "name": "warp-location",
@@ -19619,7 +19619,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "ViridianForest"
+              "value": "KantoViridianForest"
             },
             {
               "name": "warp-location",
@@ -19632,7 +19632,7 @@
           "visible": true,
           "width": 64,
           "x": 672,
-          "y": 544
+          "y": 576
         },
         {
           "height": 32,

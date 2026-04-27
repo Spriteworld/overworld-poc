@@ -571,7 +571,7 @@
                         {
                          "name":"warp",
                          "type":"string",
-                         "value":"HeroHouseF1"
+                         "value":"KantoHeroHouseF1"
                         }, 
                         {
                          "name":"warp-location",
@@ -701,7 +701,7 @@
                         {
                          "name":"warp",
                          "type":"string",
-                         "value":"HeroHouseF2"
+                         "value":"KantoHeroHouseF2"
                         }, 
                         {
                          "name":"warp-location",

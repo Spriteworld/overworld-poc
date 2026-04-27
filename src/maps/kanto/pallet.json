@@ -4261,7 +4261,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "HeroHouseF1"
+              "value": "KantoHeroHouseF1"
             },
             {
               "name": "warp-location",
@@ -4737,7 +4737,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "ProfessorLab"
+              "value": "KantoProfessorLab"
             },
             {
               "name": "warp-location",
@@ -4844,7 +4844,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "RivalHouse"
+              "value": "KantoRivalHouse"
             },
             {
               "name": "warp-location",
@@ -4901,7 +4901,7 @@
         "can_run": true,
         "can_see": true,
         "encounter-table": [],
-        "weather_type": "heavy_rain"
+        "weather_type": "none"
       }
     }
   ],

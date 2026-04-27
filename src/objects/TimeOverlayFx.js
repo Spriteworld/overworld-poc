@@ -77,7 +77,9 @@ export default class TimeOverlayFx {
       this._lightBuf.push({ x: l.x, y: l.y, radius: l.radius * 0.6 });
     }
     this.pipeline.setLights?.(this._lightBuf);
-    this.pipeline.setResolution?.(this.camera.width, this.camera.height);
+    // World-pixel uResolution — see Darkness.js for the rationale.
+    const zoom = this.camera.zoom || 1;
+    this.pipeline.setResolution?.(this.camera.width / zoom, this.camera.height / zoom);
     this.pipeline.setScroll?.(this.camera.scrollX, this.camera.scrollY);
   }
 

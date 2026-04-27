@@ -2320,7 +2320,7 @@
                         {
                          "name":"warp",
                          "type":"string",
-                         "value":"HeroHouseF1"
+                         "value":"KantoHeroHouseF1"
                         }, 
                         {
                          "name":"warp-location",
@@ -2856,7 +2856,7 @@
                         {
                          "name":"warp",
                          "type":"string",
-                         "value":"ViridianForest"
+                         "value":"KantoViridianForest"
                         }, 
                         {
                          "name":"warp-location",
@@ -2879,7 +2879,7 @@
                         {
                          "name":"warp",
                          "type":"string",
-                         "value":"ViridianForest"
+                         "value":"KantoViridianForest"
                         }, 
                         {
                          "name":"warp-location",
@@ -2891,7 +2891,7 @@
                  "visible":true,
                  "width":64,
                  "x":2336,
-                 "y":4160
+                 "y":4192
                 }, 
                 {
                  "height":32,
@@ -3267,87 +3267,6 @@
                  "width":64,
                  "x":2336,
                  "y":5408
-                }, 
-                {
-                 "height":32,
-                 "id":79,
-                 "name":"testTrainer",
-                 "opacity":1,
-                 "properties":[
-                        {
-                         "name":"battle-texture",
-                         "type":"string",
-                         "value":""
-                        }, 
-                        {
-                         "name":"facing-direction",
-                         "type":"string",
-                         "value":"right"
-                        }, 
-                        {
-                         "name":"overworld-texture",
-                         "type":"string",
-                         "value":"ace_trainer"
-                        }, 
-                        {
-                         "name":"seen-radius",
-                         "type":"int",
-                         "value":4
-                        }, 
-                        {
-                         "name":"text",
-                         "type":"string",
-                         "value":"Oh a trainer!"
-                        }, 
-                        {
-                         "name":"text-defeated",
-                         "type":"string",
-                         "value":"Oh, a trainer..."
-                        }, 
-                        {
-                         "name":"track-player",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"track-player-radius",
-                         "type":"string",
-                         "value":"4"
-                        }, 
-                        {
-                         "name":"trainer-name",
-                         "type":"string",
-                         "value":"B"
-                        }, 
-                        {
-                         "name":"trainer-pokemon",
-                         "type":"list",
-                         "value":[
-                                {
-                                 "propertytype":"trainer-pokemon",
-                                 "type":"class",
-                                 "value":
-                                    {
-                                     "level":8,
-                                     "species":"pikachu"
-                                    }
-                                }, 
-                                {
-                                 "propertytype":"trainer-pokemon",
-                                 "type":"class",
-                                 "value":
-                                    {
-                                     "level":8,
-                                     "species":"pikachu"
-                                    }
-                                }]
-                        }],
-                 "rotation":0,
-                 "type":"trainer",
-                 "visible":true,
-                 "width":32,
-                 "x":2688,
-                 "y":6432
                 }, 
                 {
                  "height":32,
@@ -3865,7 +3784,7 @@
                         {
                          "name":"warp",
                          "type":"string",
-                         "value":"ProfessorLab"
+                         "value":"KantoProfessorLab"
                         }, 
                         {
                          "name":"warp-location",
@@ -4520,7 +4439,7 @@
                         {
                          "name":"warp",
                          "type":"string",
-                         "value":"MtMoonF1"
+                         "value":"KantoMtMoonF1"
                         }, 
                         {
                          "name":"warp-location",
@@ -4543,7 +4462,7 @@
                         {
                          "name":"warp",
                          "type":"string",
-                         "value":"MtMoonF2"
+                         "value":"KantoMtMoonF2"
                         }, 
                         {
                          "name":"warp-location",
@@ -4666,7 +4585,7 @@
                         {
                          "name":"warp",
                          "type":"string",
-                         "value":"RivalHouse"
+                         "value":"KantoRivalHouse"
                         }, 
                         {
                          "name":"warp-location",
@@ -5057,7 +4976,7 @@
                              "can_run":true,
                              "can_see":true,
                              "encounter-table":[],
-                             "weather_type":"heavy_rain"
+                             "weather_type":"none"
                             }
                         }],
                  "rotation":0,
