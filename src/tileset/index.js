@@ -1,7 +1,14 @@
 import blank from '@Tileset/blank.png';
 
 import animated_grass from '@Tileset/animated_grass.png';
+import animated_grass_json from '@Tileset/animated_grass.json';
 import animation_sheet from '@Tileset/maps/animation.png';
+
+import Transparent_Tiles from '@Tileset/Transparent_Tiles.png';
+import Transparent_Tiles_json from '@Tileset/Transparent_Tiles.json';
+
+import caves      from '@Tileset/caves.png';
+import caves_json from '@Tileset/caves.json';
 
 import gen3inside from '@Tileset/gen3_inside.png';
 import gen3inside_json from '@Tileset/gen3_inside.json';
@@ -14,6 +21,17 @@ import kanto_outside      from '@Tileset/maps/kanto_outside.png';
 import kanto_outside_json  from '@Tileset/maps/kanto_outside.json';
 import kanto_inside       from '@Tileset/maps/kanto_inside.png';
 import kanto_inside_json  from '@Tileset/maps/kanto_inside.json';
+import kanto_dungeons     from '@Tileset/maps/kanto_dungeons.png';
+import kanto_dungeons_json from '@Tileset/maps/kanto_dungeons.json';
+
+import Gavworld_common       from '@Tileset/maps/Gavworld_common.png';
+import Gavworld_common_json   from '@Tileset/maps/Gavworld_common.json';
+import Gavworld_outside      from '@Tileset/maps/Gavworld_outside.png';
+import Gavworld_outside_json  from '@Tileset/maps/Gavworld_outside.json';
+import Gavworld_inside       from '@Tileset/maps/Gavworld_inside.png';
+import Gavworld_inside_json  from '@Tileset/maps/Gavworld_inside.json';
+import Gavworld_dungeons     from '@Tileset/maps/Gavworld_dungeons.png';
+import Gavworld_dungeons_json from '@Tileset/maps/Gavworld_dungeons.json';
 
 import rse_inside from '@Tileset/rse_inside.png';
 import rse_inside_json from '@Tileset/rse_inside.json';
@@ -44,8 +62,9 @@ import may          from '@Tileset/characters/sprites/may.png';
 import may_bike     from '@Tileset/characters/sprites/may_bike.png';
 import may_surf     from '@Tileset/characters/sprites/may_surf.png';
 
-// NPC/trainer sprites: lazy factories — only bundled when actually needed.
-import trainers, { sprites } from '@Tileset/characters';
+// Overworld NPC/trainer sprites (from characters/sprites/).
+// In-battle trainer portraits live in characters/trainer/ — exported as `trainer`.
+import trainers, { sprites, trainer } from '@Tileset/characters';
 
 const _pokemonGlob      = import.meta.glob('./overworld/pokemon/*.png',       { eager: false, query: '?url', import: 'default' });
 const _pokemonShinyGlob = import.meta.glob('./overworld/pokemon_shiny/*.png',  { eager: false, query: '?url', import: 'default' });
@@ -67,13 +86,28 @@ const pokemon_shiny = Object.fromEntries(
 export default {
   blank,
   animated_grass,
+  animated_grass_json,
   animation_sheet,
+  Transparent_Tiles,
+  Transparent_Tiles_json,
+  caves,
+  caves_json,
   kanto_common,
   kanto_common_json,
   kanto_outside,
   kanto_outside_json,
   kanto_inside,
   kanto_inside_json,
+  kanto_dungeons,
+  kanto_dungeons_json,
+  Gavworld_common,
+  Gavworld_common_json,
+  Gavworld_outside,
+  Gavworld_outside_json,
+  Gavworld_inside,
+  Gavworld_inside_json,
+  Gavworld_dungeons,
+  Gavworld_dungeons_json,
   gen3inside,
   gen3inside_json,
   gen3outside,
@@ -102,6 +136,7 @@ export default {
 
   sprites,
   trainers,
+  trainer,
 
   ow_pokemon_dimensions,
   ow_pokemon_shiny_dimensions,

@@ -162,20 +162,70 @@ def discover_firstgids(master, source_substrings):
     return found
 
 
+# ── Polygon helpers ────────────────────────────────────────────────────────
+
+def _point_in_polygon(px, py, polygon):
+    """Ray-casting point-in-polygon test.  `polygon` is a list of (x, y)
+    tuples forming a closed ring (last→first edge is implicit)."""
+    n = len(polygon)
+    inside = False
+    j = n - 1
+    for i in range(n):
+        xi, yi = polygon[i]
+        xj, yj = polygon[j]
+        if ((yi > py) != (yj > py)) and \
+           (px < (xj - xi) * (py - yi) / (yj - yi) + xi):
+            inside = not inside
+        j = i
+    return inside
+
+
+def _polygon_bbox(polygon):
+    """Return (min_x, min_y, max_x, max_y) for a list of (x, y) tuples."""
+    xs = [p[0] for p in polygon]
+    ys = [p[1] for p in polygon]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def _zone_geometry(obj):
+    """Derive pixel-space bounding box and optional polygon from a Tiled
+    maps-layer object.  Handles rectangles, polygons, and polylines.
+
+    Returns (x, y, width, height, polygon_or_None).
+    `polygon` (when present) is a list of (px, py) tuples in absolute
+    pixel coordinates forming a closed ring."""
+    poly_pts = obj.get('polygon') or obj.get('polyline')
+    if poly_pts:
+        abs_pts = [(obj['x'] + p['x'], obj['y'] + p['y']) for p in poly_pts]
+        bx0, by0, bx1, by1 = _polygon_bbox(abs_pts)
+        return bx0, by0, bx1 - bx0, by1 - by0, abs_pts
+    return obj['x'], obj['y'], obj['width'], obj['height'], None
+
+
 # ── Tile-data extraction ────────────────────────────────────────────────────
 
-def extract_region(data, src_w, src_h, ox, oy, dst_w, dst_h):
+def extract_region(data, src_w, src_h, ox, oy, dst_w, dst_h,
+                   polygon=None, tw=32, th=32):
     """Extract a `dst_w`×`dst_h` rectangular region from a flat tile-data
     array of size `src_w`×`src_h` starting at tile origin `(ox, oy)`.
-    Out-of-bounds reads return 0 (empty tile)."""
+    Out-of-bounds reads return 0 (empty tile).
+
+    If `polygon` is provided (list of absolute pixel (x,y) tuples), tiles
+    whose center falls outside the polygon are zeroed out."""
     out = []
     for row in range(dst_h):
         for col in range(dst_w):
             sx, sy = ox + col, oy + row
             if 0 <= sx < src_w and 0 <= sy < src_h:
-                out.append(data[sy * src_w + sx])
+                tile = data[sy * src_w + sx]
             else:
-                out.append(0)
+                tile = 0
+            if tile and polygon:
+                cx = (ox + col) * tw + tw / 2
+                cy = (oy + row) * th + th / 2
+                if not _point_in_polygon(cx, cy, polygon):
+                    tile = 0
+            out.append(tile)
     return out
 
 
@@ -207,18 +257,27 @@ def name_to_filename(name, overrides=None, *, expand_floor_suffix=False):
 
 # ── Per-zone wiring ─────────────────────────────────────────────────────────
 
-def merge_interactions(master_objs, master_px_x, master_px_y, px_w, px_h):
+def merge_interactions(master_objs, master_px_x, master_px_y, px_w, px_h,
+                       polygon=None):
     """Filter master's interaction objects to those whose center falls inside
-    the zone's pixel bounds, returning the objects with localised x/y and
-    fresh sequential ids. Returns (objects_list, next_object_id)."""
+    the zone's pixel bounds (and optional polygon), returning the objects with
+    localised x/y and fresh sequential ids.
+    Returns (objects_list, next_object_id).
+
+    If `polygon` is provided (list of absolute pixel (x,y) tuples) the
+    point-in-polygon test replaces the rectangular bounds check."""
     objects = []
     next_id = 0
     for obj in master_objs:
         cx = obj['x'] + obj.get('width',  0) / 2
         cy = obj['y'] + obj.get('height', 0) / 2
-        if not (master_px_x <= cx < master_px_x + px_w and
-                master_px_y <= cy < master_px_y + px_h):
-            continue
+        if polygon:
+            if not _point_in_polygon(cx, cy, polygon):
+                continue
+        else:
+            if not (master_px_x <= cx < master_px_x + px_w and
+                    master_px_y <= cy < master_px_y + px_h):
+                continue
         next_id += 1
         objects.append({
             **obj,
@@ -368,12 +427,39 @@ def js_insert_after_last(content, pattern, new_line):
     return ''.join(lines), True
 
 
-def ensure_scene_file(scene_key, *, inside=False):
+def ensure_scene_file(scene_key, *, inside=False, world_prefix=None):
     """Create `src/scenes/maps/kanto/{scene_key}.js` if missing. Inside
-    scenes get an `inside: true` constructor flag."""
-    path = SRC_DIR / 'scenes' / 'maps' / 'kanto' / f'{scene_key}.js'
-    if path.exists():
+    scenes get an `inside: true` constructor flag.
+
+    Migration: when `world_prefix` is set and a legacy scene file exists at
+    the un-prefixed name (`{scene_key.removeprefix(world_prefix)}.js`), the
+    file is renamed on disk and its `mapName` / `map` references are rewritten
+    to use the new prefixed scene_key + map_var.
+    """
+    new_path = SRC_DIR / 'scenes' / 'maps' / 'kanto' / f'{scene_key}.js'
+    if new_path.exists():
         return False
+
+    if world_prefix and scene_key.startswith(world_prefix) and scene_key != world_prefix:
+        legacy_scene_key = scene_key[len(world_prefix):]
+        legacy_path      = SRC_DIR / 'scenes' / 'maps' / 'kanto' / f'{legacy_scene_key}.js'
+        if legacy_path.exists():
+            old_content = legacy_path.read_text(encoding='utf-8')
+            legacy_var  = legacy_scene_key + 'Map'
+            new_var     = scene_key + 'Map'
+            # Word-boundary regex catches both `{ Foo }` and `{Foo}` shapes
+            # (older scenes used the no-space form). Renaming the var
+            # everywhere also covers any other reference to it inside the file.
+            new_content = re.sub(
+                r'\b' + re.escape(legacy_var) + r'\b', new_var, old_content,
+            ).replace(
+                f"mapName: '{legacy_scene_key}'", f"mapName: '{scene_key}'",
+            )
+            new_path.write_text(new_content, encoding='utf-8')
+            legacy_path.unlink()
+            print(f'  renamed scene file {legacy_path.name} -> {new_path.name}')
+            return True
+
     map_var = scene_key + 'Map'
     inside_line = "      inside: true,\n" if inside else ""
     content = (
@@ -405,16 +491,18 @@ def ensure_scene_file(scene_key, *, inside=False):
         f"  }}\n"
         f"}}\n"
     )
-    path.write_text(content, encoding='utf-8')
-    print(f'  created scene {path.name}')
+    new_path.write_text(content, encoding='utf-8')
+    print(f'  created scene {new_path.name}')
     return True
 
 
-def ensure_maps_index(scene_key, fname, inside=False):
-    """Register a map in `src/maps/index.js`. If the file is already
-    imported under a different variable name (e.g. ProfessorLabMap for a
-    file authored elsewhere), re-use that variable for the registry entry
-    rather than adding a duplicate import.
+def ensure_maps_index(scene_key, fname, inside=False, *, world_prefix=None):
+    """Register a map in `src/maps/index.js`.
+
+    Migration: any existing `import OLDMap from './kanto/{fname}'` whose var
+    differs from the new `{scene_key}Map` is renamed (import + named export +
+    MAP_REGISTRY value). MAP_REGISTRY keys and WORLD_MAP_KEYS values that
+    pointed at the legacy scene_key are rewritten to the new scene_key.
 
     `inside=True` marks indoor/dungeon scenes so they are NOT added to
     `WORLD_MAP_KEYS` — that dict is strictly for maps listed in
@@ -426,6 +514,53 @@ def ensure_maps_index(scene_key, fname, inside=False):
     map_var = scene_key + 'Map'
     changed = False
 
+    # ── Migration: rename legacy import + downstream references ────────────
+    m = re.search(
+        r"import (\w+) from " + re.escape(f"'./kanto/{fname}'"), content,
+    )
+    if m and m.group(1) != map_var:
+        legacy_var = m.group(1)
+        # Rename the import line
+        content = content.replace(
+            f"import {legacy_var} from './kanto/{fname}'",
+            f"import {map_var} from './kanto/{fname}'",
+        )
+        # Rename standalone occurrences of legacy_var (named export entry,
+        # any MAP_REGISTRY value reference). Word-boundary regex avoids
+        # touching substrings like `LegacyVarSuffix`.
+        content = re.sub(
+            r'\b' + re.escape(legacy_var) + r'\b', map_var, content,
+        )
+        changed = True
+        print(f'  maps/index.js: renamed {legacy_var} -> {map_var}')
+
+        # MAP_REGISTRY: line is now `'OldKey': map_var,` — rename key.
+        reg_m = re.search(
+            r"'(\w+)'(\s*:\s*)" + re.escape(map_var) + r"\b", content,
+        )
+        if reg_m and reg_m.group(1) != scene_key:
+            old_key = reg_m.group(1)
+            spacing = reg_m.group(2)
+            content = content.replace(
+                f"'{old_key}'{spacing}{map_var}",
+                f"'{scene_key}'{spacing}{map_var}", 1,
+            )
+            print(f"  maps/index.js: renamed MAP_REGISTRY key '{old_key}' -> '{scene_key}'")
+
+        # WORLD_MAP_KEYS: rename value if line `'{fname}': '{old_value}'` exists.
+        wmk_m = re.search(
+            r"'" + re.escape(fname) + r"'(\s*:\s*)'(\w+)'", content,
+        )
+        if wmk_m and wmk_m.group(2) != scene_key:
+            old_value = wmk_m.group(2)
+            spacing   = wmk_m.group(1)
+            content = content.replace(
+                f"'{fname}'{spacing}'{old_value}'",
+                f"'{fname}'{spacing}'{scene_key}'", 1,
+            )
+            print(f"  maps/index.js: renamed WORLD_MAP_KEYS '{fname}' value '{old_value}' -> '{scene_key}'")
+
+    # ── Add-if-missing ────────────────────────────────────────────────────
     file_already_imported = f"'./kanto/{fname}'" in content
 
     if not file_already_imported and f"import {map_var} from" not in content:
@@ -439,10 +574,6 @@ def ensure_maps_index(scene_key, fname, inside=False):
             print(f'  maps/index.js: added import {map_var}')
         else:
             print(f'  maps/index.js: WARNING — could not find anchor for import {map_var}')
-
-    if file_already_imported:
-        m = re.search(r"import (\w+) from '\./kanto/" + re.escape(fname) + r"'", content)
-        map_var = m.group(1) if m else map_var
 
     # WORLD_MAP_KEYS — outdoor maps only. Indoor/dungeon scenes must NOT
     # appear here; KantoWorld._buildWorldTilemap drops every warp whose
@@ -461,8 +592,6 @@ def ensure_maps_index(scene_key, fname, inside=False):
         else:
             print(f"  maps/index.js: WARNING — could not find anchor for WORLD_MAP_KEYS '{fname}'")
 
-    # Word-boundary regex so we match `Foo,` regardless of whether it's on
-    # its own line or sharing one with `Bar, Foo,` etc.
     if not re.search(r'\b' + re.escape(map_var) + r'\b\s*,', content):
         content, ok = js_insert_after_last(
             content,
@@ -493,11 +622,39 @@ def ensure_maps_index(scene_key, fname, inside=False):
     return changed
 
 
-def ensure_scenes_index(scene_key):
-    """Register a scene class in `src/scenes/index.js`."""
+def ensure_scenes_index(scene_key, *, world_prefix=None):
+    """Register a scene class in `src/scenes/index.js`.
+
+    Migration: when `world_prefix` is set, a script-generated legacy import
+    matching `import {legacy} from '@Scenes/maps/kanto/{legacy}.js';`
+    (where `legacy = scene_key.removeprefix(world_prefix)`) is rewritten
+    in-place. The export-list entry `  {legacy},` is also renamed.
+    Hand-edited imports (e.g. `import {{default as X}} from ...`) are left
+    alone — only entries that match the script's exact emitted shape migrate.
+    """
     path    = SRC_DIR / 'scenes' / 'index.js'
     content = path.read_text(encoding='utf-8')
     changed = False
+
+    if world_prefix and scene_key.startswith(world_prefix) and scene_key != world_prefix:
+        legacy_scene_key = scene_key[len(world_prefix):]
+        legacy_import    = (
+            f"import {legacy_scene_key} from "
+            f"'@Scenes/maps/kanto/{legacy_scene_key}.js';"
+        )
+        if legacy_import in content:
+            new_import = (
+                f"import {scene_key} from "
+                f"'@Scenes/maps/kanto/{scene_key}.js';"
+            )
+            content = content.replace(legacy_import, new_import)
+            content = re.sub(
+                r'^(\s+)' + re.escape(legacy_scene_key) + r',\s*$',
+                lambda m, s=scene_key: m.group(1) + s + ',',
+                content, flags=re.MULTILINE,
+            )
+            changed = True
+            print(f'  scenes/index.js: renamed {legacy_scene_key} -> {scene_key}')
 
     if f"import {scene_key} from" not in content:
         content, ok = js_insert_after_last(
@@ -528,6 +685,131 @@ def ensure_scenes_index(scene_key):
     return changed
 
 
+# ── End-of-run namespace sweep ──────────────────────────────────────────────
+
+def sweep_legacy_world_namespace(world_prefix):
+    """Migrate any leftover un-prefixed entries for this world.
+
+    `ensure_maps_index` / `ensure_scene_file` only migrate maps the script is
+    actively processing this run. Stale entries (maps that used to be in the
+    master JSON, or were registered by an older convention) are left alone.
+    This sweep finishes the rename: every `import \\w+Map from './kanto/...';`
+    in src/maps/index.js whose var doesn't already start with `world_prefix`
+    is renamed file-wide, including its MAP_REGISTRY key and WORLD_MAP_KEYS
+    value. Same for src/scenes/index.js + src/scenes/maps/kanto/*.js scene
+    files. Hand-edited imports (e.g. `import {default as X}`) are left
+    alone — the sweep only touches entries that match the script's
+    canonical emitted shape.
+    """
+    if not world_prefix:
+        return
+
+    # ── maps/index.js ─────────────────────────────────────────────────────
+    path    = SRC_DIR / 'maps' / 'index.js'
+    content = path.read_text(encoding='utf-8')
+    changed = False
+
+    for m in list(re.finditer(
+        r"import (\w+)Map from '\./kanto/([\w./]+\.json)';", content,
+    )):
+        old_stem  = m.group(1)
+        old_fname = m.group(2)
+        if old_stem.lower().startswith(world_prefix.lower()):
+            continue
+        new_stem = world_prefix + old_stem
+        old_var  = old_stem + 'Map'
+        new_var  = new_stem + 'Map'
+
+        content = content.replace(
+            f"import {old_var} from './kanto/{old_fname}'",
+            f"import {new_var} from './kanto/{old_fname}'",
+        )
+        content = re.sub(
+            r'\b' + re.escape(old_var) + r'\b', new_var, content,
+        )
+        # MAP_REGISTRY key (line is now `'OldKey': new_var,`)
+        reg_m = re.search(
+            r"'(\w+)'(\s*:\s*)" + re.escape(new_var) + r"\b", content,
+        )
+        if reg_m and reg_m.group(1) != new_stem:
+            content = content.replace(
+                f"'{reg_m.group(1)}'{reg_m.group(2)}{new_var}",
+                f"'{new_stem}'{reg_m.group(2)}{new_var}", 1,
+            )
+        # WORLD_MAP_KEYS value
+        wmk_m = re.search(
+            r"'" + re.escape(old_fname) + r"'(\s*:\s*)'(\w+)'", content,
+        )
+        if wmk_m and wmk_m.group(2) != new_stem:
+            content = content.replace(
+                f"'{old_fname}'{wmk_m.group(1)}'{wmk_m.group(2)}'",
+                f"'{old_fname}'{wmk_m.group(1)}'{new_stem}'", 1,
+            )
+        changed = True
+        print(f'  sweep: maps/index.js renamed {old_var} -> {new_var}')
+
+    if changed:
+        path.write_text(content, encoding='utf-8')
+
+    # ── scenes/index.js ───────────────────────────────────────────────────
+    path    = SRC_DIR / 'scenes' / 'index.js'
+    content = path.read_text(encoding='utf-8')
+    changed = False
+
+    for m in list(re.finditer(
+        r"import (\w+) from '@Scenes/maps/kanto/(\w+)\.js';", content,
+    )):
+        var_name   = m.group(1)
+        scene_name = m.group(2)
+        if var_name != scene_name:
+            continue  # hand-edited (e.g. `import {default as X} from ...`)
+        if var_name.lower().startswith(world_prefix.lower()):
+            continue
+        new_name = world_prefix + var_name
+        content = content.replace(
+            f"import {var_name} from '@Scenes/maps/kanto/{var_name}.js';",
+            f"import {new_name} from '@Scenes/maps/kanto/{new_name}.js';",
+        )
+        content = re.sub(
+            r'^(\s+)' + re.escape(var_name) + r',\s*$',
+            lambda mm, n=new_name: mm.group(1) + n + ',',
+            content, flags=re.MULTILINE,
+        )
+        changed = True
+        print(f'  sweep: scenes/index.js renamed {var_name} -> {new_name}')
+
+    if changed:
+        path.write_text(content, encoding='utf-8')
+
+    # ── src/scenes/maps/kanto/*.js files ──────────────────────────────────
+    scenes_dir = SRC_DIR / 'scenes' / 'maps' / 'kanto'
+    if scenes_dir.exists():
+        for js_file in list(scenes_dir.glob('*.js')):
+            stem = js_file.stem
+            if stem.lower().startswith(world_prefix.lower()):
+                continue
+            new_stem = world_prefix + stem
+            new_path = scenes_dir / f'{new_stem}.js'
+            if new_path.exists():
+                continue
+            old_content = js_file.read_text(encoding='utf-8')
+            # Only touch script-generated scene files (recognised by the
+            # `mapName: '{stem}'` line we always emit). Foreign files keep
+            # their names so we never clobber hand-rolled scenes.
+            if f"mapName: '{stem}'" not in old_content:
+                continue
+            old_var = stem + 'Map'
+            new_var = new_stem + 'Map'
+            new_content = re.sub(
+                r'\b' + re.escape(old_var) + r'\b', new_var, old_content,
+            ).replace(
+                f"mapName: '{stem}'", f"mapName: '{new_stem}'",
+            )
+            new_path.write_text(new_content, encoding='utf-8')
+            js_file.unlink()
+            print(f'  sweep: renamed scene file {js_file.name} -> {new_path.name}')
+
+
 # ── Per-zone driver ─────────────────────────────────────────────────────────
 
 def iter_zones(maps_layer, *, name_to_file_overrides=None,
@@ -538,11 +820,16 @@ def iter_zones(maps_layer, *, name_to_file_overrides=None,
     sync — this just centralises filename derivation, scene-key extraction,
     and the maps-object property pass-through.
 
+    Supports rectangle, polygon, and polyline zone shapes.  For non-rect
+    shapes the bounding box is computed from the vertices; the original
+    polygon is passed through so callers can mask tiles and objects.
+
     Yields dicts with keys:
       name        — CamelCase scene key (object's `name`)
       fname       — derived filename, e.g. "pallet.json"
-      x, y        — pixel origin (raw, no offset applied)
-      width, height — pixel size
+      x, y        — pixel origin of the bounding box
+      width, height — pixel size of the bounding box
+      polygon     — list of absolute (px, py) tuples, or None for rects
       properties  — list of Tiled custom properties on the maps-layer object
     """
     if not maps_layer:
@@ -554,12 +841,14 @@ def iter_zones(maps_layer, *, name_to_file_overrides=None,
             obj['name'], name_to_file_overrides,
             expand_floor_suffix=expand_floor_suffix,
         )
+        x, y, w, h, polygon = _zone_geometry(obj)
         yield {
             'name':       obj['name'],
             'fname':      fname,
-            'x':          obj['x'],
-            'y':          obj['y'],
-            'width':      obj['width'],
-            'height':     obj['height'],
+            'x':          x,
+            'y':          y,
+            'width':      w,
+            'height':     h,
+            'polygon':    polygon,
             'properties': obj.get('properties', []),
         }

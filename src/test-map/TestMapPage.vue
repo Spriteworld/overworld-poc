@@ -35,7 +35,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <div
           v-for="m in group.maps"
-          :key="m.scene"
+          :key="hashFor(m)"
           class="rounded-xl p-3 flex flex-col gap-2"
           :style="{ background: m.color }"
         >
@@ -89,6 +89,8 @@ import PhaserGame from '@/PhaserGame.vue';
 import MobileControls from '@/components/MobileControls.vue';
 import { setStartScene, clearStartScene } from '@/data/startScene.js';
 import { setStartFlags, clearStartFlags } from '@/data/startFlags.js';
+import { setStartDebug, clearStartDebug } from '@/data/startDebug.js';
+import { setStartPlayerLocation, clearStartPlayerLocation } from '@/data/startPlayerLocation.js';
 import { setStartPauseScreen, clearStartPauseScreen } from '@/data/startPauseScreen.js';
 import { setTestMode, clearTestMode } from '@/data/testMode.js';
 import MAPS from './maps.js';
@@ -106,14 +108,24 @@ function formatKey(key) {
 
 const active = ref(null);
 
-/** Hash format: "Scene" or "Scene/pauseScreen" (e.g. "Test/team"). */
+/**
+ * Hash format:
+ *   - "id"               when the scenario sets an explicit `id` (preferred
+ *                        whenever multiple scenarios share the same scene).
+ *   - "Scene"            for plain map entries.
+ *   - "Scene/pauseScreen" for menu-screen entries.
+ */
 function hashFor(map) {
+  if (map.id) return map.id;
   return map.pauseScreen ? `${map.scene}/${map.pauseScreen}` : map.scene;
 }
 
 function findMap(hash) {
+  // Prefer explicit id match — allows multiple scenarios to share a scene.
+  const byId = allMaps.find(m => m.id === hash);
+  if (byId) return byId;
   const [scene, pauseScreen = null] = hash.split('/');
-  return allMaps.find(m => m.scene === scene && (m.pauseScreen ?? null) === pauseScreen);
+  return allMaps.find(m => !m.id && m.scene === scene && (m.pauseScreen ?? null) === pauseScreen);
 }
 
 function launch(map) {
@@ -121,6 +133,8 @@ function launch(map) {
   setStartFlags(liveState[map.scene]);
   setStartScene(map.scene);
   setStartPauseScreen(map.pauseScreen ?? null);
+  setStartDebug(map.debug ?? null);
+  setStartPlayerLocation(map.playerLocation ?? null);
   active.value = map;
   window.location.hash = hashFor(map);
 }
@@ -130,6 +144,8 @@ function close() {
   clearStartFlags();
   clearStartScene();
   clearStartPauseScreen();
+  clearStartDebug();
+  clearStartPlayerLocation();
   clearTestMode();
   history.replaceState(null, '', window.location.pathname + window.location.search);
 }

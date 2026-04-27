@@ -7,6 +7,7 @@ import * as Tile from '../Tile.js';
 import * as Direction from '../Direction.js';
 import { Vector2, getPropertyValue, getInputManager, Action, generateTid } from '@Utilities';
 import { playSfx } from '@Utilities/AudioManager.js';
+import { getGameDef } from '@Data/gameDef.js';
 
 export default class extends MovableSprite {
   /**
@@ -96,6 +97,8 @@ export default class extends MovableSprite {
       });
       this.once('destroy', () => this.reflection?.destroy());
     }
+
+    this._installBobRenderHooks();
 
     this.initSeenRadius(identification);
     this.trackingCoords = [];
@@ -467,6 +470,81 @@ export default class extends MovableSprite {
   }
 
   /**
+   * Vertical bob applied while the character occupies a water tile, phase-
+   * matched to the water shader's wave so riders rise and fall with the
+   * surface they're on. Call from the subclass's per-frame update() AFTER
+   * the state machine (so any GE-driven y change has already landed) and
+   * BEFORE reflection / surf-mount sync (so they bob with the parent).
+   *
+   * Bookkeeping: when stationary GE doesn't touch sprite.y, so we own it
+   * and must restore last frame's offset before applying a new one. When
+   * moving, GE re-writes sprite.y each tick (overwriting last frame's bob),
+   * so we skip the restore. `gridEngine.isMoving(id)` distinguishes.
+   */
+  _applyWaterBob(time) {
+    const ge = this.scene?.gridEngine;
+    const id = this.config?.id;
+    if (!ge?.hasCharacter?.(id)) { this._waterBobY = 0; return; }
+
+    const pos = ge.getPosition(id);
+    if (!pos || !this.scene.isWaterTile?.(pos.x, pos.y)) {
+      this._waterBobY = 0;
+      return;
+    }
+
+    // Compute-only: store the desired offset; the actual sprite.y mutation
+    // happens inside the camera's PRE_RENDER hook (see _installBobRenderHooks).
+    // That timing keeps the bob out of camera follow-scroll calculations,
+    // which run earlier in camera.preRender — so the viewport never moves.
+    const AMPLITUDE_PX = 3;
+    const SPEED        = 4.0;
+    const t = time / 1000;
+    this._waterBobY = Math.cos(this.x * 0.08 - t * SPEED) * AMPLITUDE_PX;
+  }
+
+  /**
+   * Hook the main camera's PRE_RENDER / POST_RENDER events to apply and
+   * revert the per-frame water bob exclusively for rendering. Phaser's
+   * camera computes follow-scroll inside camera.preRender BEFORE its
+   * PRE_RENDER event fires, so by the time we mutate sprite.y here the
+   * scroll is already locked to the un-bobbed position. POST_RENDER (after
+   * the camera renders the display list) reverts the offset so the next
+   * scene-update tick sees the clean logical y — no drift, no GE conflict.
+   * Reflection and surf mount sprites get the same delta pushed through
+   * because their own update() ran during scene-update with un-bobbed parent
+   * y, so they need a render-time nudge too.
+   */
+  _installBobRenderHooks() {
+    const cam = this.config.scene?.cameras?.main;
+    if (!cam) return;
+
+    this._onCamPreRender = () => {
+      const off = this._waterBobY || 0;
+      if (!off) return;
+      this.y += off;
+      if (this.reflection?.sprite) this.reflection.sprite.y += off;
+      if (this._surfMount?.sprite)  this._surfMount.sprite.y  += off;
+    };
+    this._onCamPostRender = () => {
+      const off = this._waterBobY || 0;
+      if (!off) return;
+      this.y -= off;
+      if (this.reflection?.sprite) this.reflection.sprite.y -= off;
+      if (this._surfMount?.sprite)  this._surfMount.sprite.y  -= off;
+    };
+
+    cam.on(Phaser.Cameras.Scene2D.Events.PRE_RENDER,  this._onCamPreRender);
+    cam.on(Phaser.Cameras.Scene2D.Events.POST_RENDER, this._onCamPostRender);
+
+    this.once('destroy', () => {
+      try {
+        cam.off(Phaser.Cameras.Scene2D.Events.PRE_RENDER,  this._onCamPreRender);
+        cam.off(Phaser.Cameras.Scene2D.Events.POST_RENDER, this._onCamPostRender);
+      } catch (_) {}
+    });
+  }
+
+  /**
    * Flip this character's tile-collision flag at runtime. Grid-engine v2.48
    * doesn't expose a public setter. The real GridCharacter lives on the
    * headless engine — `gridEngine.gridCharacters` on the Phaser plugin holds
@@ -739,15 +817,16 @@ export default class extends MovableSprite {
    * and periodic random direction changes when `config.spin` is true.
    * @param {number} delta - Time in ms since the last frame.
    */
+  applyInitialFacing() {
+    const lookDir = (this.config['facing-direction'] ?? Direction.DOWN).toUpperCase();
+    if (this.look(lookDir) === false) return;
+    this.initalCreation = false;
+  }
+
   addAutoSpin(delta) {
     if (this.initalCreation) {
-      const lookDir = (this.config['facing-direction'] ?? Direction.DOWN).toUpperCase();
-      const faceDir = this.getFacingDirection().toUpperCase();
-      if (faceDir !== lookDir) {
-        this.look(lookDir);
-        return;
-      }
-      this.initalCreation = false;
+      this.applyInitialFacing();
+      if (this.initalCreation) return;
     }
 
     if (this.config.spin !== true && this.config['spin-rate'] && delta) { return; }
@@ -934,6 +1013,10 @@ export default class extends MovableSprite {
     if (this.scene.game.config.debug.noTrainerSight) { return; }
     if ((this.config['seen-radius'] ?? 0) === 0) { return; }
     if (this.config['seen-character'] === null || this.config['seen-character']?.length === 0) { return; }
+    // Per-map / gameDef opt-out — set map-settings.can_see = false to
+    // disable every trainer / NPC line-of-sight cast on this map (e.g.
+    // a stealth section the player is meant to sneak through).
+    if (this.config.scene.getMapFlag && !this.config.scene.getMapFlag('can_see')) { return; }
     // Skip the sight cast when no character has moved on the map since our
     // last evaluation — the prior `isInside` result is still correct.
     const seq = this.config.scene._tileSeq ?? 0;
@@ -955,17 +1038,32 @@ export default class extends MovableSprite {
       return;
     }
 
-    const facingLocked = getPropertyValue(this.config.properties, 'facing-direction') != null;
-    const directions = facingLocked
-      ? [this.getFacingDirection()]
-      : [Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN];
-
-    let isInside = false;
-    for (const dir of directions) {
-      if (this._sightCheckDir(dir, character)) {
-        isInside = true;
-        break;
+    // A trainer can only see the way they're currently facing. For spinner
+    // trainers the facing rotates over time via addAutoSpin, so this
+    // naturally re-evaluates each tick to the direction the sprite is
+    // actually pointing — letting the player sneak past while they're
+    // turned away.
+    //
+    // Two opt-ins escalate to omnidirectional sight (all four cardinals at
+    // once, impossible to slip past):
+    //   • per-trainer `impassible: true` (Tiled property) — flags one
+    //     specific trainer as a key encounter that always sees everywhere,
+    //     regardless of the gameDef.
+    //   • gameDef `impassibleSpinners: true` — applies the same effect to
+    //     every spinner trainer in the run, for ROM-hack-style mods.
+    // Either trigger flips the same path; static trainers without
+    // `impassible` stay single-direction even when the gameDef flag is on.
+    const isSpinner   = !!this.config.spin;
+    const omniByDef   = isSpinner && !!getGameDef().impassibleSpinners;
+    const omniByProp  = !!this.config.impassible;
+    let isInside;
+    if (omniByDef || omniByProp) {
+      isInside = false;
+      for (const dir of [Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN]) {
+        if (this._sightCheckDir(dir, character)) { isInside = true; break; }
       }
+    } else {
+      isInside = this._sightCheckDir(this.getFacingDirection(), character);
     }
 
     if (isInside && typeof this.config['event-can-see-character'] === 'function') {

@@ -8,14 +8,22 @@ import store from '../../store/index.js';
 import { getStartScene } from '@Data/startScene.js';
 import { getGameDef } from '@Data/gameDef.js';
 import { getStartFlags, clearStartFlags } from '@Data/startFlags.js';
+import { getStartDebug, clearStartDebug } from '@Data/startDebug.js';
+import { getStartPlayerLocation, clearStartPlayerLocation } from '@Data/startPlayerLocation.js';
 import { isTestMode } from '@Data/testMode.js';
 import { initRng } from '@Utilities/rng.js';
+import { createInputManager, getInputManager } from '@Utilities';
 import { SHADER_ASSET_KEYS } from '@/asset-key.js';
 import shader_wipe          from '@/assets/shader/wipe.png';
 import shader_wipe_diagonal from '@/assets/shader/wipe-diagonal.png';
 import shader_wipe_vertical from '@/assets/shader/wipe-vertical.png';
 import shader_close_bars    from '@/assets/shader/close-bars.png';
 import shader_trapped       from '@/assets/shader/trapped.png';
+import shader_fog_diagonal  from '@/assets/shader/fog_diagonal.png';
+import shader_fog_horizontal from '@/assets/shader/fog_horizontal.png';
+import shader_sandstorm     from '@/assets/shader/sandstorm.png';
+import shader_snow0         from '@/assets/shader/snow0.png';
+import shader_snow1         from '@/assets/shader/snow1.png';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -60,6 +68,11 @@ export default class extends Phaser.Scene {
     this.load.image(SHADER_ASSET_KEYS.WIPE_VERTICAL, shader_wipe_vertical);
     this.load.image(SHADER_ASSET_KEYS.CLOSE_BARS,    shader_close_bars);
     this.load.image(SHADER_ASSET_KEYS.TRAPPED,       shader_trapped);
+    this.load.image(SHADER_ASSET_KEYS.FOG_DIAGONAL,   shader_fog_diagonal);
+    this.load.image(SHADER_ASSET_KEYS.FOG_HORIZONTAL, shader_fog_horizontal);
+    this.load.image(SHADER_ASSET_KEYS.SANDSTORM,      shader_sandstorm);
+    this.load.image(SHADER_ASSET_KEYS.SNOW_0,         shader_snow0);
+    this.load.image(SHADER_ASSET_KEYS.SNOW_1,         shader_snow1);
     
     this.load.spritesheet('red', Tileset.red, {frameWidth: 32, frameHeight: 48});
     this.load.spritesheet('red_bike', Tileset.red_bike, {frameWidth: 48, frameHeight: 48});
@@ -152,11 +165,25 @@ export default class extends Phaser.Scene {
     }
     initRng(store.state.game.seed);
 
+    if (!getInputManager()) {
+      createInputManager(this);
+    }
+
     // Apply test-harness flags AFTER loadGame() so they override any saved state.
     // Write to both game.config.gameFlags (Phaser-level) and the Vuex store.
     if (startFlags) {
       Object.assign(this.game.config.gameFlags, startFlags);
       store.commit('game/PATCH_FLAGS', startFlags);
+    }
+
+    // Test-harness debug overrides — deep-merge into game.config.debug so a
+    // scenario can switch on visual debug flags (e.g. tests.timeOverlay) for
+    // its duration without editing src/data/debug.js. Captured/cleared like
+    // startFlags so it stays scoped to the launch.
+    const startDebug = getStartDebug();
+    clearStartDebug();
+    if (startDebug) {
+      deepMerge(this.game.config.debug, startDebug);
     }
 
     // Seed party when running a test scenario and it's empty.
@@ -253,9 +280,16 @@ export default class extends Phaser.Scene {
     // both bypass the title screen and drop you straight into the game.
     if (testScene || envLoadedSlot) {
       const savedTile = testScene ? null : store.state.game.playerTile;
-      const playerLocation = (savedTile && (savedTile.x || savedTile.y))
-        ? { x: savedTile.x, y: savedTile.y, charLayer: savedTile.charLayer }
-        : {};
+      // Test harness scenarios can pin the player to a specific tile via
+      // `setStartPlayerLocation` — takes precedence over save-slot tile and
+      // the map's default playerSpawn. Captured/cleared like startFlags.
+      const harnessLoc = testScene ? getStartPlayerLocation() : null;
+      clearStartPlayerLocation();
+      const playerLocation = harnessLoc
+        ? { ...harnessLoc }
+        : (savedTile && (savedTile.x || savedTile.y))
+          ? { x: savedTile.x, y: savedTile.y, charLayer: savedTile.charLayer }
+          : {};
       const startScene = testScene || store.state.game.currentMap || getGameDef().overworldScene;
       const startParams = { playerLocation };
       // Restore the map variant that was active when the game was saved.
@@ -292,10 +326,10 @@ export default class extends Phaser.Scene {
     if (this.game.config.debug.console.preload) {
       console.log('Preload::preloadTrainers');
     }
-    Object.keys(Tileset.trainers)
+    Object.keys(Tileset.sprites)
       .forEach((name) => {
-        console.log(name.toLowerCase(), Tileset.trainers[name]);
-        this.load.spritesheet(name.toLowerCase(), Tileset.trainers[name], {
+        console.log(name.toLowerCase(), Tileset.sprites[name]);
+        this.load.spritesheet(name.toLowerCase(), Tileset.sprites[name], {
           frameWidth: Tile.WIDTH,
           frameHeight: 48
         });
@@ -310,7 +344,7 @@ export default class extends Phaser.Scene {
       console.log('Preload::preloadTrainers');
     }
 
-    Object.keys(Tileset.trainers).forEach((name) => {
+    Object.keys(Tileset.sprites).forEach((name) => {
       this.anims.create({
         key: name.toLowerCase() + '-spin',
         frames: this.anims.generateFrameNumbers(name.toLowerCase(), { frames: [0, 4, 12, 8] }),
@@ -319,4 +353,23 @@ export default class extends Phaser.Scene {
       });
     });
   }
+}
+
+/**
+ * Recursively merge `src` into `target`. Plain-object keys recurse; everything
+ * else (primitives, arrays) replaces. Used to apply scenario-supplied debug
+ * overrides on top of the default debug config without losing untouched keys.
+ */
+function deepMerge(target, src) {
+  if (!target || !src || typeof src !== 'object') return target;
+  for (const k of Object.keys(src)) {
+    const sv = src[k];
+    if (sv && typeof sv === 'object' && !Array.isArray(sv)
+        && target[k] && typeof target[k] === 'object' && !Array.isArray(target[k])) {
+      deepMerge(target[k], sv);
+    } else {
+      target[k] = sv;
+    }
+  }
+  return target;
 }

@@ -2,6 +2,7 @@ import { Tile, Player } from '@Objects';
 import { EventBus, getPropertyValue } from '@Utilities';
 import { gameState } from '@Data/gameState.js';
 import store from '../../store/index.js';
+import TimeOverlayDebug from '@Objects/TimeOverlayDebug.js';
 
 export default class {
   constructor(scene) {
@@ -9,7 +10,7 @@ export default class {
 
     this.loadedPlayer = false;
     this.player = {};
-    this.playerMon = {};
+    this.playerMon = null;
     this.hasPlayerMon = false;
     
     this.jumpTiles = [];
@@ -98,24 +99,11 @@ export default class {
       );
     }
 
-    // debug for time overlay stuffs
+    // 4-camera debug compare grid (Day / Evening / Night / Morning) —
+    // each panel runs the live TimeOverlay pipeline with a forced preset
+    // so the comparison includes desaturation + light-aware sat recover.
     if (this.scene.game.config.debug.tests.timeOverlay === true) {
-      this.scene.cameras.main.setSize(400, 300);
-
-      // evening
-      let cam2 = this.scene.cameras.add(400, 0, 400, 300);
-      cam2.startFollow(this.player, true);
-      cam2.setFollowOffset(-this.player.width, -this.player.height);
-
-      // night
-      let cam3 = this.scene.cameras.add(0, 300, 400, 300);
-      cam3.startFollow(this.player, true);
-      cam3.setFollowOffset(-this.player.width, -this.player.height);
-
-      // morning
-      let cam4 = this.scene.cameras.add(400, 300, 400, 300);
-      cam4.startFollow(this.player, true);
-      cam4.setFollowOffset(-this.player.width, -this.player.height);
+      this.scene.timeOverlayDebug = new TimeOverlayDebug(this.scene, this.player);
     }
 
     if (store.state.game.gameFlags.follower_pokemon && !store.state.game.onBike && !store.state.game.onSurf) {

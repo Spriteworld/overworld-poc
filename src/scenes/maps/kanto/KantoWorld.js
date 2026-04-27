@@ -6,6 +6,11 @@ import kantoCommonJson from '@Tileset/maps/kanto_common.json';
 import kantoOutsideJson from '@Tileset/maps/kanto_outside.json';
 import gen3outsideTilesetJson from '@Tileset/gen3_outside.json';
 import Tileset from '@Tileset';
+import RainFx, { RAIN_VARIANTS } from '@Objects/RainFx.js';
+import FogFx, { FOG_VARIANTS } from '@Objects/FogFx.js';
+import SandstormFx, { SANDSTORM_VARIANTS } from '@Objects/SandstormFx.js';
+import SnowFx, { SNOW_VARIANTS } from '@Objects/SnowFx.js';
+import SunlightFx, { SUNLIGHT_VARIANTS } from '@Objects/SunlightFx.js';
 
 /**
  * Pixel offset between kanto.json coordinates and world-file coordinates.
@@ -69,6 +74,7 @@ export default class KantoWorld extends GameMap {
       return {
         name: obj.name,
         bgm:  mapSettings?.bgm ?? null,
+        weather: mapSettings?.weather_type ?? 'none',
         // Convert kanto.json pixel origin → merged-world tile coords.
         x: (obj.x - KANTO_OFFSET_X - minX) / Tile.WIDTH,
         y: (obj.y - KANTO_OFFSET_Y - minY) / Tile.HEIGHT,
@@ -76,8 +82,9 @@ export default class KantoWorld extends GameMap {
         h: obj.height / Tile.HEIGHT,
       };
     });
-    this._currentLocation = null;
-    this._currentBgmKey   = null;
+    this._currentLocation    = null;
+    this._currentBgmKey      = null;
+    this._currentWeatherType = 'none';
   }
 
   /**
@@ -90,6 +97,7 @@ export default class KantoWorld extends GameMap {
     // Check the player's spawn tile immediately (replaces the generic 'map-enter' toast).
     this._checkLocation(this.gridEngine.getPosition('player'));
     this._checkForBGM();
+    this._checkForWeather();
 
     this._locationSub = this.gridEngine
       .positionChangeStarted()
@@ -97,6 +105,7 @@ export default class KantoWorld extends GameMap {
         if (charId !== 'player') return;
         this._checkLocation(enterTile);
         this._checkForBGM();
+        this._checkForWeather();
       });
 
     this.events.once('shutdown', () => this._locationSub?.unsubscribe());
@@ -134,6 +143,50 @@ export default class KantoWorld extends GameMap {
     if (!bgmKey || bgmKey === this._currentBgmKey) return;
     this._currentBgmKey = bgmKey;
     lazyLoadBgm(this, bgmKey);
+  }
+
+  /**
+   * Swap weather effects when the player crosses into a zone whose
+   * `weather_type` differs from the current one. Variants are resolved
+   * through RAIN_VARIANTS (`light_rain` / `heavy_rain` for now); any
+   * other value (or leaving a weather zone) destroys the active effect.
+   * Debug-flag-driven rain (force-on for testing) is left alone — it's
+   * instantiated by GameMap.loadMap and never managed here.
+   */
+  _checkForWeather() {
+    if (this.game.config.debug?.rain) return;  // global override owns rainFx
+
+    // forceWeatherType (test harness) ignores zone weather and pins the map
+    // to a single variant — once set the zone changes are ignored.
+    const force = this.game.config.debug?.forceWeatherType;
+    const zone = this._locationZones.find(z => z.name === this._currentLocation);
+    const next = force ?? zone?.weather ?? 'none';
+    if (next === this._currentWeatherType) return;
+    this._currentWeatherType = next;
+
+    // Tear down whichever weather effect was previously running, then spin
+    // up the one matching the new zone (the variant tables are disjoint so
+    // at most one fires per zone).
+    if (this.rainFx)      { this.rainFx.destroy();      this.rainFx      = null; }
+    if (this.fogFx)       { this.fogFx.destroy();       this.fogFx       = null; }
+    if (this.sandstormFx) { this.sandstormFx.destroy(); this.sandstormFx = null; }
+    if (this.snowFx)      { this.snowFx.destroy();      this.snowFx      = null; }
+    if (this.sunlightFx)  { this.sunlightFx.destroy();  this.sunlightFx  = null; }
+
+    const rainCfg = RAIN_VARIANTS[next];
+    if (rainCfg) this.rainFx = new RainFx(this, rainCfg);
+
+    const fogCfg = FOG_VARIANTS[next];
+    if (fogCfg) this.fogFx = new FogFx(this, fogCfg);
+
+    const sandCfg = SANDSTORM_VARIANTS[next];
+    if (sandCfg) this.sandstormFx = new SandstormFx(this, sandCfg);
+
+    const snowCfg = SNOW_VARIANTS[next];
+    if (snowCfg) this.snowFx = new SnowFx(this, snowCfg);
+
+    const sunCfg = SUNLIGHT_VARIANTS[next];
+    if (sunCfg) this.sunlightFx = new SunlightFx(this, sunCfg);
   }
 
   /**

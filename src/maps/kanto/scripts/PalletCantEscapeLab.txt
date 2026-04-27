@@ -1,0 +1,17 @@
+[
+  {
+    "propertytype": "cmd-text",
+    "type": "class",
+    "value": {
+      "text": "OAK: Hey!\nDon't go away yet!"
+    }
+  },
+  {
+    "propertytype": "cmd-knockback",
+    "type": "class",
+    "value": {
+      "direction": "up",
+      "target": "player"
+    }
+  }
+]

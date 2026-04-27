@@ -3,6 +3,7 @@ import store, { listSaves, saveOptions } from '../../store/index.js';
 import { getGameDef, setGameDef } from '@Data/gameDef.js';
 import * as gameDefPresets from '@Data/gameDefs/index.js';
 import { initRng } from '@Utilities/rng.js';
+import { getInputManager } from '@Utilities';
 
 const CX = 400;
 const CY = 260;
@@ -116,6 +117,22 @@ export default class TitleScreen extends Phaser.Scene {
       esc:     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC),
     };
 
+    this._imQueue = [];
+    const im = getInputManager();
+    if (im) {
+      const enqueue = (action) => () => this._imQueue.push(action);
+      this._imBindings = [
+        ['up',      enqueue('up')],
+        ['down',    enqueue('down')],
+        ['left',    enqueue('left')],
+        ['right',   enqueue('right')],
+        ['confirm', enqueue('confirm')],
+        ['cancel',  enqueue('cancel')],
+        ['menu',    enqueue('confirm')],
+      ];
+      for (const [action, cb] of this._imBindings) im.on(action, cb);
+    }
+
     if (this._skipIdle) {
       // VITE_SKIP_INTRO path: draw the menu screen directly.
       this._enterMenuLayout();
@@ -128,6 +145,14 @@ export default class TitleScreen extends Phaser.Scene {
   }
 
   update() {
+    const q = this._imQueue;
+    const hasIM = (action) => {
+      const idx = q.indexOf(action);
+      if (idx === -1) return false;
+      q.splice(idx, 1);
+      return true;
+    };
+
     if (this._state === 'idle') {
       const pad = this.input.gamepad?.getPad(0);
       const K  = this._keys;
@@ -140,23 +165,29 @@ export default class TitleScreen extends Phaser.Scene {
         Phaser.Input.Keyboard.JustDown(K.down)    ||
         Phaser.Input.Keyboard.JustDown(K.left)    ||
         Phaser.Input.Keyboard.JustDown(K.right);
-      if (anyJustDown || pad?.buttons.some(b => b.pressed)) this._activate();
+      if (anyJustDown || q.length > 0 || pad?.buttons.some(b => b.pressed)) {
+        q.length = 0;
+        this._activate();
+      }
       return;
     }
 
-    if (Phaser.Input.Keyboard.JustDown(this._keys.up))    this._moveCursor(-1);
-    if (Phaser.Input.Keyboard.JustDown(this._keys.down))  this._moveCursor(1);
-    if (Phaser.Input.Keyboard.JustDown(this._keys.left))  this._cycleValue(-1);
-    if (Phaser.Input.Keyboard.JustDown(this._keys.right)) this._cycleValue(1);
+    if (Phaser.Input.Keyboard.JustDown(this._keys.up)    || hasIM('up'))    this._moveCursor(-1);
+    if (Phaser.Input.Keyboard.JustDown(this._keys.down)  || hasIM('down'))  this._moveCursor(1);
+    if (Phaser.Input.Keyboard.JustDown(this._keys.left)  || hasIM('left'))  this._cycleValue(-1);
+    if (Phaser.Input.Keyboard.JustDown(this._keys.right) || hasIM('right')) this._cycleValue(1);
 
     if (Phaser.Input.Keyboard.JustDown(this._keys.confirm) ||
-        Phaser.Input.Keyboard.JustDown(this._keys.enter)) {
+        Phaser.Input.Keyboard.JustDown(this._keys.enter)   ||
+        hasIM('confirm')) {
       this._select();
     }
     if (Phaser.Input.Keyboard.JustDown(this._keys.cancel) ||
-        Phaser.Input.Keyboard.JustDown(this._keys.esc)) {
+        Phaser.Input.Keyboard.JustDown(this._keys.esc)    ||
+        hasIM('cancel')) {
       this._cancel();
     }
+    q.length = 0;
   }
 
   // ─── Press-start ──────────────────────────────────────────────────────────
@@ -583,7 +614,16 @@ export default class TitleScreen extends Phaser.Scene {
     this._launch(map, playerLocation);
   }
 
+  _cleanupIM() {
+    const im = getInputManager();
+    if (im && this._imBindings) {
+      for (const [action, cb] of this._imBindings) im.off(action, cb);
+    }
+    this._imBindings = null;
+  }
+
   _launch(sceneKey, playerLocation) {
+    this._cleanupIM();
     this.scene.start(sceneKey, { playerLocation });
     this.scene.start('OverworldUI');
     this.scene.bringToTop('OverworldUI');

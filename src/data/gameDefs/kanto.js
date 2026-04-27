@@ -106,4 +106,17 @@ export default {
    * Pokémon already in the save — only affects freshly built ones.
    */
   maxIvs: false,
+
+  /**
+   * When true, spinner trainers (movement-behavior: spinner / config.spin =
+   * true) cast their line-of-sight in all four cardinal directions at once
+   * instead of only the direction they're currently facing. Effectively
+   * makes them impossible to sneak past — useful for ROM-hack-style
+   * difficulty mods. When false (default, classic Gen 1–5 behavior), a
+   * spinner only sees in its current facing direction, so players can
+   * time their movement to slip past while the trainer is turned away.
+   * Static trainers (no spin) always use single-direction sight regardless
+   * of this flag.
+   */
+  impassibleSpinners: false,
 };

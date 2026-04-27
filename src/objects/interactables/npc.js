@@ -1,5 +1,5 @@
 import { Tile, NPC } from '@Objects';
-import { getPropertyValue, remapProps, Vector2, checkOnlyIf, assertNotReservedId } from '@Utilities';
+import { getPropertyValue, remapProps, Vector2, checkOnlyIf, assertNotReservedId, loadOverworldSpritesheet } from '@Utilities';
 import Tileset from '@Tileset';
 import store from '../../store/index.js';
 import ScriptRunner from '../../utilities/ScriptRunner.js';
@@ -30,7 +30,7 @@ export default class {
     // map, not just the on-screen ones).
     this.scene.npcs.runChildUpdate = false;
     npcs.forEach((npc) => {
-      if (!checkOnlyIf(getPropertyValue(npc.properties, 'only_if'), store.state.game.gameFlags, this.scene.config.variant ?? null)) return;
+      if (!checkOnlyIf(getPropertyValue(npc.properties, 'only_if'), store.state.game.gameFlags, this.scene.config.variant ?? null, this.scene.mapVars ?? {})) return;
       assertNotReservedId(npc.name, 'Interactables::npc');
       this.addToScene(
         npc.name,
@@ -89,7 +89,7 @@ export default class {
         this.scene._indexCharacter?.(npcObj.config.id);
       }
     } else {
-      const pathFactory = texture ? (Tileset.sprites[texture] ?? Tileset.trainers[texture]) : null;
+      const pathFactory = texture ? Tileset.sprites[texture] : null;
       if (!pathFactory) {
         if (texture) console.warn('Interactables::npc: no sprite path for texture', texture);
         npcObj.setTexture('red');
@@ -109,11 +109,7 @@ export default class {
 
       pathFactory().then(path => {
         if (!this.scene.sys) return; // scene was destroyed
-        this.scene.load.spritesheet(texture, path, {
-          frameWidth: Tile.WIDTH,
-          frameHeight: 48
-        });
-        this.scene.load.once('filecomplete-spritesheet-' + texture, () => {
+        loadOverworldSpritesheet(this.scene, texture, path).then(() => {
           this._ensureAnim(texture);
           this.scene.npcs.getChildren()
             .filter(n => n.config?.texture === texture)
@@ -121,10 +117,11 @@ export default class {
               n.setTexture(texture);
               if (this.scene.gridEngine?.hasCharacter(n.config.id)) {
                 this.scene.gridEngine.setWalkingAnimationMapping(n.config.id, n.characterFramesDef());
+                const dir = this.scene.gridEngine.getFacingDirection(n.config.id);
+                this.scene.gridEngine.turnTowards(n.config.id, dir);
               }
             });
         });
-        this.scene.load.start();
       });
     }
 

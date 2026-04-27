@@ -3205,6 +3205,102 @@
      "width": 32,
      "x": 64,
      "y": 832
+    },
+    {
+     "height": 32,
+     "id": 39,
+     "name": "bug_catcher",
+     "opacity": 1,
+     "properties": [
+      {
+       "name": "facing-direction",
+       "type": "string",
+       "value": "right"
+      },
+      {
+       "name": "overworld-texture",
+       "type": "string",
+       "value": "bug_catcher"
+      }
+     ],
+     "rotation": 0,
+     "type": "npc",
+     "visible": true,
+     "width": 32,
+     "x": 160,
+     "y": 832
+    },
+    {
+     "height": 32,
+     "id": 40,
+     "name": "engineer",
+     "opacity": 1,
+     "properties": [
+      {
+       "name": "facing-direction",
+       "type": "string",
+       "value": "left"
+      },
+      {
+       "name": "overworld-texture",
+       "type": "string",
+       "value": "engineer"
+      }
+     ],
+     "rotation": 0,
+     "type": "npc",
+     "visible": true,
+     "width": 32,
+     "x": 256,
+     "y": 832
+    },
+    {
+     "height": 32,
+     "id": 41,
+     "name": "hiker",
+     "opacity": 1,
+     "properties": [
+      {
+       "name": "facing-direction",
+       "type": "string",
+       "value": "down"
+      },
+      {
+       "name": "overworld-texture",
+       "type": "string",
+       "value": "hiker"
+      }
+     ],
+     "rotation": 0,
+     "type": "npc",
+     "visible": true,
+     "width": 32,
+     "x": 352,
+     "y": 832
+    },
+    {
+     "height": 32,
+     "id": 42,
+     "name": "lass",
+     "opacity": 1,
+     "properties": [
+      {
+       "name": "facing-direction",
+       "type": "string",
+       "value": "up"
+      },
+      {
+       "name": "overworld-texture",
+       "type": "string",
+       "value": "lass"
+      }
+     ],
+     "rotation": 0,
+     "type": "npc",
+     "visible": true,
+     "width": 32,
+     "x": 448,
+     "y": 832
     }
    ],
    "opacity": 1,
@@ -3215,7 +3311,7 @@
   }
  ],
  "nextlayerid": 6,
- "nextobjectid": 39,
+ "nextobjectid": 43,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.12.1",

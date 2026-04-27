@@ -5,7 +5,7 @@ Sync individual dungeon map JSON files from kanto_dungeons.json.
 kanto_dungeons.json is edited in Tiled and may reference any of:
   - gen3_outside.json (one OR more refs — Tiled occasionally registers the
     same source twice via different relative paths)
-  - cave_dungeon.json  (the dungeon-specific tileset; required)
+  - caves.json        (the dungeon-specific tileset; required)
 
 This script converts the combined source GIDs from those tilesets into a
 three-tileset layout that the engine consumes:
@@ -18,7 +18,7 @@ script's authority) — dungeons doesn't extend the outdoor tilesets. If a
 gen3_outside tile in a dungeon isn't already mapped by the outdoor build
 the lookup warns and the tile is skipped; re-run update_kanto.py first.
 
-cave_dungeon tiles are assigned compact map GIDs in a fresh kanto_dungeons
+caves tiles are assigned compact map GIDs in a fresh kanto_dungeons
 output tileset and committed to dungeon_gid_map.json so reruns are stable.
 """
 
@@ -28,6 +28,10 @@ import rebuild_lib as lib
 
 NAME_TO_FILE = {}
 NAME_TO_SCENE_KEY = {}
+
+# Prefixed onto every scene_key (after NAME_TO_SCENE_KEY override). Keeps map
+# names unique across worlds in src/maps/index.js + src/scenes/index.js.
+WORLD_PREFIX = 'Kanto'
 
 LAYER_TEMPLATE = [
     ('floor',        None,     False),
@@ -56,23 +60,26 @@ def make_dungeons_tilesets(common_count, outside_count):
 def catalogue_master_tilesets(master):
     """
     Return a list of (firstgid, source_name, tile_count) sorted by firstgid
-    ascending. `source_name` is one of 'gen3_outside' or 'cave_dungeon'
+    ascending. `source_name` is one of 'gen3_outside' or 'caves'
     (other sources are unsupported here and the caller should error).
     `tile_count` is read from the source tileset JSON.
     """
+    TILESET_PATHS = {
+        'caves':        lib.TILESET_DIR / 'caves.json',
+        'gen3_outside': lib.TILESET_DIR / 'gen3_outside.json',
+    }
     entries = []
     for ts in master.get('tilesets', []):
         src = ts.get('source', '')
         # Identify by substring; both relative and absolute Tiled paths work.
-        if 'cave_dungeon' in src:
-            name = 'cave_dungeon'
+        if 'caves' in src:
+            name = 'caves'
         elif 'gen3_outside' in src:
             name = 'gen3_outside'
         else:
             print(f'  WARNING: unsupported tileset source "{src}" — ignoring')
             continue
-        # Resolve to the project's canonical tileset path.
-        ts_path = lib.TILESET_DIR / f'{name}.json'
+        ts_path = TILESET_PATHS[name]
         with open(ts_path) as f:
             ts_json = json.load(f)
         entries.append((ts['firstgid'], name, ts_json.get('tilecount', 0)))
@@ -96,7 +103,7 @@ def build_compact_gid_map(master_tilelayers, catalogue,
     """
     Build src_gid → map_gid mapping for dungeon maps.
     - gen3_outside tiles → kanto_common / kanto_outside via gid_map.json
-    - cave_dungeon tiles → compact starting at common_count + outside_count + 1
+    - caves tiles → compact starting at common_count + outside_count + 1
     Tiles whose lookup fails are silently dropped (with a warning) — re-run
     update_kanto.py to surface a missing outdoor tile.
     """
@@ -110,7 +117,7 @@ def build_compact_gid_map(master_tilelayers, catalogue,
     })
 
     src_to_map_gid = {}
-    cave_tids_used = []  # 0-based cave_dungeon tile ids, ordered by first appearance
+    cave_tids_used = []  # 0-based caves tile ids, ordered by first appearance
 
     seen_cave = set()
     for src_gid in all_src_gids:
@@ -123,23 +130,21 @@ def build_compact_gid_map(master_tilelayers, catalogue,
                       f'not in gid_map.json — skipping. Re-run update_kanto.py first.')
                 continue
             src_to_map_gid[src_gid] = kgid
-        elif name == 'cave_dungeon':
+        elif name == 'caves':
             if tid not in seen_cave:
                 seen_cave.add(tid)
                 cave_tids_used.append(tid)
-            # map_gid filled in after we've assembled the sorted list below.
         else:
             print(f'  WARNING: unmappable src_gid {src_gid} (no tileset match) — skipping')
 
-    # Assign cave_dungeon tile ids in numerical order so the kanto_dungeons
-    # PNG mirrors cave_dungeon.png's layout for easier visual diffing.
+    # Assign caves tile ids in numerical order so the kanto_dungeons
+    # PNG mirrors caves.png's layout for easier visual diffing.
     cave_tids_used.sort()
     for i, cave_tid in enumerate(cave_tids_used):
         map_gid = DUNGEONS_FIRSTGID + i
-        # Find every src_gid that resolves to this cave tile and map them all.
         for src_gid in all_src_gids:
             name, tid = src_gid_to_source(src_gid, catalogue)
-            if name == 'cave_dungeon' and tid == cave_tid:
+            if name == 'caves' and tid == cave_tid:
                 src_to_map_gid[src_gid] = map_gid
 
     map_gid_to_src = {v: k for k, v in src_to_map_gid.items()}
@@ -156,14 +161,14 @@ def build_compact_gid_map(master_tilelayers, catalogue,
 def ensure_dungeons_tile(dungeons_ts_json, map_gid, src_gid, catalogue,
                           cave_props_index, common_count, outside_count):
     """Sync a tile entry into kanto_dungeons.json with properties from the
-    cave_dungeon source. Only call for cave_dungeon-sourced map_gids
+    caves source. Only call for caves-sourced map_gids
     (>= common_count + outside_count + 1)."""
     DUNGEONS_FIRSTGID = common_count + outside_count + 1
     tile_id  = map_gid - DUNGEONS_FIRSTGID
     tiles    = dungeons_ts_json.setdefault('tiles', [])
 
     name, src_tid = src_gid_to_source(src_gid, catalogue)
-    props = cave_props_index.get(src_tid, []) if name == 'cave_dungeon' else []
+    props = cave_props_index.get(src_tid, []) if name == 'caves' else []
 
     existing = next((t for t in tiles if t['id'] == tile_id), None)
     if existing is None:
@@ -202,18 +207,18 @@ def remap_data(data, src_to_map_gid, dungeons_ts_json, catalogue,
 
 def update_dungeons_png(src_to_map_gid, common_count, outside_count,
                           dungeons_ts_json, dungeons_ts_path, catalogue):
-    """Rebuild kanto_dungeons.png from cave_dungeon tiles only."""
+    """Rebuild kanto_dungeons.png from caves tiles only."""
     DUNGEONS_FIRSTGID = common_count + outside_count + 1
 
-    # Collect (cave_dungeon_tile_id, dst_tile_id) in dst order — and dedupe
-    # since multiple src_gids can resolve to the same cave_dungeon tile.
+    # Collect (caves_tile_id, dst_tile_id) in dst order — and dedupe
+    # since multiple src_gids can resolve to the same caves tile.
     seen_dst = set()
     entries  = []
     for src_gid, map_gid in src_to_map_gid.items():
         if map_gid < DUNGEONS_FIRSTGID:
             continue
         name, tid = src_gid_to_source(src_gid, catalogue)
-        if name != 'cave_dungeon':
+        if name != 'caves':
             continue
         dst = map_gid - DUNGEONS_FIRSTGID
         if dst in seen_dst:
@@ -224,12 +229,12 @@ def update_dungeons_png(src_to_map_gid, common_count, outside_count,
         return False
     entries.sort(key=lambda e: e[1])
 
-    cave_ts_path = lib.TILESET_DIR / 'cave_dungeon.json'
+    cave_ts_path = lib.TILESET_DIR / 'caves.json'
     with open(cave_ts_path) as f:
         cave_ts_json = json.load(f)
     return lib.write_tileset_png(
         entries,
-        lib.TILESET_DIR / 'cave_dungeon.png',
+        lib.TILESET_DIR / 'caves.png',
         dungeons_ts_json,
         dungeons_ts_path.parent / dungeons_ts_json['image'],
         source_columns=cave_ts_json.get('columns', 8),
@@ -259,11 +264,17 @@ def main():
         print(f'  {name}: firstgid={firstgid}, tilecount={count}')
 
     # Inherit outdoor's GID space — both common + outside.
+    # common_count must come from gid_map.json (the number of *used* common
+    # tiles) because gen3_to_kanto GID values are relative to it.
+    # outside_count uses the tileset tilecount (image-grid size) so the
+    # dungeons firstgid sits past Phaser's full kanto_outside GID range.
     with open(lib.MAPS_DIR / 'gid_map.json') as f:
         gid_map_data = json.load(f)
     gen3_raw_to_kanto = {int(k): v for k, v in gid_map_data['gen3_to_kanto'].items()}
-    common_count      = gid_map_data['common_count']
-    outside_count     = len(gen3_raw_to_kanto) - common_count
+    common_count = gid_map_data['common_count']
+
+    with open(lib.TILESET_DIR / 'maps' / 'kanto_outside.json') as f:
+        outside_count = json.load(f)['tilecount']
 
     src_to_map_gid, map_gid_to_src, gid_map_raw = build_compact_gid_map(
         master_tilelayers, catalogue,
@@ -272,7 +283,7 @@ def main():
     DUNGEONS_FIRSTGID = common_count + outside_count + 1
     dungeons_count = sum(1 for g in src_to_map_gid.values() if g >= DUNGEONS_FIRSTGID)
     print(f'Compact GID map: {len(src_to_map_gid)} src tiles '
-          f'({dungeons_count} cave_dungeon, '
+          f'({dungeons_count} dungeon, '
           f'{len(src_to_map_gid)-dungeons_count} inherited from kanto_common/outside)')
 
     dungeons_ts_path = lib.TILESET_DIR / 'maps' / 'kanto_dungeons.json'
@@ -281,7 +292,7 @@ def main():
         columns=8, image_width=256,
     )
 
-    cave_ts_path = lib.TILESET_DIR / 'cave_dungeon.json'
+    cave_ts_path = lib.TILESET_DIR / 'caves.json'
     with open(cave_ts_path) as f:
         cave_ts_json = json.load(f)
     cave_props_index = lib.build_props_index(cave_ts_json)
@@ -296,7 +307,8 @@ def main():
     for zone in lib.iter_zones(maps_layer, name_to_file_overrides=NAME_TO_FILE,
                                 expand_floor_suffix=True):
         fname     = zone['fname']
-        scene_key = NAME_TO_SCENE_KEY.get(zone['name'], zone['name'])
+        scene_key = WORLD_PREFIX + NAME_TO_SCENE_KEY.get(zone['name'], zone['name'])
+        polygon   = zone['polygon']
 
         map_path = lib.MAPS_DIR / fname
         ox = zone['x'] // tw
@@ -326,6 +338,7 @@ def main():
             raw = lib.extract_region(
                 klayer['data'], master_w, master_h,
                 ox, oy, dst_w, dst_h,
+                polygon=polygon, tw=tw, th=th,
             )
             converted, modified = remap_data(
                 raw, src_to_map_gid, dungeons_ts_json, catalogue,
@@ -355,6 +368,7 @@ def main():
         px_h = dst_h * th
         objects, next_oid = lib.merge_interactions(
             master_objs, master_px_x, master_px_y, px_w, px_h,
+            polygon=polygon,
         )
         inter['objects']      = objects
         route['nextobjectid'] = next_oid
@@ -374,9 +388,9 @@ def main():
             json.dump(route, f, indent=2)
         print(f'  saved {fname}')
 
-        lib.ensure_scene_file(scene_key, inside=True)
-        lib.ensure_maps_index(scene_key, fname, inside=True)
-        lib.ensure_scenes_index(scene_key)
+        lib.ensure_scene_file(scene_key, inside=True, world_prefix=WORLD_PREFIX)
+        lib.ensure_maps_index(scene_key, fname, inside=True, world_prefix=WORLD_PREFIX)
+        lib.ensure_scenes_index(scene_key, world_prefix=WORLD_PREFIX)
 
     with open(gid_map_path, 'w') as f:
         json.dump(gid_map_raw, f, indent=2)
@@ -388,6 +402,8 @@ def main():
 
     if dungeons_ts_modified or not dungeons_ts_path.exists():
         lib.write_tileset_json(dungeons_ts_path, dungeons_ts_json)
+
+    lib.sweep_legacy_world_namespace(WORLD_PREFIX)
 
 
 if __name__ == '__main__':

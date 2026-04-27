@@ -59,6 +59,9 @@ export default class extends Character {
   update(time, delta) {
     if (!this.config.scene.ge_init) { return; }
     this.stateMachine.update(time);
+    if (this.initalCreation) {
+      this.applyInitialFacing();
+    }
     // Static NPCs (no spin / move / follow / sight / tracking) skip the
     // entire auto-behavior pipeline. _hasUpdateWork is refreshed in the
     // Character constructor and in setMovementBehavior.

@@ -25,7 +25,7 @@ export default {
 
   // hms
   has_cut: false,
-  // has_flash: false,
+  has_flash: false,
   // has_rock_smash: false,
   // has_fly: false,
   has_strength: false,

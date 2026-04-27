@@ -54,6 +54,7 @@ export default class extends Character {
     ;
 
     this.setOrigin(0.5, 0.5);
+    this._lastMoveSucceededAt = Date.now();
 
     this.blockedRight = this.scene.add
       .rectangle(0, 0, Tile.WIDTH, Tile.HEIGHT)
@@ -97,6 +98,7 @@ export default class extends Character {
    */
   update(time, delta) {
     this.stateMachine.update(time);
+    this._applyWaterBob(time);
     this.reflection?.update();
     this._surfMount?.update();
 
@@ -138,7 +140,10 @@ export default class extends Character {
     const hasShoes = this.config.scene.game.config.gameFlags.has_running_shoes;
     const runHeld  = !!im?.isDown(Action.RUN);
     // alwaysRun on → runs by default, B walks. Off → walks by default, B runs.
-    if (hasShoes && (store.state.game.alwaysRun ? !runHeld : runHeld)) {
+    // Maps can disable running entirely via map-settings.can_run (e.g. ceremony
+    // maps where dashing breaks pacing) — falls back to gameDef.can_run.
+    const mapAllowsRun = this.config.scene.getMapFlag?.('can_run') ?? true;
+    if (mapAllowsRun && hasShoes && (store.state.game.alwaysRun ? !runHeld : runHeld)) {
       moveSpeed = 8;
     }
 
@@ -383,7 +388,7 @@ export default class extends Character {
     // Fallback: mount surf when facing a water tile. has_surf gates the
     // actual mount; without it, surface a Gen 3-style hint so the player
     // knows why nothing happened. Skip both if the tile isn't water.
-    if (this.config.scene.isWaterTile?.(facingTile.x, facingTile.y)) {
+    if (!store.state.game.onSurf && this.config.scene.isWaterTile?.(facingTile.x, facingTile.y)) {
       if (store.state.game.gameFlags?.has_surf) {
         this.stateMachine.setState(this.stateDef.SURF);
         store.commit('game/SET_ON_SURF', true);

@@ -13,12 +13,10 @@ export default class {
     }
     const trees = this.scene.findInteractions('cutTree');
     trees.forEach(obj => {
-      // Tiled tile objects (gid) anchor at bottom-left, so subtract height to
-      // get the top-left tile coord that Items.CutTree positions from.
       new Items.CutTree({
         scene: this.scene,
         x: obj.x / Tile.WIDTH,
-        y: (obj.y - obj.height) / Tile.HEIGHT,
+        y: (obj.gid ? obj.y - obj.height : obj.y) / Tile.HEIGHT,
       });
     });
   }

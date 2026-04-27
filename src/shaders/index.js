@@ -11,13 +11,28 @@
  */
 
 import { GradientTexturePostFxPipeline } from './gradient-texture-post-fx-pipeline';
+import { DarknessPostFxPipeline } from './darkness-post-fx-pipeline';
+import { WaterPostFxPipeline } from './water-post-fx-pipeline';
+import { RainPostFxPipeline } from './rain-post-fx-pipeline';
+import { FogPostFxPipeline } from './fog-post-fx-pipeline';
+import { SandstormPostFxPipeline } from './sandstorm-post-fx-pipeline';
+import { SnowPostFxPipeline } from './snow-post-fx-pipeline';
+import { SunlightPostFxPipeline } from './sunlight-post-fx-pipeline';
+import { TimeOverlayPostFxPipeline } from './time-overlay-post-fx-pipeline';
+import { SHADER_KEYS } from './keys.js';
 
-export const SHADER_KEYS = {
-  GRADIENT: 'fx_gradient',
-};
+export { SHADER_KEYS };
 
 const PIPELINES = [
-  [SHADER_KEYS.GRADIENT, GradientTexturePostFxPipeline],
+  [SHADER_KEYS.GRADIENT,     GradientTexturePostFxPipeline],
+  [SHADER_KEYS.DARKNESS,     DarknessPostFxPipeline],
+  [SHADER_KEYS.WATER,        WaterPostFxPipeline],
+  [SHADER_KEYS.RAIN,         RainPostFxPipeline],
+  [SHADER_KEYS.FOG,          FogPostFxPipeline],
+  [SHADER_KEYS.SANDSTORM,    SandstormPostFxPipeline],
+  [SHADER_KEYS.SNOW,         SnowPostFxPipeline],
+  [SHADER_KEYS.SUNLIGHT,     SunlightPostFxPipeline],
+  [SHADER_KEYS.TIME_OVERLAY, TimeOverlayPostFxPipeline],
 ];
 
 export function registerBattlePipelines(game) {

@@ -7,6 +7,7 @@ import { EventBus } from './EventBus.js';
 import InputManager, { Action, createInputManager, getInputManager } from './InputManager.js';
 import { RESERVED_CHARACTER_IDS, assertNotReservedId } from './reservedIds.js';
 import { generateTid, formatTid } from './tid.js';
+import { loadOverworldSpritesheet } from './loadOverworldSpritesheet.js';
 
 export {
   debugDraw,
@@ -29,4 +30,5 @@ export {
   assertNotReservedId,
   generateTid,
   formatTid,
+  loadOverworldSpritesheet,
 };

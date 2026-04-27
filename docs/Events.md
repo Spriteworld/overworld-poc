@@ -38,6 +38,12 @@ Two event channels are used in this project:
 |-------|---------|-------------|
 | Menu selection | `{menu-name}-select-option-{idx}` | Fired when a menu option is confirmed. |
 
+### HMs
+
+| Event | Direction | Description |
+|-------|-----------|-------------|
+| `use-flash` | any → Phaser | Trigger HM05 Flash. Listened to by `Darkness` on the active scene; expands the visible radius for the rest of that scene. Idempotent. No payload. |
+
 ## game.events (Cross-Scene)
 
 These are emitted on `this.game.events` / `scene.game.events` so all running scenes can hear them.

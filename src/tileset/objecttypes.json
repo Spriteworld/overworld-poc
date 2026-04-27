@@ -35,6 +35,69 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
+        "id": 120,
+        "members": [
+            {
+                "name": "attenuation",
+                "type": "float",
+                "value": 0.06
+            },
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "add_light"
+            },
+            {
+                "name": "color",
+                "type": "string",
+                "value": "#ffffff"
+            },
+            {
+                "name": "glow",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "intensity",
+                "type": "float",
+                "value": 0.2
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "pixels",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "radius",
+                "type": "float",
+                "value": 100
+            },
+            {
+                "name": "x",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "y",
+                "type": "int",
+                "value": 0
+            }
+        ],
+        "name": "cmd-add_light",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
         "id": 101,
         "members": [
             {
@@ -152,6 +215,95 @@
             }
         ],
         "name": "cmd-camera_pan",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 117,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "darkness_disable"
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "value": 0
+            }
+        ],
+        "name": "cmd-darkness_disable",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 118,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "darkness_enable"
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "pixels",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "radius",
+                "type": "float",
+                "value": 0
+            }
+        ],
+        "name": "cmd-darkness_enable",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 119,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "darkness_set_radius"
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "pixels",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "radius",
+                "type": "float",
+                "value": 2.5
+            }
+        ],
+        "name": "cmd-darkness_set_radius",
         "type": "class",
         "useAs": [
             "property"
@@ -308,6 +460,65 @@
             }
         ],
         "name": "cmd-flag",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ff0080ff",
+        "drawFill": true,
+        "id": 114,
+        "members": [
+            {
+                "name": "anchor",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "flock"
+            },
+            {
+                "name": "count",
+                "type": "int",
+                "value": 5
+            },
+            {
+                "name": "direction",
+                "propertyType": "facing-direction",
+                "type": "string",
+                "value": "right"
+            },
+            {
+                "name": "spacing",
+                "type": "int",
+                "value": 16
+            },
+            {
+                "name": "species",
+                "type": "string",
+                "value": "pidgey"
+            },
+            {
+                "name": "speed",
+                "type": "int",
+                "value": 200
+            },
+            {
+                "name": "x",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "y",
+                "type": "int",
+                "value": 0
+            }
+        ],
+        "name": "cmd-flock",
         "type": "class",
         "useAs": [
             "property"
@@ -879,6 +1090,39 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
+        "id": 113,
+        "members": [
+            {
+                "name": "character1",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "character2",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "cmd",
+                "type": "string",
+                "value": "movement_behavior"
+            },
+            {
+                "name": "value",
+                "propertyType": "movement-behavior",
+                "type": "string",
+                "value": "none"
+            }
+        ],
+        "name": "cmd-movement_behavior",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
         "id": 93,
         "members": [
             {
@@ -929,6 +1173,29 @@
             }
         ],
         "name": "cmd-remove_item",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 121,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "remove_light"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "cmd-remove_light",
         "type": "class",
         "useAs": [
             "property"
@@ -988,6 +1255,59 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
+        "id": 122,
+        "members": [
+            {
+                "name": "attenuation",
+                "type": "float",
+                "value": 0
+            },
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "set_light"
+            },
+            {
+                "name": "color",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "glow",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "intensity",
+                "type": "float",
+                "value": 0
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "radius",
+                "type": "float",
+                "value": 0
+            }
+        ],
+        "name": "cmd-set_light",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
         "id": 39,
         "members": [
             {
@@ -1031,6 +1351,48 @@
             }
         ],
         "name": "cmd-show_exclamation",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ff8000ff",
+        "drawFill": true,
+        "id": 115,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "parallel"
+            },
+            {
+                "name": "branches",
+                "type": "list",
+                "value": [
+                ]
+            }
+        ],
+        "name": "cmd-parallel",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a0",
+        "drawFill": true,
+        "id": 116,
+        "members": [
+            {
+                "name": "commands",
+                "type": "list",
+                "value": [
+                ]
+            }
+        ],
+        "name": "branch",
         "type": "class",
         "useAs": [
             "property"
@@ -1156,65 +1518,6 @@
             }
         ],
         "name": "cmd-spawn_pkmn",
-        "type": "class",
-        "useAs": [
-            "property"
-        ]
-    },
-    {
-        "color": "#ff0080ff",
-        "drawFill": true,
-        "id": 114,
-        "members": [
-            {
-                "name": "anchor",
-                "type": "string",
-                "value": ""
-            },
-            {
-                "name": "cmd",
-                "propertyType": "command-list",
-                "type": "string",
-                "value": "flock"
-            },
-            {
-                "name": "count",
-                "type": "int",
-                "value": 5
-            },
-            {
-                "name": "direction",
-                "propertyType": "facing-direction",
-                "type": "string",
-                "value": "right"
-            },
-            {
-                "name": "spacing",
-                "type": "int",
-                "value": 16
-            },
-            {
-                "name": "species",
-                "type": "string",
-                "value": "pidgey"
-            },
-            {
-                "name": "speed",
-                "type": "int",
-                "value": 200
-            },
-            {
-                "name": "x",
-                "type": "int",
-                "value": 0
-            },
-            {
-                "name": "y",
-                "type": "int",
-                "value": 0
-            }
-        ],
-        "name": "cmd-flock",
         "type": "class",
         "useAs": [
             "property"
@@ -1582,11 +1885,6 @@
                 "value": ""
             },
             {
-                "name": "variant",
-                "type": "string",
-                "value": ""
-            },
-            {
                 "name": "x",
                 "type": "int",
                 "value": 0
@@ -1692,7 +1990,14 @@
             "spawn_pkmn",
             "give_starter",
             "start_battle",
-            "flock"
+            "flock",
+            "parallel",
+            "darkness_enable",
+            "darkness_disable",
+            "darkness_set_radius",
+            "add_light",
+            "remove_light",
+            "set_light"
         ],
         "valuesAsFlags": false
     },
@@ -2026,14 +2331,29 @@
         "id": 17,
         "members": [
             {
-                "name": "battle-theme",
-                "type": "string",
-                "value": "field"
-            },
-            {
                 "name": "bgm",
                 "type": "string",
                 "value": ""
+            },
+            {
+                "name": "can_bike",
+                "type": "bool",
+                "value": true
+            },
+            {
+                "name": "can_escape",
+                "type": "bool",
+                "value": true
+            },
+            {
+                "name": "can_run",
+                "type": "bool",
+                "value": true
+            },
+            {
+                "name": "can_see",
+                "type": "bool",
+                "value": true
             },
             {
                 "name": "encounter-rate",
@@ -2069,6 +2389,12 @@
                 "type": "class",
                 "value": {
                 }
+            },
+            {
+                "name": "weather_type",
+                "propertyType": "weather-type",
+                "type": "string",
+                "value": "none"
             }
         ],
         "name": "map-settings",
@@ -2088,6 +2414,24 @@
             "mirror-move",
             "spinner",
             "follow"
+        ],
+        "valuesAsFlags": false
+    },
+    {
+        "id": 117,
+        "name": "weather-type",
+        "storageType": "string",
+        "type": "enum",
+        "values": [
+            "none",
+            "light_rain",
+            "heavy_rain",
+            "fog",
+            "light_fog",
+            "harsh_sunlight",
+            "sandstorm",
+            "snow",
+            "heavy_snow"
         ],
         "valuesAsFlags": false
     },
@@ -2399,6 +2743,11 @@
                 "value": "down"
             },
             {
+                "name": "impassible",
+                "type": "bool",
+                "value": false
+            },
+            {
                 "name": "movement-behavior",
                 "propertyType": "movement-behavior",
                 "type": "string",
@@ -2572,7 +2921,7 @@
                 "name": "trigger",
                 "propertyType": "trigger-list",
                 "type": "string",
-                "value": "enter"
+                "value": "interact"
             }
         ],
         "name": "trigger",
@@ -2664,39 +3013,6 @@
         "useAs": [
             "object",
             "project"
-        ]
-    },
-    {
-        "color": "#ffa0a0a4",
-        "drawFill": true,
-        "id": 113,
-        "members": [
-            {
-                "name": "character1",
-                "type": "string",
-                "value": ""
-            },
-            {
-                "name": "character2",
-                "type": "string",
-                "value": ""
-            },
-            {
-                "name": "cmd",
-                "type": "string",
-                "value": "movement_behavior"
-            },
-            {
-                "name": "value",
-                "propertyType": "movement-behavior",
-                "type": "string",
-                "value": "none"
-            }
-        ],
-        "name": "cmd-movement_behavior",
-        "type": "class",
-        "useAs": [
-            "property"
         ]
     }
 ]

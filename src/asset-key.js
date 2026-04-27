@@ -23,4 +23,15 @@ export const SHADER_ASSET_KEYS = {
   WIPE_VERTICAL: 'shader_wipe_vertical',
   CLOSE_BARS:    'shader_close_bars',
   TRAPPED:       'shader_trapped',
+  // Tileable cloud-noise textures used by FogPostFxPipeline. FogFx picks
+  // one randomly per instantiation when no explicit texture is supplied,
+  // so a long session sees both directional patterns.
+  FOG_DIAGONAL:   'shader_fog_diagonal',
+  FOG_HORIZONTAL: 'shader_fog_horizontal',
+  // Particle/sand fleck pattern used by SandstormPostFxPipeline.
+  SANDSTORM:      'shader_sandstorm',
+  // Snowflake stamps used by SnowPostFxPipeline. snow1 is the common flake;
+  // snow0 is the rare bigger flake scattered sparsely on top.
+  SNOW_0:         'shader_snow0',
+  SNOW_1:         'shader_snow1',
 };

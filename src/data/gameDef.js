@@ -50,6 +50,11 @@ import defaultDef from './gameDefs/kanto.js';
  *   When true, every newly generated Pokémon (wild, trainer, starter, gift)
  *   is rolled with 31s across all IV slots. Does not retroactively update
  *   mons already in the save — only affects freshly built ones.
+ * @property {boolean}               impassibleSpinners
+ *   When true, spinner trainers cast line-of-sight in all four directions at
+ *   once, so the player can never sneak past while they're turned away.
+ *   When false (default), spinners only see in their current facing
+ *   direction. Static (non-spinning) trainers are unaffected.
  */
 
 let _active = defaultDef;

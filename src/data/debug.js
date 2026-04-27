@@ -13,6 +13,8 @@ export default {
   noTrainerSight: false,
   smoothCam: false,
   toasts: true,
+  waterFx: false,
+  rain: false,
   tests: {
     timeOverlay: false,
     outlineColliders: false,

@@ -324,6 +324,65 @@
             ]
         },
         {
+            "color": "#ff0080ff",
+            "drawFill": true,
+            "id": 114,
+            "members": [
+                {
+                    "name": "anchor",
+                    "type": "string",
+                    "value": ""
+                },
+                {
+                    "name": "cmd",
+                    "propertyType": "command-list",
+                    "type": "string",
+                    "value": "flock"
+                },
+                {
+                    "name": "count",
+                    "type": "int",
+                    "value": 5
+                },
+                {
+                    "name": "direction",
+                    "propertyType": "facing-direction",
+                    "type": "string",
+                    "value": "right"
+                },
+                {
+                    "name": "spacing",
+                    "type": "int",
+                    "value": 16
+                },
+                {
+                    "name": "species",
+                    "type": "string",
+                    "value": "pidgey"
+                },
+                {
+                    "name": "speed",
+                    "type": "int",
+                    "value": 200
+                },
+                {
+                    "name": "x",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "y",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "cmd-flock",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
             "color": "#ffa0a0a4",
             "drawFill": true,
             "id": 29,
@@ -1671,7 +1730,8 @@
                 "spawn_pkmn",
                 "give_starter",
                 "start_battle",
-                "flock"
+                "flock",
+                "parallel"
             ],
             "valuesAsFlags": false
         },
@@ -2010,6 +2070,26 @@
                     "value": ""
                 },
                 {
+                    "name": "can_bike",
+                    "type": "bool",
+                    "value": true
+                },
+                {
+                    "name": "can_escape",
+                    "type": "bool",
+                    "value": true
+                },
+                {
+                    "name": "can_run",
+                    "type": "bool",
+                    "value": true
+                },
+                {
+                    "name": "can_see",
+                    "type": "bool",
+                    "value": true
+                },
+                {
                     "name": "encounter-rate",
                     "type": "int",
                     "value": 0
@@ -2043,6 +2123,12 @@
                     "type": "class",
                     "value": {
                     }
+                },
+                {
+                    "name": "weather_type",
+                    "propertyType": "weather-type",
+                    "type": "string",
+                    "value": "none"
                 }
             ],
             "name": "map-settings",
@@ -2062,6 +2148,24 @@
                 "mirror-move",
                 "spinner",
                 "follow"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "id": 117,
+            "name": "weather-type",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "none",
+                "light_rain",
+                "heavy_rain",
+                "fog",
+                "light_fog",
+                "harsh_sunlight",
+                "sandstorm",
+                "snow",
+                "heavy_snow"
             ],
             "valuesAsFlags": false
         },
@@ -2373,6 +2477,11 @@
                     "value": "down"
                 },
                 {
+                    "name": "impassible",
+                    "type": "bool",
+                    "value": false
+                },
+                {
                     "name": "movement-behavior",
                     "propertyType": "movement-behavior",
                     "type": "string",
@@ -2546,7 +2655,7 @@
                     "name": "trigger",
                     "propertyType": "trigger-list",
                     "type": "string",
-                    "value": "enter"
+                    "value": "interact"
                 }
             ],
             "name": "trigger",
@@ -2641,59 +2750,42 @@
             ]
         },
         {
-            "color": "#ff0080ff",
+            "color": "#ff8000ff",
             "drawFill": true,
-            "id": 114,
+            "id": 115,
             "members": [
                 {
-                    "name": "anchor",
-                    "type": "string",
-                    "value": ""
+                    "name": "branches",
+                    "type": "list",
+                    "value": [
+                    ]
                 },
                 {
                     "name": "cmd",
                     "propertyType": "command-list",
                     "type": "string",
-                    "value": "flock"
-                },
-                {
-                    "name": "count",
-                    "type": "int",
-                    "value": 5
-                },
-                {
-                    "name": "direction",
-                    "propertyType": "facing-direction",
-                    "type": "string",
-                    "value": "right"
-                },
-                {
-                    "name": "spacing",
-                    "type": "int",
-                    "value": 16
-                },
-                {
-                    "name": "species",
-                    "type": "string",
-                    "value": "pidgey"
-                },
-                {
-                    "name": "speed",
-                    "type": "int",
-                    "value": 200
-                },
-                {
-                    "name": "x",
-                    "type": "int",
-                    "value": 0
-                },
-                {
-                    "name": "y",
-                    "type": "int",
-                    "value": 0
+                    "value": "parallel"
                 }
             ],
-            "name": "cmd-flock",
+            "name": "cmd-parallel",
+            "type": "class",
+            "useAs": [
+                "property"
+            ]
+        },
+        {
+            "color": "#ffa0a0a0",
+            "drawFill": true,
+            "id": 116,
+            "members": [
+                {
+                    "name": "commands",
+                    "type": "list",
+                    "value": [
+                    ]
+                }
+            ],
+            "name": "branch",
             "type": "class",
             "useAs": [
                 "property"

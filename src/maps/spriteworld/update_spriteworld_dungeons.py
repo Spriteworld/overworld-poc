@@ -29,6 +29,10 @@ import rebuild_lib as lib
 NAME_TO_FILE = {}
 NAME_TO_SCENE_KEY = {}
 
+# Prefixed onto every scene_key (after NAME_TO_SCENE_KEY override). Keeps map
+# names unique across worlds in src/maps/index.js + src/scenes/index.js.
+WORLD_PREFIX = 'Spriteworld'
+
 LAYER_TEMPLATE = [
     ('floor',        None,     False),
     ('subground',    None,     False),
@@ -296,7 +300,7 @@ def main():
     for zone in lib.iter_zones(maps_layer, name_to_file_overrides=NAME_TO_FILE,
                                 expand_floor_suffix=True):
         fname     = zone['fname']
-        scene_key = NAME_TO_SCENE_KEY.get(zone['name'], zone['name'])
+        scene_key = WORLD_PREFIX + NAME_TO_SCENE_KEY.get(zone['name'], zone['name'])
 
         map_path = lib.MAPS_DIR / fname
         ox = zone['x'] // tw
@@ -374,9 +378,9 @@ def main():
             json.dump(route, f, indent=2)
         print(f'  saved {fname}')
 
-        lib.ensure_scene_file(scene_key, inside=True)
-        lib.ensure_maps_index(scene_key, fname, inside=True)
-        lib.ensure_scenes_index(scene_key)
+        lib.ensure_scene_file(scene_key, inside=True, world_prefix=WORLD_PREFIX)
+        lib.ensure_maps_index(scene_key, fname, inside=True, world_prefix=WORLD_PREFIX)
+        lib.ensure_scenes_index(scene_key, world_prefix=WORLD_PREFIX)
 
     with open(gid_map_path, 'w') as f:
         json.dump(gid_map_raw, f, indent=2)
@@ -388,6 +392,8 @@ def main():
 
     if dungeons_ts_modified or not dungeons_ts_path.exists():
         lib.write_tileset_json(dungeons_ts_path, dungeons_ts_json)
+
+    lib.sweep_legacy_world_namespace(WORLD_PREFIX)
 
 
 if __name__ == '__main__':

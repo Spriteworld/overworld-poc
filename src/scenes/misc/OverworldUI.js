@@ -132,6 +132,21 @@ export default class extends Phaser.Scene {
     });
 
     this.game.events.on('map-enter', (mapName) => {
+      // Auto-dismount the bike when entering a map that disallows it
+      // (map-settings.can_bike = false, or `inside: true` scenes). Without
+      // this, a player who hopped on the bike outdoors and then warped
+      // would still be in the BIKE state on a no-bike map.
+      const mapScene = mapName ? this.scene.get(mapName) : null;
+      const player   = mapScene?.mapPlugins?.player?.player;
+      if (player && player.stateMachine.currentState?.name === player.stateDef.BIKE) {
+        const allowsBike = !mapScene.config?.inside && (mapScene.getMapFlag?.('can_bike') ?? true);
+        if (!allowsBike) {
+          player.stateMachine.setState(player.stateDef.IDLE);
+          store.commit('game/SET_ON_BIKE', false);
+          this.game.events.emit('player-bike-change', false);
+        }
+      }
+
       // KantoWorld uses location-zone detection instead of scene-name toasts.
       if (mapName === 'KantoWorld') return;
       if (!this.game.config.debug.toasts) return;
@@ -158,7 +173,14 @@ export default class extends Phaser.Scene {
 
     this.game.events.on('textbox-disable', () => {
       this.textbox.setVisible(false);
-      EventBus.emit('player-move-enable');
+      // Don't auto-re-enable input mid-script. Closing a textbox during a
+      // running script (e.g. between a `text` and the next `move_npc` /
+      // `walk_to_char`) would otherwise free the player to walk around
+      // while the cutscene is still playing out. The `script-runner-end`
+      // handler above restores input when the script is fully done.
+      if (this._scriptDepth === 0) {
+        EventBus.emit('player-move-enable');
+      }
     });
 
     this.game.events.on('textbox-changedata', (value) => {
@@ -331,16 +353,7 @@ export default class extends Phaser.Scene {
                 },
               });
 
-              // On a lost trainer battle, show the trainer's loss line (if any)
-              // before the screen fades to white and we warp to the heal point.
-              const wonText = battleScene?.config?.enemy?.wonFightText;
-              const isTrainerLoss = !isTutorial && result === 'lost' && battleScene?.config?.enemy?.isTrainer;
-              if (isTrainerLoss && wonText) {
-                this.game.events.emit('textbox-changedata', wonText);
-                this.game.events.once('textbox-disable', runWarp);
-              } else {
-                this.time.delayedCall(2000, runWarp);
-              }
+              this.time.delayedCall(2000, runWarp);
             };
 
             runEvolutionQueue(evolvingPokemon, returnToMap);
@@ -358,7 +371,13 @@ export default class extends Phaser.Scene {
 
       if (itemName === 'Bicycle') {
         if (mapScene?.config?.inside) return;
-        const inBike = player.stateMachine.currentState?.name === player.stateDef.BIKE;
+        // Per-map / gameDef opt-out — set map-settings.can_bike = false to
+        // disable bike toggling on maps where it doesn't fit. Always allow
+        // dismounting even on a no-bike map in case the player got there
+        // mid-ride.
+        const inBike        = player.stateMachine.currentState?.name === player.stateDef.BIKE;
+        const mapAllowsBike = mapScene?.getMapFlag?.('can_bike') ?? true;
+        if (!inBike && !mapAllowsBike) return;
         const nextState = inBike ? player.stateDef.IDLE : player.stateDef.BIKE;
         player.stateMachine.setState(nextState);
         store.commit('game/SET_ON_BIKE', !inBike);

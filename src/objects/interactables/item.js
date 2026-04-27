@@ -25,12 +25,10 @@ export default class {
         return;
       }
 
-      // Tiled tile objects (gid) anchor at bottom-left, so subtract height to
-      // get the top-left tile coord that Items.Pokeball positions from.
       let item = new Items.Pokeball({
         scene: this.scene,
         x: obj.x / Tile.WIDTH,
-        y: (obj.y - obj.height) / Tile.HEIGHT,
+        y: (obj.gid ? obj.y - obj.height : obj.y) / Tile.HEIGHT,
         item: itemName,
         overworldKey: obj.name,
       });

@@ -13,11 +13,43 @@ function geKnows(scene, id) {
   return !ge || ge.hasCharacter(id);
 }
 
+/**
+ * Apply the optional `speed` and `noclip` fields a movement command may carry
+ * onto the target character. Centralised so every move_* / walk_* command
+ * accepts the same flags consistently — `move_npc`, `move_player`,
+ * `walk_to_char`, and `walk_warp_continue` all flow through here.
+ *
+ * `speed` (tiles/sec) updates GridEngine's per-character speed before the
+ * move kicks off. Useful for dramatic exits (Mt Moon Zubats flying off-
+ * screen) or slow ceremonial walks (Oak's lab cutscenes).
+ *
+ * `noclip` toggles tile collision off via `Character._setCollidesWithTiles`,
+ * which lets the character pass through walls. The combination of `noclip`
+ * with `path` mode is what enables flyaway scenes — pathfind mode evaluates
+ * routes against static map data and largely ignores the runtime toggle.
+ *
+ * Neither flag is restored automatically. Callers that need to revert (e.g.
+ * an NPC that persists after the move) should issue a follow-up command
+ * with the original values, or `move_player` will already snap speed back
+ * to 4 the next time the player moves under script control.
+ */
+function applyMoveOptions(scene, charId, char, cmd) {
+  if (typeof cmd.speed === 'number' && cmd.speed > 0) {
+    scene.gridEngine.setSpeed(charId, cmd.speed);
+  }
+  if (cmd.noclip === true) {
+    char._setCollidesWithTiles?.(false);
+  }
+}
+
 export default {
   move_player(runner, cmd) {
     const player = runner._scene.characters?.get('player');
     if (!player || !runner._scene.gridEngine || !geKnows(runner._scene, 'player')) { runner._step(); return; }
+    // Default speed is 4 tiles/sec for the player under script control;
+    // applyMoveOptions overrides it when the script passes `speed`.
     runner._scene.gridEngine.setSpeed('player', 4);
+    applyMoveOptions(runner._scene, 'player', player, cmd);
     if (cmd.path?.length) {
       runner._walkPath('player', player, [...cmd.path], null);
     } else {
@@ -44,6 +76,7 @@ export default {
     const npc = resolveChar(runner._scene, cmd.character);
     if (!npc || !runner._scene.gridEngine || !geKnows(runner._scene, npc.config.id)) { runner._step(); return; }
     const npcCharId = npc.config.id;
+    applyMoveOptions(runner._scene, npcCharId, npc, cmd);
     if (cmd.path?.length) {
       runner._walkPath(npcCharId, npc, [...cmd.path], null);
     } else {
@@ -111,6 +144,7 @@ export default {
       runner._step();
     };
     const charId = char1.config.id;
+    applyMoveOptions(runner._scene, charId, char1, cmd);
     const moveSub = runner._scene.gridEngine.positionChangeFinished().subscribe(({ charId: id, enterTile }) => {
       if (id !== charId) return;
       if (enterTile.x === target.x && enterTile.y === target.y) settle();
@@ -289,6 +323,7 @@ export default {
       stopSub.unsubscribe();
       doWarp();
     };
+    applyMoveOptions(runner._scene, char.config.id, char, cmd);
     const moveSub = runner._scene.gridEngine.positionChangeFinished().subscribe(({ charId, enterTile }) => {
       if (charId !== char.config.id) return;
       if (enterTile.x === dest.x && enterTile.y === dest.y) settle();
@@ -315,6 +350,15 @@ export default {
   },
 
   escape_rope(runner) {
+    // Per-map / gameDef opt-out — set map-settings.can_escape = false
+    // to disable Escape Rope on maps where the player must traverse
+    // back manually (story segments, post-game challenges).
+    const allowsEscape = runner._scene.getMapFlag?.('can_escape') ?? true;
+    if (!allowsEscape) {
+      console.warn('[ScriptRunner] escape_rope: blocked by map-settings.can_escape on', runner._scene.config?.mapName);
+      runner._step();
+      return;
+    }
     const outdoor = store.state.game.lastOutdoorLocation
       ?? store.state.game.healLocation
       ?? { map: 'KantoWorld', x: 74, y: 287, charLayer: 'ground' };

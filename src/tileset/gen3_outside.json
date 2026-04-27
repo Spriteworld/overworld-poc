@@ -4014,6 +4014,11 @@
                  "value":true
                 }, 
                 {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
                  "name":"sw_water",
                  "type":"bool",
                  "value":true
@@ -4028,6 +4033,11 @@
                  "value":true
                 }, 
                 {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
                  "name":"sw_water",
                  "type":"bool",
                  "value":true
@@ -4038,6 +4048,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
                  "type":"bool",
                  "value":true
                 }, 
@@ -4173,6 +4188,11 @@
                  "value":true
                 }, 
                 {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
                  "name":"sw_water",
                  "type":"bool",
                  "value":true
@@ -4187,6 +4207,11 @@
                  "value":true
                 }, 
                 {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
                  "name":"sw_water",
                  "type":"bool",
                  "value":true
@@ -4197,6 +4222,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
                  "type":"bool",
                  "value":true
                 }, 
@@ -4347,6 +4377,11 @@
                  "value":true
                 }, 
                 {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
                  "name":"sw_water",
                  "type":"bool",
                  "value":true
@@ -4361,6 +4396,11 @@
                  "value":true
                 }, 
                 {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
                  "name":"sw_water",
                  "type":"bool",
                  "value":true
@@ -4371,6 +4411,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
                  "type":"bool",
                  "value":true
                 }, 
@@ -4530,6 +4575,11 @@
                  "value":true
                 }, 
                 {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
                  "name":"sw_water",
                  "type":"bool",
                  "value":true
@@ -4540,6 +4590,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
                  "type":"bool",
                  "value":true
                 }, 
@@ -4714,6 +4769,11 @@
                  "value":true
                 }, 
                 {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
                  "name":"sw_water",
                  "type":"bool",
                  "value":true
@@ -4724,6 +4784,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
                  "type":"bool",
                  "value":true
                 }, 

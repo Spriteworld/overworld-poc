@@ -47,6 +47,11 @@ NAME_TO_FILE = {
     'PalletTown': 'pallet.json',
 }
 
+# Prefixed onto every Tiled zone-name to produce the scene_key. Lets multiple
+# worlds re-use the same map name (e.g. "Route1") without colliding in
+# src/maps/index.js or src/scenes/index.js.
+WORLD_PREFIX = 'Spriteworld'
+
 # (layer_name, ge_charLayer_value, is_objectgroup) — render-stack order.
 LAYER_TEMPLATE = [
     ('floor',        None,     False),
@@ -529,7 +534,7 @@ def main():
             'height': zone['height'],
             'properties': zone['properties'],
         }
-        fname_to_key[zone['fname']] = zone['name']
+        fname_to_key[zone['fname']] = WORLD_PREFIX + zone['name']
 
     world_path = lib.MAPS_DIR / 'spriteworld.world'
     if world_path.exists():
@@ -669,9 +674,9 @@ def main():
         print(f'  saved {fname}')
 
         scene_key = fname_to_key[fname]
-        lib.ensure_scene_file(scene_key)
-        lib.ensure_maps_index(scene_key, fname)
-        lib.ensure_scenes_index(scene_key)
+        lib.ensure_scene_file(scene_key, world_prefix=WORLD_PREFIX)
+        lib.ensure_maps_index(scene_key, fname, world_prefix=WORLD_PREFIX)
+        lib.ensure_scenes_index(scene_key, world_prefix=WORLD_PREFIX)
 
     # ── Animation backfill + sync ──────────────────────────────────────────
     if ensure_anim_tiles_in_spriteworld(gen3_ts_json, gen3_to_spriteworld, spriteworld_to_gen3,
@@ -724,6 +729,10 @@ def main():
         lib.write_tileset_json(spriteworld_common_ts_path, spriteworld_common_ts_json)
     if spriteworld_outside_ts_modified:
         lib.write_tileset_json(spriteworld_outside_ts_path, spriteworld_outside_ts_json)
+
+    # End-of-run sweep: catch any leftover un-prefixed entries (maps no longer
+    # in the master, but still listed in src/maps/index.js etc).
+    lib.sweep_legacy_world_namespace(WORLD_PREFIX)
 
 
 if __name__ == '__main__':

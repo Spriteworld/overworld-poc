@@ -7,16 +7,30 @@
  */
 export function normalize(cmds) {
   return cmds.map(item => {
-    if (item?.type === 'class' && typeof item.propertytype === 'string' && item.propertytype.startsWith('cmd-')) {
-      const flat = { cmd: item.propertytype.slice(4), ...item.value };
-      for (const key of ['then', 'else', 'yes', 'no']) {
-        if (Array.isArray(flat[key])) {
-          flat[key] = normalize(flat[key]);
-        }
-      }
-      return flat;
+    const flat = (item?.type === 'class' && typeof item.propertytype === 'string' && item.propertytype.startsWith('cmd-'))
+      ? { cmd: item.propertytype.slice(4), ...item.value }
+      : item;
+    if (!flat || typeof flat !== 'object') return flat;
+    for (const key of ['then', 'else', 'yes', 'no']) {
+      if (Array.isArray(flat[key])) flat[key] = normalize(flat[key]);
     }
-    return item;
+    // `parallel.branches` is an array where each entry is a sub-script.
+    // Accept several authoring shapes:
+    //   - raw array of commands (JSON-only):    [[cmd, cmd], [cmd]]
+    //   - Tiled `branch` wrapper class:         [{type:'class', propertytype:'branch', value:{commands:[...]}}]
+    //   - already-normalized branch wrapper:    [{commands:[cmd, cmd]}]
+    //   - single-command shorthand (Tiled UX):  [cmd, cmd, cmd]  → each cmd becomes its own one-command branch
+    if (Array.isArray(flat.branches)) {
+      flat.branches = flat.branches.map(b => {
+        if (b?.type === 'class' && b?.propertytype === 'branch') {
+          return Array.isArray(b.value?.commands) ? normalize(b.value.commands) : [];
+        }
+        if (b && Array.isArray(b.commands)) return normalize(b.commands);
+        if (Array.isArray(b)) return normalize(b);
+        return normalize([b]);
+      });
+    }
+    return flat;
   });
 }
 
@@ -37,6 +51,9 @@ export function validate(commands, path = 'root') {
     'fade_out', 'fade_in', 'camera_pan',
     'camera_follow_player', 'camera_follow_npc',
     'start_battle',
+    'parallel',
+    'darkness_enable', 'darkness_disable', 'darkness_set_radius',
+    'add_light', 'remove_light', 'set_light',
   ]);
   const REQUIRED = {
     text:              ['text'],
@@ -70,6 +87,10 @@ export function validate(commands, path = 'root') {
     bgm_start:         ['key'],
     camera_follow_npc: ['name'],
     start_battle:      ['team'],
+    darkness_set_radius: ['radius'],
+    add_light:           ['name'],
+    remove_light:        ['name'],
+    set_light:           ['name'],
   };
   const warnings = [];
   commands.forEach((cmd, i) => {
@@ -81,6 +102,11 @@ export function validate(commands, path = 'root') {
     }
     for (const key of ['then', 'else', 'yes', 'no']) {
       if (Array.isArray(cmd[key])) { warnings.push(...validate(cmd[key], `${loc}.${key}`)); }
+    }
+    if (Array.isArray(cmd.branches)) {
+      cmd.branches.forEach((b, j) => {
+        if (Array.isArray(b)) warnings.push(...validate(b, `${loc}.branches[${j}]`));
+      });
     }
   });
   return warnings;

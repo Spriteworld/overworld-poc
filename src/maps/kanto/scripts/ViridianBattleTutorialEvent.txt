@@ -1,0 +1,133 @@
+[
+  {
+    "propertytype": "cmd-if_flag",
+    "type": "class",
+    "value": {
+      "else": [
+        {
+          "propertytype": "cmd-if_flag",
+          "type": "class",
+          "value": {
+            "else": [
+              {
+                "propertytype": "cmd-show_exclamation",
+                "type": "class",
+                "value": {
+                  "target": "battle_tutor"
+                }
+              },
+              {
+                "propertytype": "cmd-text",
+                "type": "class",
+                "value": {
+                  "text": "I absolutely forbid you from\ngoing through here!\nThis is private property!"
+                }
+              },
+              {
+                "propertytype": "cmd-knockback",
+                "type": "class",
+                "value": {
+                  "direction": "down",
+                  "target": "player",
+                  "tiles": 2
+                }
+              }
+            ],
+            "key": "has_pokedex",
+            "then": [
+              {
+                "propertytype": "cmd-show_exclamation",
+                "type": "class",
+                "value": {
+                  "target": "battle_tutor"
+                }
+              },
+              {
+                "propertytype": "cmd-text",
+                "type": "class",
+                "value": {
+                  "text": "Oh, {player}!\nLet me show you how to catch a POK{e}MON."
+                }
+              },
+              {
+                "propertytype": "cmd-text",
+                "type": "class",
+                "value": {
+                  "text": "Watch carefully..."
+                }
+              },
+              {
+                "propertytype": "cmd-start_battle",
+                "type": "class",
+                "value": {
+                  "force_catch": true,
+                  "player_override": {
+                    "inventory": [
+                      {
+                        "type": "",
+                        "value": null
+                      }
+                    ],
+                    "name": "Tutor",
+                    "team": [
+                      {
+                        "type": "",
+                        "value": null
+                      }
+                    ]
+                  },
+                  "scripted_actions": [
+                    {
+                      "propertytype": "scripted-action",
+                      "type": "class",
+                      "value": {
+                        "move": "Tackle",
+                        "type": "attack"
+                      }
+                    },
+                    {
+                      "propertytype": "scripted-action",
+                      "type": "class",
+                      "value": {
+                        "itemName": "Poké Ball",
+                        "type": "use_item"
+                      }
+                    }
+                  ],
+                  "team": [
+                    {
+                      "propertytype": "trainer-pokemon",
+                      "type": "class",
+                      "value": {
+                        "level": 5,
+                        "species": "rattata"
+                      }
+                    }
+                  ],
+                  "tutorial": true,
+                  "type": "wild"
+                }
+              },
+              {
+                "propertytype": "cmd-text",
+                "type": "class",
+                "value": {
+                  "text": "And that's how you catch a POK{e}MON!"
+                }
+              },
+              {
+                "propertytype": "cmd-set_flag",
+                "type": "class",
+                "value": {
+                  "key": "done_battle_tutorial",
+                  "value": true
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "key": "done_battle_tutorial"
+    }
+  }
+]

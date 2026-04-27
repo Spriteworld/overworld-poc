@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import * as Tile from '@Objects/Tile.js';
 import { Items, buildMon, buildMovePool, resolveSpecies } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
-import { getPropertyValue, getBattleTheme, remapProps, Vector2, checkOnlyIf, assertNotReservedId } from '@Utilities';
+import { getPropertyValue, getBattleTheme, remapProps, Vector2, checkOnlyIf, assertNotReservedId, loadOverworldSpritesheet } from '@Utilities';
 import { getGameDef } from '@Data/gameDef.js';
 import { resolveAiType, DEFAULT_TRAINER_AI } from '@Data/aiTypes.js';
 import { rng } from '@Utilities/rng.js';
@@ -142,7 +142,7 @@ export default class {
         this.scene._indexCharacter?.(trainerChar.config.id);
       }
     } else {
-      const pathFactory = texture ? Tileset.trainers[texture] : null;
+      const pathFactory = texture ? Tileset.sprites[texture] : null;
       if (!pathFactory) {
         if (texture) console.warn('[Trainer] no sprite path for texture:', texture);
         trainerChar.setTexture('red');
@@ -158,8 +158,7 @@ export default class {
         }
         pathFactory().then(path => {
           if (!this.scene.sys) return;
-          this.scene.load.spritesheet(texture, path, { frameWidth: Tile.WIDTH, frameHeight: 42 });
-          this.scene.load.once('filecomplete-spritesheet-' + texture, () => {
+          loadOverworldSpritesheet(this.scene, texture, path).then(() => {
             this._ensureAnim(texture);
             // Update ALL trainers sharing this texture, not just the one that triggered the load.
             this.scene.trainers.getChildren()
@@ -168,10 +167,11 @@ export default class {
                 t.setTexture(texture);
                 if (this.scene.gridEngine?.hasCharacter(t.config.id)) {
                   this.scene.gridEngine.setWalkingAnimationMapping(t.config.id, t.characterFramesDef());
+                  const dir = this.scene.gridEngine.getFacingDirection(t.config.id);
+                  this.scene.gridEngine.turnTowards(t.config.id, dir);
                 }
               });
           });
-          this.scene.load.start();
         });
       }
     }

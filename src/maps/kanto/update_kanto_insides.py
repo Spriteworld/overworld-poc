@@ -48,6 +48,10 @@ NAME_TO_SCENE_KEY = {
     'ProfLab': 'ProfessorLab',
 }
 
+# Prefixed onto every scene_key (after NAME_TO_SCENE_KEY override). Keeps map
+# names like "ProfessorLab" unique across worlds in src/maps/index.js etc.
+WORLD_PREFIX = 'Kanto'
+
 LAYER_TEMPLATE = [
     ('floor',        None,     False),
     ('subground',    None,     False),
@@ -306,7 +310,8 @@ def main():
     for zone in lib.iter_zones(maps_layer, name_to_file_overrides=NAME_TO_FILE,
                                 expand_floor_suffix=True):
         fname     = zone['fname']
-        scene_key = NAME_TO_SCENE_KEY.get(zone['name'], zone['name'])
+        scene_key = WORLD_PREFIX + NAME_TO_SCENE_KEY.get(zone['name'], zone['name'])
+        polygon   = zone['polygon']
 
         map_path = lib.MAPS_DIR / fname
         ox = zone['x'] // tw
@@ -335,6 +340,7 @@ def main():
             raw = lib.extract_region(
                 klayer['data'], master_w, master_h,
                 ox, oy, dst_w, dst_h,
+                polygon=polygon, tw=tw, th=th,
             )
             converted, modified = remap_data(
                 raw, src_to_map_gid, map_gid_to_src,
@@ -366,6 +372,7 @@ def main():
         px_h = dst_h * th
         objects, next_oid = lib.merge_interactions(
             master_objs, master_px_x, master_px_y, px_w, px_h,
+            polygon=polygon,
         )
         inter['objects']      = objects
         route['nextobjectid'] = next_oid
@@ -385,9 +392,9 @@ def main():
             json.dump(route, f, indent=2)
         print(f'  saved {fname}')
 
-        lib.ensure_scene_file(scene_key, inside=True)
-        lib.ensure_maps_index(scene_key, fname, inside=True)
-        lib.ensure_scenes_index(scene_key)
+        lib.ensure_scene_file(scene_key, inside=True, world_prefix=WORLD_PREFIX)
+        lib.ensure_maps_index(scene_key, fname, inside=True, world_prefix=WORLD_PREFIX)
+        lib.ensure_scenes_index(scene_key, world_prefix=WORLD_PREFIX)
 
     # ── Item-tile report (informational) ──────────────────────────────────
     print('\nItem tile map_gids (kanto_common):')
@@ -414,6 +421,8 @@ def main():
 
     if inside_ts_modified or not inside_ts_path.exists():
         lib.write_tileset_json(inside_ts_path, inside_ts_json)
+
+    lib.sweep_legacy_world_namespace(WORLD_PREFIX)
 
 
 if __name__ == '__main__':

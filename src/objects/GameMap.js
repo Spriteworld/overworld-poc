@@ -10,6 +10,14 @@ import store from '../store/index.js';
 import Tileset from '@Tileset';
 import { MAP_REGISTRY } from '@Maps';
 import RoomSync from '@/multiplayer/RoomSync.js';
+import Darkness from '@Objects/Darkness.js';
+import WaterFx from '@Objects/WaterFx.js';
+import RainFx, { RAIN_VARIANTS } from '@Objects/RainFx.js';
+import FogFx, { FOG_VARIANTS } from '@Objects/FogFx.js';
+import SandstormFx, { SANDSTORM_VARIANTS } from '@Objects/SandstormFx.js';
+import SnowFx, { SNOW_VARIANTS } from '@Objects/SnowFx.js';
+import SunlightFx, { SUNLIGHT_VARIANTS } from '@Objects/SunlightFx.js';
+import TimeOverlayFx from '@Objects/TimeOverlayFx.js';
 
 /**
  * Maps the tileset name (derived from the map JSON source filename) to the
@@ -20,9 +28,17 @@ const TILESET_REGISTRY = {
   'gen3_outside':       { url: Tileset.gen3outside,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'rse_inside':         { url: Tileset.rse_inside,    frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'rse_outside':        { url: Tileset.rse_outside,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'Transparent_Tiles':  { url: Tileset.Transparent_Tiles, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'animated_grass':     { url: Tileset.animated_grass,    frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'caves':              { url: Tileset.caves,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'kanto_common':       { url: Tileset.kanto_common,  frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'kanto_outside':      { url: Tileset.kanto_outside, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'kanto_inside':       { url: Tileset.kanto_inside,  frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'kanto_dungeons':     { url: Tileset.kanto_dungeons, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'Gavworld_common':    { url: Tileset.Gavworld_common,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'Gavworld_outside':   { url: Tileset.Gavworld_outside,  frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'Gavworld_inside':    { url: Tileset.Gavworld_inside,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'Gavworld_dungeons':  { url: Tileset.Gavworld_dungeons, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
 };
 
 /**
@@ -30,13 +46,21 @@ const TILESET_REGISTRY = {
  * Used to inline external tileset references before passing to Phaser.
  */
 const TILESET_JSON_REGISTRY = {
-  'gen3_inside':   Tileset.gen3inside_json,
-  'gen3_outside':  Tileset.gen3outside_json,
-  'rse_inside':    Tileset.rse_inside_json,
-  'rse_outside':   Tileset.rse_outside_json,
-  'kanto_common':   Tileset.kanto_common_json,
-  'kanto_outside':  Tileset.kanto_outside_json,
-  'kanto_inside':   Tileset.kanto_inside_json,
+  'gen3_inside':       Tileset.gen3inside_json,
+  'gen3_outside':      Tileset.gen3outside_json,
+  'rse_inside':        Tileset.rse_inside_json,
+  'rse_outside':       Tileset.rse_outside_json,
+  'Transparent_Tiles': Tileset.Transparent_Tiles_json,
+  'animated_grass':    Tileset.animated_grass_json,
+  'caves':             Tileset.caves_json,
+  'kanto_common':      Tileset.kanto_common_json,
+  'kanto_outside':     Tileset.kanto_outside_json,
+  'kanto_inside':      Tileset.kanto_inside_json,
+  'kanto_dungeons':    Tileset.kanto_dungeons_json,
+  'Gavworld_common':   Tileset.Gavworld_common_json,
+  'Gavworld_outside':  Tileset.Gavworld_outside_json,
+  'Gavworld_inside':   Tileset.Gavworld_inside_json,
+  'Gavworld_dungeons': Tileset.Gavworld_dungeons_json,
 };
 
 /**
@@ -234,6 +258,59 @@ export default class extends Phaser.Scene {
 
     this.initPlugins();
 
+    // Instantiate Darkness before plugin init so the Light plugin can
+    // register each torch with the darkness overlay during its own init().
+    // can_see=false marks maps where vision is limited — same flag that
+    // already disables trainer sight-casting (Mt. Moon, Rock Tunnel, etc.).
+    if (!this.getMapFlag('can_see', true)) {
+      this.darkness = new Darkness(this);
+    }
+
+    // Optional water-surface shader. Self-disables on maps with no `sw_water`
+    // tiles. Gated by debug flag so we can A/B against the unshaded look.
+    if (this.game.config.debug.waterFx) {
+      this.waterFx = new WaterFx(this);
+    }
+
+    // Optional weather: per-map `weather_type` from Tiled map-settings, or
+    // forced via debug overrides — `debug.forceWeatherType` (string, takes
+    // priority over the authored map setting; used by test scenarios) or
+    // legacy `debug.rain` (heavy_rain preset). Variants resolve through
+    // RAIN_VARIANTS / FOG_VARIANTS / SUNLIGHT_VARIANTS — the tables are
+    // disjoint so at most one fires per map.
+    const weatherType = this.game.config.debug.forceWeatherType
+      ?? this.getMapSetting('weather_type', 'none');
+    const rainCfg = this.game.config.debug.rain
+      ? RAIN_VARIANTS.heavy_rain
+      : RAIN_VARIANTS[weatherType];
+    if (rainCfg) {
+      this.rainFx = new RainFx(this, rainCfg);
+    }
+    const fogCfg = FOG_VARIANTS[weatherType];
+    if (fogCfg) {
+      this.fogFx = new FogFx(this, fogCfg);
+    }
+    const sandCfg = SANDSTORM_VARIANTS[weatherType];
+    if (sandCfg) {
+      this.sandstormFx = new SandstormFx(this, sandCfg);
+    }
+    const snowCfg = SNOW_VARIANTS[weatherType];
+    if (snowCfg) {
+      this.snowFx = new SnowFx(this, snowCfg);
+    }
+    const sunCfg = SUNLIGHT_VARIANTS[weatherType];
+    if (sunCfg) {
+      this.sunlightFx = new SunlightFx(this, sunCfg);
+    }
+
+    // Time-of-day tint via post-FX (replaces the old full-screen overlay
+    // scene). Outdoor maps only — indoors stays unmuted. Skip when the
+    // 4-quadrant compare grid is on so each panel shows its own preset on
+    // a neutral baseline rather than "current tint + panel tint".
+    if (!this.config.inside && !this.game.config.debug?.tests?.timeOverlay) {
+      this.timeOverlayFx = new TimeOverlayFx(this);
+    }
+
     // loop and init the plugins
     Object.entries(this.mapPlugins).forEach(([key, plugin]) => {
       if (this.game.config.debug.console.gameMap) {
@@ -272,6 +349,24 @@ export default class extends Phaser.Scene {
       Object.values(this.mapPlugins).forEach(plugin => {
         if (typeof plugin.destroy === 'function') plugin.destroy();
       });
+      this.darkness?.destroy();
+      this.darkness = null;
+      this.waterFx?.destroy();
+      this.waterFx = null;
+      this.rainFx?.destroy();
+      this.rainFx = null;
+      this.fogFx?.destroy();
+      this.fogFx = null;
+      this.sandstormFx?.destroy();
+      this.sandstormFx = null;
+      this.snowFx?.destroy();
+      this.snowFx = null;
+      this.sunlightFx?.destroy();
+      this.sunlightFx = null;
+      this.timeOverlayFx?.destroy();
+      this.timeOverlayFx = null;
+      this.timeOverlayDebug?.destroy();
+      this.timeOverlayDebug = null;
     });
   }
 
@@ -481,6 +576,37 @@ export default class extends Phaser.Scene {
   }
 
   /**
+   * Read a boolean capability flag for this map (`can_run`, `can_bike`,
+   * `can_escape`, `can_see`, etc.) from the Tiled `map-settings` property.
+   * Falls back to `defaultValue` (default `true` — most maps "can" do most
+   * things) when the field is absent or non-boolean.
+   *
+   * @param {string} key
+   * @param {boolean} [defaultValue=true]
+   * @returns {boolean}
+   */
+  getMapFlag(key, defaultValue = true) {
+    const settings = this.config.map?.properties?.find(p => p.name === 'map-settings')?.value;
+    const fromMap  = settings?.[key];
+    if (typeof fromMap === 'boolean') return fromMap;
+    return defaultValue;
+  }
+
+  /**
+   * Read an arbitrary-typed setting from the Tiled `map-settings` property
+   * (string, number, enum, etc.). For boolean capability flags use
+   * `getMapFlag` — this returns the raw value as-authored.
+   *
+   * @param {string} key
+   * @param {*} [defaultValue]
+   */
+  getMapSetting(key, defaultValue) {
+    const settings = this.config.map?.properties?.find(p => p.name === 'map-settings')?.value;
+    const v = settings?.[key];
+    return (v === undefined || v === null) ? defaultValue : v;
+  }
+
+  /**
    * Returns true if any tile layer at (x, y) has the `water: true` custom property.
    * @param {number} x - Tile x coordinate.
    * @param {number} y - Tile y coordinate.
@@ -604,6 +730,16 @@ export default class extends Phaser.Scene {
       characters: chars
     });
     this.ge_init = true;
+
+    this.characters.forEach((char) => {
+      if (char.initalCreation) {
+        const dir = (char.config['facing-direction'] ?? 'down').toLowerCase();
+        try {
+          this.gridEngine.turnTowards(char.config.id, dir);
+        } catch (_) { /* character may not be registered */ }
+        char.initalCreation = false;
+      }
+    });
   }
 
   /**
@@ -627,6 +763,17 @@ export default class extends Phaser.Scene {
     // Tick NPCs / trainers / overworld Pokémon ourselves (runChildUpdate is
     // disabled on their groups) so we can cull off-screen children cheaply.
     this._updateCulledGroups(time, scaledDelta);
+
+    // Water shader uniforms + trail RT — must run after the player update so
+    // the trail samples the player's just-stepped position, not last frame's.
+    this.waterFx?.update(time, scaledDelta);
+    this.rainFx?.update(time, scaledDelta);
+    this.fogFx?.update(time, scaledDelta);
+    this.sandstormFx?.update(time, scaledDelta);
+    this.snowFx?.update(time, scaledDelta);
+    this.sunlightFx?.update(time, scaledDelta);
+    this.timeOverlayFx?.update();
+    this.timeOverlayDebug?.update();
 
     if (this.ge_init && !this.ge_events_init) {
       this.initGEEvents();

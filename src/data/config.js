@@ -16,6 +16,9 @@ const config = {
   disableContextMenu: true,
   input: {
     gamepad: true,
+    touch: {
+      capture: false,
+    },
   },
   fps: {
     target: 30,

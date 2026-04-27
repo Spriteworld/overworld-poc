@@ -48,6 +48,10 @@ NAME_TO_SCENE_KEY = {
     'ProfLab': 'ProfessorLab',
 }
 
+# Prefixed onto every scene_key (after NAME_TO_SCENE_KEY override). Keeps map
+# names like "ProfessorLab" unique across worlds in src/maps/index.js etc.
+WORLD_PREFIX = 'Spriteworld'
+
 LAYER_TEMPLATE = [
     ('floor',        None,     False),
     ('subground',    None,     False),
@@ -306,7 +310,7 @@ def main():
     for zone in lib.iter_zones(maps_layer, name_to_file_overrides=NAME_TO_FILE,
                                 expand_floor_suffix=True):
         fname     = zone['fname']
-        scene_key = NAME_TO_SCENE_KEY.get(zone['name'], zone['name'])
+        scene_key = WORLD_PREFIX + NAME_TO_SCENE_KEY.get(zone['name'], zone['name'])
 
         map_path = lib.MAPS_DIR / fname
         ox = zone['x'] // tw
@@ -385,9 +389,9 @@ def main():
             json.dump(route, f, indent=2)
         print(f'  saved {fname}')
 
-        lib.ensure_scene_file(scene_key, inside=True)
-        lib.ensure_maps_index(scene_key, fname, inside=True)
-        lib.ensure_scenes_index(scene_key)
+        lib.ensure_scene_file(scene_key, inside=True, world_prefix=WORLD_PREFIX)
+        lib.ensure_maps_index(scene_key, fname, inside=True, world_prefix=WORLD_PREFIX)
+        lib.ensure_scenes_index(scene_key, world_prefix=WORLD_PREFIX)
 
     # ── Item-tile report (informational) ──────────────────────────────────
     print('\nItem tile map_gids (spriteworld_common):')
@@ -414,6 +418,8 @@ def main():
 
     if inside_ts_modified or not inside_ts_path.exists():
         lib.write_tileset_json(inside_ts_path, inside_ts_json)
+
+    lib.sweep_legacy_world_namespace(WORLD_PREFIX)
 
 
 if __name__ == '__main__':

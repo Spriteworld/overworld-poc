@@ -1,0 +1,62 @@
+[
+  {
+    "propertytype": "cmd-if_flag",
+    "type": "class",
+    "value": {
+      "comparison": "eq",
+      "else": [
+        {
+          "propertytype": "cmd-text",
+          "type": "class",
+          "value": {}
+        }
+      ],
+      "key": "has_boulderbadge",
+      "then": [
+        {
+          "propertytype": "cmd-text",
+          "type": "class",
+          "value": {
+            "text": "You're a TRAINER, right?\nBROCK's looking for new challengers.\nFollow me!"
+          }
+        },
+        {
+          "propertytype": "cmd-disable_input",
+          "type": "class",
+          "value": {}
+        },
+        {
+          "propertytype": "cmd-movement_behavior",
+          "type": "class",
+          "value": {
+            "character1": "player",
+            "character2": "pewterAide",
+            "value": "follow"
+          }
+        },
+        {
+          "propertytype": "cmd-move_npc",
+          "type": "class",
+          "value": {
+            "anchor": "pewterGym",
+            "character": "pewterAide"
+          }
+        },
+        {
+          "propertytype": "cmd-movement_behavior",
+          "type": "class",
+          "value": {
+            "character1": "player",
+            "value": "none"
+          }
+        },
+        {
+          "propertytype": "cmd-enable_input",
+          "type": "class",
+          "value": {}
+        }
+      ],
+      "value": "true"
+    }
+  }
+]

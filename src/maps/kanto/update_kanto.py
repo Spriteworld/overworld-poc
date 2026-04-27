@@ -47,6 +47,11 @@ NAME_TO_FILE = {
     'PalletTown': 'pallet.json',
 }
 
+# Prefixed onto every Tiled zone-name to produce the scene_key. Lets multiple
+# worlds re-use the same map name (e.g. "Route1") without colliding in
+# src/maps/index.js or src/scenes/index.js.
+WORLD_PREFIX = 'Kanto'
+
 # (layer_name, ge_charLayer_value, is_objectgroup) — render-stack order.
 LAYER_TEMPLATE = [
     ('floor',        None,     False),
@@ -456,6 +461,10 @@ def main():
     kanto_outside_ts_json = lib.load_or_init_tileset(
         kanto_outside_ts_path, 'kanto_outside', 'kanto_outside.png', columns=16, image_width=512)
 
+    # Clear stale tile entries — recomputed from gen3_outside every run.
+    kanto_common_ts_json['tiles'] = []
+    kanto_outside_ts_json['tiles'] = []
+
     # Read kanto_inside.json to find which gen3_outside tiles are also used indoors.
     kanto_inside_path        = lib.MAPS_DIR / 'kanto_inside.json'
     kanto_inside_tilelayers  = {}
@@ -522,14 +531,18 @@ def main():
     bounds = {}
     fname_to_key = {}
     for zone in lib.iter_zones(maps_layer, name_to_file_overrides=NAME_TO_FILE):
+        polygon = zone['polygon']
+        if polygon:
+            polygon = [(px - OFFSET_X, py - OFFSET_Y) for px, py in polygon]
         bounds[zone['fname']] = {
             'x':      zone['x'] - OFFSET_X,
             'y':      zone['y'] - OFFSET_Y,
             'width':  zone['width'],
             'height': zone['height'],
+            'polygon':    polygon,
             'properties': zone['properties'],
         }
-        fname_to_key[zone['fname']] = zone['name']
+        fname_to_key[zone['fname']] = WORLD_PREFIX + zone['name']
 
     world_path = lib.MAPS_DIR / 'kanto.world'
     if world_path.exists():
@@ -559,6 +572,10 @@ def main():
         dst_h = b['height'] // th
         ox    = (b['x'] + OFFSET_X) // tw
         oy    = (b['y'] + OFFSET_Y) // th
+        # Polygon in master pixel coords (add OFFSET back) for extract_region
+        polygon_local = b.get('polygon')
+        polygon_master = ([(px + OFFSET_X, py + OFFSET_Y) for px, py in polygon_local]
+                          if polygon_local else None)
 
         print(f'\n{fname}: kanto tile origin ({ox},{oy}), size {dst_w}x{dst_h}')
 
@@ -586,6 +603,7 @@ def main():
             raw = lib.extract_region(
                 kanto_tilelayers[name]['data'], kanto_w, kanto_h,
                 ox, oy, dst_w, dst_h,
+                polygon=polygon_master, tw=tw, th=th,
             )
             converted, modified = remap_data(
                 raw, gen3_to_kanto, kanto_common_ts_json, kanto_outside_ts_json,
@@ -620,6 +638,7 @@ def main():
             raw = lib.extract_region(
                 klayer['data'], kanto_w, kanto_h,
                 ox, oy, dst_w, dst_h,
+                polygon=polygon_master, tw=tw, th=th,
             )
             if not any(raw):
                 continue
@@ -649,7 +668,8 @@ def main():
         px_w = dst_w * tw
         px_h = dst_h * th
         objects, next_oid = lib.merge_interactions(
-            kanto_objs, kanto_px_x, kanto_px_y, px_w, px_h
+            kanto_objs, kanto_px_x, kanto_px_y, px_w, px_h,
+            polygon=polygon_master,
         )
         inter['objects']      = objects
         route['nextobjectid'] = next_oid
@@ -669,9 +689,9 @@ def main():
         print(f'  saved {fname}')
 
         scene_key = fname_to_key[fname]
-        lib.ensure_scene_file(scene_key)
-        lib.ensure_maps_index(scene_key, fname)
-        lib.ensure_scenes_index(scene_key)
+        lib.ensure_scene_file(scene_key, world_prefix=WORLD_PREFIX)
+        lib.ensure_maps_index(scene_key, fname, world_prefix=WORLD_PREFIX)
+        lib.ensure_scenes_index(scene_key, world_prefix=WORLD_PREFIX)
 
     # ── Animation backfill + sync ──────────────────────────────────────────
     if ensure_anim_tiles_in_kanto(gen3_ts_json, gen3_to_kanto, kanto_to_gen3,
@@ -724,6 +744,10 @@ def main():
         lib.write_tileset_json(kanto_common_ts_path, kanto_common_ts_json)
     if kanto_outside_ts_modified:
         lib.write_tileset_json(kanto_outside_ts_path, kanto_outside_ts_json)
+
+    # End-of-run sweep: catch any leftover un-prefixed entries (maps no longer
+    # in the master, but still listed in src/maps/index.js etc).
+    lib.sweep_legacy_world_namespace(WORLD_PREFIX)
 
 
 if __name__ == '__main__':

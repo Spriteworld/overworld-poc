@@ -49,6 +49,10 @@ export default class Reflection {
 
     this.sprite.setDepth(floor.depth + DEPTH_OFFSET);
 
+    // Pick up the water shader if it's active on this scene, so reflections
+    // ripple in lockstep with the water tiles beneath them.
+    this.scene.waterFx?.applyToSprite?.(this.sprite);
+
     const mask = Reflection._getOrCreateWaterMask(this.scene);
     if (mask) {
       this.sprite.setMask(mask);

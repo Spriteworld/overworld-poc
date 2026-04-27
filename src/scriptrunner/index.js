@@ -11,6 +11,8 @@ import cameraCmds    from './commands/camera.js';
 import audioCmds     from './commands/audio.js';
 import characterCmds from './commands/character.js';
 import battleCmds    from './commands/battle.js';
+import controlCmds   from './commands/control.js';
+import darknessCmds  from './commands/darkness.js';
 
 const HANDLERS = {
   ...dialogueCmds,
@@ -25,6 +27,8 @@ const HANDLERS = {
   ...audioCmds,
   ...characterCmds,
   ...battleCmds,
+  ...controlCmds,
+  ...darknessCmds,
 };
 
 /**
@@ -42,13 +46,20 @@ const HANDLERS = {
  *
  * @param {Phaser.Scene} scene    - The active map scene (NOT OverworldUI).
  * @param {object[]}     commands - Parsed command array from the script property.
+ * @param {object}       [options]
+ * @param {boolean}      [options.child=false] - When true, the runner is a
+ *   child of another runner (spawned by `parallel`). Child runners share the
+ *   scene with their parent but do not claim `scene._activeScriptRunner` and
+ *   do not emit script-runner-start/end events, so the parent stays the
+ *   single owner of those signals for the duration of the run.
  */
 export default class ScriptRunner {
-  constructor(scene, commands) {
+  constructor(scene, commands, options = {}) {
     this._scene  = scene;
     this._queue  = normalize(commands);
     this._onDone        = null;
     this._inspectorText = null;
+    this._isChild       = !!options.child;
     if (!this._scene.mapVars) this._scene.mapVars = {};
   }
 
@@ -57,15 +68,17 @@ export default class ScriptRunner {
 
   run(onDone) {
     this._onDone = onDone ?? null;
-    if (this._debug()) {
+    if (this._debug() && !this._isChild) {
       const warnings = validate(this._queue);
       if (warnings.length) {
         console.warn('[ScriptRunner] Validation warnings:', warnings);
       }
     }
-    this._scene._activeScriptRunner = this;
-    this._scene.game.events.emit('script-runner-start');
-    if (this._debug()) console.log('[ScriptRunner] start — queue:', this._queue.map(c => c.cmd));
+    if (!this._isChild) {
+      this._scene._activeScriptRunner = this;
+      this._scene.game.events.emit('script-runner-start');
+    }
+    if (this._debug()) console.log(`[ScriptRunner${this._isChild ? '(child)' : ''}] start — queue:`, this._queue.map(c => c.cmd));
     this._step();
   }
 
@@ -77,9 +90,11 @@ export default class ScriptRunner {
         this._inspectorText.destroy();
         this._inspectorText = null;
       }
-      if (this._debug()) console.log('[ScriptRunner] done');
-      delete this._scene._activeScriptRunner;
-      this._scene.game.events.emit('script-runner-end');
+      if (this._debug()) console.log(`[ScriptRunner${this._isChild ? '(child)' : ''}] done`);
+      if (!this._isChild) {
+        delete this._scene._activeScriptRunner;
+        this._scene.game.events.emit('script-runner-end');
+      }
       this._onDone?.();
       return;
     }
@@ -93,7 +108,7 @@ export default class ScriptRunner {
   }
 
   _exec(cmd) {
-    if (this._debug()) {
+    if (this._debug() && !this._isChild) {
       const label = `[Script] ${cmd.cmd}  (${this._queue.length} remaining)`;
       if (!this._inspectorText) {
         this._inspectorText = this._scene.add.text(8, 8, label, {
@@ -137,10 +152,12 @@ export default class ScriptRunner {
       this._inspectorText.destroy();
       this._inspectorText = null;
     }
-    if (this._scene?._activeScriptRunner === this) {
-      delete this._scene._activeScriptRunner;
+    if (!this._isChild) {
+      if (this._scene?._activeScriptRunner === this) {
+        delete this._scene._activeScriptRunner;
+      }
+      this._scene?.game?.events?.emit?.('script-runner-end');
     }
-    this._scene?.game?.events?.emit?.('script-runner-end');
     this._onDone?.();
   }
 
@@ -168,11 +185,23 @@ export default class ScriptRunner {
     const dest = { x: pos.x + dx, y: pos.y + dy };
 
     let settled = false;
+    let timer   = null;
+    let timedOut = false;
     const settle = () => {
       if (settled) return;
       settled = true;
       sub1.unsubscribe();
       sub2.unsubscribe();
+      if (timer) clearTimeout(timer);
+      // If the timeout fired without GridEngine ever moving the character,
+      // the destination tile is blocked. Don't grind through the rest of
+      // the path — every remaining step will hit the same wall and waste
+      // another timeout each. Skip straight to completion.
+      if (timedOut) {
+        const here = ge.getPosition?.(charId);
+        const stuck = here && here.x === pos.x && here.y === pos.y;
+        if (stuck) steps.length = 0;
+      }
       this._walkPath(charId, char, steps, finalAnchor);
     };
 
@@ -184,7 +213,20 @@ export default class ScriptRunner {
       if (id === charId) settle();
     });
 
-    char.moveTo(dest, { noPathFoundStrategy: 'STOP', pathBlockedStrategy: 'STOP' });
+    // Direction-based step (gridEngine.move) instead of moveTo's pathfinder.
+    // Pathfinding pre-computes routes against static tile collision data and
+    // ignores the per-character runtime `setCollidesWithTiles` toggle, so a
+    // noclipped character can still get "no path found" through walls.
+    // `move(dir)` defers to the same per-step collision check that respects
+    // noclip, which is what flyaway scenes (e.g. Mt Moon Zubats) need.
+    char.move(dir);
+
+    // Safety net: if the destination tile is blocked at the moment move runs,
+    // GridEngine never starts movement and neither subscription ever fires —
+    // the script would hang. Match the warp_npc pattern: bail after 500 ms so
+    // the path advances (or, when the character truly didn't move, settle()
+    // short-circuits the remaining steps).
+    timer = setTimeout(() => { timedOut = true; settle(); }, 500);
   }
 
   /** Convert a direction string to a {dx, dy} unit vector. */

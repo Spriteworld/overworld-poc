@@ -10,6 +10,8 @@ export default class Trainer extends NPC {
   constructor(config) {
     super(config);
     this._spotted = false;
+
+    this.setOrigin(0.5, 0.5);
   }
 
   /**

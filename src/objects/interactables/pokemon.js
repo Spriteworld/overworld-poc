@@ -1,10 +1,12 @@
 import Debug from '@Data/debug.js';
 import { Tile, PkmnOverworld } from '@Objects';
-import { getValue, getPropertyValue, remapProps, Vector2, checkOnlyIf, assertNotReservedId } from '@Utilities';
+import { getValue, getPropertyValue, remapProps, Vector2, checkOnlyIf, assertNotReservedId, loadOverworldSpritesheet } from '@Utilities';
 import store from '../../store/index.js';
 import { rng as gameRng } from '@Utilities/rng.js';
 import Tileset from '@Tileset';
 import ScriptRunner from '../../utilities/ScriptRunner.js';
+import { Pokedex } from '@spriteworld/pokemon-data';
+import { getGameDef } from '@Data/gameDef.js';
 
 export default class {
   constructor(scene) {
@@ -33,6 +35,12 @@ export default class {
           pokemon.x, pokemon.y
         );
       }
+      // Gate spawning on only_if so flag/variable-driven encounters (e.g. the
+      // Mt Moon Zubats hidden after the player triggers their flyaway scene)
+      // don't reappear on map re-entry. Pass mapVars so `type:variable`
+      // checks (set by `set_var`) actually work.
+      const onlyIf = getPropertyValue(pokemon.properties, 'only_if');
+      if (!checkOnlyIf(onlyIf, store.state.game.gameFlags, this.scene.config.variant ?? null, this.scene.mapVars ?? {})) return;
       assertNotReservedId(pokemon.name, 'Interactables::pokemon');
       this.addToScene(
         pokemon.name,
@@ -56,6 +64,17 @@ export default class {
     }
     if (typeof monId === 'number') {
       monId = monId.toString();
+    }
+    if (monId !== 'RNG' && isNaN(Number(monId))) {
+      const dex   = new Pokedex(getGameDef().game);
+      const entry = Object.values(dex.pokedex).find(
+        p => p.species?.toLowerCase() === monId.toLowerCase()
+      );
+      if (entry) {
+        monId = String(entry.nat_dex_id);
+      } else {
+        console.warn('Interactables::pokemon: unknown species', monId);
+      }
     }
     monId = monId.padStart(3, '0');
 
@@ -105,10 +124,8 @@ export default class {
       }
     } else {
       const pathFactory = isShiny ? Tileset.pokemon_shiny[texture] : Tileset.pokemon[texture];
-      const dimSource   = isShiny ? Tileset.ow_pokemon_shiny_dimensions : Tileset.ow_pokemon_dimensions;
-      const dims        = dimSource.default?.[texture];
 
-      if (!pathFactory || !dims) {
+      if (!pathFactory) {
         console.warn('Interactables::pokemon: missing sprite data for', texture);
         pkmn.setTexture('red');
         if (this.scene.ge_init) {
@@ -127,11 +144,7 @@ export default class {
 
       pathFactory().then(path => {
         if (!this.scene.sys) return;
-        this.scene.load.spritesheet(texture, path, {
-          frameWidth: Math.floor(dims.width  / 4),
-          frameHeight: Math.floor(dims.height / 4),
-        });
-        this.scene.load.once('filecomplete-spritesheet-' + texture, () => {
+        loadOverworldSpritesheet(this.scene, texture, path).then(() => {
           this._ensureAnim(texture);
           this.scene.pkmn.getChildren()
             .filter(n => n.config?.texture === texture)
@@ -142,7 +155,6 @@ export default class {
               }
             });
         });
-        this.scene.load.start();
       });
     }
 
