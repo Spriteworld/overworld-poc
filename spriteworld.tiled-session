@@ -154,10 +154,10 @@
                 7
             ],
             "scale": 1,
-            "selectedLayer": 6,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 1367,
-                "y": 612.5
+                "x": 1019,
+                "y": 580.5
             }
         },
         "src/maps/kanto/lavender_town.json": {

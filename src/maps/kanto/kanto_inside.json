@@ -1432,12 +1432,12 @@
                         {
                          "name":"warp",
                          "type":"string",
-                         "value":"KantoWorld"
+                         "value":"_lastmap_"
                         }, 
                         {
                          "name":"warp-location",
                          "type":"string",
-                         "value":"ViridianCityHouseExit"
+                         "value":""
                         }],
                  "rotation":0,
                  "type":"warp",

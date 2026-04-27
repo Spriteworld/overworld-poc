@@ -67,6 +67,7 @@ import KantoMtMoonBF1A from '@Scenes/maps/kanto/KantoMtMoonBF1A.js';
 import KantoMtMoonBF1B from '@Scenes/maps/kanto/KantoMtMoonBF1B.js';
 import KantoMtMoonBF1C from '@Scenes/maps/kanto/KantoMtMoonBF1C.js';
 import KantoPokeMart from '@Scenes/maps/kanto/KantoPokeMart.js';
+import KantoViridianCityHouse from '@Scenes/maps/kanto/KantoViridianCityHouse.js';
 
 import GavWorld from '@Scenes/maps/Gavworld/Gavworld.js';
 import GavworldStarterTown from '@Scenes/maps/Gavworld/GavworldStarterTown.js';
@@ -149,4 +150,5 @@ export default {
   GavworldPokemonCenter,
   GavworldViridianForest,
   GavworldMeadowTown,
+  KantoViridianCityHouse,
 };

@@ -55,6 +55,7 @@ import KantoMtMoonBF1AMap from './kanto/mt_moon_bf1_a.json';
 import KantoMtMoonBF1BMap from './kanto/mt_moon_bf1_b.json';
 import KantoMtMoonBF1CMap from './kanto/mt_moon_bf1_c.json';
 import KantoPokeMartMap from './kanto/poke_mart.json';
+import KantoViridianCityHouseMap from './kanto/viridian_city_house.json';
 
 import GavWorldMap from './Gavworld/Gavworld.json';
 import GavworldStarterTownMap from './Gavworld/starter_town.json';
@@ -164,6 +165,7 @@ export {
     GavworldPokemonCenterMap,
     GavworldViridianForestMap,
     GavworldMeadowTownMap,
+    KantoViridianCityHouseMap,
 };
 
 /** Scene keys for kanto inside / non-world maps, shown in the debug warp list. */
@@ -230,4 +232,5 @@ export const MAP_REGISTRY = {
   'GavworldPokemonCenter': GavworldPokemonCenterMap,
   'GavworldViridianForest': GavworldViridianForestMap,
   'GavworldMeadowTown': GavworldMeadowTownMap,
+  'KantoViridianCityHouse': KantoViridianCityHouseMap,
 };
