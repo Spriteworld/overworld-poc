@@ -25,7 +25,7 @@ function makeScene(warpObjects = [], { variant = undefined } = {}) {
  * Build a Tiled-style warp object using pixel coordinates (as Tiled exports them).
  * width/height are in tile units and are converted to pixels internally.
  */
-function makeWarpObj({ x, y, width = 1, height = 1, warpTo = 'Route1', warpX = 5, warpY = 3, id = 1 }) {
+function makeWarpObj({ x, y, width = 1, height = 1, warpTo = 'KantoRoute1', warpX = 5, warpY = 3, id = 1 }) {
   return {
     id,
     x: x * 32,

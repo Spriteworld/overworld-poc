@@ -71,6 +71,11 @@ export default class extends Phaser.Scene {
 
     this._updateUILayout();
     this.scale.on('resize', () => this._updateUILayout());
+    // Live-apply user UI-scale changes from Options without needing a reload.
+    this.game.events.on('ui-scale-change', this._onUiScaleChange, this);
+    this.events.once('shutdown', () => {
+      this.game.events.off('ui-scale-change', this._onUiScaleChange, this);
+    });
 
     this.handleEvents();
 
@@ -108,9 +113,14 @@ export default class extends Phaser.Scene {
       this.transitionRect.setSize(width, height);
     }
     if (this.pauseMenu) {
-      const menuScale = width >= 1024 ? Math.min(width / 800, height / 600)
+      // The menu was authored at 800×600. Auto-fit it into the current
+      // canvas (with a small/medium step so it stays usable on narrow
+      // screens), then multiply by the user's UI-scale preference.
+      const uiScale  = store.state.game.uiScale ?? 1;
+      const fitScale = width >= 1024 ? Math.min(width / 800, height / 600)
         : width < 768 ? 0.5
         : 1;
+      const menuScale = fitScale * uiScale;
       this.pauseMenu.setScale(menuScale);
       this.pauseMenu.setPosition(
         Math.max(0, (width - 800 * menuScale) / 2),
@@ -120,6 +130,10 @@ export default class extends Phaser.Scene {
     if (this.textbox) {
       this.textbox.reposition();
     }
+  }
+
+  _onUiScaleChange() {
+    this._updateUILayout();
   }
 
   /** Open the pause menu and transition directly to a named sub-screen. */

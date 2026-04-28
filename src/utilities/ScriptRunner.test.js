@@ -850,14 +850,14 @@ describe('warp commands forward remaining commands as _pendingScript', () => {
     scene.scene.start = jest.fn((key, params) => { startedWith = params; });
 
     new ScriptRunner(scene, [
-      { cmd: 'warp_player', map: 'Route1', x: 5, y: 3 },
+      { cmd: 'warp_player', map: 'KantoRoute1', x: 5, y: 3 },
       { cmd: 'heal_party' },
       { cmd: 'enable_input' },
     ]).run();
 
     scene.cameras.main.emit('camerafadeoutcomplete');
 
-    expect(scene.scene.start).toHaveBeenCalledWith('Route1', expect.any(Object));
+    expect(scene.scene.start).toHaveBeenCalledWith('KantoRoute1', expect.any(Object));
     expect(startedWith._pendingScript.queue).toHaveLength(2);
     expect(startedWith._pendingScript.queue[0].cmd).toBe('heal_party');
     expect(startedWith._pendingScript.queue[1].cmd).toBe('enable_input');
@@ -869,7 +869,7 @@ describe('warp commands forward remaining commands as _pendingScript', () => {
     scene.scene.start = jest.fn((key, params) => { startedWith = params; });
 
     new ScriptRunner(scene, [
-      { cmd: 'warp_player', map: 'Route1', x: 5, y: 3 },
+      { cmd: 'warp_player', map: 'KantoRoute1', x: 5, y: 3 },
     ]).run();
 
     scene.cameras.main.emit('camerafadeoutcomplete');
@@ -883,7 +883,7 @@ describe('warp commands forward remaining commands as _pendingScript', () => {
     scene.scene.start = jest.fn((key, params) => { startedWith = params; });
 
     new ScriptRunner(scene, [
-      { cmd: 'walk_warp_continue', map: 'ProfessorLab', anchor: 'entry' },
+      { cmd: 'walk_warp_continue', map: 'KantoProfessorLab', anchor: 'entry' },
       { cmd: 'heal_party' },
     ]).run();
 

@@ -4300,7 +4300,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "ProfessorLab"
+              "value": "KantoProfessorLab"
             },
             {
               "name": "warp-location",
@@ -4684,7 +4684,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "ProfessorLab"
+              "value": "KantoProfessorLab"
             },
             {
               "name": "warp-location",

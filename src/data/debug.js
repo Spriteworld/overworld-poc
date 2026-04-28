@@ -14,6 +14,7 @@ export default {
   smoothCam: false,
   toasts: true,
   waterFx: false,
+  waterFxMask: false,  // overlay water mask in red; bright = inside the 5px erosion border, dim = deep water
   rain: false,
   tests: {
     timeOverlay: false,

@@ -126,9 +126,14 @@ export class DarknessPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.Post
     // camera by one frame (worse under smooth follow). A one-pixel lag
     // manifests as the metaball field drifting out of sync with the rendered
     // tiles, making world-anchored lights appear to swim toward the player.
+    // Use camera.worldView (the world-pixel rect of the visible viewport) for
+    // scroll. camera.scrollX/Y is `midPoint - canvas.width/2` and is NOT zoom-
+    // aware (Phaser's own comment in Camera.js: "Values are in pixels and not
+    // impacted by zooming the Camera"). At zoom != 1 they differ by half the
+    // un-zoomed extra view width, and lights/world-anchored effects shift.
     const cam = this._cam;
-    const sx = cam ? cam.scrollX : this._scrollX;
-    const sy = cam ? cam.scrollY : this._scrollY;
+    const sx = cam ? cam.worldView.x : this._scrollX;
+    const sy = cam ? cam.worldView.y : this._scrollY;
 
     // uResolution is the WORLD-pixel size of the visible camera area. The FX
     // class is expected to call setResolution(camera.width / zoom, camera.height / zoom)

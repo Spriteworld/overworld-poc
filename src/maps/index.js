@@ -170,10 +170,10 @@ export {
 
 /** Scene keys for kanto inside / non-world maps, shown in the debug warp list. */
 export const INSIDE_MAP_SCENE_KEYS = [
-  'HeroHouseF1',
-  'HeroHouseF2',
-  'ProfessorLab',
-  'ViridianForest',
+  'KantoHeroHouseF1',
+  'KantoHeroHouseF2',
+  'KantoProfessorLab',
+  'KantoViridianForest',
 ];
 
 export const MAP_REGISTRY = {

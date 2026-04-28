@@ -25,13 +25,11 @@ export default class extends GameMap {
   }
 
   _setupSplitView() {
-    const fullW = 25 * Tile.WIDTH;
-    const fullH = 19 * Tile.HEIGHT;
-    const halfW = Math.floor(fullW / 2);
-
-    const cam = this.cameras.main;
-    cam.setViewport(0, 0, halfW, fullH);
-    cam.setSize(halfW, fullH);
+    // Split the full canvas in half so the comparison fills the screen at
+    // any resolution. Hardcoded 25×19 tiles (= 800×608) used to match the
+    // old 800x600 canvas; at 1920×1024 it left most of the screen blank.
+    this._applySplitLayout();
+    this.scale.on('resize', this._onResize, this);
 
     const player = this.registry.get('player');
     const smoothCam = !!this.game.config.debug?.smoothCam;
@@ -39,12 +37,19 @@ export default class extends GameMap {
     const fox = player ? -(player.width / 2) : 0;
     const foy = player ? -(player.height / 2) : 0;
 
-    this._camRight = this.cameras.add(halfW, 0, fullW - halfW, fullH);
+    const halfW = Math.floor(this.scale.width / 2);
+    const fullH = this.scale.height;
+    this._camRight = this.cameras.add(halfW, 0, this.scale.width - halfW, fullH);
     if (player) {
       this._camRight.startFollow(player, true, lerp, lerp);
       this._camRight.setFollowOffset(fox, foy);
     }
-    this._camRight.setSize(fullW - halfW, fullH);
+
+    // Match zoom on both cameras so left + right show the same world content.
+    const targetTilesWide = 22; // half of the standard ~42-tile target
+    const zoom = Math.max(1, halfW / (targetTilesWide * Tile.WIDTH));
+    this.cameras.main.setZoom(zoom);
+    this._camRight.setZoom(zoom);
 
     // Move the WaterFx pipeline from the floor layer onto the left camera.
     // The water mask texture still limits the effect to water pixels, so the
@@ -53,6 +58,7 @@ export default class extends GameMap {
     if (floor && this.waterFx?.pipeline) {
       floor.removePostPipeline(SHADER_KEYS.WATER);
 
+      const cam = this.cameras.main;
       cam.setPostPipeline(SHADER_KEYS.WATER);
       const pipe = cam.getPostPipeline(SHADER_KEYS.WATER);
       if (pipe) {
@@ -68,11 +74,33 @@ export default class extends GameMap {
     }
   }
 
+  _applySplitLayout() {
+    const fullW = this.scale.width;
+    const fullH = this.scale.height;
+    const halfW = Math.floor(fullW / 2);
+    this.cameras.main.setViewport(0, 0, halfW, fullH);
+    this.cameras.main.setSize(halfW, fullH);
+    if (this._camRight) {
+      this._camRight.setViewport(halfW, 0, fullW - halfW, fullH);
+      this._camRight.setSize(fullW - halfW, fullH);
+    }
+  }
+
+  _onResize() {
+    this._applySplitLayout();
+    const halfW = Math.floor(this.scale.width / 2);
+    const targetTilesWide = 22;
+    const zoom = Math.max(1, halfW / (targetTilesWide * Tile.WIDTH));
+    this.cameras.main.setZoom(zoom);
+    this._camRight?.setZoom(zoom);
+  }
+
   update(time, delta) {
     this.updateCharacters(time, delta);
   }
 
   destroy() {
+    this.scale.off('resize', this._onResize, this);
     if (this._camRight) {
       const status = this.sys?.settings?.status;
       const sceneDown = typeof status === 'number' && status >= 8;

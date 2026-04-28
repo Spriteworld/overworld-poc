@@ -127,9 +127,11 @@ export class FogPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPip
   }
 
   onPreRender(): void {
+    // Use camera.worldView (world-pixel rect of visible viewport) — see the
+    // darkness pipeline for the rationale. scrollX/Y is not zoom-aware.
     const cam = this._cam;
-    const sx  = cam ? cam.scrollX : this._scrollX;
-    const sy  = cam ? cam.scrollY : this._scrollY;
+    const sx  = cam ? cam.worldView.x : this._scrollX;
+    const sy  = cam ? cam.worldView.y : this._scrollY;
     // World-pixel uResolution — see the darkness pipeline for the rationale.
     const rw = this._resW || this.renderTargets?.[0]?.width  || this.renderer.width;
     const rh = this._resH || this.renderTargets?.[0]?.height || this.renderer.height;

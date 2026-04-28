@@ -189,7 +189,7 @@ const MAPS = [
         },
       },
       {
-        scene: 'HeroHouseF1',
+        scene: 'KantoHeroHouseF1',
         title: "Hero's House — F1",
         description: "Interior of the player's house, ground floor. Tests indoor warp to F2.",
         color: '#4c1d95',
@@ -199,7 +199,7 @@ const MAPS = [
         },
       },
       {
-        scene: 'HeroHouseF2',
+        scene: 'KantoHeroHouseF2',
         title: "Hero's House — F2",
         description: "Interior of the player's house, second floor. Tests staircase warp return.",
         color: '#4c1d95',
@@ -209,7 +209,7 @@ const MAPS = [
         },
       },
       {
-        scene: 'ProfessorLab',
+        scene: 'KantoProfessorLab',
         title: "Professor's Lab",
         description: "Professor Oak's lab interior. Tests NPC interactions and lab-to-overworld warp.",
         color: '#1e3a5f',
@@ -220,7 +220,7 @@ const MAPS = [
         },
       },
       {
-        scene: 'ViridianCity',
+        scene: 'KantoViridianCity',
         title: 'Viridian City — Catching Tutorial',
         description: "Talk to the old man (battle_tutor) to watch the fully auto-played catching demo. Tests tutorial / force_catch / scripted_actions / player_override — party, bag, and Pokédex must stay untouched afterwards.",
         color: '#166534',
@@ -237,7 +237,7 @@ const MAPS = [
     maps: [
       {
         id: 'time-grid',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'TimeOverlay — Compare Grid',
         description: 'Cerulean City with the 4-quadrant time-of-day compare grid overlaid (Morning / Day / Evening / Night). Live-tint shader is suppressed so each panel reads its own preset on a neutral baseline. Player spawns in front of the Pokémon Center.',
         color: '#1e293b',
@@ -255,7 +255,7 @@ const MAPS = [
       },
       {
         id: 'time-morning',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'TimeOverlay — Morning',
         description: 'Cerulean City pinned to the Morning preset (real-world clock ignored). Subtle blue tint, very mild desat — sun-up baseline.',
         color: '#1e3a5f',
@@ -266,7 +266,7 @@ const MAPS = [
       },
       {
         id: 'time-day',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'TimeOverlay — Day',
         description: 'Cerulean City pinned to the Day preset. No tint, just a faint baseline desat to soften raw pixel-art chroma.',
         color: '#1e293b',
@@ -277,7 +277,7 @@ const MAPS = [
       },
       {
         id: 'time-evening',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'TimeOverlay — Evening',
         description: 'Cerulean City pinned to the Evening preset. Warm orange tint, mild desat — golden-hour cast.',
         color: '#7c2d12',
@@ -288,7 +288,7 @@ const MAPS = [
       },
       {
         id: 'time-night',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'TimeOverlay — Night',
         description: 'Cerulean City pinned to the Night preset. Strong blue tint and 40% desat — torches/lights carve full-colour pockets via the saturation-recover shader.',
         color: '#1e1b4b',
@@ -299,7 +299,7 @@ const MAPS = [
       },
       {
         id: 'weather-light-rain',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'Weather — Light Rain',
         description: 'Cerulean City pinned to light_rain. Sparse drops, soft slate-blue tint, gentle wind drift; small splashes on land, larger ripples on water tiles.',
         color: '#475569',
@@ -310,7 +310,7 @@ const MAPS = [
       },
       {
         id: 'weather-heavy-rain',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'Weather — Heavy Rain',
         description: 'Cerulean City pinned to heavy_rain. Dense drops, deeper tint, faster fall, 30% scene desaturation; stronger wind gusts slant the streaks.',
         color: '#1e293b',
@@ -321,7 +321,7 @@ const MAPS = [
       },
       {
         id: 'weather-light-fog',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'Weather — Light Fog',
         description: 'Cerulean City pinned to light_fog. Thin drifting cloud-noise field, slow right-to-left motion, gentle cool tint. Texture randomized between fog_diagonal / fog_horizontal.',
         color: '#94a3b8',
@@ -332,7 +332,7 @@ const MAPS = [
       },
       {
         id: 'weather-fog',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'Weather — Fog',
         description: 'Cerulean City pinned to fog. Thicker drifting cloud field, banks visibly roll past as the player moves. Texture randomized between fog_diagonal / fog_horizontal.',
         color: '#64748b',
@@ -343,7 +343,7 @@ const MAPS = [
       },
       {
         id: 'weather-harsh-sunlight',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'Weather — Harsh Sunlight',
         description: 'Cerulean City pinned to harsh_sunlight. Boosted contrast, lifted brightness, warm yellow tint biased toward highlights — midday glare baseline.',
         color: '#ca8a04',
@@ -354,7 +354,7 @@ const MAPS = [
       },
       {
         id: 'weather-sandstorm',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'Weather — Sandstorm',
         description: 'Cerulean City pinned to sandstorm. Muddy-orange scene wash, mild desat, warm sand specks whip past at 80 px/s right-to-left over a fast-tiled particle texture.',
         color: '#7c4f0a',
@@ -365,7 +365,7 @@ const MAPS = [
       },
       {
         id: 'weather-snow',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'Weather — Snow',
         description: 'Cerulean City pinned to snow. Three-layer parallax flakes (bulk snow1 + mid snow0 + hero snow0). Each flake falls top-to-bottom in one motion with random speed and downward angle.',
         color: '#475569',
@@ -376,7 +376,7 @@ const MAPS = [
       },
       {
         id: 'weather-heavy-snow',
-        scene: 'CeruleanCity',
+        scene: 'KantoCeruleanCity',
         title: 'Weather — Heavy Snow',
         description: 'Cerulean City pinned to heavy_snow. Maxed density (all 408 flakes active), 2.8× faster fall than standard snow, stormier wind drift, thicker overcast tint, and +18% map contrast — blizzard baseline.',
         color: '#1e3a5f',
@@ -406,7 +406,7 @@ const MAPS = [
         ];
         return times.flatMap(t => weathers.map(w => ({
           id: `combo-${t.key}-${w.key}`,
-          scene: 'CeruleanCity',
+          scene: 'KantoCeruleanCity',
           title: `${t.label} + ${w.label}`,
           description: `Cerulean City with ${t.label.toLowerCase()} time-of-day and ${w.label.toLowerCase()} weather active simultaneously.`,
           color: t.color,

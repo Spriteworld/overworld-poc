@@ -8078,7 +8078,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "PokemonCenter"
+              "value": "KantoPokemonCenter"
             },
             {
               "name": "warp-dir",
@@ -8222,7 +8222,7 @@
                                     "propertytype": "scripted-action",
                                     "type": "class",
                                     "value": {
-                                      "itemName": "Pok\u00e9 Ball",
+                                      "itemName": "Poké Ball",
                                       "type": "use_item"
                                     }
                                   }
@@ -8341,7 +8341,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "PokeMart"
+              "value": "KantoPokeMart"
             },
             {
               "name": "warp-dir",
@@ -8375,7 +8375,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "ViridianCityHouse"
+              "value": "KantoViridianCityHouse"
             },
             {
               "name": "warp-dir",
@@ -8409,7 +8409,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "ViridianCityHouse"
+              "value": "KantoViridianCityHouse"
             },
             {
               "name": "warp-dir",

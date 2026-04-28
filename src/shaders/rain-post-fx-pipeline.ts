@@ -297,10 +297,11 @@ export class RainPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPi
   }
 
   onPreRender(): void {
-    // World-pixel uResolution — see the darkness pipeline for the rationale.
+    // World-pixel uResolution + worldView for scroll — see the darkness
+    // pipeline for the rationale. scrollX/Y is not zoom-aware.
     const cam = this._cam;
-    const sx  = cam ? cam.scrollX : this._scrollX;
-    const sy  = cam ? cam.scrollY : this._scrollY;
+    const sx  = cam ? cam.worldView.x : this._scrollX;
+    const sy  = cam ? cam.worldView.y : this._scrollY;
     const rw = this._resW || this.renderTargets?.[0]?.width  || this.renderer.width;
     const rh = this._resH || this.renderTargets?.[0]?.height || this.renderer.height;
 

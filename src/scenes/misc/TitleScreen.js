@@ -72,6 +72,11 @@ const OPTION_FIELDS = [
     values: [false, true],
     format: (v) => v ? 'On' : 'Off',
   },
+  {
+    key: 'uiScale', label: 'UI scale',
+    values: [0.75, 1.0, 1.25, 1.5, 1.75, 2.0],
+    format: (v) => `${Math.round(v * 100)}%`,
+  },
 ];
 
 export default class TitleScreen extends Phaser.Scene {
@@ -353,6 +358,7 @@ export default class TitleScreen extends Phaser.Scene {
       sfxVolume: g.sfxVolume,
       alwaysRun: g.alwaysRun,
       autoSurf:  g.autoSurf,
+      uiScale:   g.uiScale,
     };
     this._caption = this.add.text(this._cx, 140,
       '◀ ▶ to change · X to return', CAPTION_FONT)

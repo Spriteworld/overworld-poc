@@ -1,3 +1,5 @@
+import store from '../store/index.js';
+
 const PAD = 20;
 const RADIUS = 10;
 
@@ -33,18 +35,23 @@ class Toast {
     this._tween?.stop();
     this._timer?.remove();
 
+    // Pick up the current uiScale on every message so a change from the
+    // Options screen takes effect on the next toast without a reload.
+    const uiScale = store.state.game.uiScale ?? 1;
     this._text.setText(msg);
+    this._text.setScale(uiScale);
 
-    const bw = this._text.width  + PAD * 2;
-    const bh = this._text.height + PAD * 2;
+    // After setScale, displayWidth/displayHeight are the on-screen dims.
+    const bw = this._text.displayWidth  + PAD * 2 * uiScale;
+    const bh = this._text.displayHeight + PAD * 2 * uiScale;
 
-    this._text.setPosition(this.ox + PAD, this.oy + PAD);
+    this._text.setPosition(this.ox + PAD * uiScale, this.oy + PAD * uiScale);
 
     this._bg.clear();
     this._bg.fillStyle(0x000000, 1);
-    this._bg.fillRoundedRect(this.ox, this.oy, bw, bh, RADIUS);
+    this._bg.fillRoundedRect(this.ox, this.oy, bw, bh, RADIUS * uiScale);
     this._bg.lineStyle(2, 0xffffff, 1);
-    this._bg.strokeRoundedRect(this.ox, this.oy, bw, bh, RADIUS);
+    this._bg.strokeRoundedRect(this.ox, this.oy, bw, bh, RADIUS * uiScale);
 
     this._bg.setAlpha(0);
     this._text.setAlpha(0);

@@ -19015,7 +19015,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "PokemonCenter"
+              "value": "KantoPokemonCenter"
             },
             {
               "name": "warp-dir",

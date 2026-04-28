@@ -29,10 +29,8 @@ export default class {
     }
 
     if (this.scene.game.config.debug.playerCoords === true) {
-      const cam = this.scene.cameras.main;
       this._coordsText = this.scene.add.text(
-        cam.width - 6, cam.height - 6,
-        '',
+        0, 0, '',
         { fontFamily: 'monospace', fontSize: '11px', color: '#ffffff', backgroundColor: '#00000088', padding: { x: 4, y: 2 } }
       )
         .setOrigin(1, 1)
@@ -41,16 +39,18 @@ export default class {
     }
 
     if (this.scene.game.config.debug.fps === true) {
-      const cam = this.scene.cameras.main;
       this._fpsText = this.scene.add.text(
-        cam.width - 6, 6,
-        'fps —',
+        0, 0, 'fps —',
         { fontFamily: 'monospace', fontSize: '11px', color: '#ffffff', backgroundColor: '#00000088', padding: { x: 4, y: 2 } }
       )
         .setOrigin(1, 0)
         .setScrollFactor(0)
         .setDepth(9999999);
     }
+
+    // Position is recomputed every frame in update() — see _positionDebugText
+    // for why (covers both Scale.RESIZE canvas changes and the player plugin
+    // mutating cam.zoom after this init runs).
 
     // Register click-to-move listener unconditionally so the flag can be
     // toggled from the debug menu without requiring a map reload.
@@ -242,7 +242,44 @@ export default class {
     debugObj.setDepth(9999999);
   }
 
+  /**
+   * Pin FPS / coords text to the camera corners and counter-scale so the
+   * on-screen size is independent of cam.zoom.
+   *
+   * Phaser's camera scales around its origin point (default 0.5, 0.5 — the
+   * camera's centre), so for a `scrollFactor(0)` sprite the world→screen
+   * mapping is `screen = (world - origin) * zoom + origin`. Inverting that
+   * to land at canvas pixel `cx` gives `world = origin + (cx - origin) / zoom`.
+   * Just dividing by zoom (which would only be correct if the camera scaled
+   * around 0,0) lands the text near the canvas centre instead of the corner.
+   *
+   * Called every frame from update() because Phaser doesn't emit a `zoom`
+   * event when setZoom() is called (which the player plugin does on init
+   * and on every Scale.RESIZE), so listening to scale.resize alone misses
+   * the zoom-change path.
+   */
+  _positionDebugText() {
+    const cam = this.scene.cameras?.main;
+    if (!cam) return;
+    const zoom = cam.zoom || 1;
+    const ox   = cam.width  * cam.originX;  // camera centre in canvas px
+    const oy   = cam.height * cam.originY;
+    const toW  = (cx, cy) => [ox + (cx - ox) / zoom, oy + (cy - oy) / zoom];
+    const inv  = 1 / zoom;
+    if (this._coordsText) {
+      const [x, y] = toW(cam.width - 6, cam.height - 6);
+      this._coordsText.setPosition(x, y).setScale(inv);
+    }
+    if (this._fpsText) {
+      const [x, y] = toW(cam.width - 6, 6);
+      this._fpsText.setPosition(x, y).setScale(inv);
+    }
+  }
+
   update() {
+    if (this._coordsText || this._fpsText) {
+      this._positionDebugText();
+    }
     if (this._coordsText) {
       const pos     = this.scene.gridEngine.getPosition('player');
       const layer   = this.scene.gridEngine.getCharLayer?.('player') ?? null;

@@ -33,6 +33,7 @@ uniform vec2  uResolution;
 uniform vec2  uScroll;
 uniform vec2  uMapSize;
 uniform float uTime;
+uniform float uDebugMask;  // 0 = off, > 0.5 = overlay water mask in red
 
 varying vec2 outTexCoord;
 
@@ -49,8 +50,31 @@ void main() {
     return;
   }
 
-  float mask  = texture2D(uWaterMask, maskUv).r;
+  // Erode the water mask by EDGE_INSET world pixels along the 4 cardinals so
+  // the shimmer / displacement / tint don't bleed onto the very edge of the
+  // water tiles. Sampling 4 offset taps and taking the min returns "water"
+  // only when this fragment is at least EDGE_INSET pixels deep into a
+  // contiguous water region — adjacent water tiles still flow together
+  // because the offset taps land inside the neighbour tile, not in a gap.
+  const float EDGE_INSET = 5.0;
+  vec2 inset    = vec2(EDGE_INSET) / uMapSize;
+  float fullMask = texture2D(uWaterMask, maskUv).r;
+  float mask     = fullMask;
+  mask = min(mask, texture2D(uWaterMask, maskUv + vec2( inset.x, 0.0)).r);
+  mask = min(mask, texture2D(uWaterMask, maskUv + vec2(-inset.x, 0.0)).r);
+  mask = min(mask, texture2D(uWaterMask, maskUv + vec2(0.0,  inset.y)).r);
+  mask = min(mask, texture2D(uWaterMask, maskUv + vec2(0.0, -inset.y)).r);
   float trail = texture2D(uTrailMask, maskUv).r;
+
+  // Debug overlay: tint the full water mask red. Pixels inside the 5px
+  // erosion border get a brighter red, deep water gets a dimmer red so the
+  // boundary the shader actually applies to is obvious.
+  if (uDebugMask > 0.5 && fullMask >= 0.5) {
+    vec4 src = texture2D(uMainSampler, outTexCoord);
+    float alpha = (mask < 0.5) ? 0.75 : 0.35;
+    gl_FragColor = vec4(mix(src.rgb, vec3(1.0, 0.0, 0.0), alpha), 1.0);
+    return;
+  }
 
   if (mask < 0.5) {
     gl_FragColor = texture2D(uMainSampler, outTexCoord);
@@ -88,6 +112,7 @@ export class WaterPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXP
   private _mapW: number;
   private _mapH: number;
   private _time: number;
+  private _debugMask: number;
   private _cam: Phaser.Cameras.Scene2D.Camera | null;
 
   constructor(game: Phaser.Game) {
@@ -103,6 +128,7 @@ export class WaterPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXP
     this._mapW     = 1;
     this._mapH     = 1;
     this._time     = 0;
+    this._debugMask = 0;
     this._cam      = null;
   }
 
@@ -122,6 +148,7 @@ export class WaterPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXP
   setTime(seconds: number) { this._time = seconds; }
   setResolution(w: number, h: number) { this._resW = w; this._resH = h; }
   setScroll(x: number, y: number) { this._scrollX = x; this._scrollY = y; }
+  setDebugMask(on: boolean) { this._debugMask = on ? 1 : 0; }
 
   private _bind(field: '_maskTex' | '_trailTex', key: string) {
     if (!this.game.textures.exists(key)) {
@@ -133,9 +160,11 @@ export class WaterPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXP
   }
 
   onPreRender(): void {
+    // Use camera.worldView (world-pixel rect of visible viewport) — see the
+    // darkness pipeline for the rationale. scrollX/Y is not zoom-aware.
     const cam = this._cam;
-    const sx  = cam ? cam.scrollX : this._scrollX;
-    const sy  = cam ? cam.scrollY : this._scrollY;
+    const sx  = cam ? cam.worldView.x : this._scrollX;
+    const sy  = cam ? cam.worldView.y : this._scrollY;
 
     // World-pixel uResolution — see the darkness pipeline for the rationale.
     const rw = this._resW || this.renderTargets?.[0]?.width  || this.renderer.width;
@@ -145,6 +174,7 @@ export class WaterPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXP
     this.set2f('uScroll',     sx, sy);
     this.set2f('uMapSize',    this._mapW, this._mapH);
     this.set1f('uTime',       this._time);
+    this.set1f('uDebugMask',  this._debugMask);
     this.set1i('uWaterMask',  1);
     this.set1i('uTrailMask',  2);
   }

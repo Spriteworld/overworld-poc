@@ -186,6 +186,14 @@ export default class extends Phaser.Scene {
       deepMerge(this.game.config.debug, startDebug);
     }
 
+    // Force the FPS overlay on for every test-harness scenario — handy when
+    // iterating on shaders / rendering. Done here (not per-scenario) so we
+    // don't have to touch every map entry in src/test-map/maps.js, and so
+    // any newly added scenarios pick it up automatically.
+    if (isTestMode()) {
+      this.game.config.debug.fps = true;
+    }
+
     // Seed party when running a test scenario and it's empty.
     //   Test scene → randomise a full 6-mon party so menu screens have varied
     //                content to render. Save is blocked while test mode is on,

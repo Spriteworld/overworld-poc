@@ -10988,7 +10988,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "PokemonCenter"
+              "value": "KantoPokemonCenter"
             },
             {
               "name": "warp-dir",
@@ -11022,7 +11022,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "PokeMart"
+              "value": "KantoPokeMart"
             },
             {
               "name": "warp-dir",

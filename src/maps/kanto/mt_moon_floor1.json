@@ -20258,7 +20258,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "MtMoonBF1A"
+              "value": "KantoMtMoonBF1A"
             },
             {
               "name": "warp-location",
@@ -20282,7 +20282,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "MtMoonBF1B"
+              "value": "KantoMtMoonBF1B"
             },
             {
               "name": "warp-location",
@@ -20306,7 +20306,7 @@
             {
               "name": "warp",
               "type": "string",
-              "value": "MtMoonBF1C"
+              "value": "KantoMtMoonBF1C"
             },
             {
               "name": "warp-location",

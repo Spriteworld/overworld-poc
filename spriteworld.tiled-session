@@ -72,11 +72,11 @@
             "scaleInEditor": 1
         },
         "src/maps/Gavworld/Gavworld.json": {
-            "scale": 1.5,
+            "scale": 0.75,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 3185.333333333333,
-                "y": 861
+                "x": 1633.3333333333335,
+                "y": 546
             }
         },
         "src/maps/kanto/animated_grass.json": {
@@ -133,8 +133,8 @@
             "scale": 1.5,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 2874,
-                "y": 6887
+                "x": 2781.333333333333,
+                "y": 9103
             }
         },
         "src/maps/kanto/kanto_dungeons.json": {
@@ -156,8 +156,8 @@
             "scale": 1,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 1019,
-                "y": 580.5
+                "x": 1015,
+                "y": 307.5
             }
         },
         "src/maps/kanto/lavender_town.json": {
@@ -658,10 +658,10 @@
     "project": "spriteworld.tiled-project",
     "property.type": "bool",
     "recentFiles": [
+        "src/maps/kanto/kanto_inside.json",
         "src/maps/Gavworld/Gavworld.json",
         "src/tileset/Transparent_Tiles.json",
         "src/maps/random/test.json",
-        "src/maps/kanto/kanto_inside.json",
         "src/maps/kanto/kanto_dungeons.json",
         "src/maps/kanto/poke_mart.json",
         "src/tileset/gen3_outside.json",

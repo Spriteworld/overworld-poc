@@ -70,6 +70,7 @@ export default class WaterFx {
     this.pipeline.setMaskTexture?.(this._maskKey);
     this.pipeline.setTrailTexture?.(this._trailKey);
     this.pipeline.setMapSize?.(this._mapW, this._mapH);
+    this.pipeline.setDebugMask?.(!!scene.game.config.debug?.waterFxMask);
 
     // Reusable scratch graphics for redrawing the trail RT each frame.
     this._trailGfx = scene.make.graphics({ add: false });

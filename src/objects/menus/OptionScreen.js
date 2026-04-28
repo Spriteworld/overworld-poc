@@ -11,11 +11,17 @@ const SPRITE_LABELS = { red: 'Male (Red)', leaf: 'Female (Leaf)', brendan: 'Male
 const TEXT_SPEEDS = ['normal', 'fast', 'instant'];
 const TEXT_SPEED_LABELS = { normal: 'Normal', fast: 'Fast', instant: 'Instant' };
 
+// Discrete UI scale steps. 1.0 is "native" so the default is in the middle of
+// the range and changes feel symmetric. Range stops at 2.0 — beyond that the
+// pause menu starts running off-screen on smaller viewports.
+const UI_SCALES = [0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+
 const OPTIONS = [
   { key: 'character',       label: 'Character'       },
   { key: 'textSpeed',       label: 'Text Speed'      },
   { key: 'bgmVolume',       label: 'BGM Vol'         },
   { key: 'sfxVolume',       label: 'SFX Vol'         },
+  { key: 'uiScale',         label: 'UI Scale'        },
   { key: 'followerPokemon', label: 'Follower Pokémon' },
   { key: 'alwaysRun',       label: 'Always Run',      requires: 'has_running_shoes' },
   { key: 'autoSurf',        label: 'Auto Surf',       requires: 'has_surf' },
@@ -99,6 +105,9 @@ export default class OptionScreen {
       const v = store.state.game.sfxVolume;
       return '█'.repeat(v) + '░'.repeat(20 - v);
     }
+    if (key === 'uiScale') {
+      return Math.round(store.state.game.uiScale * 100) + '%';
+    }
     if (key === 'followerPokemon') {
       return store.state.game.gameFlags.follower_pokemon ? 'On' : 'Off';
     }
@@ -141,6 +150,17 @@ export default class OptionScreen {
       const next = Math.min(20, Math.max(0, store.state.game.sfxVolume + delta));
       store.commit('game/SET_SFX_VOLUME', next);
       if (next === 0) stopSfx(this.menu.scene);
+    } else if (key === 'uiScale') {
+      // Snap to the nearest known step before stepping so a value loaded from
+      // an older options file (or the wizard) still lands on a valid index.
+      const cur  = store.state.game.uiScale;
+      const idx  = UI_SCALES.reduce(
+        (best, v, i) => Math.abs(v - cur) < Math.abs(UI_SCALES[best] - cur) ? i : best,
+        0,
+      );
+      const next = UI_SCALES[Math.min(UI_SCALES.length - 1, Math.max(0, idx + delta))];
+      store.commit('game/SET_UI_SCALE', next);
+      this.menu.scene.game.events.emit('ui-scale-change', next);
     } else if (key === 'followerPokemon') {
       const next = !store.state.game.gameFlags.follower_pokemon;
       store.commit('game/PATCH_FLAGS', { follower_pokemon: next });

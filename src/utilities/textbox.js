@@ -46,25 +46,21 @@ class TextBox {
     const FH = config.fixedHeight || 65;
     const ww = config.wrapWidth   || FW;
 
-    const boxW = FW + PAD_X * 2;
-    const boxH = FH + PAD_Y * 2;
-    const bx   = Math.floor((scene.scale.width  - boxW) / 2);
-    const by   = scene.scale.height - boxH - 20;
-
-    this._bx      = bx;
-    this._by      = by;
-    this._boxW    = boxW;
-    this._boxH    = boxH;
-    this._maxBoxW = boxW;
+    // Authored (unscaled) box dims. Stored separately because reposition()
+    // multiplies them by store.state.game.uiScale every call to keep the
+    // textbox in sync with the user's UI-scale preference.
+    this._authBoxW = FW + PAD_X * 2;
+    this._authBoxH = FH + PAD_Y * 2;
+    this._maxBoxW  = this._authBoxW;
 
     // Background
     this._bg = scene.add.graphics()
       .setScrollFactor(0)
       .setDepth(DEPTH);
-    this._drawBg();
 
-    // Text
-    this._textObj = scene.add.text(bx + PAD_X, by + PAD_Y, '', {
+    // Text — wrap + fixed size are in AUTHORED units; setScale multiplies
+    // both the rendered text and (via reposition) the bg dims by uiScale.
+    this._textObj = scene.add.text(0, 0, '', {
       fontSize:    '20px',
       color:       '#ffffff',
       wordWrap:    { width: ww, useAdvancedWrap: false },
@@ -75,16 +71,13 @@ class TextBox {
       .setFixedSize(FW, FH);
 
     // "next page / done" indicator
-    this._arrow = scene.add.text(
-      bx + boxW - PAD_X - 4,
-      by + boxH - PAD_Y - 2,
-      '▼',
-      { fontSize: '14px', color: '#c8a060' }
-    )
+    this._arrow = scene.add.text(0, 0, '▼', { fontSize: '14px', color: '#c8a060' })
       .setScrollFactor(0)
       .setDepth(DEPTH + 2)
       .setOrigin(1, 1)
       .setVisible(false);
+
+    this.reposition();
 
     // State
     this._pages       = [];
@@ -159,17 +152,25 @@ class TextBox {
   reposition() {
     const sw = this._scene.scale.width;
     const sh = this._scene.scale.height;
-    this._boxW = Math.min(this._maxBoxW, sw - 40);
-    const fw = this._boxW - PAD_X * 2;
-    this._bx = Math.floor((sw - this._boxW) / 2);
-    this._by = sh - this._boxH - 20;
+    const uiScale = store.state.game.uiScale ?? 1;
+
+    // The box visually grows with uiScale but stays clamped to the canvas
+    // width so it doesn't run off-screen on small viewports / large scales.
+    this._boxW = Math.min(this._maxBoxW * uiScale, sw - 40);
+    this._boxH = this._authBoxH * uiScale;
+    this._bx   = Math.floor((sw - this._boxW) / 2);
+    this._by   = sh - this._boxH - 20;
     this._drawBg();
-    this._textObj.setFixedSize(fw, this._boxH - PAD_Y * 2);
-    this._textObj.setWordWrapWidth(fw);
-    this._textObj.setPosition(this._bx + PAD_X, this._by + PAD_Y);
+
+    // Text + arrow scale around their (x, y), so position the visible
+    // top-left at the inner padding (also scaled). Wrap width / fixed size
+    // stay in authored units — the on-screen size is handled by setScale.
+    this._textObj.setScale(uiScale);
+    this._textObj.setPosition(this._bx + PAD_X * uiScale, this._by + PAD_Y * uiScale);
+    this._arrow.setScale(uiScale);
     this._arrow.setPosition(
-      this._bx + this._boxW - PAD_X - 4,
-      this._by + this._boxH - PAD_Y - 2,
+      this._bx + this._boxW - PAD_X * uiScale - 4 * uiScale,
+      this._by + this._boxH - PAD_Y * uiScale - 2 * uiScale,
     );
   }
 
