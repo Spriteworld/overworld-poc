@@ -33,6 +33,17 @@ import Gavworld_inside_json  from '@Tileset/maps/Gavworld_inside.json';
 import Gavworld_dungeons     from '@Tileset/maps/Gavworld_dungeons.png';
 import Gavworld_dungeons_json from '@Tileset/maps/Gavworld_dungeons.json';
 
+import Water from '@Tileset/Water.png';
+import Water_json from '@Tileset/Water.json';
+import Paths from '@Tileset/Paths.png';
+import Paths_json from '@Tileset/Paths.json';
+import Balls from '@Tileset/Balls.png';
+import Balls_json from '@Tileset/Balls.json';
+import SignsFences from '@Tileset/Signs+Fences.png';
+import SignsFences_json from '@Tileset/Signs+Fences.json';
+import Trees from '@Tileset/Trees.png';
+import Trees_json from '@Tileset/Trees.json';
+
 import rse_inside from '@Tileset/rse_inside.png';
 import rse_inside_json from '@Tileset/rse_inside.json';
 import rse_outside from '@Tileset/rse_outside.png';
@@ -108,6 +119,16 @@ export default {
   Gavworld_inside_json,
   Gavworld_dungeons,
   Gavworld_dungeons_json,
+  Water,
+  Water_json,
+  Paths,
+  Paths_json,
+  Balls,
+  Balls_json,
+  SignsFences,
+  SignsFences_json,
+  Trees,
+  Trees_json,
   gen3inside,
   gen3inside_json,
   gen3outside,

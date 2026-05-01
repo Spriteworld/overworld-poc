@@ -3,14 +3,13 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "src/maps/kanto/kanto_inside.json",
     "expandedProjectPaths": [
-        "src/maps",
-        "src/tileset/maps",
         "src/tileset",
+        "src/maps/kanto",
+        "src/maps",
         "src",
-        "src/maps/random",
-        "src/maps/spriteworld"
+        "src/maps/random"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -23,6 +22,9 @@
             "scaleInEditor": 1
         },
         "//dev/www/linky/spriteworld-claude/character/src/tileset/cave_dungeon.json": {
+            "scaleInDock": 3
+        },
+        "//dev/www/linky/spriteworld-claude/character/src/tileset/gen3_gyms_inside.json": {
             "scaleInDock": 3
         },
         "//dev/www/linky/spriteworld-claude/character/src/tileset/gen3_outside.json": {
@@ -73,10 +75,26 @@
         },
         "src/maps/Gavworld/Gavworld.json": {
             "scale": 0.75,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 1232,
+                "y": 547.3333333333333
+            }
+        },
+        "src/maps/Gavworld/Gavworld_dungeons.json": {
+            "scale": 0.20217187499999997,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 1633.3333333333335,
-                "y": 546
+                "x": 591.081227297319,
+                "y": 1778.1899683128527
+            }
+        },
+        "src/maps/Gavworld/Gavworld_inside.json": {
+            "scale": 0.574453125,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 1318.6454508363934,
+                "y": 878.2265741874064
             }
         },
         "src/maps/kanto/animated_grass.json": {
@@ -95,13 +113,65 @@
                 "y": 585.994274388901
             }
         },
+        "src/maps/kanto/celadon_gym.json": {
+            "scale": 2.872265625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 207.84985720114238,
+                "y": 320.13055895552833
+            }
+        },
         "src/maps/kanto/cerulean_city.json": {
-            "scale": 0.5,
+            "scale": 1,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 960,
-                "y": 755
+                "x": 702,
+                "y": 792.5
             }
+        },
+        "src/maps/kanto/cerulean_gym.json": {
+            "scale": 2.872265625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 271.9107847137223,
+                "y": 320.13055895552833
+            }
+        },
+        "src/maps/kanto/cinnabar_gym.json": {
+            "scale": 2.1909375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.15974896591075,
+                "y": 400.057053202111
+            }
+        },
+        "src/maps/kanto/cinnabar_island.json": {
+            "scale": 0.25,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 3180,
+                "y": -1234
+            }
+        },
+        "src/maps/kanto/fuchsia_city.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 700,
+                "y": 270
+            }
+        },
+        "src/maps/kanto/fushsia_gym.json": {
+            "scale": 2.3935546875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 239.81068951448384,
+                "y": 384.156670746634
+            }
+        },
+        "src/maps/kanto/gen3_gyms_inside.json": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "src/maps/kanto/hero_house_floor1.json": {
             "expandedObjectLayers": [
@@ -127,14 +197,13 @@
         },
         "src/maps/kanto/kanto.json": {
             "expandedObjectLayers": [
-                12,
-                13
+                12
             ],
-            "scale": 1.5,
+            "scale": 0.33,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 2781.333333333333,
-                "y": 9103
+                "x": 8575.757575757576,
+                "y": 7113.636363636364
             }
         },
         "src/maps/kanto/kanto_dungeons.json": {
@@ -150,14 +219,14 @@
         },
         "src/maps/kanto/kanto_inside.json": {
             "expandedObjectLayers": [
-                6,
-                7
+                10,
+                6
             ],
-            "scale": 1,
-            "selectedLayer": 5,
+            "scale": 1.5,
+            "selectedLayer": 8,
             "viewCenter": {
-                "x": 1015,
-                "y": 307.5
+                "x": 2233,
+                "y": 1421.6666666666665
             }
         },
         "src/maps/kanto/lavender_town.json": {
@@ -204,11 +273,11 @@
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 2,
+            "scale": 0.25,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 836,
-                "y": 132.75
+                "x": 6604,
+                "y": -530
             }
         },
         "src/maps/kanto/pewter_city.json": {
@@ -220,6 +289,14 @@
             "viewCenter": {
                 "x": 964,
                 "y": 3315
+            }
+        },
+        "src/maps/kanto/pewter_gym.json": {
+            "scale": 3.59033203125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 208.05875152998777,
+                "y": 256.1044471644227
             }
         },
         "src/maps/kanto/poke_mart.json": {
@@ -239,11 +316,22 @@
             }
         },
         "src/maps/kanto/prof_lab.json": {
+            "expandedObjectLayers": [
+                7
+            ],
             "scale": 2,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 113.5,
+                "x": 113.25,
                 "y": 203.25
+            }
+        },
+        "src/maps/kanto/rival_house.json": {
+            "scale": 4.332254464285714,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 224.01731200247318,
+                "y": 176.00535847695602
             }
         },
         "src/maps/kanto/route1.json": {
@@ -311,6 +399,14 @@
             "viewCenter": {
                 "x": 9136,
                 "y": -3192
+            }
+        },
+        "src/maps/kanto/route19.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 700,
+                "y": -1202
             }
         },
         "src/maps/kanto/route2.json": {
@@ -387,11 +483,11 @@
             }
         },
         "src/maps/kanto/route6.json": {
-            "scale": 1.127064732142857,
+            "scale": 0.25,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 896.1330890726346,
-                "y": 319.85740456503447
+                "x": -36,
+                "y": 1174
             }
         },
         "src/maps/kanto/route7.json": {
@@ -419,11 +515,19 @@
             }
         },
         "src/maps/kanto/saffron_city.json": {
-            "scale": 0.125,
+            "scale": 0.25,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": -240,
-                "y": 1444
+                "x": 698,
+                "y": 3854
+            }
+        },
+        "src/maps/kanto/saffron_gym.json": {
+            "scale": 2.0904094827586204,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 464.023918758699,
+                "y": 400.16083303263065
             }
         },
         "src/maps/kanto/test.json": {
@@ -434,12 +538,20 @@
                 "y": 22548
             }
         },
+        "src/maps/kanto/vermilion_gym.json": {
+            "scale": 2.872265625,
+            "selectedLayer": 7,
+            "viewCenter": {
+                "x": -0.17407860737114333,
+                "y": -0.17407860737114333
+            }
+        },
         "src/maps/kanto/vermillion_city.json": {
-            "scale": 1.0825334821428572,
+            "scale": 0.25,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 896.0461879478323,
-                "y": 735.7740089695345
+                "x": -470,
+                "y": 2350
             }
         },
         "src/maps/kanto/vermillion_gym.json": {
@@ -460,8 +572,8 @@
             "scale": 1,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 432,
-                "y": 191.5
+                "x": 494.5,
+                "y": 593.5
             }
         },
         "src/maps/kanto/viridian_forest.json": {
@@ -470,6 +582,14 @@
             "viewCenter": {
                 "x": 1221.333333333333,
                 "y": 1198
+            }
+        },
+        "src/maps/kanto/viridian_gym.json": {
+            "scale": 2.3935546875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 320.0261117911057,
+                "y": 384.156670746634
             }
         },
         "src/maps/kanto/world.json": {
@@ -541,11 +661,14 @@
             }
         },
         "src/maps/random/test.json": {
-            "scale": 1,
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 2,
             "selectedLayer": 8,
             "viewCenter": {
-                "x": 973,
-                "y": 168.5
+                "x": 1086.25,
+                "y": 1074.25
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -566,10 +689,10 @@
         },
         "src/maps/random/vermillion_gym.json": {
             "scale": 2,
-            "selectedLayer": 0,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 168.75,
-                "y": 293.75
+                "x": 176,
+                "y": 396.25
             }
         },
         "src/maps/spriteworld/spriteworld.json": {
@@ -597,6 +720,11 @@
         "src/tileset/caves.json": {
             "scaleInDock": 2,
             "scaleInEditor": 2
+        },
+        "src/tileset/gen3_gyms_inside.json": {
+            "dynamicWrapping": false,
+            "scaleInDock": 3,
+            "scaleInEditor": 3
         },
         "src/tileset/gen3_inside.json": {
             "scaleInDock": 2,
@@ -644,7 +772,6 @@
     "last.objectTypesPath": "Y:/linky/spriteworld-claude/character/src/tileset/objecttypes.json",
     "loadedWorlds": [
         "//dev/www/linky/spriteworld.dev.xlink.cybershade.org/character/src/maps/kanto/kanto.world",
-        "//dev/www/linky/spriteworld.dev.xlink.cybershade.org/character-claude/src/maps/kanto/kanto.world",
         "//dev/www/linky/spriteworld-claude/character/src/maps/kanto/kanto.world",
         "Y:/linky/spriteworld-claude/character/src/maps/kanto/kanto.world"
     ],
@@ -654,22 +781,26 @@
     "map.width": 100,
     "mapScene.enableWorlds": true,
     "openFiles": [
+        "src/maps/kanto/kanto.json",
+        "src/maps/random/test.json",
+        "src/maps/kanto/prof_lab.json",
+        "src/maps/kanto/kanto_inside.json"
     ],
     "project": "spriteworld.tiled-project",
     "property.type": "bool",
     "recentFiles": [
+        "src/maps/kanto/prof_lab.json",
         "src/maps/kanto/kanto_inside.json",
-        "src/maps/Gavworld/Gavworld.json",
-        "src/tileset/Transparent_Tiles.json",
+        "src/maps/Gavworld/Gavworld_inside.json",
+        "src/maps/Gavworld/Gavworld_dungeons.json",
+        "src/maps/kanto/kanto.json",
         "src/maps/random/test.json",
-        "src/maps/kanto/kanto_dungeons.json",
-        "src/maps/kanto/poke_mart.json",
-        "src/tileset/gen3_outside.json",
-        "src/maps/kanto/pewter_city.json",
-        "src/tileset/gen3_inside.json",
-        "src/maps/random/darkness_test.json",
-        "src/maps/kanto/pallet.json",
-        "src/maps/kanto/viridian_city.json"
+        "src/maps/kanto/viridian_city.json",
+        "src/maps/kanto/vermillion_city.json",
+        "src/maps/kanto/rival_house.json",
+        "src/maps/kanto/saffron_city.json",
+        "src/maps/kanto/vermilion_gym.json",
+        "src/tileset/gen3_gyms_inside.json"
     ],
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFilter": "All Files (*)",

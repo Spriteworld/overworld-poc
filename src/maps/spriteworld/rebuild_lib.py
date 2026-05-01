@@ -357,7 +357,9 @@ def write_tileset_png(entries, source_image_path, ts_json, dst_png_path,
     img.save(dst_png_path)
     ts_json['imagewidth']  = cols * tw
     ts_json['imageheight'] = rows * th
-    ts_json['tilecount']   = cols * rows
+    grid_count = cols * rows
+    max_tile_id = max((t['id'] for t in ts_json.get('tiles', [])), default=-1)
+    ts_json['tilecount'] = max(grid_count, max_tile_id + 1)
     print(f'  rebuilt {dst_png_path.name} ({len(entries)} tiles, {cols}x{rows} grid)')
     return True
 

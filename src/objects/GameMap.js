@@ -39,6 +39,11 @@ const TILESET_REGISTRY = {
   'Gavworld_outside':   { url: Tileset.Gavworld_outside,  frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'Gavworld_inside':    { url: Tileset.Gavworld_inside,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'Gavworld_dungeons':  { url: Tileset.Gavworld_dungeons, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'Water':              { url: Tileset.Water,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'Paths':              { url: Tileset.Paths,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'Balls':              { url: Tileset.Balls,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'Signs+Fences':       { url: Tileset.SignsFences,       frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'Trees':              { url: Tileset.Trees,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
 };
 
 /**
@@ -61,6 +66,11 @@ const TILESET_JSON_REGISTRY = {
   'Gavworld_outside':  Tileset.Gavworld_outside_json,
   'Gavworld_inside':   Tileset.Gavworld_inside_json,
   'Gavworld_dungeons': Tileset.Gavworld_dungeons_json,
+  'Water':             Tileset.Water_json,
+  'Paths':             Tileset.Paths_json,
+  'Balls':             Tileset.Balls_json,
+  'Signs+Fences':      Tileset.SignsFences_json,
+  'Trees':             Tileset.Trees_json,
 };
 
 /**

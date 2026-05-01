@@ -518,7 +518,9 @@ def _compose_png(entries, src_imgs, src_cols, ts_json, dst_path):
     img.save(dst_path)
     ts_json['imagewidth']  = cols * tw
     ts_json['imageheight'] = rows * th
-    ts_json['tilecount']   = cols * rows
+    grid_count = cols * rows
+    max_tile_id = max((t['id'] for t in ts_json.get('tiles', [])), default=-1)
+    ts_json['tilecount'] = max(grid_count, max_tile_id + 1)
     print(f'  rebuilt {dst_path.name} ({len(entries)} tiles, {cols}x{rows} grid)')
     return True
 
