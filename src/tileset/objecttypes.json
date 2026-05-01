@@ -35,69 +35,6 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
-        "id": 120,
-        "members": [
-            {
-                "name": "attenuation",
-                "type": "float",
-                "value": 0.06
-            },
-            {
-                "name": "cmd",
-                "propertyType": "command-list",
-                "type": "string",
-                "value": "add_light"
-            },
-            {
-                "name": "color",
-                "type": "string",
-                "value": "#ffffff"
-            },
-            {
-                "name": "glow",
-                "type": "bool",
-                "value": false
-            },
-            {
-                "name": "intensity",
-                "type": "float",
-                "value": 0.2
-            },
-            {
-                "name": "name",
-                "type": "string",
-                "value": ""
-            },
-            {
-                "name": "pixels",
-                "type": "bool",
-                "value": false
-            },
-            {
-                "name": "radius",
-                "type": "float",
-                "value": 100
-            },
-            {
-                "name": "x",
-                "type": "int",
-                "value": 0
-            },
-            {
-                "name": "y",
-                "type": "int",
-                "value": 0
-            }
-        ],
-        "name": "cmd-add_light",
-        "type": "class",
-        "useAs": [
-            "property"
-        ]
-    },
-    {
-        "color": "#ffa0a0a4",
-        "drawFill": true,
         "id": 101,
         "members": [
             {
@@ -215,95 +152,6 @@
             }
         ],
         "name": "cmd-camera_pan",
-        "type": "class",
-        "useAs": [
-            "property"
-        ]
-    },
-    {
-        "color": "#ffa0a0a4",
-        "drawFill": true,
-        "id": 117,
-        "members": [
-            {
-                "name": "cmd",
-                "propertyType": "command-list",
-                "type": "string",
-                "value": "darkness_disable"
-            },
-            {
-                "name": "duration",
-                "type": "int",
-                "value": 0
-            }
-        ],
-        "name": "cmd-darkness_disable",
-        "type": "class",
-        "useAs": [
-            "property"
-        ]
-    },
-    {
-        "color": "#ffa0a0a4",
-        "drawFill": true,
-        "id": 118,
-        "members": [
-            {
-                "name": "cmd",
-                "propertyType": "command-list",
-                "type": "string",
-                "value": "darkness_enable"
-            },
-            {
-                "name": "duration",
-                "type": "int",
-                "value": 0
-            },
-            {
-                "name": "pixels",
-                "type": "bool",
-                "value": false
-            },
-            {
-                "name": "radius",
-                "type": "float",
-                "value": 0
-            }
-        ],
-        "name": "cmd-darkness_enable",
-        "type": "class",
-        "useAs": [
-            "property"
-        ]
-    },
-    {
-        "color": "#ffa0a0a4",
-        "drawFill": true,
-        "id": 119,
-        "members": [
-            {
-                "name": "cmd",
-                "propertyType": "command-list",
-                "type": "string",
-                "value": "darkness_set_radius"
-            },
-            {
-                "name": "duration",
-                "type": "int",
-                "value": 0
-            },
-            {
-                "name": "pixels",
-                "type": "bool",
-                "value": false
-            },
-            {
-                "name": "radius",
-                "type": "float",
-                "value": 2.5
-            }
-        ],
-        "name": "cmd-darkness_set_radius",
         "type": "class",
         "useAs": [
             "property"
@@ -539,8 +387,7 @@
                 "name": "item",
                 "propertyType": "item",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "qty",
@@ -574,8 +421,7 @@
                 "name": "pokemon",
                 "propertyType": "encounter-pokemon",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             }
         ],
         "name": "cmd-give_pokemon",
@@ -645,8 +491,7 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "target",
@@ -656,8 +501,7 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             }
         ],
         "name": "cmd-if_facing",
@@ -686,8 +530,7 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "key",
@@ -697,8 +540,7 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "value",
@@ -726,8 +568,7 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "item",
@@ -737,8 +578,7 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             }
         ],
         "name": "cmd-if_has_item",
@@ -766,8 +606,7 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "name",
@@ -777,8 +616,7 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "x",
@@ -822,14 +660,12 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "then",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             }
         ],
         "name": "cmd-if_party_count",
@@ -858,8 +694,7 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "key",
@@ -869,8 +704,7 @@
             {
                 "name": "then",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "value",
@@ -904,14 +738,12 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "then",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "value",
@@ -1163,8 +995,7 @@
                 "name": "item",
                 "propertyType": "item",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "qty",
@@ -1173,29 +1004,6 @@
             }
         ],
         "name": "cmd-remove_item",
-        "type": "class",
-        "useAs": [
-            "property"
-        ]
-    },
-    {
-        "color": "#ffa0a0a4",
-        "drawFill": true,
-        "id": 121,
-        "members": [
-            {
-                "name": "cmd",
-                "propertyType": "command-list",
-                "type": "string",
-                "value": "remove_light"
-            },
-            {
-                "name": "name",
-                "type": "string",
-                "value": ""
-            }
-        ],
-        "name": "cmd-remove_light",
         "type": "class",
         "useAs": [
             "property"
@@ -1255,59 +1063,6 @@
     {
         "color": "#ffa0a0a4",
         "drawFill": true,
-        "id": 122,
-        "members": [
-            {
-                "name": "attenuation",
-                "type": "float",
-                "value": 0
-            },
-            {
-                "name": "cmd",
-                "propertyType": "command-list",
-                "type": "string",
-                "value": "set_light"
-            },
-            {
-                "name": "color",
-                "type": "string",
-                "value": ""
-            },
-            {
-                "name": "duration",
-                "type": "int",
-                "value": 0
-            },
-            {
-                "name": "glow",
-                "type": "bool",
-                "value": false
-            },
-            {
-                "name": "intensity",
-                "type": "float",
-                "value": 0
-            },
-            {
-                "name": "name",
-                "type": "string",
-                "value": ""
-            },
-            {
-                "name": "radius",
-                "type": "float",
-                "value": 0
-            }
-        ],
-        "name": "cmd-set_light",
-        "type": "class",
-        "useAs": [
-            "property"
-        ]
-    },
-    {
-        "color": "#ffa0a0a4",
-        "drawFill": true,
         "id": 39,
         "members": [
             {
@@ -1334,6 +1089,35 @@
         ]
     },
     {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 125,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "random_var"
+            },
+            {
+                "name": "key",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "values",
+                "propertyType": "random-var-values",
+                "type": "class",
+                "value": {}
+            }
+        ],
+        "name": "cmd-random_var",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
         "color": "#ffff8000",
         "drawFill": true,
         "id": 44,
@@ -1351,48 +1135,6 @@
             }
         ],
         "name": "cmd-show_exclamation",
-        "type": "class",
-        "useAs": [
-            "property"
-        ]
-    },
-    {
-        "color": "#ff8000ff",
-        "drawFill": true,
-        "id": 115,
-        "members": [
-            {
-                "name": "cmd",
-                "propertyType": "command-list",
-                "type": "string",
-                "value": "parallel"
-            },
-            {
-                "name": "branches",
-                "type": "list",
-                "value": [
-                ]
-            }
-        ],
-        "name": "cmd-parallel",
-        "type": "class",
-        "useAs": [
-            "property"
-        ]
-    },
-    {
-        "color": "#ffa0a0a0",
-        "drawFill": true,
-        "id": 116,
-        "members": [
-            {
-                "name": "commands",
-                "type": "list",
-                "value": [
-                ]
-            }
-        ],
-        "name": "branch",
         "type": "class",
         "useAs": [
             "property"
@@ -1428,8 +1170,7 @@
             {
                 "name": "on-interact",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "texture",
@@ -1566,8 +1307,7 @@
                     {
                         "propertyType": "trainer-pokemon",
                         "type": "class",
-                        "value": {
-                        }
+                        "value": {}
                     }
                 ]
             },
@@ -1915,8 +1655,7 @@
             {
                 "name": "else",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "text",
@@ -1926,8 +1665,7 @@
             {
                 "name": "yes",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             }
         ],
         "name": "cmd-yes_no",
@@ -1942,62 +1680,67 @@
         "storageType": "string",
         "type": "enum",
         "values": [
-            "text",
-            "yes_no",
-            "give_item",
-            "remove_item",
-            "set_flag",
-            "if_flag",
-            "give_pokemon",
-            "enable_input",
-            "disable_input",
-            "move_player",
-            "move_npc",
-            "wait_input",
-            "set_var",
-            "if_var",
-            "if_variant",
-            "heal_party",
-            "show_exclamation",
-            "knockback",
-            "spawn_npc",
-            "move_to_box",
-            "if_party_count",
-            "teach_move",
-            "warp_player",
-            "teleport_to_pokecenter",
-            "escape_rope",
-            "walk_to_char",
-            "movement_behavior",
-            "face_char",
-            "warp_npc",
-            "walk_warp_continue",
-            "look",
-            "if_facing",
-            "if_npc_at",
-            "wait",
-            "remove_npc",
-            "play_sound",
-            "stop_sound",
-            "if_has_item",
-            "fade_in",
-            "fade_out",
-            "camera_pan",
-            "camera_follow_player",
-            "camera_follow_npc",
+            "add_light",
             "bgm_start",
             "bgm_stop",
-            "spawn_pkmn",
-            "give_starter",
-            "start_battle",
-            "flock",
-            "parallel",
-            "darkness_enable",
+            "call_script",
+            "camera_follow_npc",
+            "camera_follow_player",
+            "camera_pan",
             "darkness_disable",
+            "darkness_enable",
             "darkness_set_radius",
-            "add_light",
+            "disable_input",
+            "enable_input",
+            "escape_rope",
+            "face_char",
+            "fade_in",
+            "fade_out",
+            "flock",
+            "give_item",
+            "give_pokemon",
+            "give_starter",
+            "heal_party",
+            "hide_placeable",
+            "if_facing",
+            "if_flag",
+            "if_has_item",
+            "if_npc_at",
+            "if_party_count",
+            "if_var",
+            "if_variant",
+            "knockback",
+            "look",
+            "move_npc",
+            "move_placeable",
+            "move_player",
+            "move_to_box",
+            "movement_behavior",
+            "parallel",
+            "play_sound",
+            "random_var",
+            "remove_item",
             "remove_light",
-            "set_light"
+            "remove_npc",
+            "set_flag",
+            "set_light",
+            "set_var",
+            "show_exclamation",
+            "show_placeable",
+            "spawn_npc",
+            "spawn_pkmn",
+            "start_battle",
+            "stop_sound",
+            "teach_move",
+            "teleport_to_pokecenter",
+            "text",
+            "wait",
+            "wait_input",
+            "walk_to_char",
+            "walk_warp_continue",
+            "warp_npc",
+            "warp_player",
+            "yes_no"
         ],
         "valuesAsFlags": false
     },
@@ -2022,8 +1765,7 @@
         "color": "#ff00aa00",
         "drawFill": true,
         "id": 10,
-        "members": [
-        ],
+        "members": [],
         "name": "cutTree",
         "type": "class",
         "useAs": [
@@ -2044,8 +1786,7 @@
             {
                 "name": "level-random",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "level-range-max",
@@ -2104,20 +1845,17 @@
             {
                 "name": "good-rod",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "grass",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "headbutt",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "name",
@@ -2127,26 +1865,22 @@
             {
                 "name": "old-rod",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "rock-smash",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "super-rod",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "surf",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             }
         ],
         "name": "encounterTable",
@@ -2221,8 +1955,7 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "quantity",
@@ -2308,6 +2041,18 @@
         ]
     },
     {
+        "color": "#ff0026a4",
+        "drawFill": false,
+        "id": 124,
+        "members": [],
+        "name": "location",
+        "type": "class",
+        "useAs": [
+            "object",
+            "project"
+        ]
+    },
+    {
         "color": "#ff40d0a0",
         "drawFill": true,
         "id": 42,
@@ -2387,8 +2132,7 @@
                 "name": "script",
                 "propertyType": "trigger",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "weather_type",
@@ -2414,24 +2158,6 @@
             "mirror-move",
             "spinner",
             "follow"
-        ],
-        "valuesAsFlags": false
-    },
-    {
-        "id": 117,
-        "name": "weather-type",
-        "storageType": "string",
-        "type": "enum",
-        "values": [
-            "none",
-            "light_rain",
-            "heavy_rain",
-            "fog",
-            "light_fog",
-            "harsh_sunlight",
-            "sandstorm",
-            "snow",
-            "heavy_snow"
         ],
         "valuesAsFlags": false
     },
@@ -2476,8 +2202,7 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "overworld-texture",
@@ -2487,8 +2212,7 @@
             {
                 "name": "script",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "text",
@@ -2537,8 +2261,7 @@
             {
                 "name": "value",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             }
         ],
         "name": "only-if",
@@ -2576,14 +2299,12 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "script",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "shiny",
@@ -2624,8 +2345,7 @@
                     {
                         "propertyType": "inventory-entry",
                         "type": "class",
-                        "value": {
-                        }
+                        "value": {}
                     }
                 ]
             },
@@ -2641,8 +2361,7 @@
                     {
                         "propertyType": "trainer-pokemon",
                         "type": "class",
-                        "value": {
-                        }
+                        "value": {}
                     }
                 ]
             }
@@ -2757,8 +2476,7 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "overworld-texture",
@@ -2822,8 +2540,7 @@
                     {
                         "propertyType": "trainer-pokemon",
                         "type": "class",
-                        "value": {
-                        }
+                        "value": {}
                     }
                 ]
             },
@@ -2908,14 +2625,12 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "script",
                 "type": "list",
-                "value": [
-                ]
+                "value": []
             },
             {
                 "name": "trigger",
@@ -2957,8 +2672,7 @@
                 "name": "only_if",
                 "propertyType": "only-if",
                 "type": "class",
-                "value": {
-                }
+                "value": {}
             },
             {
                 "name": "warp",
@@ -3013,6 +2727,462 @@
         "useAs": [
             "object",
             "project"
+        ]
+    },
+    {
+        "color": "#ff8000ff",
+        "drawFill": true,
+        "id": 115,
+        "members": [
+            {
+                "name": "branches",
+                "type": "list",
+                "value": []
+            },
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "parallel"
+            }
+        ],
+        "name": "cmd-parallel",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a0",
+        "drawFill": true,
+        "id": 116,
+        "members": [
+            {
+                "name": "commands",
+                "type": "list",
+                "value": []
+            }
+        ],
+        "name": "branch",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 117,
+        "members": [
+            {
+                "name": "attenuation",
+                "type": "float",
+                "value": 0.06
+            },
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "add_light"
+            },
+            {
+                "name": "color",
+                "type": "string",
+                "value": "#ffffff"
+            },
+            {
+                "name": "glow",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "intensity",
+                "type": "float",
+                "value": 0.2
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "pixels",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "radius",
+                "type": "float",
+                "value": 100
+            },
+            {
+                "name": "x",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "y",
+                "type": "int",
+                "value": 0
+            }
+        ],
+        "name": "cmd-add_light",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 118,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "darkness_disable"
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "value": 0
+            }
+        ],
+        "name": "cmd-darkness_disable",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 119,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "darkness_enable"
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "pixels",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "radius",
+                "type": "float",
+                "value": 0
+            }
+        ],
+        "name": "cmd-darkness_enable",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 120,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "darkness_set_radius"
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "pixels",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "radius",
+                "type": "float",
+                "value": 2.5
+            }
+        ],
+        "name": "cmd-darkness_set_radius",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 121,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "remove_light"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "cmd-remove_light",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 122,
+        "members": [
+            {
+                "name": "attenuation",
+                "type": "float",
+                "value": 0
+            },
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "set_light"
+            },
+            {
+                "name": "color",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "glow",
+                "type": "bool",
+                "value": false
+            },
+            {
+                "name": "intensity",
+                "type": "float",
+                "value": 0
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "radius",
+                "type": "float",
+                "value": 0
+            }
+        ],
+        "name": "cmd-set_light",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "id": 123,
+        "name": "weather-type",
+        "storageType": "string",
+        "type": "enum",
+        "values": [
+            "none",
+            "light_rain",
+            "heavy_rain",
+            "fog",
+            "light_fog",
+            "harsh_sunlight"
+        ],
+        "valuesAsFlags": false
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 126,
+        "members": [],
+        "name": "random-var-values",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffff8800",
+        "drawFill": true,
+        "id": 127,
+        "members": [
+            {
+                "name": "layer",
+                "type": "string",
+                "value": "ground"
+            }
+        ],
+        "name": "placeable",
+        "type": "class",
+        "useAs": [
+            "property",
+            "object"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 128,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "show_placeable"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "x",
+                "type": "int",
+                "value": -1
+            },
+            {
+                "name": "y",
+                "type": "int",
+                "value": -1
+            },
+            {
+                "name": "anchor",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "cmd-show_placeable",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 129,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "hide_placeable"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "cmd-hide_placeable",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 130,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "move_placeable"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "x",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "y",
+                "type": "int",
+                "value": 0
+            },
+            {
+                "name": "anchor",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "cmd-move_placeable",
+        "type": "class",
+        "useAs": [
+            "property"
+        ]
+    },
+    {
+        "color": "#ff8080ff",
+        "drawFill": true,
+        "id": 131,
+        "members": [
+            {
+                "name": "script",
+                "type": "list",
+                "value": []
+            }
+        ],
+        "name": "script-template",
+        "type": "class",
+        "useAs": [
+            "object"
+        ]
+    },
+    {
+        "color": "#ffa0a0a4",
+        "drawFill": true,
+        "id": 132,
+        "members": [
+            {
+                "name": "cmd",
+                "propertyType": "command-list",
+                "type": "string",
+                "value": "call_script"
+            },
+            {
+                "name": "script",
+                "type": "string",
+                "value": ""
+            },
+            {
+                "name": "args",
+                "type": "string",
+                "value": ""
+            }
+        ],
+        "name": "cmd-call_script",
+        "type": "class",
+        "useAs": [
+            "property"
         ]
     }
 ]

@@ -1,6 +1,17 @@
 import store from '../../store/index.js';
+import { rng } from '../../utilities/rng.js';
 
 export default {
+  random_var(runner, cmd) {
+    const raw = cmd.values_var ? runner._scene.mapVars[cmd.values_var] : cmd.values;
+    const values = Array.isArray(raw) ? raw : Object.values(raw ?? {});
+    const picked = values[Math.floor(rng() * values.length)];
+    runner._scene.mapVars[cmd.key] = picked;
+    store.commit('game/SET_MAP_VAR', { map: runner._scene.sys.settings.key, key: cmd.key, value: picked });
+    if (runner._debug()) console.log(`[ScriptRunner] random_var — key: "${cmd.key}", picked: ${JSON.stringify(picked)} from ${JSON.stringify(values)}`);
+    runner._step();
+  },
+
   set_var(runner, cmd) {
     runner._scene.mapVars[cmd.key] = cmd.value;
     store.commit('game/SET_MAP_VAR', { map: runner._scene.sys.settings.key, key: cmd.key, value: cmd.value });
@@ -12,8 +23,13 @@ export default {
     let varVal = runner._scene.mapVars[cmd.key];
     if (varVal === 'true')  varVal = true;
     if (varVal === 'false') varVal = false;
-    const varCmp  = cmd.comparison ?? 'eq';
-    const targets = Array.isArray(cmd.value) ? cmd.value : (cmd.value != null ? [cmd.value] : []);
+    let varCmp  = cmd.comparison ?? 'eq';
+    let rawValue = cmd.value;
+    if (varCmp === 'var') {
+      rawValue = runner._scene.mapVars[cmd.value];
+      varCmp = 'eq';
+    }
+    const targets = Array.isArray(rawValue) ? rawValue : (rawValue != null ? [rawValue] : []);
     let varMatch;
     // eslint-disable-next-line eqeqeq
     if (varCmp === 'in')       varMatch = targets.some(t  => varVal == t);

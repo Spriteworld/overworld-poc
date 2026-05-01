@@ -2,29 +2,30 @@
 """
 Sync individual route/town JSON files and spriteworld.world from spriteworld.json.
 
-spriteworld.json is edited in Tiled using gen3_outside.png as its tileset.
-This script converts gen3_outside GIDs → spriteworld GIDs when writing the
-individual map files (which use spriteworld tileset for the game engine).
+spriteworld.json is edited in Tiled and may reference any source tilesets
+(auto-discovered from the master's tilesets array).  This script
+converts master src GIDs → spriteworld GIDs when writing the individual map
+files (which use a compact two-tileset layout: spriteworld_common +
+spriteworld_outside).
 
 What this script does
 ─────────────────────
-1. Reads spriteworld.json's "maps" objectgroup to derive each named area's
+1. Catalogues every source tileset in spriteworld.json.
+2. Reads spriteworld.json's "maps" objectgroup to derive each named area's
    pixel bounds.
-2. Converts those bounds to world coordinates and writes spriteworld.world.
-3. For each map file:
+3. Converts those bounds to world coordinates and writes spriteworld.world.
+4. For each map file:
    - Creates it if it doesn't exist (standard spriteworld layer skeleton).
    - Resizes its tilelayers if the tile dimensions have changed.
-   - Extracts tile data from spriteworld.json, remapping gen3_outside GIDs
-     to spriteworld GIDs using gid_map.json.
-   - For any gen3_outside GID with no spriteworld equivalent (new tiles added
-     in Tiled), appends new entries to the spriteworld tileset JSON and updates
-     gid_map.json so subsequent runs keep the assignment stable.
+   - Decodes each master src GID to (source_name, tile_id) and remaps it
+     to a compact spriteworld GID.
    - Merges interaction objects (matched by name).
-4. Writes the updated spriteworld tileset JSON (tile properties synced from
-   gen3_outside for any GID newly added in step 3).
-5. For any map not already registered in the JS source files, creates a
-   Phaser scene file and updates src/maps/index.js and
-   src/scenes/index.js automatically.
+5. Splits the combined GID space into spriteworld_common (used in indoor maps
+   too) + spriteworld_outside (everything else).
+6. Writes the updated spriteworld_common / spriteworld_outside tileset JSONs and
+   composes their PNGs from the appropriate source PNG per tile.
+7. Registers any new map in src/maps/index.js + src/scenes/index.js and
+   creates a Phaser scene stub.
 
 Coordinate relationship
 ───────────────────────
@@ -37,6 +38,8 @@ Offset derived from pallet.json HeroHouseF1Warp:
 """
 
 import json
+import pathlib
+import sys
 
 import rebuild_lib as lib
 
@@ -77,189 +80,261 @@ def make_outdoor_tilesets(common_count):
     ]
 
 
+# ── Source-tileset catalogue ────────────────────────────────────────────────
+
+def catalogue_master_tilesets(master):
+    """Auto-discover all tilesets in the master JSON by resolving each
+    source path to its canonical file in TILESET_DIR.
+    Returns [(firstgid, source_name, tile_count, source_json), ...] sorted
+    by firstgid ascending. Aborts if a tileset JSON cannot be found."""
+    entries = []
+    for ts in master.get('tilesets', []):
+        src = ts.get('source', '')
+        name = pathlib.PurePosixPath(src).stem
+        ts_path = lib.TILESET_DIR / f'{name}.json'
+        if not ts_path.exists():
+            print(f'  ERROR: cannot resolve tileset source "{src}" '
+                  f'— expected {ts_path}')
+            sys.exit(1)
+        with open(ts_path) as f:
+            ts_json = json.load(f)
+        entries.append((ts['firstgid'], name, ts_json.get('tilecount', 0), ts_json))
+    entries.sort(key=lambda e: e[0])
+    return entries
+
+
+def src_gid_to_source(src_gid, catalogue):
+    """Resolve a master GID to (source_name, 0-based tile_id, source_json).
+    Returns (None, None, None) on miss."""
+    for fg, name, count, ts_json in reversed(catalogue):
+        if fg <= src_gid < fg + count:
+            return name, src_gid - fg, ts_json
+    return None, None, None
+
+
 # ── GID conversion ─────────────────────────────────────────────────────────
 
-def build_compact_gid_map(spriteworld_tilelayers, gen3_ts_json,
+def build_compact_gid_map(master_tilelayers, catalogue,
                           spriteworld_inside_tilelayers=None,
                           gen3_outside_firstgid_inside=None,
                           dungeons_outside_gids=None):
     """
-    Build a gap-free gen3_gid → spriteworld_gid mapping.
+    Build a gap-free (source, tile_id) → spriteworld_gid mapping.
 
     Tiles are split into two groups:
-    - common (GIDs 1..C): gen3_outside tiles used in both outdoor AND indoor maps,
-      plus all ITEM_TILE_IDS and animation frame tiles.
-    - outdoor_only (GIDs C+1..C+O): gen3_outside tiles used only in outdoor maps,
-      plus any gen3_outside tile referenced by `spriteworld_dungeons.json` (dungeons
-      reads from the outdoor tilesets so every dungeon-referenced outdoor tile
-      must have an entry here).
+    - common (GIDs 1..C): gen3_outside tiles used in both outdoor AND indoor
+      maps, plus all gen3_outside ITEM_TILE_IDS and gen3_outside animation
+      frame tiles.
+    - outdoor_only (GIDs C+1..C+O): every other referenced tile — gen3_outside
+      tiles only used outdoor (or by dungeons), plus every tile from other
+      source tilesets (those sources are outdoor-only by nature).
 
-    Returns (gen3_to_spriteworld, spriteworld_to_gen3, gid_map_path, gid_map_raw, common_count).
+    Returns (src_to_spriteworld, spriteworld_to_src, gid_map_path, gid_map_raw,
+              common_count) where the in-memory dicts are keyed by
+      (source_name, tile_id).
     """
-    outdoor_gids = {
-        gid
-        for layer in spriteworld_tilelayers.values()
-        for gid in layer.get('data', [])
-        if gid != 0
-    }
+    # Decode every non-zero master GID in outdoor tilelayers to (source, tid).
+    outdoor_keys = set()
+    for layer in master_tilelayers.values():
+        for src_gid in layer.get('data', []):
+            if src_gid == 0:
+                continue
+            name, tid, _ = src_gid_to_source(src_gid, catalogue)
+            if name is None:
+                continue
+            outdoor_keys.add((name, tid))
 
-    anim_gids = set()
-    for t in gen3_ts_json.get('tiles', []):
-        if 'animation' not in t:
-            continue
-        anim_gids.add(t['id'] + 1)
-        for frame in t['animation']:
-            anim_gids.add(frame['tileid'] + 1)
-    outdoor_gids |= anim_gids
+    # Animation frames from any source — always need a spriteworld GID even
+    # when not placed on a tilelayer directly.
+    anim_keys = set()
+    for fg, name, count, ts_json in catalogue:
+        for t in ts_json.get('tiles', []):
+            if 'animation' not in t:
+                continue
+            anim_keys.add((name, t['id']))
+            for frame in t['animation']:
+                anim_keys.add((name, frame['tileid']))
+    outdoor_keys |= anim_keys
 
-    # Dungeon-referenced outdoor tiles must exist in gid_map.json or the
-    # dungeons rebuild can't resolve them. They don't need to be common —
-    # dungeons output maps reference both spriteworld_common and spriteworld_outside —
-    # so just fold them into the outdoor pool.
+    # Dungeons-referenced gen3_outside tiles must exist in gid_map.json or
+    # update_spriteworld_dungeons.py can't resolve them.
     if dungeons_outside_gids:
-        outdoor_gids |= dungeons_outside_gids
+        for raw_gid in dungeons_outside_gids:
+            outdoor_keys.add(('gen3_outside', raw_gid - 1))
 
-    item_gids = {tid + 1 for tid in ITEM_TILE_IDS}
+    # Item tiles + indoor-shared gen3_outside tiles → common pool.
+    item_keys = {('gen3_outside', tid) for tid in ITEM_TILE_IDS}
 
-    indoor_outside_gids = set()
+    indoor_outside_keys = set()
     if spriteworld_inside_tilelayers and gen3_outside_firstgid_inside:
         for layer in spriteworld_inside_tilelayers.values():
             for src_gid in layer.get('data', []):
                 if src_gid >= gen3_outside_firstgid_inside:
-                    gen3_raw_gid = src_gid - gen3_outside_firstgid_inside + 1
-                    indoor_outside_gids.add(gen3_raw_gid)
+                    tid = src_gid - gen3_outside_firstgid_inside
+                    indoor_outside_keys.add(('gen3_outside', tid))
 
-    common_raw   = sorted(indoor_outside_gids | item_gids)
-    outdoor_only = sorted(outdoor_gids - set(common_raw))
+    common_keys  = sorted(indoor_outside_keys | item_keys)
+    outdoor_only = sorted(outdoor_keys - set(common_keys))
 
-    common_count  = len(common_raw)
-    gen3_to_spriteworld = {}
-    for i, g in enumerate(common_raw):
-        gen3_to_spriteworld[g] = i + 1
-    for i, g in enumerate(outdoor_only):
-        gen3_to_spriteworld[g] = common_count + i + 1
+    common_count    = len(common_keys)
+    outside_count   = len(outdoor_only)
+    src_to_spriteworld = {}
+    for i, key in enumerate(common_keys):
+        src_to_spriteworld[key] = i + 1
+    for i, key in enumerate(outdoor_only):
+        src_to_spriteworld[key] = common_count + i + 1
+    spriteworld_to_src = {v: k for k, v in src_to_spriteworld.items()}
 
-    spriteworld_to_gen3 = {v: k for k, v in gen3_to_spriteworld.items()}
-    gid_map_raw   = {
-        'gen3_to_spriteworld': {str(k): v for k, v in gen3_to_spriteworld.items()},
-        'spriteworld_to_gen3': {str(k): v for k, v in spriteworld_to_gen3.items()},
-        'common_count':  common_count,
+    # Persist with the schema that update_spriteworld_insides.py /
+    # update_spriteworld_dungeons.py read:
+    #   gen3_to_spriteworld / spriteworld_to_gen3 hold ONLY gen3_outside entries
+    #     (raw_gid = tile_id + 1). Other source mappings live in
+    #     `extras_to_spriteworld` keyed by "source:tile_id" strings.
+    #   `outside_count` = total spriteworld_outside tile count (across all
+    #     sources) — dungeons reads this to know its own firstgid.
+    gen3_to_spriteworld = {
+        str(tid + 1): sgid
+        for (src, tid), sgid in src_to_spriteworld.items() if src == 'gen3_outside'
+    }
+    spriteworld_to_gen3 = {
+        str(sgid): tid + 1
+        for (src, tid), sgid in src_to_spriteworld.items() if src == 'gen3_outside'
+    }
+    extras_to_spriteworld = {
+        f'{src}:{tid}': sgid
+        for (src, tid), sgid in src_to_spriteworld.items() if src != 'gen3_outside'
+    }
+    gid_map_raw = {
+        'gen3_to_spriteworld':   gen3_to_spriteworld,
+        'spriteworld_to_gen3':   spriteworld_to_gen3,
+        'extras_to_spriteworld': extras_to_spriteworld,
+        'common_count':          common_count,
+        'outside_count':         outside_count,
     }
     gid_map_path = lib.MAPS_DIR / 'gid_map.json'
-    return gen3_to_spriteworld, spriteworld_to_gen3, gid_map_path, gid_map_raw, common_count
+    return src_to_spriteworld, spriteworld_to_src, gid_map_path, gid_map_raw, common_count
 
 
-def ensure_spriteworld_tile(ts_json, spriteworld_gid, gen3_gid, gen3_props_index,
-                      tile_id_offset=0):
-    """
-    Ensure a tileset JSON has a tile entry for the given GID. Properties are
-    re-synced from the gen3_outside source on every run so that flipping a
-    flag (e.g. ge_collide) on a source tile actually propagates downstream.
-    Returns True if the tileset was modified.
-    """
+def _record_new_mapping(name, tid, sgid, gid_map):
+    """Update gid_map dict in-place for a freshly assigned (source, tid)."""
+    if name == 'gen3_outside':
+        gid_map['gen3_to_spriteworld'][str(tid + 1)] = sgid
+        gid_map['spriteworld_to_gen3'][str(sgid)]    = tid + 1
+    else:
+        gid_map['extras_to_spriteworld'][f'{name}:{tid}'] = sgid
+
+
+def ensure_spriteworld_tile(ts_json, spriteworld_gid, source, tid, src_props_indices,
+                            tile_id_offset=0):
+    """Ensure a tileset JSON has a tile entry for `spriteworld_gid` with up-to-date
+    properties from the named source tileset. Returns True if modified."""
     tile_id = spriteworld_gid - 1 - tile_id_offset
     tiles   = ts_json.setdefault('tiles', [])
-
-    gen3_tile_id = gen3_gid - 1
-    props        = gen3_props_index.get(gen3_tile_id, [])
+    props   = src_props_indices.get(source, {}).get(tid, [])
 
     existing = next((t for t in tiles if t['id'] == tile_id), None)
-    if existing:
-        if existing.get('properties') == props:
-            return False
-        existing['properties'] = props
+    if existing is None:
+        tiles.append({'id': tile_id, 'properties': props})
         return True
-
-    tiles.append({'id': tile_id, 'properties': props})
+    if existing.get('properties') == props:
+        return False
+    existing['properties'] = props
     return True
 
 
-def remap_data(data, gen3_to_spriteworld, spriteworld_common_ts_json, spriteworld_outside_ts_json,
-               gen3_props_index, spriteworld_to_gen3,
-               gid_map, new_mappings, common_count):
+def remap_data(data, catalogue, src_to_spriteworld, spriteworld_to_src,
+               spriteworld_common_ts_json, spriteworld_outside_ts_json,
+               src_props_indices, gid_map, common_count, new_mappings):
     """
-    Convert a flat tile-data array from gen3_outside GIDs to spriteworld GIDs.
+    Convert a flat master-GID array to spriteworld GIDs.
 
-    Tiles with no existing mapping are assigned the next available spriteworld GID
-    (extending the appropriate tileset) and recorded in `new_mappings`.
-    GIDs 1..common_count → spriteworld_common; higher → spriteworld_outside.
-    Returns (converted_data, ts_modified).
+    Tiles whose (source, tid) isn't in `src_to_spriteworld` are assigned the
+    next available spriteworld GID (extending the appropriate output tileset)
+    and recorded in `new_mappings`. GIDs 1..common_count → spriteworld_common;
+    higher → spriteworld_outside. Returns (converted_data, ts_modified).
     """
-    max_spriteworld   = max(spriteworld_to_gen3.keys(), default=0)
+    max_spriteworld = max(spriteworld_to_src.keys(), default=0)
     out         = []
     ts_modified = False
-    for gid in data:
-        if gid == 0:
+    for src_gid in data:
+        if src_gid == 0:
             out.append(0)
             continue
-        kgid = gen3_to_spriteworld.get(gid)
-        if kgid is None:
-            if gid in new_mappings:
-                kgid = new_mappings[gid]
+        name, tid, _ = src_gid_to_source(src_gid, catalogue)
+        if name is None:
+            out.append(0)
+            continue
+        key  = (name, tid)
+        sgid = src_to_spriteworld.get(key)
+        if sgid is None:
+            if key in new_mappings:
+                sgid = new_mappings[key]
             else:
                 max_spriteworld += 1
-                kgid = max_spriteworld
-                new_mappings[gid]                  = kgid
-                gen3_to_spriteworld[gid]                 = kgid
-                spriteworld_to_gen3[kgid]                = gid
-                gid_map['gen3_to_spriteworld'][str(gid)]  = kgid
-                gid_map['spriteworld_to_gen3'][str(kgid)] = gid
-        if kgid <= common_count:
-            if ensure_spriteworld_tile(spriteworld_common_ts_json, kgid, gid, gen3_props_index, 0):
+                sgid = max_spriteworld
+                new_mappings[key]          = sgid
+                src_to_spriteworld[key]    = sgid
+                spriteworld_to_src[sgid]   = key
+                _record_new_mapping(name, tid, sgid, gid_map)
+        if sgid <= common_count:
+            if ensure_spriteworld_tile(spriteworld_common_ts_json, sgid, name, tid,
+                                       src_props_indices, 0):
                 ts_modified = True
         else:
-            if ensure_spriteworld_tile(spriteworld_outside_ts_json, kgid, gid, gen3_props_index, common_count):
+            if ensure_spriteworld_tile(spriteworld_outside_ts_json, sgid, name, tid,
+                                       src_props_indices, common_count):
                 ts_modified = True
-        out.append(kgid)
+        out.append(sgid)
     return out, ts_modified
 
 
 # ── Animation support ──────────────────────────────────────────────────────
 
-def ensure_anim_tiles_in_spriteworld(gen3_ts_json, gen3_to_spriteworld, spriteworld_to_gen3,
-                                gid_map, new_mappings, spriteworld_common_ts_json,
-                                spriteworld_outside_ts_json, gen3_props_index, common_count):
-    """
-    Guarantee that every animation frame tile from gen3_outside has a spriteworld
+def ensure_anim_tiles_in_spriteworld(catalogue, src_to_spriteworld, spriteworld_to_src,
+                                     gid_map, new_mappings,
+                                     spriteworld_common_ts_json, spriteworld_outside_ts_json,
+                                     src_props_indices, common_count):
+    """Guarantee every animation frame tile from any source has a spriteworld
     GID. Frame tiles aren't placed directly on maps so remap_data won't see
-    them — fill that gap before update_split_pngs runs.
-    """
-    max_spriteworld   = max(spriteworld_to_gen3.keys(), default=0)
+    them — fill that gap before update_split_pngs runs."""
+    max_spriteworld = max(spriteworld_to_src.keys(), default=0)
     ts_modified = False
-    for t in gen3_ts_json.get('tiles', []):
-        if 'animation' not in t:
-            continue
-        frame_tids = {f['tileid'] for f in t['animation']}
-        frame_tids.add(t['id'])
-        for tid in sorted(frame_tids):
-            gen3_gid = tid + 1
-            if gen3_gid in gen3_to_spriteworld:
+    for fg, name, count, ts_json in catalogue:
+        for t in ts_json.get('tiles', []):
+            if 'animation' not in t:
                 continue
-            if gen3_gid in new_mappings:
-                kgid = new_mappings[gen3_gid]
-            else:
-                max_spriteworld += 1
-                kgid = max_spriteworld
-                new_mappings[gen3_gid]                = kgid
-                gen3_to_spriteworld[gen3_gid]               = kgid
-                spriteworld_to_gen3[kgid]                   = gen3_gid
-                gid_map['gen3_to_spriteworld'][str(gen3_gid)] = kgid
-                gid_map['spriteworld_to_gen3'][str(kgid)]      = gen3_gid
-            if kgid <= common_count:
-                if ensure_spriteworld_tile(spriteworld_common_ts_json, kgid, gen3_gid, gen3_props_index, 0):
-                    ts_modified = True
-            else:
-                if ensure_spriteworld_tile(spriteworld_outside_ts_json, kgid, gen3_gid, gen3_props_index, common_count):
-                    ts_modified = True
+            frame_tids = {f['tileid'] for f in t['animation']}
+            frame_tids.add(t['id'])
+            for tid in sorted(frame_tids):
+                key = (name, tid)
+                if key in src_to_spriteworld:
+                    continue
+                if key in new_mappings:
+                    sgid = new_mappings[key]
+                else:
+                    max_spriteworld += 1
+                    sgid = max_spriteworld
+                    new_mappings[key]          = sgid
+                    src_to_spriteworld[key]    = sgid
+                    spriteworld_to_src[sgid]   = key
+                    _record_new_mapping(name, tid, sgid, gid_map)
+                if sgid <= common_count:
+                    if ensure_spriteworld_tile(spriteworld_common_ts_json, sgid, name, tid,
+                                               src_props_indices, 0):
+                        ts_modified = True
+                else:
+                    if ensure_spriteworld_tile(spriteworld_outside_ts_json, sgid, name, tid,
+                                               src_props_indices, common_count):
+                        ts_modified = True
     return ts_modified
 
 
-def sync_spriteworld_animations(gen3_ts_json, gen3_to_spriteworld, common_count,
-                           spriteworld_common_ts_json, spriteworld_outside_ts_json):
+def sync_spriteworld_animations(catalogue, src_to_spriteworld, common_count,
+                                spriteworld_common_ts_json, spriteworld_outside_ts_json):
     """
-    Write animation properties into spriteworld_common_ts_json or spriteworld_outside_ts_json
-    for every animated gen3 tile. Frame tileids are made 0-based within the
-    target tileset.
+    Write animation properties into spriteworld_common/outside for every animated
+    source tile (across all source tilesets). Frame tileids are made 0-based
+    within the target output tileset.
     """
     common_tiles  = spriteworld_common_ts_json.setdefault('tiles', [])
     outside_tiles = spriteworld_outside_ts_json.setdefault('tiles', [])
@@ -267,58 +342,59 @@ def sync_spriteworld_animations(gen3_ts_json, gen3_to_spriteworld, common_count,
     outside_by_id = {t['id']: t for t in outside_tiles}
     modified = False
 
-    for gen3_tile in gen3_ts_json.get('tiles', []):
-        if 'animation' not in gen3_tile:
-            continue
-        spriteworld_gid = gen3_to_spriteworld.get(gen3_tile['id'] + 1)
-        if spriteworld_gid is None:
-            continue
-
-        is_common = spriteworld_gid <= common_count
-        offset    = 0 if is_common else common_count
-        spriteworld_tid = spriteworld_gid - 1 - offset
-
-        new_anim = []
-        for frame in gen3_tile['animation']:
-            frame_spriteworld_gid = gen3_to_spriteworld.get(frame['tileid'] + 1)
-            if frame_spriteworld_gid is None:
+    for fg, name, count, ts_json in catalogue:
+        for src_tile in ts_json.get('tiles', []):
+            if 'animation' not in src_tile:
                 continue
-            frame_is_common = frame_spriteworld_gid <= common_count
-            frame_offset    = 0 if frame_is_common else common_count
-            new_anim.append({
-                'duration': frame['duration'],
-                'tileid':   frame_spriteworld_gid - 1 - frame_offset,
-            })
+            sgid = src_to_spriteworld.get((name, src_tile['id']))
+            if sgid is None:
+                continue
 
-        if not new_anim:
-            continue
-        # animatedTiles plugin uses findIndex to locate the animated tile's
-        # own frame — skip animations that don't include themselves.
-        if not any(f['tileid'] == spriteworld_tid for f in new_anim):
-            continue
+            is_common      = sgid <= common_count
+            offset         = 0 if is_common else common_count
+            spriteworld_tid = sgid - 1 - offset
 
-        tile_by_id = common_by_id if is_common else outside_by_id
-        tiles_list = common_tiles if is_common else outside_tiles
-        entry = tile_by_id.get(spriteworld_tid)
-        if entry is None:
-            entry = {'id': spriteworld_tid}
-            tiles_list.append(entry)
-            tile_by_id[spriteworld_tid] = entry
+            new_anim = []
+            for frame in src_tile['animation']:
+                frame_sgid = src_to_spriteworld.get((name, frame['tileid']))
+                if frame_sgid is None:
+                    continue
+                frame_is_common = frame_sgid <= common_count
+                frame_offset    = 0 if frame_is_common else common_count
+                new_anim.append({
+                    'duration': frame['duration'],
+                    'tileid':   frame_sgid - 1 - frame_offset,
+                })
 
-        if entry.get('animation') != new_anim:
-            entry['animation'] = new_anim
-            modified = True
-            ts_name = 'spriteworld_common' if is_common else 'spriteworld_outside'
-            print(f'  synced animation for {ts_name} tile {spriteworld_tid} ({len(new_anim)} frames)')
+            if not new_anim:
+                continue
+            # animatedTiles plugin uses findIndex to locate the animated
+            # tile's own frame — skip animations that don't include themselves.
+            if not any(f['tileid'] == spriteworld_tid for f in new_anim):
+                continue
+
+            tile_by_id = common_by_id if is_common else outside_by_id
+            tiles_list = common_tiles  if is_common else outside_tiles
+            entry = tile_by_id.get(spriteworld_tid)
+            if entry is None:
+                entry = {'id': spriteworld_tid}
+                tiles_list.append(entry)
+                tile_by_id[spriteworld_tid] = entry
+
+            if entry.get('animation') != new_anim:
+                entry['animation'] = new_anim
+                modified = True
+                ts_name = 'spriteworld_common' if is_common else 'spriteworld_outside'
+                print(f'  synced animation for {ts_name} tile {spriteworld_tid} '
+                      f'({len(new_anim)} frames, source={name})')
 
     return modified
 
 
-def build_anim_png(gen3_ts_json, gen3_to_spriteworld):
+def build_anim_png(catalogue, src_to_spriteworld):
     """
     Write animation.png — a single-row sprite sheet of every animation frame
-    tile, ordered by spriteworld tile ID, followed by frames from any standalone
-    animation tilesets (e.g. animated_grass.png). Visual reference only;
+    tile (from any source), ordered by spriteworld GID. Visual reference only;
     the tiles themselves live in their canonical sheets for the engine.
     """
     try:
@@ -327,112 +403,116 @@ def build_anim_png(gen3_ts_json, gen3_to_spriteworld):
         return False
 
     seen       = set()
-    anim_tiles = []  # (spriteworld_gid, gen3_gid) sorted by spriteworld_gid
-    for t in gen3_ts_json.get('tiles', []):
-        if 'animation' not in t:
-            continue
-        all_tids = {t['id']} | {f['tileid'] for f in t['animation']}
-        for tid in all_tids:
-            gen3_gid  = tid + 1
-            spriteworld_gid = gen3_to_spriteworld.get(gen3_gid)
-            if spriteworld_gid and spriteworld_gid not in seen:
-                anim_tiles.append((spriteworld_gid, gen3_gid))
-                seen.add(spriteworld_gid)
-
-    tw, th = 32, 32
-    strips = []
-
-    if anim_tiles:
-        anim_tiles.sort()
-        gen3_cols = gen3_ts_json['columns']
-        gen3_img  = Image.open(lib.TILESET_DIR / gen3_ts_json['image']).convert('RGBA')
-        strip = Image.new('RGBA', (len(anim_tiles) * tw, th), (0, 0, 0, 0))
-        for i, (_, gen3_gid) in enumerate(anim_tiles):
-            gen3_tid = gen3_gid - 1
-            src_x = (gen3_tid % gen3_cols) * tw
-            src_y = (gen3_tid // gen3_cols) * th
-            strip.paste(gen3_img.crop((src_x, src_y, src_x + tw, src_y + th)), (i * tw, 0))
-        strips.append(strip)
-
-    EXTRA_TILESETS = ['animated_grass']
-    for ts_name in EXTRA_TILESETS:
-        ts_json_path = lib.TILESET_DIR / f'{ts_name}.json'
-        ts_png_path  = lib.TILESET_DIR / f'{ts_name}.png'
-        if not ts_json_path.exists() or not ts_png_path.exists():
-            continue
-        ts_json = json.loads(ts_json_path.read_text(encoding='utf-8'))
-        ts_img  = Image.open(ts_png_path).convert('RGBA')
-        ts_cols = ts_json['columns']
-        frame_tids = set()
+    anim_tiles = []  # (spriteworld_gid, source_name, tile_id) sorted by spriteworld_gid
+    for fg, name, count, ts_json in catalogue:
         for t in ts_json.get('tiles', []):
-            if 'animation' in t:
-                frame_tids.add(t['id'])
-                frame_tids.update(f['tileid'] for f in t['animation'])
-        if not frame_tids:
-            frame_tids = set(range(ts_json['tilecount']))
-        frame_tids = sorted(frame_tids)
-        strip = Image.new('RGBA', (len(frame_tids) * tw, th), (0, 0, 0, 0))
-        for i, tid in enumerate(frame_tids):
-            src_x = (tid % ts_cols) * tw
-            src_y = (tid // ts_cols) * th
-            strip.paste(ts_img.crop((src_x, src_y, src_x + tw, src_y + th)), (i * tw, 0))
-        strips.append(strip)
-        print(f'  included {len(frame_tids)} frame(s) from {ts_name}.png in animation.png')
+            if 'animation' not in t:
+                continue
+            all_tids = {t['id']} | {f['tileid'] for f in t['animation']}
+            for tid in all_tids:
+                sgid = src_to_spriteworld.get((name, tid))
+                if sgid and sgid not in seen:
+                    anim_tiles.append((sgid, name, tid))
+                    seen.add(sgid)
 
-    if not strips:
+    if not anim_tiles:
         return False
 
-    total_w = sum(s.width for s in strips)
-    out_img = Image.new('RGBA', (total_w, th), (0, 0, 0, 0))
-    x_off = 0
-    for s in strips:
-        out_img.paste(s, (x_off, 0))
-        x_off += s.width
+    tw, th = 32, 32
+    anim_tiles.sort(key=lambda e: e[0])
+
+    src_imgs = {}
+    src_cols = {}
+    for fg, name, count, ts_json in catalogue:
+        png_path = lib.TILESET_DIR / ts_json['image']
+        src_imgs[name] = Image.open(png_path).convert('RGBA')
+        src_cols[name] = ts_json['columns']
+
+    out_img = Image.new('RGBA', (len(anim_tiles) * tw, th), (0, 0, 0, 0))
+    for i, (_, name, tid) in enumerate(anim_tiles):
+        cols = src_cols[name]
+        sx = (tid % cols) * tw
+        sy = (tid // cols) * th
+        out_img.paste(src_imgs[name].crop((sx, sy, sx + tw, sy + th)), (i * tw, 0))
 
     out_path = lib.TILESET_DIR / 'maps' / 'animation.png'
     out_img.save(out_path)
-    total_frames = total_w // tw
-    print(f'  rebuilt animation.png ({total_frames} animation frame tile(s))')
+    print(f'  rebuilt animation.png ({len(anim_tiles)} animation frame tile(s))')
     return True
 
 
-# ── Output PNG split (spriteworld_common + spriteworld_outside) ────────────────────────
+# ── Output PNG split (spriteworld_common + spriteworld_outside) ────────────
 
-def update_split_pngs(gen3_to_spriteworld, common_count,
+def update_split_pngs(catalogue, src_to_spriteworld, common_count,
                       spriteworld_common_ts_json, spriteworld_outside_ts_json,
-                      spriteworld_common_ts_path, spriteworld_outside_ts_path,
-                      gen3_ts_json):
+                      spriteworld_common_ts_path, spriteworld_outside_ts_path):
     """
-    Rebuild spriteworld_common.png and spriteworld_outside.png from scratch.
-    GIDs 1..common_count → spriteworld_common.png; higher → spriteworld_outside.png.
+    Rebuild spriteworld_common.png and spriteworld_outside.png from scratch. Each
+    output tile is sourced from whichever input PNG owns its (source, tid)
+    pair. GIDs 1..common_count → spriteworld_common.png; higher → spriteworld_outside.png.
     """
-    if not gen3_to_spriteworld:
+    if not src_to_spriteworld:
         return False, False
 
-    gen3_cols  = gen3_ts_json['columns']
-    gen3_png   = lib.TILESET_DIR / gen3_ts_json['image']
+    try:
+        from PIL import Image
+    except ImportError:
+        print('  WARNING: Pillow not installed — cannot rebuild PNG')
+        return False, False
 
-    # Split: each entry is (gen3_tile_id, dst_tile_id). 0-based within target.
-    common_entries = sorted(
-        [(g - 1, kgid - 1) for g, kgid in gen3_to_spriteworld.items() if kgid <= common_count],
-        key=lambda x: x[1]
-    )
-    outside_entries = sorted(
-        [(g - 1, kgid - common_count - 1) for g, kgid in gen3_to_spriteworld.items() if kgid > common_count],
-        key=lambda x: x[1]
-    )
+    src_imgs = {}
+    src_cols = {}
+    for fg, name, count, ts_json in catalogue:
+        png_path = lib.TILESET_DIR / ts_json['image']
+        src_imgs[name] = Image.open(png_path).convert('RGBA')
+        src_cols[name] = ts_json['columns']
 
-    c = lib.write_tileset_png(
-        common_entries, gen3_png, spriteworld_common_ts_json,
-        spriteworld_common_ts_path.parent / spriteworld_common_ts_json['image'],
-        gen3_cols,
-    )
-    o = lib.write_tileset_png(
-        outside_entries, gen3_png, spriteworld_outside_ts_json,
-        spriteworld_outside_ts_path.parent / spriteworld_outside_ts_json['image'],
-        gen3_cols,
-    )
+    # (source_name, src_tile_id, dst_tile_id) per output tileset.
+    common_entries  = []
+    outside_entries = []
+    for (name, tid), sgid in src_to_spriteworld.items():
+        if sgid <= common_count:
+            common_entries.append((name, tid, sgid - 1))
+        else:
+            outside_entries.append((name, tid, sgid - common_count - 1))
+
+    c = _compose_png(common_entries,  src_imgs, src_cols,
+                     spriteworld_common_ts_json,
+                     spriteworld_common_ts_path.parent / spriteworld_common_ts_json['image'])
+    o = _compose_png(outside_entries, src_imgs, src_cols,
+                     spriteworld_outside_ts_json,
+                     spriteworld_outside_ts_path.parent / spriteworld_outside_ts_json['image'])
     return c, o
+
+
+def _compose_png(entries, src_imgs, src_cols, ts_json, dst_path):
+    """Compose a tileset PNG from (source_name, src_tile_id, dst_tile_id) entries.
+    Reads tiles from the appropriate cached source PNG."""
+    try:
+        from PIL import Image
+    except ImportError:
+        return False
+    if not entries:
+        return False
+    tw   = ts_json['tilewidth']
+    th   = ts_json['tileheight']
+    cols = ts_json['columns']
+    max_dst = max(dst for _, _, dst in entries)
+    rows    = (max_dst // cols) + 1
+    img     = Image.new('RGBA', (cols * tw, rows * th), (0, 0, 0, 0))
+    for name, src_tid, dst_tid in entries:
+        scol = src_cols[name]
+        sx = (src_tid % scol) * tw
+        sy = (src_tid // scol) * th
+        dx = (dst_tid % cols) * tw
+        dy = (dst_tid // cols) * th
+        img.paste(src_imgs[name].crop((sx, sy, sx + tw, sy + th)), (dx, dy))
+    img.save(dst_path)
+    ts_json['imagewidth']  = cols * tw
+    ts_json['imageheight'] = rows * th
+    ts_json['tilecount']   = cols * rows
+    print(f'  rebuilt {dst_path.name} ({len(entries)} tiles, {cols}x{rows} grid)')
+    return True
 
 
 # ── Main ────────────────────────────────────────────────────────────────────
@@ -449,10 +529,18 @@ def main():
     spriteworld_h = master['height']
     tw, th  = master['tilewidth'], master['tileheight']
 
-    gen3_ts_path = lib.TILESET_DIR / 'gen3_outside.json'
-    with open(gen3_ts_path) as f:
-        gen3_ts_json = json.load(f)
-    gen3_props_index = lib.build_props_index(gen3_ts_json)
+    catalogue = catalogue_master_tilesets(master)
+    if not catalogue:
+        print('ERROR: spriteworld.json has no recognised tilesets')
+        return
+    print('Master tilesets:')
+    for fg, name, count, _ in catalogue:
+        print(f'  {name}: firstgid={fg}, tilecount={count}')
+
+    src_props_indices = {
+        name: lib.build_props_index(ts_json)
+        for fg, name, count, ts_json in catalogue
+    }
 
     spriteworld_common_ts_path  = lib.TILESET_DIR / 'maps' / 'spriteworld_common.json'
     spriteworld_outside_ts_path = lib.TILESET_DIR / 'maps' / 'spriteworld_outside.json'
@@ -479,59 +567,62 @@ def main():
     # Read spriteworld_dungeons.json to surface every gen3_outside tile referenced
     # by dungeons. Dungeons may register the same gen3_outside source under
     # multiple firstgids (Tiled occasionally re-imports via a different path),
-    # so visit each tileset entry. Only `cave_dungeon` is a non-outdoor source.
+    # so visit each tileset entry.
     dungeons_outside_gids = set()
     spriteworld_dungeons_path = lib.MAPS_DIR / 'spriteworld_dungeons.json'
     if spriteworld_dungeons_path.exists():
         with open(spriteworld_dungeons_path) as f:
             kd = json.load(f)
-        outside_ranges = []
-        cave_firstgid  = None
-        cave_count     = 0
+        # Build a catalogue of the dungeon master's tilesets to properly resolve GIDs.
+        dung_catalogue = []
         for ts in kd.get('tilesets', []):
             src = ts.get('source', '')
-            if 'cave_dungeon' in src:
-                cave_firstgid = ts['firstgid']
-                with open(lib.TILESET_DIR / 'cave_dungeon.json') as ctf:
-                    cave_count = json.load(ctf).get('tilecount', 0)
-            elif 'gen3_outside' in src:
-                outside_ranges.append(ts['firstgid'])
+            dname = pathlib.PurePosixPath(src).stem
+            dts_path = lib.TILESET_DIR / f'{dname}.json'
+            if dts_path.exists():
+                with open(dts_path) as dtf:
+                    dts_json = json.load(dtf)
+                dung_catalogue.append((ts['firstgid'], dname, dts_json.get('tilecount', 0)))
+        dung_catalogue.sort()
         for layer in kd.get('layers', []):
             if layer.get('type') != 'tilelayer':
                 continue
             for src_gid in layer.get('data', []):
                 if src_gid == 0:
                     continue
-                if cave_firstgid is not None and \
-                   cave_firstgid <= src_gid < cave_firstgid + cave_count:
-                    continue
-                # Resolve via the largest gen3_outside firstgid <= src_gid.
-                base = max((fg for fg in outside_ranges if fg <= src_gid), default=None)
-                if base is None:
-                    continue
-                gen3_raw_gid = src_gid - base + 1
-                dungeons_outside_gids.add(gen3_raw_gid)
+                # Resolve via the catalogue.
+                dname, dtid = None, None
+                for dfg, dn, dc in reversed(dung_catalogue):
+                    if dfg <= src_gid < dfg + dc:
+                        dname, dtid = dn, src_gid - dfg
+                        break
+                if dname == 'gen3_outside' and dtid is not None:
+                    dungeons_outside_gids.add(dtid + 1)
 
-    gen3_to_spriteworld, spriteworld_to_gen3, gid_map_path, gid_map, common_count = build_compact_gid_map(
-        spriteworld_tilelayers, gen3_ts_json,
+    src_to_spriteworld, spriteworld_to_src, gid_map_path, gid_map, common_count = build_compact_gid_map(
+        spriteworld_tilelayers, catalogue,
         spriteworld_inside_tilelayers, gen3_outside_firstgid_inside,
         dungeons_outside_gids=dungeons_outside_gids,
     )
-    print(f'Compact GID map: {len(gen3_to_spriteworld)} tiles '
-          f'({common_count} common, {len(gen3_to_spriteworld)-common_count} outdoor-only)')
+    print(f'Compact GID map: {len(src_to_spriteworld)} tiles '
+          f'({common_count} common, {len(src_to_spriteworld)-common_count} outdoor-only)')
 
     spriteworld_common_ts_modified  = False
     spriteworld_outside_ts_modified = False
 
-    # ── Bounds + spriteworld.world ───────────────────────────────────────────────
+    # ── Bounds + spriteworld.world ─────────────────────────────────────────
     bounds = {}
     fname_to_key = {}
     for zone in lib.iter_zones(maps_layer, name_to_file_overrides=NAME_TO_FILE):
+        polygon = zone['polygon']
+        if polygon:
+            polygon = [(px - OFFSET_X, py - OFFSET_Y) for px, py in polygon]
         bounds[zone['fname']] = {
             'x':      zone['x'] - OFFSET_X,
             'y':      zone['y'] - OFFSET_Y,
             'width':  zone['width'],
             'height': zone['height'],
+            'polygon':    polygon,
             'properties': zone['properties'],
         }
         fname_to_key[zone['fname']] = WORLD_PREFIX + zone['name']
@@ -558,12 +649,17 @@ def main():
     print('Updated spriteworld.world')
 
     # ── Per-zone sync ──────────────────────────────────────────────────────
+    new_mappings = {}
     for fname, b in bounds.items():
         route_path = lib.MAPS_DIR / fname
         dst_w = b['width']  // tw
         dst_h = b['height'] // th
         ox    = (b['x'] + OFFSET_X) // tw
         oy    = (b['y'] + OFFSET_Y) // th
+        # Polygon in master pixel coords (add OFFSET back) for extract_region
+        polygon_local = b.get('polygon')
+        polygon_master = ([(px + OFFSET_X, py + OFFSET_Y) for px, py in polygon_local]
+                          if polygon_local else None)
 
         print(f'\n{fname}: spriteworld tile origin ({ox},{oy}), size {dst_w}x{dst_h}')
 
@@ -591,10 +687,12 @@ def main():
             raw = lib.extract_region(
                 spriteworld_tilelayers[name]['data'], spriteworld_w, spriteworld_h,
                 ox, oy, dst_w, dst_h,
+                polygon=polygon_master, tw=tw, th=th,
             )
             converted, modified = remap_data(
-                raw, gen3_to_spriteworld, spriteworld_common_ts_json, spriteworld_outside_ts_json,
-                gen3_props_index, spriteworld_to_gen3, gid_map, {}, common_count,
+                raw, catalogue, src_to_spriteworld, spriteworld_to_src,
+                spriteworld_common_ts_json, spriteworld_outside_ts_json,
+                src_props_indices, gid_map, common_count, new_mappings,
             )
             if modified:
                 spriteworld_common_ts_modified  = True
@@ -625,12 +723,14 @@ def main():
             raw = lib.extract_region(
                 klayer['data'], spriteworld_w, spriteworld_h,
                 ox, oy, dst_w, dst_h,
+                polygon=polygon_master, tw=tw, th=th,
             )
             if not any(raw):
                 continue
             converted, modified = remap_data(
-                raw, gen3_to_spriteworld, spriteworld_common_ts_json, spriteworld_outside_ts_json,
-                gen3_props_index, spriteworld_to_gen3, gid_map, {}, common_count,
+                raw, catalogue, src_to_spriteworld, spriteworld_to_src,
+                spriteworld_common_ts_json, spriteworld_outside_ts_json,
+                src_props_indices, gid_map, common_count, new_mappings,
             )
             if modified:
                 spriteworld_common_ts_modified  = True
@@ -654,7 +754,8 @@ def main():
         px_w = dst_w * tw
         px_h = dst_h * th
         objects, next_oid = lib.merge_interactions(
-            spriteworld_objs, spriteworld_px_x, spriteworld_px_y, px_w, px_h
+            spriteworld_objs, spriteworld_px_x, spriteworld_px_y, px_w, px_h,
+            polygon=polygon_master,
         )
         inter['objects']      = objects
         route['nextobjectid'] = next_oid
@@ -679,37 +780,44 @@ def main():
         lib.ensure_scenes_index(scene_key, world_prefix=WORLD_PREFIX)
 
     # ── Animation backfill + sync ──────────────────────────────────────────
-    if ensure_anim_tiles_in_spriteworld(gen3_ts_json, gen3_to_spriteworld, spriteworld_to_gen3,
-                                   gid_map, {}, spriteworld_common_ts_json,
-                                   spriteworld_outside_ts_json, gen3_props_index,
-                                   common_count):
+    if ensure_anim_tiles_in_spriteworld(catalogue, src_to_spriteworld, spriteworld_to_src,
+                                        gid_map, new_mappings,
+                                        spriteworld_common_ts_json, spriteworld_outside_ts_json,
+                                        src_props_indices, common_count):
         spriteworld_common_ts_modified  = True
         spriteworld_outside_ts_modified = True
 
-    if sync_spriteworld_animations(gen3_ts_json, gen3_to_spriteworld, common_count,
-                              spriteworld_common_ts_json, spriteworld_outside_ts_json):
+    if sync_spriteworld_animations(catalogue, src_to_spriteworld, common_count,
+                                   spriteworld_common_ts_json, spriteworld_outside_ts_json):
         spriteworld_common_ts_modified  = True
         spriteworld_outside_ts_modified = True
 
-    # Re-sync tile properties on every existing spriteworld tile entry. Tiles only
-    # appear in remap_data when touched by the master spriteworld.json data;
-    # per-zone sources don't round-trip through this script, so a flag
-    # flipped on a gen3_outside source tile would otherwise never propagate
-    # to its spriteworld_common / spriteworld_outside derivative.
-    for kgid_str, gen3_gid in gid_map['spriteworld_to_gen3'].items():
-        kgid = int(kgid_str)
-        if kgid <= common_count:
-            if ensure_spriteworld_tile(spriteworld_common_ts_json, kgid, int(gen3_gid), gen3_props_index, 0):
+    # Re-sync tile properties on every existing spriteworld tile entry. Tiles
+    # only appear in remap_data when touched by the master spriteworld.json data;
+    # per-zone sources don't round-trip through this script, so a flag flipped
+    # on a source tile would otherwise never propagate to its
+    # spriteworld_common / spriteworld_outside derivative.
+    for sgid, (name, tid) in spriteworld_to_src.items():
+        if sgid <= common_count:
+            if ensure_spriteworld_tile(spriteworld_common_ts_json, sgid, name, tid,
+                                       src_props_indices, 0):
                 spriteworld_common_ts_modified = True
         else:
-            if ensure_spriteworld_tile(spriteworld_outside_ts_json, kgid, int(gen3_gid), gen3_props_index, common_count):
+            if ensure_spriteworld_tile(spriteworld_outside_ts_json, sgid, name, tid,
+                                       src_props_indices, common_count):
                 spriteworld_outside_ts_modified = True
+
+    # Recompute outside_count from final spriteworld_to_src (includes any tiles
+    # added by remap_data after build_compact_gid_map ran).
+    gid_map['outside_count'] = sum(1 for sgid in spriteworld_to_src if sgid > common_count)
 
     with open(gid_map_path, 'w') as f:
         json.dump(gid_map, f, indent=2)
-    print(f'\nUpdated gid_map.json ({len(gen3_to_spriteworld)} total, {common_count} common)')
+    print(f'\nUpdated gid_map.json '
+          f'({len(src_to_spriteworld)} total, {common_count} common, '
+          f'{gid_map["outside_count"]} outdoor)')
 
-    # Flat common-only map for BaseItem.js
+    # Flat common-only map for BaseItem.js (gen3_outside entries only).
     common_flat = {k: v for k, v in gid_map['gen3_to_spriteworld'].items() if int(v) <= common_count}
     flat_path = lib.MAPS_DIR / 'gen3_to_spriteworld_common.json'
     with open(flat_path, 'w') as f:
@@ -717,13 +825,14 @@ def main():
     print(f'Updated gen3_to_spriteworld_common.json ({len(common_flat)} entries)')
 
     common_png_modified, outside_png_modified = update_split_pngs(
-        gen3_to_spriteworld, common_count, spriteworld_common_ts_json, spriteworld_outside_ts_json,
-        spriteworld_common_ts_path, spriteworld_outside_ts_path, gen3_ts_json,
+        catalogue, src_to_spriteworld, common_count,
+        spriteworld_common_ts_json, spriteworld_outside_ts_json,
+        spriteworld_common_ts_path, spriteworld_outside_ts_path,
     )
     if common_png_modified:  spriteworld_common_ts_modified  = True
     if outside_png_modified: spriteworld_outside_ts_modified = True
 
-    build_anim_png(gen3_ts_json, gen3_to_spriteworld)
+    build_anim_png(catalogue, src_to_spriteworld)
 
     if spriteworld_common_ts_modified:
         lib.write_tileset_json(spriteworld_common_ts_path, spriteworld_common_ts_json)

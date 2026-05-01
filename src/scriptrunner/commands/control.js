@@ -1,5 +1,6 @@
 // Avoid a circular import: ScriptRunner ← index.js ← (this file).
 // At call time the runner instance is passed in, so we can read its constructor.
+import { normalize } from '../normalize.js';
 
 export default {
   /**
@@ -37,5 +38,18 @@ export default {
       const cmds = Array.isArray(branch) ? branch : [];
       new Runner(runner._scene, [...cmds], { child: true }).run(onBranchDone);
     }
+  },
+
+  call_script(runner, cmd) {
+    let args = cmd.args;
+    if (typeof args === 'string') { try { args = JSON.parse(args); } catch { args = null; } }
+    if (args) {
+      for (const [k, v] of Object.entries(args)) {
+        runner._scene.mapVars[k] = v;
+      }
+    }
+    const template = runner._resolveTemplate(cmd.script);
+    if (!template) { runner._step(); return; }
+    runner._branch(normalize(structuredClone(template)));
   },
 };

@@ -30,6 +30,7 @@ export default {
     alwaysRun:    false,       // move at run speed without holding B (requires Running Shoes)
     autoSurf:     false,       // walking into water auto-mounts surf (requires has_surf)
     uiScale:      1.0,         // multiplier on HUD/menu sizes — bigger value = larger UI
+    windowStyle:  'default',   // 'default' | 'hgss' | 'platinum'
     activeSlot:   1,           // transient — which save slot is currently loaded; not persisted
   }),
 
@@ -73,6 +74,9 @@ export default {
     SET_UI_SCALE(state, v) {
       state.uiScale = Number(v) || 1.0;
     },
+    SET_WINDOW_STYLE(state, v) {
+      state.windowStyle = v || 'default';
+    },
 
     SET_ON_BIKE(state, value) {
       state.onBike = value;
@@ -100,6 +104,7 @@ export default {
       if (opts.alwaysRun != null) state.alwaysRun = !!opts.alwaysRun;
       if (opts.autoSurf  != null) state.autoSurf  = !!opts.autoSurf;
       if (opts.uiScale   != null) state.uiScale   = Number(opts.uiScale) || 1.0;
+      if (opts.windowStyle != null) state.windowStyle = opts.windowStyle || 'default';
     },
 
     SET_PLAYER_FACING(state, direction) {

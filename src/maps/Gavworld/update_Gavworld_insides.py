@@ -2,13 +2,17 @@
 """
 Sync individual interior map JSON files from Gavworld_inside.json.
 
-Gavworld_inside.json is edited in Tiled using one or two source tilesets:
-  - gen3_inside.png  (firstgid=1, required)
-  - gen3_outside.png (optional — present only when interior tiles re-use
-                       outdoor sprites; firstgids discovered dynamically)
+Gavworld_inside.json is edited in Tiled using one or more source tilesets
+(auto-discovered at runtime — no hardcoded tileset assumptions).
 
 This script converts those combined source GIDs → Gavworld_inside GIDs when
-writing individual map files (which use a single Gavworld_inside tileset).
+writing individual map files, which use a two-tileset layout:
+  - Gavworld_common  (inherited from outdoor — written by update_Gavworld.py)
+  - Gavworld_inside  (owned — written here)
+
+Tiles from sources that appear in the outdoor gid_map.json are resolved
+through it (common range only). ALL OTHER source tiles are compacted into
+the inside range starting at common_count + 1.
 
 What this script does
 ─────────────────────
@@ -28,7 +32,7 @@ What this script does
    StrengthBoulder) from gen3_outside are present in Gavworld_common so that
    BaseItem subclasses work correctly in interior maps.
 4. Rebuilds Gavworld_inside.png from scratch every run, sourcing pixels from
-   gen3_inside.png.
+   all inside-owned source tilesets.
 5. Writes the updated Gavworld_inside tileset JSON (tile properties synced from
    source tilesets for any GID newly added).
 6. For any map not already registered in the JS source files, creates a
@@ -36,6 +40,8 @@ What this script does
 """
 
 import json
+import pathlib
+import sys
 
 import rebuild_lib as lib
 
@@ -76,22 +82,66 @@ def make_inside_tilesets(common_count):
     ]
 
 
+# ── Master tileset cataloguing ─────────────────────────────────────────────
+
+def catalogue_master_tilesets(master):
+    """Auto-discover all tilesets in the master JSON by resolving each
+    source path to its canonical file in TILESET_DIR.
+    Returns [(firstgid, source_name, tile_count, source_json), ...] sorted
+    by firstgid ascending. Aborts if a tileset JSON cannot be found."""
+    entries = []
+    for ts in master.get('tilesets', []):
+        src = ts.get('source', '')
+        name = pathlib.PurePosixPath(src).stem
+        ts_path = lib.TILESET_DIR / f'{name}.json'
+        if not ts_path.exists():
+            print(f'  ERROR: cannot resolve tileset source "{src}" '
+                  f'— expected {ts_path}')
+            sys.exit(1)
+        with open(ts_path) as f:
+            ts_json = json.load(f)
+        entries.append((ts['firstgid'], name, ts_json.get('tilecount', 0), ts_json))
+    entries.sort()
+    return entries
+
+
+def src_gid_to_source(src_gid, catalogue):
+    """Resolve a master GID to (source_name, 0-based tile_id, source_json)
+    using standard Tiled firstgid-range partitioning.
+    Returns (None, None, None) on miss."""
+    for firstgid, name, count, ts_json in reversed(catalogue):
+        if src_gid >= firstgid and src_gid < firstgid + count:
+            return name, src_gid - firstgid, ts_json
+    return None, None, None
+
+
 # ── GID conversion ─────────────────────────────────────────────────────────
 
-def build_compact_gid_map(master_tilelayers, gen3_inside_firstgid,
-                           gen3_outside_firstgid, gen3_raw_to_Gavworld, common_count):
+def build_compact_gid_map(master_tilelayers, catalogue,
+                           outdoor_gid_lookup, outdoor_source_names, common_count):
     """
     Build src_gid → map_gid mapping for indoor maps using the two-tileset
     layout:
-    - gen3_outside tiles → Gavworld_common GID (1..common_count) via gid_map.json
-    - gen3_inside  tiles → compact starting at common_count + 1
+    - Tiles from outdoor sources → Gavworld_common GID (1..common_count)
+      via outdoor_gid_lookup. Only tiles whose resolved GID falls within
+      the common range are kept; others are skipped.
+    - All non-outdoor source tiles → compact inside range starting at
+      common_count + 1
 
-    `gen3_outside_firstgid` may be None if the master no longer references
-    gen3_outside; in that case all tiles come from gen3_inside.
+    Existing assignments in inside_gid_map.json are preserved so that adding
+    a new source tileset doesn't reshuffle every GID.
 
     Returns (src_to_map_gid, map_gid_to_src, gid_map_raw, gid_map_path).
     """
     INSIDE_FIRSTGID = common_count + 1
+    gid_map_path = lib.MAPS_DIR / 'inside_gid_map.json'
+
+    prev_src_to_map = {}
+    if gid_map_path.exists():
+        with open(gid_map_path) as f:
+            prev = json.load(f)
+        prev_src_to_map = {int(k): int(v)
+                           for k, v in prev.get('src_to_map_gid', {}).items()}
 
     all_src_gids = sorted({
         gid
@@ -100,56 +150,58 @@ def build_compact_gid_map(master_tilelayers, gen3_inside_firstgid,
         if gid != 0
     })
 
-    if gen3_outside_firstgid is not None:
-        extra_outside = [gen3_outside_firstgid + tid for tid in ITEM_TILE_IDS]
-        all_src_gids  = sorted(set(all_src_gids) | set(extra_outside))
-        inside_src_gids  = [g for g in all_src_gids if g < gen3_outside_firstgid]
-        outside_src_gids = [g for g in all_src_gids if g >= gen3_outside_firstgid]
-    else:
-        inside_src_gids  = list(all_src_gids)
-        outside_src_gids = []
+    # Add item tile GIDs for gen3_outside if present in the master
+    if 'gen3_outside' in outdoor_source_names:
+        for firstgid, name, count, _ in catalogue:
+            if name == 'gen3_outside':
+                extra = [firstgid + tid for tid in ITEM_TILE_IDS]
+                all_src_gids = sorted(set(all_src_gids) | set(extra))
+                break
 
     src_to_map_gid = {}
-    for src_gid in outside_src_gids:
-        tile_id      = src_gid - gen3_outside_firstgid
-        gen3_raw_gid = tile_id + 1
-        kgid = gen3_raw_to_Gavworld.get(gen3_raw_gid)
-        if kgid is not None:
-            src_to_map_gid[src_gid] = kgid
+    needs_assignment = []
 
-    for i, src_gid in enumerate(inside_src_gids):
-        src_to_map_gid[src_gid] = INSIDE_FIRSTGID + i
+    for src_gid in all_src_gids:
+        name, tid, _ = src_gid_to_source(src_gid, catalogue)
+        if name is None:
+            continue
+        if name in outdoor_source_names:
+            kgid = outdoor_gid_lookup.get((name, tid))
+            if kgid is not None and kgid <= common_count:
+                src_to_map_gid[src_gid] = kgid
+        elif src_gid in prev_src_to_map:
+            src_to_map_gid[src_gid] = prev_src_to_map[src_gid]
+        else:
+            needs_assignment.append(src_gid)
+
+    existing_inside = [g for g in src_to_map_gid.values() if g >= INSIDE_FIRSTGID]
+    next_gid = max(existing_inside, default=INSIDE_FIRSTGID - 1) + 1
+
+    for src_gid in needs_assignment:
+        src_to_map_gid[src_gid] = next_gid
+        next_gid += 1
 
     map_gid_to_src = {v: k for k, v in src_to_map_gid.items()}
     gid_map_raw    = {
         'src_to_map_gid': {str(k): v for k, v in src_to_map_gid.items()},
         'map_gid_to_src': {str(k): v for k, v in map_gid_to_src.items()},
     }
-    gid_map_path = lib.MAPS_DIR / 'inside_gid_map.json'
     return src_to_map_gid, map_gid_to_src, gid_map_raw, gid_map_path
 
 
-def src_gid_to_tile_id(src_gid, gen3_inside_firstgid, gen3_outside_firstgid):
-    """Resolve a master GID back to (source_name, 0-based tile_id)."""
-    if gen3_outside_firstgid is not None and src_gid >= gen3_outside_firstgid:
-        return 'gen3_outside', src_gid - gen3_outside_firstgid
-    return 'gen3_inside', src_gid - gen3_inside_firstgid
-
-
-def ensure_inside_tile(inside_ts_json, map_gid, src_gid, props_indices,
-                        common_count, gen3_inside_firstgid, gen3_outside_firstgid):
+def ensure_inside_tile(inside_ts_json, map_gid, source, tid,
+                        src_props_indices, common_count):
     """
     Ensure inside tileset JSON has a tile entry for `map_gid` with
     up-to-date properties synced from the source tileset. Only call for
-    gen3_inside tiles (map_gid >= common_count + 1) — common-range tiles
+    inside-owned tiles (map_gid >= common_count + 1) — common-range tiles
     are owned by Gavworld_common.json (written by update_Gavworld.py).
     """
     INSIDE_FIRSTGID = common_count + 1
     tile_id  = map_gid - INSIDE_FIRSTGID
     tiles    = inside_ts_json.setdefault('tiles', [])
 
-    src_name, src_tid = src_gid_to_tile_id(src_gid, gen3_inside_firstgid, gen3_outside_firstgid)
-    props = props_indices.get(src_name, {}).get(src_tid, [])
+    props = src_props_indices.get(source, {}).get(tid, [])
 
     existing = next((t for t in tiles if t['id'] == tile_id), None)
     if existing is None:
@@ -161,10 +213,9 @@ def ensure_inside_tile(inside_ts_json, map_gid, src_gid, props_indices,
     return False
 
 
-def remap_data(data, src_to_map_gid, map_gid_to_src,
-                inside_ts_json, props_indices, gid_map_raw,
-                new_mappings, common_count,
-                gen3_inside_firstgid, gen3_outside_firstgid):
+def remap_data(data, catalogue, src_to_map_gid, map_gid_to_src,
+                inside_ts_json, src_props_indices, gid_map_raw,
+                new_mappings, common_count):
     """
     Convert a flat tile-data array from combined src GIDs to map GIDs.
     Tiles with no existing mapping are assigned the next available map GID
@@ -192,41 +243,73 @@ def remap_data(data, src_to_map_gid, map_gid_to_src,
                 gid_map_raw['src_to_map_gid'][str(src_gid)] = igid
                 gid_map_raw['map_gid_to_src'][str(igid)]    = src_gid
         if igid >= INSIDE_FIRSTGID:
-            if ensure_inside_tile(inside_ts_json, igid, src_gid, props_indices,
-                                  common_count, gen3_inside_firstgid,
-                                  gen3_outside_firstgid):
+            source, tid, _ = src_gid_to_source(src_gid, catalogue)
+            if ensure_inside_tile(inside_ts_json, igid, source, tid,
+                                  src_props_indices, common_count):
                 ts_modified = True
         out.append(igid)
 
     return out, ts_modified
 
 
+# ── PNG composition ────────────────────────────────────────────────────────
+
 def update_inside_png(src_to_map_gid, common_count, inside_ts_json,
-                     inside_ts_path, gen3_inside_firstgid, gen3_outside_firstgid):
-    """Rebuild Gavworld_inside.png from gen3_inside tiles only."""
-    INSIDE_FIRSTGID = common_count + 1
-
-    # Only gen3_inside tiles.  When gen3_outside isn't present in the master,
-    # the upper-bound check still excludes any GID that would have come from it.
-    def is_inside_src(src_gid):
-        return (gen3_outside_firstgid is None or src_gid < gen3_outside_firstgid) \
-            and src_gid >= gen3_inside_firstgid
-
-    inside_entries = [
-        (src_gid - gen3_inside_firstgid, map_gid - INSIDE_FIRSTGID)
-        for src_gid, map_gid in src_to_map_gid.items()
-        if map_gid >= INSIDE_FIRSTGID and is_inside_src(src_gid)
-    ]
-    if not inside_entries:
+                      inside_ts_path, catalogue, outdoor_source_names):
+    """Rebuild Gavworld_inside.png from all inside-owned source tiles."""
+    try:
+        from PIL import Image
+    except ImportError:
+        print('  WARNING: Pillow not installed — cannot rebuild PNG')
         return False
 
-    return lib.write_tileset_png(
-        inside_entries,
-        lib.TILESET_DIR / 'gen3_inside.png',
-        inside_ts_json,
-        inside_ts_path.parent / inside_ts_json['image'],
-        source_columns=8,
-    )
+    INSIDE_FIRSTGID = common_count + 1
+
+    # Collect (source_name, src_tile_id, dst_tile_id) — dedupe by dst.
+    seen_dst = set()
+    entries  = []
+    for src_gid, map_gid in src_to_map_gid.items():
+        if map_gid < INSIDE_FIRSTGID:
+            continue
+        name, tid, _ = src_gid_to_source(src_gid, catalogue)
+        if name is None or name in outdoor_source_names:
+            continue
+        dst = map_gid - INSIDE_FIRSTGID
+        if dst in seen_dst:
+            continue
+        seen_dst.add(dst)
+        entries.append((name, tid, dst))
+    if not entries:
+        return False
+
+    # Load source PNGs for inside-owned tilesets.
+    src_imgs = {}
+    src_cols = {}
+    for fg, name, count, ts_json in catalogue:
+        if name in outdoor_source_names:
+            continue
+        src_imgs[name] = Image.open(lib.TILESET_DIR / ts_json['image']).convert('RGBA')
+        src_cols[name] = ts_json['columns']
+
+    tw   = inside_ts_json['tilewidth']
+    th   = inside_ts_json['tileheight']
+    cols = inside_ts_json['columns']
+    max_dst = max(dst for _, _, dst in entries)
+    rows    = (max_dst // cols) + 1
+    img     = Image.new('RGBA', (cols * tw, rows * th), (0, 0, 0, 0))
+    for name, src_tid, dst_tid in entries:
+        scol = src_cols[name]
+        sx = (src_tid % scol) * tw
+        sy = (src_tid // scol) * th
+        dx = (dst_tid % cols) * tw
+        dy = (dst_tid // cols) * th
+        img.paste(src_imgs[name].crop((sx, sy, sx + tw, sy + th)), (dx, dy))
+    img.save(inside_ts_path.parent / inside_ts_json['image'])
+    inside_ts_json['imagewidth']  = cols * tw
+    inside_ts_json['imageheight'] = rows * th
+    inside_ts_json['tilecount']   = cols * rows
+    print(f'  rebuilt {inside_ts_json["image"]} ({len(entries)} tiles, {cols}x{rows} grid)')
+    return True
 
 
 # ── Main ────────────────────────────────────────────────────────────────────
@@ -239,67 +322,72 @@ def main():
         print('ERROR: no "maps" objectgroup found in Gavworld_inside.json')
         return
 
-    # Discover firstgids dynamically.  gen3_outside is optional — interior
-    # masters may have removed it once no inside tile relies on outdoor art.
-    ts_map = {}
-    for ts in master.get('tilesets', []):
-        src = ts.get('source', '')
-        if 'gen3_inside' in src:
-            ts_map['gen3_inside'] = ts['firstgid']
-        elif 'gen3_outside' in src:
-            ts_map['gen3_outside'] = ts['firstgid']
-    if 'gen3_inside' not in ts_map:
-        print('ERROR: Gavworld_inside.json must contain a gen3_inside tileset')
-        return
-    gen3_inside_firstgid  = ts_map['gen3_inside']
-    gen3_outside_firstgid = ts_map.get('gen3_outside')
-    print(f'Tilesets: gen3_inside firstgid={gen3_inside_firstgid}, '
-          f'gen3_outside firstgid={gen3_outside_firstgid}')
-
     master_w = master['width']
     master_h = master['height']
     tw, th   = master['tilewidth'], master['tileheight']
 
-    # Read common_count and gen3_to_Gavworld from gid_map.json (written by update_Gavworld.py).
+    catalogue = catalogue_master_tilesets(master)
+    if not catalogue:
+        print('ERROR: Gavworld_inside.json has no recognised tilesets')
+        return
+    print('Master tilesets:')
+    for firstgid, name, count, _ in catalogue:
+        print(f'  {name}: firstgid={firstgid}, tilecount={count}')
+
+    # Read common_count from gid_map.json (written by update_Gavworld.py).
     with open(lib.MAPS_DIR / 'gid_map.json') as f:
         gid_map_data = json.load(f)
-    gen3_raw_to_Gavworld = {int(k): v for k, v in gid_map_data['gen3_to_Gavworld'].items()}
-    common_count      = gid_map_data['common_count']
-    INSIDE_FIRSTGID   = common_count + 1
+    common_count = gid_map_data['common_count']
+    INSIDE_FIRSTGID = common_count + 1
+
+    # Build a unified outdoor lookup: (source_name, tile_id) → Gavworld GID.
+    outdoor_gid_lookup = {}
+    outdoor_source_names = set()
+    for raw_str, kgid in gid_map_data.get('gen3_to_Gavworld', {}).items():
+        tid = int(raw_str) - 1
+        outdoor_gid_lookup[('gen3_outside', tid)] = kgid
+        outdoor_source_names.add('gen3_outside')
+    for key_str, kgid in gid_map_data.get('extras_to_Gavworld', {}).items():
+        src, tid_str = key_str.rsplit(':', 1)
+        outdoor_gid_lookup[(src, int(tid_str))] = kgid
+        outdoor_source_names.add(src)
 
     src_to_map_gid, map_gid_to_src, gid_map_raw, gid_map_path = build_compact_gid_map(
-        master_tilelayers, gen3_inside_firstgid, gen3_outside_firstgid,
-        gen3_raw_to_Gavworld, common_count,
+        master_tilelayers, catalogue,
+        outdoor_gid_lookup, outdoor_source_names, common_count,
     )
     inside_count = sum(1 for g in src_to_map_gid.values() if g >= INSIDE_FIRSTGID)
     print(f'Compact GID map: {len(src_to_map_gid)} tiles '
-          f'({inside_count} gen3_inside, {len(src_to_map_gid)-inside_count} gen3_outside/common)')
+          f'({inside_count} inside-owned, {len(src_to_map_gid)-inside_count} common/outdoor)')
 
     inside_ts_path = lib.TILESET_DIR / 'maps' / 'Gavworld_inside.json'
     inside_ts_json = lib.load_or_init_tileset(
         inside_ts_path, 'Gavworld_inside', 'Gavworld_inside.png', columns=8, image_width=256,
     )
 
-    with open(lib.TILESET_DIR / 'gen3_inside.json') as f:
-        gen3_inside_ts_json = json.load(f)
+    # Build properties index for all source tilesets.
+    # Non-outdoor sources: use lib.build_props_index() on their source JSON.
+    # Outdoor sources: use Gavworld_common.json properties (authoritative —
+    # written by update_Gavworld.py), mapping outdoor GIDs ≤ common_count.
+    src_props_indices = {}
+    for fg, name, count, ts_json in catalogue:
+        if name not in outdoor_source_names:
+            src_props_indices[name] = lib.build_props_index(ts_json)
 
-    # For gen3_outside tiles in indoor maps, use Gavworld_common.json properties
-    # (authoritative — written by update_Gavworld.py).  Only common tiles are there.
+    # For outdoor sources, read Gavworld_common.json and map through
+    # outdoor_gid_lookup to build a props index keyed by source tile_id.
     Gavworld_common_ts_path = lib.TILESET_DIR / 'maps' / 'Gavworld_common.json'
     with open(Gavworld_common_ts_path) as f:
         Gavworld_common_ts_json_data = json.load(f)
     Gavworld_tile_props = {t['id']: t.get('properties', [])
                         for t in Gavworld_common_ts_json_data.get('tiles', [])}
-    gen3_outside_via_Gavworld = {
-        gen3_raw_gid - 1: Gavworld_tile_props.get(Gavworld_gid - 1, [])
-        for gen3_raw_gid, Gavworld_gid in gen3_raw_to_Gavworld.items()
-        if Gavworld_gid <= common_count
-    }
-
-    props_indices = {
-        'gen3_inside':  lib.build_props_index(gen3_inside_ts_json),
-        'gen3_outside': gen3_outside_via_Gavworld,
-    }
+    for src_name in outdoor_source_names:
+        props_by_tid = {}
+        for (sn, tid), kgid in outdoor_gid_lookup.items():
+            if sn == src_name and kgid <= common_count:
+                # Gavworld_common tile id is 0-based: kgid - 1
+                props_by_tid[tid] = Gavworld_tile_props.get(kgid - 1, [])
+        src_props_indices[src_name] = props_by_tid
 
     # The compact GID rebuild reassigns every inside GID — clear stale tile
     # entries from a previous run so ensure_inside_tile starts clean.
@@ -341,9 +429,9 @@ def main():
                 ox, oy, dst_w, dst_h,
             )
             converted, modified = remap_data(
-                raw, src_to_map_gid, map_gid_to_src,
-                inside_ts_json, props_indices, gid_map_raw, {},
-                common_count, gen3_inside_firstgid, gen3_outside_firstgid,
+                raw, catalogue, src_to_map_gid, map_gid_to_src,
+                inside_ts_json, src_props_indices, gid_map_raw, {},
+                common_count,
             )
             if modified:
                 inside_ts_modified = True
@@ -396,15 +484,22 @@ def main():
     # ── Item-tile report (informational) ──────────────────────────────────
     print('\nItem tile map_gids (Gavworld_common):')
     for tile_id in ITEM_TILE_IDS:
-        if gen3_outside_firstgid is None:
-            print(f'  item tile {tile_id} — no gen3_outside in master, skipped')
+        if 'gen3_outside' not in outdoor_source_names:
+            print(f'  item tile {tile_id} — gen3_outside not in outdoor sources, skipped')
             continue
-        src_gid = gen3_outside_firstgid + tile_id
-        mgid    = src_to_map_gid.get(src_gid)
-        if mgid is None:
-            print(f'  WARNING: item tile {tile_id} missing from GID map')
-        else:
-            print(f'  item tile {tile_id} (gen3_outside) -> map GID {mgid} (Gavworld_common)')
+        found = False
+        for firstgid, name, count, _ in catalogue:
+            if name == 'gen3_outside':
+                src_gid = firstgid + tile_id
+                mgid    = src_to_map_gid.get(src_gid)
+                if mgid is None:
+                    print(f'  WARNING: item tile {tile_id} missing from GID map')
+                else:
+                    print(f'  item tile {tile_id} (gen3_outside) -> map GID {mgid} (Gavworld_common)')
+                found = True
+                break
+        if not found:
+            print(f'  item tile {tile_id} — gen3_outside not in master tilesets')
 
     # ── Persist GID map ───────────────────────────────────────────────────
     with open(gid_map_path, 'w') as f:
@@ -412,8 +507,7 @@ def main():
     print(f'\nUpdated inside_gid_map.json ({len(src_to_map_gid)} total entries)')
 
     if update_inside_png(src_to_map_gid, common_count, inside_ts_json,
-                          inside_ts_path, gen3_inside_firstgid,
-                          gen3_outside_firstgid):
+                          inside_ts_path, catalogue, outdoor_source_names):
         inside_ts_modified = True
 
     if inside_ts_modified or not inside_ts_path.exists():

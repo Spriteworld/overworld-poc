@@ -128,6 +128,7 @@ export default class extends Phaser.Scene {
     this.mapPlugins['cuttree'] = new Interactables.CutTree(this);
     this.mapPlugins['item'] = new Interactables.Item(this);
     this.mapPlugins['strengthboulder'] = new Interactables.StrengthBoulder(this);
+    this.mapPlugins['placeable']          = new Interactables.Placeable(this);
     this.mapPlugins['trainer']            = new Interactables.Trainer(this);
     this.mapPlugins['script']             = new Interactables.Script(this);
     // must be after 'pokemon' so addToScene() is available during init()

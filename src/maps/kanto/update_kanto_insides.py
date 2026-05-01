@@ -2,13 +2,17 @@
 """
 Sync individual interior map JSON files from kanto_inside.json.
 
-kanto_inside.json is edited in Tiled using one or two source tilesets:
-  - gen3_inside.png  (firstgid=1, required)
-  - gen3_outside.png (optional — present only when interior tiles re-use
-                       outdoor sprites; firstgids discovered dynamically)
+kanto_inside.json is edited in Tiled and may reference any source
+tilesets (auto-discovered from the master's tilesets array).
 
-This script converts those combined source GIDs → kanto_inside GIDs when
-writing individual map files (which use a single kanto_inside tileset).
+This script converts the combined source GIDs into a two-tileset
+layout that the engine consumes:
+  - kanto_common  (inherited — written by update_kanto.py)
+  - kanto_inside  (owned — written here)
+
+Tiles from sources that appear in the outdoor gid_map.json are resolved
+through it (common range only).  All other source tiles are assigned
+compact map GIDs in a fresh kanto_inside output tileset.
 
 What this script does
 ─────────────────────
@@ -28,7 +32,7 @@ What this script does
    StrengthBoulder) from gen3_outside are present in kanto_common so that
    BaseItem subclasses work correctly in interior maps.
 4. Rebuilds kanto_inside.png from scratch every run, sourcing pixels from
-   gen3_inside.png.
+   each inside-owned source tileset.
 5. Writes the updated kanto_inside tileset JSON (tile properties synced from
    source tilesets for any GID newly added).
 6. For any map not already registered in the JS source files, creates a
@@ -36,6 +40,8 @@ What this script does
 """
 
 import json
+import pathlib
+import sys
 
 import rebuild_lib as lib
 
@@ -59,6 +65,8 @@ LAYER_TEMPLATE = [
     ('middle',       None,     False),
     ('top',          'top',    False),
     ('interactions', None,     True),
+    ('placeables',   None,     True),
+    ('scripts',      None,     True),
 ]
 LAYER_CHAR  = {name: char for name, char, is_obj in LAYER_TEMPLATE if not is_obj}
 LAYER_ORDER = [name for name, _, _ in LAYER_TEMPLATE]
@@ -76,22 +84,67 @@ def make_inside_tilesets(common_count):
     ]
 
 
-# ── GID conversion ─────────────────────────────────────────────────────────
+# ── Master tileset cataloguing ─────────────────────────────────────────────
 
-def build_compact_gid_map(master_tilelayers, gen3_inside_firstgid,
-                           gen3_outside_firstgid, gen3_raw_to_kanto, common_count):
+def catalogue_master_tilesets(master):
+    """Auto-discover all tilesets in the master JSON by resolving each
+    source path to its canonical file in TILESET_DIR.
+    Returns [(firstgid, source_name, tile_count, source_json), ...] sorted
+    by firstgid ascending. Aborts if a tileset JSON cannot be found."""
+    entries = []
+    for ts in master.get('tilesets', []):
+        src = ts.get('source', '')
+        name = pathlib.PurePosixPath(src).stem
+        ts_path = lib.TILESET_DIR / f'{name}.json'
+        if not ts_path.exists():
+            print(f'  ERROR: cannot resolve tileset source "{src}" '
+                  f'— expected {ts_path}')
+            sys.exit(1)
+        with open(ts_path) as f:
+            ts_json = json.load(f)
+        entries.append((ts['firstgid'], name, ts_json.get('tilecount', 0), ts_json))
+    entries.sort()
+    return entries
+
+
+def src_gid_to_source(src_gid, catalogue):
+    """Resolve a master GID to (source_name, 0-based tile_id, source_json)
+    using standard Tiled firstgid-range partitioning.
+    Returns (None, None, None) on miss."""
+    for firstgid, name, count, ts_json in reversed(catalogue):
+        if firstgid <= src_gid < firstgid + count:
+            return name, src_gid - firstgid, ts_json
+    return None, None, None
+
+
+# ── GID assignment ─────────────────────────────────────────────────────────
+
+def build_compact_gid_map(master_tilelayers, catalogue,
+                           outdoor_gid_lookup, outdoor_source_names, common_count):
     """
     Build src_gid → map_gid mapping for indoor maps using the two-tileset
     layout:
-    - gen3_outside tiles → kanto_common GID (1..common_count) via gid_map.json
-    - gen3_inside  tiles → compact starting at common_count + 1
+    - Tiles from sources in outdoor_source_names → kanto_common GID
+      (1..common_count) via outdoor_gid_lookup. Only tiles that resolve to
+      ≤ common_count are kept; outdoor-only tiles don't belong in inside maps.
+    - All other source tiles → inside-owned, compact starting at
+      common_count + 1
 
-    `gen3_outside_firstgid` may be None if the master no longer references
-    gen3_outside; in that case all tiles come from gen3_inside.
+    Existing assignments in inside_gid_map.json are preserved so that adding
+    a new source tileset to the master doesn't reshuffle every GID.
 
     Returns (src_to_map_gid, map_gid_to_src, gid_map_raw, gid_map_path).
     """
     INSIDE_FIRSTGID = common_count + 1
+    gid_map_path = lib.MAPS_DIR / 'inside_gid_map.json'
+
+    # Seed from the persisted GID map so existing assignments are stable.
+    prev_src_to_map = {}
+    if gid_map_path.exists():
+        with open(gid_map_path) as f:
+            prev = json.load(f)
+        prev_src_to_map = {int(k): int(v)
+                           for k, v in prev.get('src_to_map_gid', {}).items()}
 
     all_src_gids = sorted({
         gid
@@ -100,56 +153,61 @@ def build_compact_gid_map(master_tilelayers, gen3_inside_firstgid,
         if gid != 0
     })
 
-    if gen3_outside_firstgid is not None:
-        extra_outside = [gen3_outside_firstgid + tid for tid in ITEM_TILE_IDS]
-        all_src_gids  = sorted(set(all_src_gids) | set(extra_outside))
-        inside_src_gids  = [g for g in all_src_gids if g < gen3_outside_firstgid]
-        outside_src_gids = [g for g in all_src_gids if g >= gen3_outside_firstgid]
-    else:
-        inside_src_gids  = list(all_src_gids)
-        outside_src_gids = []
+    # Add ITEM_TILE_IDS for gen3_outside if it's in the outdoor sources.
+    if 'gen3_outside' in outdoor_source_names:
+        # Find gen3_outside firstgid in catalogue.
+        for firstgid, name, count, _ in catalogue:
+            if name == 'gen3_outside':
+                extra_outside = [firstgid + tid for tid in ITEM_TILE_IDS]
+                all_src_gids = sorted(set(all_src_gids) | set(extra_outside))
+                break
 
     src_to_map_gid = {}
-    for src_gid in outside_src_gids:
-        tile_id      = src_gid - gen3_outside_firstgid
-        gen3_raw_gid = tile_id + 1
-        kgid = gen3_raw_to_kanto.get(gen3_raw_gid)
-        if kgid is not None:
-            src_to_map_gid[src_gid] = kgid
+    needs_assignment = []  # src_gids that need a new inside GID
 
-    for i, src_gid in enumerate(inside_src_gids):
-        src_to_map_gid[src_gid] = INSIDE_FIRSTGID + i
+    for src_gid in all_src_gids:
+        name, tid, _ = src_gid_to_source(src_gid, catalogue)
+        if name is None:
+            continue
+        if name in outdoor_source_names:
+            kgid = outdoor_gid_lookup.get((name, tid))
+            if kgid is not None and kgid <= common_count:
+                src_to_map_gid[src_gid] = kgid
+            # outdoor-only tiles (kgid > common_count or missing) are skipped
+        elif src_gid in prev_src_to_map:
+            src_to_map_gid[src_gid] = prev_src_to_map[src_gid]
+        else:
+            needs_assignment.append(src_gid)
+
+    # New tiles get the next available map GID after all existing assignments.
+    existing_inside = [g for g in src_to_map_gid.values() if g >= INSIDE_FIRSTGID]
+    next_gid = max(existing_inside, default=INSIDE_FIRSTGID - 1) + 1
+
+    for src_gid in needs_assignment:
+        src_to_map_gid[src_gid] = next_gid
+        next_gid += 1
 
     map_gid_to_src = {v: k for k, v in src_to_map_gid.items()}
     gid_map_raw    = {
         'src_to_map_gid': {str(k): v for k, v in src_to_map_gid.items()},
         'map_gid_to_src': {str(k): v for k, v in map_gid_to_src.items()},
     }
-    gid_map_path = lib.MAPS_DIR / 'inside_gid_map.json'
     return src_to_map_gid, map_gid_to_src, gid_map_raw, gid_map_path
 
 
-def src_gid_to_tile_id(src_gid, gen3_inside_firstgid, gen3_outside_firstgid):
-    """Resolve a master GID back to (source_name, 0-based tile_id)."""
-    if gen3_outside_firstgid is not None and src_gid >= gen3_outside_firstgid:
-        return 'gen3_outside', src_gid - gen3_outside_firstgid
-    return 'gen3_inside', src_gid - gen3_inside_firstgid
-
-
-def ensure_inside_tile(inside_ts_json, map_gid, src_gid, props_indices,
-                        common_count, gen3_inside_firstgid, gen3_outside_firstgid):
+def ensure_inside_tile(inside_ts_json, map_gid, source, tid,
+                        src_props_indices, common_count):
     """
     Ensure inside tileset JSON has a tile entry for `map_gid` with
     up-to-date properties synced from the source tileset. Only call for
-    gen3_inside tiles (map_gid >= common_count + 1) — common-range tiles
+    inside-owned tiles (map_gid >= common_count + 1) — common-range tiles
     are owned by kanto_common.json (written by update_kanto.py).
     """
     INSIDE_FIRSTGID = common_count + 1
     tile_id  = map_gid - INSIDE_FIRSTGID
     tiles    = inside_ts_json.setdefault('tiles', [])
 
-    src_name, src_tid = src_gid_to_tile_id(src_gid, gen3_inside_firstgid, gen3_outside_firstgid)
-    props = props_indices.get(src_name, {}).get(src_tid, [])
+    props = src_props_indices.get(source, {}).get(tid, [])
 
     existing = next((t for t in tiles if t['id'] == tile_id), None)
     if existing is None:
@@ -161,10 +219,9 @@ def ensure_inside_tile(inside_ts_json, map_gid, src_gid, props_indices,
     return False
 
 
-def remap_data(data, src_to_map_gid, map_gid_to_src,
-                inside_ts_json, props_indices, gid_map_raw,
-                new_mappings, common_count,
-                gen3_inside_firstgid, gen3_outside_firstgid):
+def remap_data(data, catalogue, src_to_map_gid, map_gid_to_src,
+                inside_ts_json, src_props_indices, gid_map_raw,
+                new_mappings, common_count):
     """
     Convert a flat tile-data array from combined src GIDs to map GIDs.
     Tiles with no existing mapping are assigned the next available map GID
@@ -192,114 +249,166 @@ def remap_data(data, src_to_map_gid, map_gid_to_src,
                 gid_map_raw['src_to_map_gid'][str(src_gid)] = igid
                 gid_map_raw['map_gid_to_src'][str(igid)]    = src_gid
         if igid >= INSIDE_FIRSTGID:
-            if ensure_inside_tile(inside_ts_json, igid, src_gid, props_indices,
-                                  common_count, gen3_inside_firstgid,
-                                  gen3_outside_firstgid):
+            source, tid, _ = src_gid_to_source(src_gid, catalogue)
+            if ensure_inside_tile(inside_ts_json, igid, source, tid,
+                                  src_props_indices, common_count):
                 ts_modified = True
         out.append(igid)
 
     return out, ts_modified
 
 
+# ── PNG composition ───────────────────────────────────────────────────────
+
 def update_inside_png(src_to_map_gid, common_count, inside_ts_json,
-                     inside_ts_path, gen3_inside_firstgid, gen3_outside_firstgid):
-    """Rebuild kanto_inside.png from gen3_inside tiles only."""
-    INSIDE_FIRSTGID = common_count + 1
-
-    # Only gen3_inside tiles.  When gen3_outside isn't present in the master,
-    # the upper-bound check still excludes any GID that would have come from it.
-    def is_inside_src(src_gid):
-        return (gen3_outside_firstgid is None or src_gid < gen3_outside_firstgid) \
-            and src_gid >= gen3_inside_firstgid
-
-    inside_entries = [
-        (src_gid - gen3_inside_firstgid, map_gid - INSIDE_FIRSTGID)
-        for src_gid, map_gid in src_to_map_gid.items()
-        if map_gid >= INSIDE_FIRSTGID and is_inside_src(src_gid)
-    ]
-    if not inside_entries:
+                      inside_ts_path, catalogue, outdoor_source_names):
+    """Rebuild kanto_inside.png from inside-owned source tiles,
+    handling multiple source tilesets via multi-source PIL composition."""
+    try:
+        from PIL import Image
+    except ImportError:
+        print('  WARNING: Pillow not installed — cannot rebuild PNG')
         return False
 
-    return lib.write_tileset_png(
-        inside_entries,
-        lib.TILESET_DIR / 'gen3_inside.png',
-        inside_ts_json,
-        inside_ts_path.parent / inside_ts_json['image'],
-        source_columns=8,
-    )
+    INSIDE_FIRSTGID = common_count + 1
+
+    # Collect (source_name, src_tile_id, dst_tile_id) — dedupe by dst.
+    seen_dst = set()
+    entries  = []
+    for src_gid, map_gid in src_to_map_gid.items():
+        if map_gid < INSIDE_FIRSTGID:
+            continue
+        name, tid, _ = src_gid_to_source(src_gid, catalogue)
+        if name is None or name in outdoor_source_names:
+            continue
+        dst = map_gid - INSIDE_FIRSTGID
+        if dst in seen_dst:
+            continue
+        seen_dst.add(dst)
+        entries.append((name, tid, dst))
+    if not entries:
+        return False
+
+    # Load source PNGs for inside-owned tilesets.
+    src_imgs = {}
+    src_cols = {}
+    for fg, name, count, ts_json in catalogue:
+        if name in outdoor_source_names:
+            continue
+        if name in src_imgs:
+            continue
+        src_imgs[name] = Image.open(lib.TILESET_DIR / ts_json['image']).convert('RGBA')
+        src_cols[name] = ts_json['columns']
+
+    tw   = inside_ts_json['tilewidth']
+    th   = inside_ts_json['tileheight']
+    cols = inside_ts_json['columns']
+    max_dst = max(dst for _, _, dst in entries)
+    rows    = (max_dst // cols) + 1
+    img     = Image.new('RGBA', (cols * tw, rows * th), (0, 0, 0, 0))
+    for name, src_tid, dst_tid in entries:
+        scol = src_cols[name]
+        sx = (src_tid % scol) * tw
+        sy = (src_tid // scol) * th
+        dx = (dst_tid % cols) * tw
+        dy = (dst_tid // cols) * th
+        img.paste(src_imgs[name].crop((sx, sy, sx + tw, sy + th)), (dx, dy))
+    img.save(inside_ts_path.parent / inside_ts_json['image'])
+    inside_ts_json['imagewidth']  = cols * tw
+    inside_ts_json['imageheight'] = rows * th
+    inside_ts_json['tilecount']   = cols * rows
+    print(f'  rebuilt {inside_ts_json["image"]} ({len(entries)} tiles, {cols}x{rows} grid)')
+    return True
 
 
 # ── Main ────────────────────────────────────────────────────────────────────
 
 def main():
-    master, master_tilelayers, master_objs, maps_layer = lib.load_master(
+    master, master_tilelayers, master_objs, maps_layer, master_placeable_objs, master_scripts_objs = lib.load_master(
         lib.MAPS_DIR / 'kanto_inside.json'
     )
     if not maps_layer:
         print('ERROR: no "maps" objectgroup found in kanto_inside.json')
         return
 
-    # Discover firstgids dynamically.  gen3_outside is optional — interior
-    # masters may have removed it once no inside tile relies on outdoor art.
-    ts_map = {}
-    for ts in master.get('tilesets', []):
-        src = ts.get('source', '')
-        if 'gen3_inside' in src:
-            ts_map['gen3_inside'] = ts['firstgid']
-        elif 'gen3_outside' in src:
-            ts_map['gen3_outside'] = ts['firstgid']
-    if 'gen3_inside' not in ts_map:
-        print('ERROR: kanto_inside.json must contain a gen3_inside tileset')
-        return
-    gen3_inside_firstgid  = ts_map['gen3_inside']
-    gen3_outside_firstgid = ts_map.get('gen3_outside')
-    print(f'Tilesets: gen3_inside firstgid={gen3_inside_firstgid}, '
-          f'gen3_outside firstgid={gen3_outside_firstgid}')
-
     master_w = master['width']
     master_h = master['height']
     tw, th   = master['tilewidth'], master['tileheight']
 
-    # Read common_count and gen3_to_kanto from gid_map.json (written by update_kanto.py).
+    catalogue = catalogue_master_tilesets(master)
+    if not catalogue:
+        print('ERROR: kanto_inside.json has no recognised tilesets')
+        return
+    print('Master tilesets:')
+    for firstgid, name, count, _ in catalogue:
+        print(f'  {name}: firstgid={firstgid}, tilecount={count}')
+
+    # Read common_count and outdoor GID mappings from gid_map.json
+    # (written by update_kanto.py).
     with open(lib.MAPS_DIR / 'gid_map.json') as f:
         gid_map_data = json.load(f)
-    gen3_raw_to_kanto = {int(k): v for k, v in gid_map_data['gen3_to_kanto'].items()}
-    common_count      = gid_map_data['common_count']
-    INSIDE_FIRSTGID   = common_count + 1
+    common_count = gid_map_data['common_count']
+    INSIDE_FIRSTGID = common_count + 1
+
+    # Build a unified outdoor lookup: (source_name, tile_id) → kanto GID.
+    outdoor_gid_lookup = {}
+    outdoor_source_names = set()
+    for raw_str, kgid in gid_map_data.get('gen3_to_kanto', {}).items():
+        tid = int(raw_str) - 1
+        outdoor_gid_lookup[('gen3_outside', tid)] = kgid
+        outdoor_source_names.add('gen3_outside')
+    for key_str, kgid in gid_map_data.get('extras_to_kanto', {}).items():
+        src, tid_str = key_str.rsplit(':', 1)
+        outdoor_gid_lookup[(src, int(tid_str))] = kgid
+        outdoor_source_names.add(src)
 
     src_to_map_gid, map_gid_to_src, gid_map_raw, gid_map_path = build_compact_gid_map(
-        master_tilelayers, gen3_inside_firstgid, gen3_outside_firstgid,
-        gen3_raw_to_kanto, common_count,
+        master_tilelayers, catalogue,
+        outdoor_gid_lookup, outdoor_source_names, common_count,
     )
     inside_count = sum(1 for g in src_to_map_gid.values() if g >= INSIDE_FIRSTGID)
     print(f'Compact GID map: {len(src_to_map_gid)} tiles '
-          f'({inside_count} gen3_inside, {len(src_to_map_gid)-inside_count} gen3_outside/common)')
+          f'({inside_count} inside-owned, '
+          f'{len(src_to_map_gid)-inside_count} inherited from kanto_common)')
 
     inside_ts_path = lib.TILESET_DIR / 'maps' / 'kanto_inside.json'
     inside_ts_json = lib.load_or_init_tileset(
         inside_ts_path, 'kanto_inside', 'kanto_inside.png', columns=8, image_width=256,
     )
 
-    with open(lib.TILESET_DIR / 'gen3_inside.json') as f:
-        gen3_inside_ts_json = json.load(f)
+    # Build properties index for ALL sources in the catalogue.
+    # For non-outdoor sources: use lib.build_props_index() on the source JSON.
+    # For outdoor sources: use kanto_common.json properties (authoritative —
+    # written by update_kanto.py). Only common tiles are present there.
+    src_props_indices = {}
 
-    # For gen3_outside tiles in indoor maps, use kanto_common.json properties
-    # (authoritative — written by update_kanto.py).  Only common tiles are there.
+    for _, name, _, ts_json in catalogue:
+        if name not in outdoor_source_names:
+            src_props_indices[name] = lib.build_props_index(ts_json)
+
+    # For outdoor sources, build props from kanto_common.json.
     kanto_common_ts_path = lib.TILESET_DIR / 'maps' / 'kanto_common.json'
     with open(kanto_common_ts_path) as f:
         kanto_common_ts_json_data = json.load(f)
     kanto_tile_props = {t['id']: t.get('properties', [])
                         for t in kanto_common_ts_json_data.get('tiles', [])}
-    gen3_outside_via_kanto = {
-        gen3_raw_gid - 1: kanto_tile_props.get(kanto_gid - 1, [])
-        for gen3_raw_gid, kanto_gid in gen3_raw_to_kanto.items()
-        if kanto_gid <= common_count
-    }
 
-    props_indices = {
-        'gen3_inside':  lib.build_props_index(gen3_inside_ts_json),
-        'gen3_outside': gen3_outside_via_kanto,
-    }
+    # Map outdoor GIDs back to tile properties via kanto_common.
+    # For gen3_outside: gen3_to_kanto maps raw_gid (1-based) → kanto GID.
+    # We need source_tid (0-based) → props, where props come from
+    # kanto_common at tile_id = kanto_gid - 1.
+    for raw_str, kgid in gid_map_data.get('gen3_to_kanto', {}).items():
+        if kgid <= common_count:
+            tid = int(raw_str) - 1
+            props = kanto_tile_props.get(kgid - 1, [])
+            src_props_indices.setdefault('gen3_outside', {})[tid] = props
+
+    # For extras_to_kanto: key is "source:tid", value is kanto GID.
+    for key_str, kgid in gid_map_data.get('extras_to_kanto', {}).items():
+        if kgid <= common_count:
+            src, tid_str = key_str.rsplit(':', 1)
+            props = kanto_tile_props.get(kgid - 1, [])
+            src_props_indices.setdefault(src, {})[int(tid_str)] = props
 
     # The compact GID rebuild reassigns every inside GID — clear stale tile
     # entries from a previous run so ensure_inside_tile starts clean.
@@ -343,9 +452,9 @@ def main():
                 polygon=polygon, tw=tw, th=th,
             )
             converted, modified = remap_data(
-                raw, src_to_map_gid, map_gid_to_src,
-                inside_ts_json, props_indices, gid_map_raw, {},
-                common_count, gen3_inside_firstgid, gen3_outside_firstgid,
+                raw, catalogue, src_to_map_gid, map_gid_to_src,
+                inside_ts_json, src_props_indices, gid_map_raw, {},
+                common_count,
             )
             if modified:
                 inside_ts_modified = True
@@ -379,6 +488,59 @@ def main():
         for o in objects:
             print(f'  added obj "{o["name"]}"')
 
+        # Placeable objects
+        if master_placeable_objs:
+            p_objs, p_next = lib.merge_interactions(
+                master_placeable_objs, master_px_x, master_px_y, px_w, px_h,
+                polygon=polygon,
+            )
+            if p_objs:
+                p_layer = next((l for l in route['layers']
+                                if l['type'] == 'objectgroup' and l['name'] == 'placeables'), None)
+                if p_layer is None:
+                    max_lid = max((l.get('id', 0) for l in route['layers']), default=0) + 1
+                    p_layer = {
+                        'draworder': 'topdown', 'id': max_lid,
+                        'name': 'placeables', 'opacity': 1,
+                        'type': 'objectgroup', 'visible': True,
+                        'x': 0, 'y': 0, 'objects': [],
+                    }
+                    route['layers'].append(p_layer)
+                # Offset IDs to avoid collision with interaction object IDs
+                for po in p_objs:
+                    po['id'] = next_oid
+                    next_oid += 1
+                p_layer['objects'] = p_objs
+                route['nextobjectid'] = next_oid
+                for o in p_objs:
+                    print(f'  added placeable "{o["name"]}"')
+
+        # Script template objects
+        if master_scripts_objs:
+            s_objs, s_next = lib.merge_interactions(
+                master_scripts_objs, master_px_x, master_px_y, px_w, px_h,
+                polygon=polygon,
+            )
+            if s_objs:
+                s_layer = next((l for l in route['layers']
+                                if l['type'] == 'objectgroup' and l['name'] == 'scripts'), None)
+                if s_layer is None:
+                    max_lid = max((l.get('id', 0) for l in route['layers']), default=0) + 1
+                    s_layer = {
+                        'draworder': 'topdown', 'id': max_lid,
+                        'name': 'scripts', 'opacity': 1,
+                        'type': 'objectgroup', 'visible': True,
+                        'x': 0, 'y': 0, 'objects': [],
+                    }
+                    route['layers'].append(s_layer)
+                for so in s_objs:
+                    so['id'] = next_oid
+                    next_oid += 1
+                s_layer['objects'] = s_objs
+                route['nextobjectid'] = next_oid
+                for o in s_objs:
+                    print(f'  added script "{o["name"]}"')
+
         props = zone['properties']
         if props:
             route['properties'] = props
@@ -399,8 +561,17 @@ def main():
     # ── Item-tile report (informational) ──────────────────────────────────
     print('\nItem tile map_gids (kanto_common):')
     for tile_id in ITEM_TILE_IDS:
+        if 'gen3_outside' not in outdoor_source_names:
+            print(f'  item tile {tile_id} — gen3_outside not in outdoor sources, skipped')
+            continue
+        # Find gen3_outside firstgid in catalogue.
+        gen3_outside_firstgid = None
+        for firstgid, name, count, _ in catalogue:
+            if name == 'gen3_outside':
+                gen3_outside_firstgid = firstgid
+                break
         if gen3_outside_firstgid is None:
-            print(f'  item tile {tile_id} — no gen3_outside in master, skipped')
+            print(f'  item tile {tile_id} — gen3_outside not in master, skipped')
             continue
         src_gid = gen3_outside_firstgid + tile_id
         mgid    = src_to_map_gid.get(src_gid)
@@ -415,8 +586,7 @@ def main():
     print(f'\nUpdated inside_gid_map.json ({len(src_to_map_gid)} total entries)')
 
     if update_inside_png(src_to_map_gid, common_count, inside_ts_json,
-                          inside_ts_path, gen3_inside_firstgid,
-                          gen3_outside_firstgid):
+                          inside_ts_path, catalogue, outdoor_source_names):
         inside_ts_modified = True
 
     if inside_ts_modified or not inside_ts_path.exists():

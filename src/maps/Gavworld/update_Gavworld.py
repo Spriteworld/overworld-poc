@@ -45,6 +45,8 @@ Until set, Gavworld.world coordinates will be off by these values.
 """
 
 import json
+import pathlib
+import sys
 
 import rebuild_lib as lib
 
@@ -73,11 +75,6 @@ LAYER_TEMPLATE = [
 LAYER_CHAR  = {name: char for name, char, is_obj in LAYER_TEMPLATE if not is_obj}
 LAYER_ORDER = [name for name, _, _ in LAYER_TEMPLATE]
 
-# Source tilesets recognised in Gavworld.json. Catalogue resolution matches
-# against the tileset's `source` substring (longest-first to avoid prefix
-# collisions, though none exist between these names today).
-RECOGNISED_SOURCES = ['gen3_outside', 'Transparent_Tiles', 'animated_grass']
-
 # gen3_outside 0-based tile IDs used programmatically by BaseItem subclasses
 # (not placed in tilelayers) — must always be present in gid_map.json so that
 # update_Gavworld_insides.py can assign matching frame positions.
@@ -94,17 +91,20 @@ def make_outdoor_tilesets(common_count):
 # ── Source-tileset catalogue ────────────────────────────────────────────────
 
 def catalogue_master_tilesets(master):
-    """Return a list of (firstgid, source_name, tile_count, source_json)
-    tuples sorted by firstgid ascending. Tilesets whose source path doesn't
-    match any RECOGNISED_SOURCES name are skipped with a warning."""
+    """Auto-discover all tilesets in the master JSON by resolving each
+    source path to its canonical file in TILESET_DIR.
+    Returns [(firstgid, source_name, tile_count, source_json), ...] sorted
+    by firstgid ascending. Aborts if a tileset JSON cannot be found."""
     entries = []
     for ts in master.get('tilesets', []):
         src = ts.get('source', '')
-        name = next((s for s in RECOGNISED_SOURCES if s in src), None)
-        if name is None:
-            print(f'  WARNING: ignoring unrecognised tileset source "{src}"')
-            continue
-        with open(lib.TILESET_DIR / f'{name}.json') as f:
+        name = pathlib.PurePosixPath(src).stem
+        ts_path = lib.TILESET_DIR / f'{name}.json'
+        if not ts_path.exists():
+            print(f'  ERROR: cannot resolve tileset source "{src}" '
+                  f'— expected {ts_path}')
+            sys.exit(1)
+        with open(ts_path) as f:
             ts_json = json.load(f)
         entries.append((ts['firstgid'], name, ts_json.get('tilecount', 0), ts_json))
     entries.sort(key=lambda e: e[0])

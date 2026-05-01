@@ -62,7 +62,7 @@ const DEFAULT_BINDINGS = {
   ArrowLeft:  [Action.LEFT],
   ArrowRight: [Action.RIGHT],
   KeyZ:       [Action.CONFIRM],
-  Enter:      [Action.CONFIRM, Action.MENU],
+  Enter:      [Action.MENU],
   KeyX:       [Action.CANCEL, Action.RUN],
   Escape:     [Action.CANCEL],
   KeyC:       [Action.RUN],

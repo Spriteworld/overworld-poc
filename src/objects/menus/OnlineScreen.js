@@ -126,7 +126,7 @@ export default class OnlineScreen {
     // ── Player roster (right column) ────────────────────────────────────────
     this._buildRoster();
 
-    reg(scene.add.text(SX + 16, SY + SH - 22, '▲▼ select   Z confirm   X back', TEXT_STYLE_HINT));
+    reg(scene.add.text(SX + SW - 16, SY + SH - 32, '▲▼ select   Z confirm   X back', TEXT_STYLE_HINT)).setOrigin(1, 0);
   }
 
   _rebuild() {

@@ -451,6 +451,6 @@ export default class TeamScreen {
   }
 
   _hint(text) {
-    this.menu.reg(this.menu.scene.add.text(SX + 16, SY + SH - 22, text, TEXT_STYLE_HINT));
+    this.menu.reg(this.menu.scene.add.text(SX + SW - 16, SY + SH - 32, text, TEXT_STYLE_HINT)).setOrigin(1, 0);
   }
 }

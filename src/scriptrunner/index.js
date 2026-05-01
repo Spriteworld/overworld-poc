@@ -12,7 +12,8 @@ import audioCmds     from './commands/audio.js';
 import characterCmds from './commands/character.js';
 import battleCmds    from './commands/battle.js';
 import controlCmds   from './commands/control.js';
-import darknessCmds  from './commands/darkness.js';
+import darknessCmds    from './commands/darkness.js';
+import placeableCmds   from './commands/placeable.js';
 
 const HANDLERS = {
   ...dialogueCmds,
@@ -29,6 +30,7 @@ const HANDLERS = {
   ...battleCmds,
   ...controlCmds,
   ...darknessCmds,
+  ...placeableCmds,
 };
 
 /**
@@ -244,6 +246,23 @@ export default class ScriptRunner {
    * Find a `location-anchor` object by name on the interactions layer.
    * @returns {{ x: number, y: number, facingDir: string|null }|null}
    */
+  _resolveTemplate(name) {
+    const tilemap = this._scene.config?.tilemap;
+    if (!tilemap) return null;
+    const layer = tilemap.getObjectLayer('scripts');
+    if (!layer) return null;
+    const obj = layer.objects.find(o => o.name === name);
+    if (!obj) {
+      console.warn(`[ScriptRunner] template "${name}" not found`);
+      return null;
+    }
+    const script = this._scene.getPropertyFromTile?.(obj, 'script');
+    if (!script) return null;
+    if (Array.isArray(script)) return script;
+    if (typeof script === 'string') { try { return JSON.parse(script); } catch { return null; } }
+    return null;
+  }
+
   _resolveAnchor(name) {
     const tilemap = this._scene.config?.tilemap;
     if (!tilemap) return null;

@@ -2,6 +2,8 @@ import { getInputManager, getKeybindLabel, Action } from './InputManager.js';
 import store from '../store/index.js';
 import { Pokedex, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
 import { getGameDef } from '../data/gameDef.js';
+import { WINDOW_STYLES } from '../objects/common/windowStyles.js';
+import tiledNineSlice from '../objects/common/tiledNineSlice.js';
 
 // Lazily-built nat_dex_id → display-name map shared across all TextBox instances.
 let _speciesMap = null;
@@ -42,8 +44,10 @@ class TextBox {
   constructor(scene, config) {
     this._scene = scene;
 
-    const FW = config.fixedWidth  || 500;
-    const FH = config.fixedHeight || 65;
+    this._authFW = config.fixedWidth  || 500;
+    this._authFH = config.fixedHeight || 65;
+    const FW = this._authFW;
+    const FH = this._authFH;
     const ww = config.wrapWidth   || FW;
 
     // Authored (unscaled) box dims. Stored separately because reposition()
@@ -54,9 +58,9 @@ class TextBox {
     this._maxBoxW  = this._authBoxW;
 
     // Background
-    this._bg = scene.add.graphics()
-      .setScrollFactor(0)
-      .setDepth(DEPTH);
+    this._windowStyle = store.state.game.windowStyle ?? 'default';
+    this._bgIsNineSlice = false;
+    this._bg = this._createBg();
 
     // Text — wrap + fixed size are in AUTHORED units; setScale multiplies
     // both the rendered text and (via reposition) the bg dims by uiScale.
@@ -162,15 +166,31 @@ class TextBox {
     this._by   = sh - this._boxH - 20;
     this._drawBg();
 
+    const style = WINDOW_STYLES[this._windowStyle];
+    const color = style?.textboxTextColor ?? '#ffffff';
+    this._textObj.setColor(color);
+
+    const padL = style?.padL ?? 0;
+    const padR = style?.padR ?? 0;
+    const padY = style?.padY ?? 0;
+    const extraPadL = padL * uiScale;
+    const extraPadR = padR * uiScale;
+    const extraPadY = padY * uiScale;
+
+    // Shrink text area to fit inside border padding (authored units).
+    const availW = this._authFW - padL - padR;
+    this._textObj.setFixedSize(availW, this._authFH);
+    this._textObj.setWordWrapWidth(availW);
+
     // Text + arrow scale around their (x, y), so position the visible
     // top-left at the inner padding (also scaled). Wrap width / fixed size
     // stay in authored units — the on-screen size is handled by setScale.
     this._textObj.setScale(uiScale);
-    this._textObj.setPosition(this._bx + PAD_X * uiScale, this._by + PAD_Y * uiScale);
+    this._textObj.setPosition(this._bx + PAD_X * uiScale + extraPadL, this._by + PAD_Y * uiScale + extraPadY);
     this._arrow.setScale(uiScale);
     this._arrow.setPosition(
-      this._bx + this._boxW - PAD_X * uiScale - 4 * uiScale,
-      this._by + this._boxH - PAD_Y * uiScale - 2 * uiScale,
+      this._bx + this._boxW - PAD_X * uiScale - 4 * uiScale - extraPadR,
+      this._by + this._boxH - PAD_Y * uiScale - 2 * uiScale - extraPadY,
     );
   }
 
@@ -222,10 +242,44 @@ class TextBox {
 
   // ─── Internal ─────────────────────────────────────────────────────────────
 
-  /**
-   * Redraws the rounded-rectangle background graphic.
-   */
+  _createBg() {
+    const style = WINDOW_STYLES[this._windowStyle];
+    this._bgIsTiled = !!(style?.texture && this._scene.textures.exists(style.texture));
+    if (this._bgIsTiled) {
+      return tiledNineSlice(this._scene, style.texture, Math.round(this._authBoxW), Math.round(this._authBoxH), style)
+        .setScrollFactor(0)
+        .setDepth(DEPTH);
+    }
+    return this._scene.add.graphics()
+      .setScrollFactor(0)
+      .setDepth(DEPTH);
+  }
+
+  setWindowStyle(key) {
+    this._windowStyle = key;
+    this._bg.destroy();
+    this._bg = this._createBg();
+    this._setChildrenVisible(this._textObj.visible);
+    const style = WINDOW_STYLES[key];
+    const color = style?.textboxTextColor ?? '#ffffff';
+    this._textObj.setColor(color);
+    this.reposition();
+  }
+
   _drawBg() {
+    if (this._bgIsTiled) {
+      const style = WINDOW_STYLES[this._windowStyle];
+      const w = Math.round(this._boxW);
+      const h = Math.round(this._boxH);
+      const wasVisible = this._bg.visible;
+      this._bg.destroy();
+      this._bg = tiledNineSlice(this._scene, style.texture, w, h, style)
+        .setScrollFactor(0)
+        .setDepth(DEPTH)
+        .setPosition(this._bx, this._by)
+        .setVisible(wasVisible);
+      return;
+    }
     this._bg.clear();
     this._bg.fillStyle(0x000000, 1);
     this._bg.fillRoundedRect(this._bx, this._by, this._boxW, this._boxH, BORDER_R);

@@ -1,0 +1,622 @@
+[
+  {
+    "key": "dp_1",
+    "label": "DP 1",
+    "file": "speech_dp_1.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 8,
+    "bottomHeight": 8,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_2",
+    "label": "DP 2",
+    "file": "speech_dp_2.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_3",
+    "label": "DP 3",
+    "file": "speech_dp_3.png",
+    "leftWidth": 18,
+    "rightWidth": 42,
+    "topHeight": 16,
+    "bottomHeight": 16,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_4",
+    "label": "DP 4",
+    "file": "speech_dp_4.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_5",
+    "label": "DP 5",
+    "file": "speech_dp_5.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_6",
+    "label": "DP 6",
+    "file": "speech_dp_6.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 8,
+    "bottomHeight": 8,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_7",
+    "label": "DP 7",
+    "file": "speech_dp_7.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 8,
+    "bottomHeight": 8,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_8",
+    "label": "DP 8",
+    "file": "speech_dp_8.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 8,
+    "bottomHeight": 8,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_9",
+    "label": "DP 9",
+    "file": "speech_dp_9.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 8,
+    "bottomHeight": 8,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_10",
+    "label": "DP 10",
+    "file": "speech_dp_10.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_11",
+    "label": "DP 11",
+    "file": "speech_dp_11.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_12",
+    "label": "DP 12",
+    "file": "speech_dp_12.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_13",
+    "label": "DP 13",
+    "file": "speech_dp_13.png",
+    "leftWidth": 22,
+    "rightWidth": 42,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_14",
+    "label": "DP 14",
+    "file": "speech_dp_14.png",
+    "leftWidth": 22,
+    "rightWidth": 42,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_15",
+    "label": "DP 15",
+    "file": "speech_dp_15.png",
+    "leftWidth": 22,
+    "rightWidth": 42,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_16",
+    "label": "DP 16",
+    "file": "speech_dp_16.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_17",
+    "label": "DP 17",
+    "file": "speech_dp_17.png",
+    "leftWidth": 18,
+    "rightWidth": 42,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_18",
+    "label": "DP 18",
+    "file": "speech_dp_18.png",
+    "leftWidth": 18,
+    "rightWidth": 40,
+    "topHeight": 16,
+    "bottomHeight": 16,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_19",
+    "label": "DP 19",
+    "file": "speech_dp_19.png",
+    "leftWidth": 16,
+    "rightWidth": 40,
+    "topHeight": 16,
+    "bottomHeight": 16,
+    "textColor": "#181818"
+  },
+  {
+    "key": "dp_20",
+    "label": "DP 20",
+    "file": "speech_dp_20.png",
+    "leftWidth": 20,
+    "rightWidth": 38,
+    "topHeight": 20,
+    "bottomHeight": 20,
+    "textColor": "#181818"
+  },
+  {
+    "key": "em",
+    "label": "Emerald",
+    "file": "speech_em.png",
+    "leftWidth": 22,
+    "rightWidth": 22,
+    "topHeight": 16,
+    "bottomHeight": 16,
+    "textColor": "#181818"
+  },
+  {
+    "key": "frlg",
+    "label": "FR/LG",
+    "file": "speech_frlg.png",
+    "leftWidth": 32,
+    "rightWidth": 32,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_1",
+    "label": "HGSS 1",
+    "file": "speech_hgss_1.png",
+    "leftWidth": 22,
+    "rightWidth": 44,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_2",
+    "label": "HGSS 2",
+    "file": "speech_hgss_2.png",
+    "leftWidth": 22,
+    "rightWidth": 44,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_3",
+    "label": "HGSS 3",
+    "file": "speech_hgss_3.png",
+    "leftWidth": 22,
+    "rightWidth": 44,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_4",
+    "label": "HGSS 4",
+    "file": "speech_hgss_4.png",
+    "leftWidth": 22,
+    "rightWidth": 44,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_5",
+    "label": "HGSS 5",
+    "file": "speech_hgss_5.png",
+    "leftWidth": 22,
+    "rightWidth": 44,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_6",
+    "label": "HGSS 6",
+    "file": "speech_hgss_6.png",
+    "leftWidth": 22,
+    "rightWidth": 44,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_7",
+    "label": "HGSS 7",
+    "file": "speech_hgss_7.png",
+    "leftWidth": 22,
+    "rightWidth": 44,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_8",
+    "label": "HGSS 8",
+    "file": "speech_hgss_8.png",
+    "leftWidth": 30,
+    "rightWidth": 46,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_9",
+    "label": "HGSS 9",
+    "file": "speech_hgss_9.png",
+    "leftWidth": 30,
+    "rightWidth": 46,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_11",
+    "label": "HGSS 11",
+    "file": "speech_hgss_11.png",
+    "leftWidth": 48,
+    "rightWidth": 40,
+    "topHeight": 12,
+    "bottomHeight": 12,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_12",
+    "label": "HGSS 12",
+    "file": "speech_hgss_12.png",
+    "leftWidth": 48,
+    "rightWidth": 40,
+    "topHeight": 12,
+    "bottomHeight": 12,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_13",
+    "label": "HGSS 13",
+    "file": "speech_hgss_13.png",
+    "leftWidth": 46,
+    "rightWidth": 46,
+    "topHeight": 16,
+    "bottomHeight": 16,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_14",
+    "label": "HGSS 14",
+    "file": "speech_hgss_14.png",
+    "leftWidth": 28,
+    "rightWidth": 42,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_15",
+    "label": "HGSS 15",
+    "file": "speech_hgss_15.png",
+    "leftWidth": 48,
+    "rightWidth": 46,
+    "topHeight": 20,
+    "bottomHeight": 20,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_16",
+    "label": "HGSS 16",
+    "file": "speech_hgss_16.png",
+    "leftWidth": 26,
+    "rightWidth": 42,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_19",
+    "label": "HGSS 19",
+    "file": "speech_hgss_19.png",
+    "leftWidth": 48,
+    "rightWidth": 44,
+    "topHeight": 24,
+    "bottomHeight": 24,
+    "textColor": "#181818"
+  },
+  {
+    "key": "hgss_20",
+    "label": "HGSS 20",
+    "file": "speech_hgss_20.png",
+    "leftWidth": 46,
+    "rightWidth": 46,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_1",
+    "label": "Platinum 1",
+    "file": "speech_pl_1.png",
+    "leftWidth": 24,
+    "rightWidth": 44,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_2",
+    "label": "Platinum 2",
+    "file": "speech_pl_2.png",
+    "leftWidth": 24,
+    "rightWidth": 44,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_3",
+    "label": "Platinum 3",
+    "file": "speech_pl_3.png",
+    "leftWidth": 24,
+    "rightWidth": 44,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_4",
+    "label": "Platinum 4",
+    "file": "speech_pl_4.png",
+    "leftWidth": 24,
+    "rightWidth": 44,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_5",
+    "label": "Platinum 5",
+    "file": "speech_pl_5.png",
+    "leftWidth": 24,
+    "rightWidth": 44,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_6",
+    "label": "Platinum 6",
+    "file": "speech_pl_6.png",
+    "leftWidth": 26,
+    "rightWidth": 42,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_7",
+    "label": "Platinum 7",
+    "file": "speech_pl_7.png",
+    "leftWidth": 22,
+    "rightWidth": 46,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_8",
+    "label": "Platinum 8",
+    "file": "speech_pl_8.png",
+    "leftWidth": 24,
+    "rightWidth": 42,
+    "topHeight": 16,
+    "bottomHeight": 16,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_9",
+    "label": "Platinum 9",
+    "file": "speech_pl_9.png",
+    "leftWidth": 22,
+    "rightWidth": 42,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_10",
+    "label": "Platinum 10",
+    "file": "speech_pl_10.png",
+    "leftWidth": 48,
+    "rightWidth": 46,
+    "topHeight": 16,
+    "bottomHeight": 16,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_11",
+    "label": "Platinum 11",
+    "file": "speech_pl_11.png",
+    "leftWidth": 22,
+    "rightWidth": 40,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_12",
+    "label": "Platinum 12",
+    "file": "speech_pl_12.png",
+    "leftWidth": 26,
+    "rightWidth": 36,
+    "topHeight": 8,
+    "bottomHeight": 8,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_13",
+    "label": "Platinum 13",
+    "file": "speech_pl_13.png",
+    "leftWidth": 28,
+    "rightWidth": 36,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_14",
+    "label": "Platinum 14",
+    "file": "speech_pl_14.png",
+    "leftWidth": 30,
+    "rightWidth": 38,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_15",
+    "label": "Platinum 15",
+    "file": "speech_pl_15.png",
+    "leftWidth": 24,
+    "rightWidth": 44,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_16",
+    "label": "Platinum 16",
+    "file": "speech_pl_16.png",
+    "leftWidth": 48,
+    "rightWidth": 46,
+    "topHeight": 16,
+    "bottomHeight": 16,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_17",
+    "label": "Platinum 17",
+    "file": "speech_pl_17.png",
+    "leftWidth": 30,
+    "rightWidth": 40,
+    "topHeight": 10,
+    "bottomHeight": 10,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_18",
+    "label": "Platinum 18",
+    "file": "speech_pl_18.png",
+    "leftWidth": 12,
+    "rightWidth": 12,
+    "topHeight": 14,
+    "bottomHeight": 14,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_19",
+    "label": "Platinum 19",
+    "file": "speech_pl_19.png",
+    "leftWidth": 48,
+    "rightWidth": 46,
+    "topHeight": 16,
+    "bottomHeight": 16,
+    "textColor": "#181818"
+  },
+  {
+    "key": "pl_20",
+    "label": "Platinum 20",
+    "file": "speech_pl_20.png",
+    "leftWidth": 18,
+    "rightWidth": 18,
+    "topHeight": 12,
+    "bottomHeight": 12,
+    "textColor": "#181818"
+  },
+  {
+    "key": "rs",
+    "label": "RS",
+    "file": "speech_rs.png",
+    "leftWidth": 22,
+    "rightWidth": 22,
+    "topHeight": 16,
+    "bottomHeight": 16,
+    "textColor": "#181818"
+  },
+  {
+    "key": "ug_1",
+    "label": "Underground 1",
+    "file": "speech_ug_1.png",
+    "leftWidth": 20,
+    "rightWidth": 42,
+    "topHeight": 8,
+    "bottomHeight": 8,
+    "textColor": "#ffffff"
+  },
+  {
+    "key": "ug_2",
+    "label": "Underground 2",
+    "file": "speech_ug_2.png",
+    "leftWidth": 16,
+    "rightWidth": 16,
+    "topHeight": 8,
+    "bottomHeight": 8,
+    "textColor": "#ffffff"
+  }
+]

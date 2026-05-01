@@ -17,6 +17,7 @@ import StrengthBoulder from '@Objects/interactables/strengthboulder.js';
 import Trainer from '@Objects/interactables/trainer.js';
 import Script from '@Objects/interactables/script.js';
 import OverworldEncounter from '@Objects/interactables/overworld_encounter.js';
+import Placeable from '@Objects/interactables/placeable.js';
 
 export default {
   Computer,
@@ -38,4 +39,5 @@ export default {
   Trainer,
   Script,
   OverworldEncounter,
+  Placeable,
 }

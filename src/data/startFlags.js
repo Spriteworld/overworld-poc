@@ -1,5 +1,10 @@
-let _flags = null;
+let _state = null;
 
-export function getStartFlags() { return _flags; }
-export function setStartFlags(flags) { _flags = flags ? { ...flags } : null; }
-export function clearStartFlags() { _flags = null; }
+export function getStartFlags() { return _state; }
+export function setStartFlags(state) {
+  if (!state) { _state = null; return; }
+  _state = { ...state };
+  if (state.flags) _state.flags = { ...state.flags };
+  if (state.game)  _state.game  = { ...state.game };
+}
+export function clearStartFlags() { _state = null; }

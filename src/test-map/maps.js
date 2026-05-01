@@ -1,448 +1,541 @@
 const MAPS = [
-  {
-    category: 'Random / Test',
-    maps: [
-      {
-        scene: 'Test',
-        title: 'Test',
-        description: 'General-purpose test map with NPCs, overworld Pokémon, item pickups, grass encounters, and a flock system.',
-        color: '#166534',
-        tags: ['npcs', 'encounters', 'items', 'flock'],
-        state: {
-          has_pokemon:       true,
-          has_cut:           false,
-          has_strength:      false,
-          follower_pokemon:  false,
-        },
-      },
-      {
-        scene: 'Forest',
-        title: 'Forest',
-        description: "Dense forest map featuring a Farfetch'd NPC with complex pathfinding AI and wild Pokémon encounters.",
-        color: '#14532d',
-        tags: ['npcs', 'encounters', 'ai'],
-        state: {
-          has_pokemon:       true,
-          has_cut:           false,
-        },
-      },
-      {
-        scene: 'SpriteViewer',
-        title: 'Sprite Viewer',
-        description: 'All 37 overworld NPC sprites in a grid. NPCs glance in a random direction every 2.5 s.',
-        color: '#374151',
-        tags: ['npcs', 'sprites'],
-        state: {
-          has_pokemon: false,
-        },
-      },
-      {
-        scene: 'Base',
-        title: 'Base',
-        description: 'Basic open-area map. Good for testing movement, collision, and general map loading.',
-        color: '#374151',
-        tags: ['basic'],
-        state: {
-          has_pokemon:       false,
-        },
-      },
-      {
-        scene: 'Skyland',
-        title: 'Skyland',
-        description: 'Elevated sky map. Tests multi-layer movement and alwaysTop tile rendering.',
-        color: '#075985',
-        tags: ['layers'],
-        state: {
-          has_pokemon:       false,
-        },
-      },
-      {
-        scene: 'VermillionGym',
-        title: 'Vermilion Gym',
-        description: 'Gym interior with puzzle-style layout. Tests indoor collision and NPC trainers.',
-        color: '#7c2d12',
-        tags: ['indoor', 'gym', 'puzzle'],
-        state: {
-          has_pokemon:       true,
-        },
-      },
-      {
-        scene: 'TurffieldGym',
-        title: 'Turffield Gym',
-        description: 'Grass-type gym interior. Tests curved paths and indoor warp tiles.',
-        color: '#3f6212',
-        tags: ['indoor', 'gym'],
-        state: {
-          has_pokemon:       true,
-        },
-      },
-      {
-        scene: 'GavWorld',
-        title: 'GavWorld',
-        description: 'GavWorld map for testing purposes.',
-        color: '#3f6212',
-        tags: [],
-        state: {
-          has_pokemon: true,
-        },
-      },
-    ],
-  },
-  {
-    category: 'Menu Screens',
-    maps: [
-      {
-        scene: 'Test',
-        pauseScreen: 'pokedex',
-        title: 'Pokédex Screen',
-        description: 'Opens the Pokédex directly on the Test map. Requires has_pokedex.',
-        color: '#7c2d12',
-        tags: ['menu', 'pokedex'],
-        state: {
-          has_pokemon: true,
-          has_pokedex: true,
-        },
-      },
-      {
-        scene: 'Test',
-        pauseScreen: 'team',
-        title: 'Team Screen',
-        description: 'Opens the party / POKÉMON screen. Party is auto-seeded with a Pikachu if empty.',
-        color: '#365314',
-        tags: ['menu', 'team'],
-        state: {
-          has_pokemon: true,
-        },
-      },
-      {
-        scene: 'Test',
-        pauseScreen: 'team-detail',
-        title: 'Team — Mon Detail',
-        description: 'Jumps straight into the first party member\'s detail view (stats / moves / info tabs).',
-        color: '#365314',
-        tags: ['menu', 'team', 'detail'],
-        state: {
-          has_pokemon: true,
-        },
-      },
-      {
-        scene: 'Test',
-        pauseScreen: 'bag',
-        title: 'Bag Screen',
-        description: 'Opens the BAG with tab switching across Items / Balls / TMs / Key.',
-        color: '#7c2d12',
-        tags: ['menu', 'bag'],
-        state: {
-          has_pokemon: true,
-        },
-      },
-      {
-        scene: 'Test',
-        pauseScreen: 'user',
-        title: 'Trainer Card',
-        description: 'Opens the user / trainer card screen — player name, money, playtime, badges.',
-        color: '#1e3a5f',
-        tags: ['menu', 'user'],
-        state: {
-          has_pokemon: true,
-        },
-      },
-      {
-        scene: 'Test',
-        pauseScreen: 'option',
-        title: 'Options Screen',
-        description: 'Opens the OPTIONS menu (text speed, volumes, character sprite, always-run toggle when shoes owned).',
-        color: '#374151',
-        tags: ['menu', 'option'],
-        state: {
-          has_running_shoes: true,
-        },
-      },
-      {
-        scene: 'Test',
-        pauseScreen: 'debug',
-        title: 'Debug Screen',
-        description: 'Opens the DEBUG menu directly (bypasses the VITE_DEBUG gate on the main pause-menu entry).',
-        color: '#111827',
-        tags: ['menu', 'debug'],
-        state: {
-          has_pokemon: true,
-        },
-      },
-    ],
-  },
-  {
-    category: 'Kanto',
-    maps: [
-      {
-        scene: 'Kanto',
-        title: 'Kanto Overworld',
-        description: 'Main Kanto region overworld. Tests large maps, outdoor encounters, and multi-area navigation.',
-        color: '#1e3a5f',
-        tags: ['overworld', 'encounters', 'large'],
-        state: {
-          has_pokemon:         false,
-          has_pokedex:         false,
-          has_running_shoes:   false,
-          has_bike:            false,
-          has_cut:             false,
-        },
-      },
-      {
-        scene: 'KantoHeroHouseF1',
-        title: "Hero's House — F1",
-        description: "Interior of the player's house, ground floor. Tests indoor warp to F2.",
-        color: '#4c1d95',
-        tags: ['indoor', 'warp'],
-        state: {
-          has_pokemon:       false,
-        },
-      },
-      {
-        scene: 'KantoHeroHouseF2',
-        title: "Hero's House — F2",
-        description: "Interior of the player's house, second floor. Tests staircase warp return.",
-        color: '#4c1d95',
-        tags: ['indoor', 'warp'],
-        state: {
-          has_pokemon:       false,
-        },
-      },
-      {
-        scene: 'KantoProfessorLab',
-        title: "Professor's Lab",
-        description: "Professor Oak's lab interior. Tests NPC interactions and lab-to-overworld warp.",
-        color: '#1e3a5f',
-        tags: ['indoor', 'npcs', 'warp'],
-        state: {
-          has_pokemon:       false,
-          has_pokedex:       false,
-        },
-      },
-      {
-        scene: 'KantoViridianCity',
-        title: 'Viridian City — Catching Tutorial',
-        description: "Talk to the old man (battle_tutor) to watch the fully auto-played catching demo. Tests tutorial / force_catch / scripted_actions / player_override — party, bag, and Pokédex must stay untouched afterwards.",
-        color: '#166534',
-        tags: ['tutorial', 'battle', 'scripted'],
-        state: {
-          has_pokemon:       true,
-          has_pokedex:       true,
-        },
-      },
-    ],
-  },
-  {
-    category: 'Shaders / Effects',
-    maps: [
-      {
-        id: 'time-grid',
-        scene: 'KantoCeruleanCity',
-        title: 'TimeOverlay — Compare Grid',
-        description: 'Cerulean City with the 4-quadrant time-of-day compare grid overlaid (Morning / Day / Evening / Night). Live-tint shader is suppressed so each panel reads its own preset on a neutral baseline. Player spawns in front of the Pokémon Center.',
-        color: '#1e293b',
-        tags: ['debug', 'shader', 'time'],
-        state: {
-          has_pokemon: false,
-        },
-        debug: {
-          time: true,
-          tests: { timeOverlay: true },
-        },
-        // One tile south of the Pokémon Center door (warp at tile 22,19) so
-        // the player faces the entrance from the path.
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      {
-        id: 'time-morning',
-        scene: 'KantoCeruleanCity',
-        title: 'TimeOverlay — Morning',
-        description: 'Cerulean City pinned to the Morning preset (real-world clock ignored). Subtle blue tint, very mild desat — sun-up baseline.',
-        color: '#1e3a5f',
-        tags: ['debug', 'shader', 'time'],
-        state: { has_pokemon: false },
-        debug: { time: true, forceTimeOfDay: 'morning' },
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      {
-        id: 'time-day',
-        scene: 'KantoCeruleanCity',
-        title: 'TimeOverlay — Day',
-        description: 'Cerulean City pinned to the Day preset. No tint, just a faint baseline desat to soften raw pixel-art chroma.',
-        color: '#1e293b',
-        tags: ['debug', 'shader', 'time'],
-        state: { has_pokemon: false },
-        debug: { time: true, forceTimeOfDay: 'day' },
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      {
-        id: 'time-evening',
-        scene: 'KantoCeruleanCity',
-        title: 'TimeOverlay — Evening',
-        description: 'Cerulean City pinned to the Evening preset. Warm orange tint, mild desat — golden-hour cast.',
-        color: '#7c2d12',
-        tags: ['debug', 'shader', 'time'],
-        state: { has_pokemon: false },
-        debug: { time: true, forceTimeOfDay: 'evening' },
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      {
-        id: 'time-night',
-        scene: 'KantoCeruleanCity',
-        title: 'TimeOverlay — Night',
-        description: 'Cerulean City pinned to the Night preset. Strong blue tint and 40% desat — torches/lights carve full-colour pockets via the saturation-recover shader.',
-        color: '#1e1b4b',
-        tags: ['debug', 'shader', 'time', 'lights'],
-        state: { has_pokemon: false },
-        debug: { time: true, forceTimeOfDay: 'night' },
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      {
-        id: 'weather-light-rain',
-        scene: 'KantoCeruleanCity',
-        title: 'Weather — Light Rain',
-        description: 'Cerulean City pinned to light_rain. Sparse drops, soft slate-blue tint, gentle wind drift; small splashes on land, larger ripples on water tiles.',
-        color: '#475569',
-        tags: ['debug', 'shader', 'weather', 'rain'],
-        state: { has_pokemon: false },
-        debug: { forceWeatherType: 'light_rain' },
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      {
-        id: 'weather-heavy-rain',
-        scene: 'KantoCeruleanCity',
-        title: 'Weather — Heavy Rain',
-        description: 'Cerulean City pinned to heavy_rain. Dense drops, deeper tint, faster fall, 30% scene desaturation; stronger wind gusts slant the streaks.',
-        color: '#1e293b',
-        tags: ['debug', 'shader', 'weather', 'rain'],
-        state: { has_pokemon: false },
-        debug: { forceWeatherType: 'heavy_rain' },
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      {
-        id: 'weather-light-fog',
-        scene: 'KantoCeruleanCity',
-        title: 'Weather — Light Fog',
-        description: 'Cerulean City pinned to light_fog. Thin drifting cloud-noise field, slow right-to-left motion, gentle cool tint. Texture randomized between fog_diagonal / fog_horizontal.',
-        color: '#94a3b8',
-        tags: ['debug', 'shader', 'weather', 'fog'],
-        state: { has_pokemon: false },
-        debug: { forceWeatherType: 'light_fog' },
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      {
-        id: 'weather-fog',
-        scene: 'KantoCeruleanCity',
-        title: 'Weather — Fog',
-        description: 'Cerulean City pinned to fog. Thicker drifting cloud field, banks visibly roll past as the player moves. Texture randomized between fog_diagonal / fog_horizontal.',
-        color: '#64748b',
-        tags: ['debug', 'shader', 'weather', 'fog'],
-        state: { has_pokemon: false },
-        debug: { forceWeatherType: 'fog' },
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      {
-        id: 'weather-harsh-sunlight',
-        scene: 'KantoCeruleanCity',
-        title: 'Weather — Harsh Sunlight',
-        description: 'Cerulean City pinned to harsh_sunlight. Boosted contrast, lifted brightness, warm yellow tint biased toward highlights — midday glare baseline.',
-        color: '#ca8a04',
-        tags: ['debug', 'shader', 'weather', 'sunlight'],
-        state: { has_pokemon: false },
-        debug: { forceWeatherType: 'harsh_sunlight' },
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      {
-        id: 'weather-sandstorm',
-        scene: 'KantoCeruleanCity',
-        title: 'Weather — Sandstorm',
-        description: 'Cerulean City pinned to sandstorm. Muddy-orange scene wash, mild desat, warm sand specks whip past at 80 px/s right-to-left over a fast-tiled particle texture.',
-        color: '#7c4f0a',
-        tags: ['debug', 'shader', 'weather', 'sandstorm'],
-        state: { has_pokemon: false },
-        debug: { forceWeatherType: 'sandstorm' },
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      {
-        id: 'weather-snow',
-        scene: 'KantoCeruleanCity',
-        title: 'Weather — Snow',
-        description: 'Cerulean City pinned to snow. Three-layer parallax flakes (bulk snow1 + mid snow0 + hero snow0). Each flake falls top-to-bottom in one motion with random speed and downward angle.',
-        color: '#475569',
-        tags: ['debug', 'shader', 'weather', 'snow'],
-        state: { has_pokemon: false },
-        debug: { forceWeatherType: 'snow' },
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      {
-        id: 'weather-heavy-snow',
-        scene: 'KantoCeruleanCity',
-        title: 'Weather — Heavy Snow',
-        description: 'Cerulean City pinned to heavy_snow. Maxed density (all 408 flakes active), 2.8× faster fall than standard snow, stormier wind drift, thicker overcast tint, and +18% map contrast — blizzard baseline.',
-        color: '#1e3a5f',
-        tags: ['debug', 'shader', 'weather', 'snow'],
-        state: { has_pokemon: false },
-        debug: { forceWeatherType: 'heavy_snow' },
-        playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-      },
-      // Time × Weather combos — generated from the cross-product of time
-      // presets and weather types, all on CeruleanCity outside the PokéCenter.
-      ...(() => {
-        const times = [
-          { key: 'morning', label: 'Morning', color: '#1e3a5f' },
-          { key: 'day',     label: 'Day',     color: '#1e293b' },
-          { key: 'evening', label: 'Evening', color: '#7c2d12' },
-          { key: 'night',   label: 'Night',   color: '#1e1b4b' },
-        ];
-        const weathers = [
-          { key: 'light_rain',     label: 'Light Rain',     tag: 'rain' },
-          { key: 'heavy_rain',     label: 'Heavy Rain',     tag: 'rain' },
-          { key: 'light_fog',      label: 'Light Fog',      tag: 'fog' },
-          { key: 'fog',            label: 'Fog',            tag: 'fog' },
-          { key: 'harsh_sunlight', label: 'Harsh Sunlight', tag: 'sunlight' },
-          { key: 'sandstorm',      label: 'Sandstorm',      tag: 'sandstorm' },
-          { key: 'snow',           label: 'Snow',           tag: 'snow' },
-          { key: 'heavy_snow',     label: 'Heavy Snow',     tag: 'snow' },
-        ];
-        return times.flatMap(t => weathers.map(w => ({
-          id: `combo-${t.key}-${w.key}`,
-          scene: 'KantoCeruleanCity',
-          title: `${t.label} + ${w.label}`,
-          description: `Cerulean City with ${t.label.toLowerCase()} time-of-day and ${w.label.toLowerCase()} weather active simultaneously.`,
-          color: t.color,
-          tags: ['debug', 'shader', 'combo', 'time', w.tag],
-          state: { has_pokemon: false },
-          debug: { time: true, forceTimeOfDay: t.key, forceWeatherType: w.key },
-          playerLocation: { x: 22, y: 20, charLayer: 'ground' },
-        })));
-      })(),
-      {
-        id: 'waterfx-compare',
-        scene: 'WaterFxCompare',
-        title: 'WaterFx — Split Compare',
-        description: 'Route 21 split into two cameras side by side. Left has the water shader, right shows the raw tiles. Walk near the water to compare.',
-        color: '#0c4a6e',
-        tags: ['debug', 'shader', 'water', 'compare'],
-        state: {
-          has_pokemon: false,
-          has_surf: true,
-        },
-        debug: { waterFx: true },
-        playerLocation: { x: 26, y: 42, charLayer: 'ground' },
-      },
-      {
-        id: 'darkness-test',
-        scene: 'DarknessTest',
-        title: 'Darkness — Cave Lights',
-        description: 'Dark cave with can_see=false. 10 hand-placed lights (varied colours, some glowing) plus 5 random lights spawned each load. Player carries the standard 2.5-tile torch. Tests metaball merging, glow tweens, and colour mixing.',
-        color: '#111827',
-        tags: ['debug', 'shader', 'darkness', 'lights'],
-        state: {
-          has_flash: false,
-        },
-      },
-    ],
-  },
+    {
+        category: "Random / Test",
+        maps: [
+            {
+                scene: "Test",
+                title: "Test",
+                description:
+                    "General-purpose test map with NPCs, overworld Pokémon, item pickups, grass encounters, and a flock system.",
+                color: "#166534",
+                tags: ["npcs", "encounters", "items", "flock"],
+                state: {
+                    flags: {
+                        has_pokemon: true,
+                        has_cut: false,
+                        has_strength: false,
+                        follower_pokemon: false,
+                    },
+                },
+            },
+            {
+                scene: "Forest",
+                title: "Forest",
+                description:
+                    "Dense forest map featuring a Farfetch'd NPC with complex pathfinding AI and wild Pokémon encounters.",
+                color: "#14532d",
+                tags: ["npcs", "encounters", "ai"],
+                state: {
+                    flags: {
+                        has_pokemon: true,
+                        has_cut: false,
+                    },
+                },
+            },
+            {
+                scene: "SpriteViewer",
+                title: "Sprite Viewer",
+                description:
+                    "All 37 overworld NPC sprites in a grid. NPCs glance in a random direction every 2.5 s.",
+                color: "#374151",
+                tags: ["npcs", "sprites"],
+                state: {
+                    flags: {
+                        has_pokemon: false,
+                    },
+                },
+            },
+            {
+                scene: "Base",
+                title: "Base",
+                description:
+                    "Basic open-area map. Good for testing movement, collision, and general map loading.",
+                color: "#374151",
+                tags: ["basic"],
+                state: {
+                    flags: {
+                        has_pokemon: false,
+                    },
+                },
+            },
+            {
+                scene: "Skyland",
+                title: "Skyland",
+                description:
+                    "Elevated sky map. Tests multi-layer movement and alwaysTop tile rendering.",
+                color: "#075985",
+                tags: ["layers"],
+                state: {
+                    flags: {
+                        has_pokemon: false,
+                    },
+                },
+            },
+            {
+                scene: "KantoVermilionGym",
+                title: "Vermilion Gym",
+                description:
+                    "Gym interior with puzzle-style layout. Tests indoor collision and NPC trainers.",
+                color: "#7c2d12",
+                tags: ["indoor", "gym", "puzzle"],
+                state: {
+                    game: {
+                        seed: Math.floor(Math.random() * 0x100000000) >>> 0,
+                    },
+                    flags: {
+                        has_pokemon: true,
+                    },
+                },
+            },
+            {
+                scene: "TurffieldGym",
+                title: "Turffield Gym",
+                description:
+                    "Grass-type gym interior. Tests curved paths and indoor warp tiles.",
+                color: "#3f6212",
+                tags: ["indoor", "gym"],
+                state: {
+                    flags: {
+                        has_pokemon: true,
+                    },
+                },
+            },
+            {
+                scene: "GavWorld",
+                title: "GavWorld",
+                description: "GavWorld map for testing purposes.",
+                color: "#3f6212",
+                tags: [],
+                state: {
+                    flags: {
+                        has_pokemon: true,
+                    },
+                },
+            },
+        ],
+    },
+    {
+        category: "Menu Screens",
+        maps: [
+            {
+                scene: "Test",
+                pauseScreen: "pokedex",
+                title: "Pokédex Screen",
+                description:
+                    "Opens the Pokédex directly on the Test map. Requires has_pokedex.",
+                color: "#7c2d12",
+                tags: ["menu", "pokedex"],
+                state: {
+                    flags: {
+                        has_pokemon: true,
+                        has_pokedex: true,
+                    },
+                },
+            },
+            {
+                scene: "Test",
+                pauseScreen: "team",
+                title: "Team Screen",
+                description:
+                    "Opens the party / POKÉMON screen. Party is auto-seeded with a Pikachu if empty.",
+                color: "#365314",
+                tags: ["menu", "team"],
+                state: {
+                    flags: {
+                        has_pokemon: true,
+                    },
+                },
+            },
+            {
+                scene: "Test",
+                pauseScreen: "team-detail",
+                title: "Team — Mon Detail",
+                description:
+                    "Jumps straight into the first party member's detail view (stats / moves / info tabs).",
+                color: "#365314",
+                tags: ["menu", "team", "detail"],
+                state: {
+                    flags: {
+                        has_pokemon: true,
+                    },
+                },
+            },
+            {
+                scene: "Test",
+                pauseScreen: "bag",
+                title: "Bag Screen",
+                description:
+                    "Opens the BAG with tab switching across Items / Balls / TMs / Key.",
+                color: "#7c2d12",
+                tags: ["menu", "bag"],
+                state: {
+                    flags: {
+                        has_pokemon: true,
+                    },
+                },
+            },
+            {
+                scene: "Test",
+                pauseScreen: "user",
+                title: "Trainer Card",
+                description:
+                    "Opens the user / trainer card screen — player name, money, playtime, badges.",
+                color: "#1e3a5f",
+                tags: ["menu", "user"],
+                state: {
+                    flags: {
+                        has_pokemon: true,
+                    },
+                },
+            },
+            {
+                scene: "Test",
+                pauseScreen: "option",
+                title: "Options Screen",
+                description:
+                    "Opens the OPTIONS menu (text speed, volumes, character sprite, always-run toggle when shoes owned).",
+                color: "#374151",
+                tags: ["menu", "option"],
+                state: {
+                    flags: {
+                        has_running_shoes: true,
+                    },
+                },
+            },
+            {
+                scene: "Test",
+                pauseScreen: "debug",
+                title: "Debug Screen",
+                description:
+                    "Opens the DEBUG menu directly (bypasses the VITE_DEBUG gate on the main pause-menu entry).",
+                color: "#111827",
+                tags: ["menu", "debug"],
+                state: {
+                    flags: {
+                        has_pokemon: true,
+                    },
+                },
+            },
+        ],
+    },
+    {
+        category: "Kanto",
+        maps: [
+            {
+                scene: "Kanto",
+                title: "Kanto Overworld",
+                description:
+                    "Main Kanto region overworld. Tests large maps, outdoor encounters, and multi-area navigation.",
+                color: "#1e3a5f",
+                tags: ["overworld", "encounters", "large"],
+                state: {
+                    flags: {
+                        has_pokemon: false,
+                        has_pokedex: false,
+                        has_running_shoes: false,
+                        has_bike: false,
+                        has_cut: false,
+                    },
+                },
+            },
+            {
+                scene: "KantoHeroHouseF1",
+                title: "Hero's House — F1",
+                description:
+                    "Interior of the player's house, ground floor. Tests indoor warp to F2.",
+                color: "#4c1d95",
+                tags: ["indoor", "warp"],
+                state: {
+                    flags: {
+                        has_pokemon: false,
+                    },
+                },
+            },
+            {
+                scene: "KantoHeroHouseF2",
+                title: "Hero's House — F2",
+                description:
+                    "Interior of the player's house, second floor. Tests staircase warp return.",
+                color: "#4c1d95",
+                tags: ["indoor", "warp"],
+                state: {
+                    flags: {
+                        has_pokemon: false,
+                    },
+                },
+            },
+            {
+                scene: "KantoProfessorLab",
+                title: "Professor's Lab",
+                description:
+                    "Professor Oak's lab interior. Tests NPC interactions and lab-to-overworld warp.",
+                color: "#1e3a5f",
+                tags: ["indoor", "npcs", "warp"],
+                state: {
+                    flags: {
+                        has_pokemon: false,
+                        has_pokedex: false,
+                    },
+                },
+            },
+            {
+                scene: "KantoViridianCity",
+                title: "Viridian City — Catching Tutorial",
+                description:
+                    "Talk to the old man (battle_tutor) to watch the fully auto-played catching demo. Tests tutorial / force_catch / scripted_actions / player_override — party, bag, and Pokédex must stay untouched afterwards.",
+                color: "#166534",
+                tags: ["tutorial", "battle", "scripted"],
+                state: {
+                    flags: {
+                        has_pokemon: true,
+                        has_pokedex: true,
+                    },
+                },
+            },
+        ],
+    },
+    {
+        category: "Shaders / Effects",
+        maps: [
+            {
+                id: "time-grid",
+                scene: "KantoCeruleanCity",
+                title: "TimeOverlay — Compare Grid",
+                description:
+                    "Cerulean City with the 4-quadrant time-of-day compare grid overlaid (Morning / Day / Evening / Night). Live-tint shader is suppressed so each panel reads its own preset on a neutral baseline. Player spawns in front of the Pokémon Center.",
+                color: "#1e293b",
+                tags: ["debug", "shader", "time"],
+                state: {
+                    flags: {
+                        has_pokemon: false,
+                    },
+                },
+                debug: {
+                    time: true,
+                    tests: { timeOverlay: true },
+                },
+                // One tile south of the Pokémon Center door (warp at tile 22,19) so
+                // the player faces the entrance from the path.
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            {
+                id: "time-morning",
+                scene: "KantoCeruleanCity",
+                title: "TimeOverlay — Morning",
+                description:
+                    "Cerulean City pinned to the Morning preset (real-world clock ignored). Subtle blue tint, very mild desat — sun-up baseline.",
+                color: "#1e3a5f",
+                tags: ["debug", "shader", "time"],
+                state: { flags: { has_pokemon: false } },
+                debug: { time: true, forceTimeOfDay: "morning" },
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            {
+                id: "time-day",
+                scene: "KantoCeruleanCity",
+                title: "TimeOverlay — Day",
+                description:
+                    "Cerulean City pinned to the Day preset. No tint, just a faint baseline desat to soften raw pixel-art chroma.",
+                color: "#1e293b",
+                tags: ["debug", "shader", "time"],
+                state: { flags: { has_pokemon: false } },
+                debug: { time: true, forceTimeOfDay: "day" },
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            {
+                id: "time-evening",
+                scene: "KantoCeruleanCity",
+                title: "TimeOverlay — Evening",
+                description:
+                    "Cerulean City pinned to the Evening preset. Warm orange tint, mild desat — golden-hour cast.",
+                color: "#7c2d12",
+                tags: ["debug", "shader", "time"],
+                state: { flags: { has_pokemon: false } },
+                debug: { time: true, forceTimeOfDay: "evening" },
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            {
+                id: "time-night",
+                scene: "KantoCeruleanCity",
+                title: "TimeOverlay — Night",
+                description:
+                    "Cerulean City pinned to the Night preset. Strong blue tint and 40% desat — torches/lights carve full-colour pockets via the saturation-recover shader.",
+                color: "#1e1b4b",
+                tags: ["debug", "shader", "time", "lights"],
+                state: { flags: { has_pokemon: false } },
+                debug: { time: true, forceTimeOfDay: "night" },
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            {
+                id: "weather-light-rain",
+                scene: "KantoCeruleanCity",
+                title: "Weather — Light Rain",
+                description:
+                    "Cerulean City pinned to light_rain. Sparse drops, soft slate-blue tint, gentle wind drift; small splashes on land, larger ripples on water tiles.",
+                color: "#475569",
+                tags: ["debug", "shader", "weather", "rain"],
+                state: { flags: { has_pokemon: false } },
+                debug: { forceWeatherType: "light_rain" },
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            {
+                id: "weather-heavy-rain",
+                scene: "KantoCeruleanCity",
+                title: "Weather — Heavy Rain",
+                description:
+                    "Cerulean City pinned to heavy_rain. Dense drops, deeper tint, faster fall, 30% scene desaturation; stronger wind gusts slant the streaks.",
+                color: "#1e293b",
+                tags: ["debug", "shader", "weather", "rain"],
+                state: { flags: { has_pokemon: false } },
+                debug: { forceWeatherType: "heavy_rain" },
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            {
+                id: "weather-light-fog",
+                scene: "KantoCeruleanCity",
+                title: "Weather — Light Fog",
+                description:
+                    "Cerulean City pinned to light_fog. Thin drifting cloud-noise field, slow right-to-left motion, gentle cool tint. Texture randomized between fog_diagonal / fog_horizontal.",
+                color: "#94a3b8",
+                tags: ["debug", "shader", "weather", "fog"],
+                state: { flags: { has_pokemon: false } },
+                debug: { forceWeatherType: "light_fog" },
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            {
+                id: "weather-fog",
+                scene: "KantoCeruleanCity",
+                title: "Weather — Fog",
+                description:
+                    "Cerulean City pinned to fog. Thicker drifting cloud field, banks visibly roll past as the player moves. Texture randomized between fog_diagonal / fog_horizontal.",
+                color: "#64748b",
+                tags: ["debug", "shader", "weather", "fog"],
+                state: { flags: { has_pokemon: false } },
+                debug: { forceWeatherType: "fog" },
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            {
+                id: "weather-harsh-sunlight",
+                scene: "KantoCeruleanCity",
+                title: "Weather — Harsh Sunlight",
+                description:
+                    "Cerulean City pinned to harsh_sunlight. Boosted contrast, lifted brightness, warm yellow tint biased toward highlights — midday glare baseline.",
+                color: "#ca8a04",
+                tags: ["debug", "shader", "weather", "sunlight"],
+                state: { flags: { has_pokemon: false } },
+                debug: { forceWeatherType: "harsh_sunlight" },
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            {
+                id: "weather-sandstorm",
+                scene: "KantoCeruleanCity",
+                title: "Weather — Sandstorm",
+                description:
+                    "Cerulean City pinned to sandstorm. Muddy-orange scene wash, mild desat, warm sand specks whip past at 80 px/s right-to-left over a fast-tiled particle texture.",
+                color: "#7c4f0a",
+                tags: ["debug", "shader", "weather", "sandstorm"],
+                state: { flags: { has_pokemon: false } },
+                debug: { forceWeatherType: "sandstorm" },
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            {
+                id: "weather-snow",
+                scene: "KantoCeruleanCity",
+                title: "Weather — Snow",
+                description:
+                    "Cerulean City pinned to snow. Three-layer parallax flakes (bulk snow1 + mid snow0 + hero snow0). Each flake falls top-to-bottom in one motion with random speed and downward angle.",
+                color: "#475569",
+                tags: ["debug", "shader", "weather", "snow"],
+                state: { flags: { has_pokemon: false } },
+                debug: { forceWeatherType: "snow" },
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            {
+                id: "weather-heavy-snow",
+                scene: "KantoCeruleanCity",
+                title: "Weather — Heavy Snow",
+                description:
+                    "Cerulean City pinned to heavy_snow. Maxed density (all 408 flakes active), 2.8× faster fall than standard snow, stormier wind drift, thicker overcast tint, and +18% map contrast — blizzard baseline.",
+                color: "#1e3a5f",
+                tags: ["debug", "shader", "weather", "snow"],
+                state: { flags: { has_pokemon: false } },
+                debug: { forceWeatherType: "heavy_snow" },
+                playerLocation: { x: 22, y: 20, charLayer: "ground" },
+            },
+            // Time × Weather combos — generated from the cross-product of time
+            // presets and weather types, all on CeruleanCity outside the PokéCenter.
+            ...(() => {
+                const times = [
+                    { key: "morning", label: "Morning", color: "#1e3a5f" },
+                    { key: "day", label: "Day", color: "#1e293b" },
+                    { key: "evening", label: "Evening", color: "#7c2d12" },
+                    { key: "night", label: "Night", color: "#1e1b4b" },
+                ];
+                const weathers = [
+                    { key: "light_rain", label: "Light Rain", tag: "rain" },
+                    { key: "heavy_rain", label: "Heavy Rain", tag: "rain" },
+                    { key: "light_fog", label: "Light Fog", tag: "fog" },
+                    { key: "fog", label: "Fog", tag: "fog" },
+                    {
+                        key: "harsh_sunlight",
+                        label: "Harsh Sunlight",
+                        tag: "sunlight",
+                    },
+                    { key: "sandstorm", label: "Sandstorm", tag: "sandstorm" },
+                    { key: "snow", label: "Snow", tag: "snow" },
+                    { key: "heavy_snow", label: "Heavy Snow", tag: "snow" },
+                ];
+                return times.flatMap((t) =>
+                    weathers.map((w) => ({
+                        id: `combo-${t.key}-${w.key}`,
+                        scene: "KantoCeruleanCity",
+                        title: `${t.label} + ${w.label}`,
+                        description: `Cerulean City with ${t.label.toLowerCase()} time-of-day and ${w.label.toLowerCase()} weather active simultaneously.`,
+                        color: t.color,
+                        tags: ["debug", "shader", "combo", "time", w.tag],
+                        state: { flags: { has_pokemon: false } },
+                        debug: {
+                            time: true,
+                            forceTimeOfDay: t.key,
+                            forceWeatherType: w.key,
+                        },
+                        playerLocation: { x: 22, y: 20, charLayer: "ground" },
+                    })),
+                );
+            })(),
+            {
+                id: "waterfx-compare",
+                scene: "WaterFxCompare",
+                title: "WaterFx — Split Compare",
+                description:
+                    "Route 21 split into two cameras side by side. Left has the water shader, right shows the raw tiles. Walk near the water to compare.",
+                color: "#0c4a6e",
+                tags: ["debug", "shader", "water", "compare"],
+                state: {
+                    flags: {
+                        has_pokemon: false,
+                        has_surf: true,
+                    },
+                },
+                debug: { waterFx: true },
+                playerLocation: { x: 26, y: 42, charLayer: "ground" },
+            },
+            {
+                id: "darkness-test",
+                scene: "DarknessTest",
+                title: "Darkness — Cave Lights",
+                description:
+                    "Dark cave with can_see=false. 10 hand-placed lights (varied colours, some glowing) plus 5 random lights spawned each load. Player carries the standard 2.5-tile torch. Tests metaball merging, glow tweens, and colour mixing.",
+                color: "#111827",
+                tags: ["debug", "shader", "darkness", "lights"],
+                state: {
+                    flags: {
+                        has_flash: false,
+                    },
+                },
+            },
+        ],
+    },
 ];
 
 export default MAPS;

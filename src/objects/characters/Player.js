@@ -149,7 +149,16 @@ export default class extends Character {
 
     this.gridengine.setSpeed(this.config.id, moveSpeed);
 
-    if (im?.isDown(Action.LEFT)) {
+    // Edge-triggered CONFIRM (matches idleOnUpdate / bikeOnUpdate). Without
+    // this, mounting surf via A required releasing the direction key first —
+    // bumping water with autoSurf off then pressing A did nothing because
+    // moveOnUpdate skipped the interactable check.
+    const confirmDown = !!im?.isDown(Action.CONFIRM);
+    const confirmJustPressed = confirmDown && !this._confirmHeldLastFrame;
+    this._confirmHeldLastFrame = confirmDown;
+    if (confirmJustPressed) {
+      this.handleInteractables();
+    } else if (im?.isDown(Action.LEFT)) {
       this.handleMove(Direction.LEFT);
     } else if (im?.isDown(Action.RIGHT)) {
       this.handleMove(Direction.RIGHT);
@@ -408,26 +417,36 @@ export default class extends Character {
    * Uses `positionChangeStarted` as the reliable "move was accepted" signal —
    * set up by the player interactable plugin via `_lastMoveSucceededAt`.
    *
-   * Also handles the autoSurf "walk onto water" plumbing: with autoSurf +
-   * has_surf, briefly drop tile collision around the move so grid-engine
-   * accepts the step onto the water tile. The actual SURF transition fires
-   * from the positionChangeFinished subscription in interactables/player.js
-   * once the move settles — keeps the mount check tied to tile entry rather
-   * than the push attempt.
+   * Water guard: water tiles are off-limits to non-surfers regardless of the
+   * tile's ge_collide flag (some animated water frames are missing it). The
+   * autoSurf + has_surf combo is the one sanctioned exception — instead of
+   * stepping onto the water tile, this transitions to SURF directly so
+   * surfOnEnter runs the hop-onto-water animation, matching the manual
+   * A-button mount visually.
    */
   handleMove(dir) {
     const dirLower = dir.toLowerCase();
+    const inSurf = this.stateMachine.currentState?.name === this.stateDef.SURF;
     let autoSurfStep = false;
+    let blockedByWater = false;
     if (this.getFacingDirection() === dirLower) {
-      if (
-        store.state.game.autoSurf &&
-        store.state.game.gameFlags?.has_surf &&
-        this.stateMachine.currentState?.name !== this.stateDef.SURF &&
-        !this.gridengine.isMoving(this.config.id)
-      ) {
-        const target = this.getPosInDirection(dir);
-        if (this.config.scene.isWaterTile?.(target.x, target.y)) {
+      const target = this.getPosInDirection(dir);
+      const targetIsWater = !!this.config.scene.isWaterTile?.(target.x, target.y);
+
+      if (targetIsWater && !inSurf) {
+        // Auto-mount path: both flags set and not already mid-move.
+        if (
+          store.state.game.autoSurf &&
+          store.state.game.gameFlags?.has_surf &&
+          !this.gridengine.isMoving(this.config.id)
+        ) {
           autoSurfStep = true;
+        } else {
+          // Hard guard: water is off-limits to non-surfers regardless of the
+          // tile's ge_collide flag. Some animated water frames in the tilesets
+          // are missing ge_collide (e.g. gen3_outside tile 296), which would
+          // otherwise let the player walk straight onto water.
+          blockedByWater = true;
         }
       }
 
@@ -456,9 +475,32 @@ export default class extends Character {
       this._moveBlockedSoundPlayed = false;
     }
 
-    if (autoSurfStep) this._setCollidesWithTiles(false);
+    if (blockedByWater) {
+      // Mirror Character.handleMove's blocked-tile signal so anything listening
+      // (UI cues, debug overlays) treats this the same as bumping any wall.
+      const target = this.getPosInDirection(dir);
+      const key = `${target.x},${target.y}`;
+      if (this._lastBlockedTile !== key) {
+        this._lastBlockedTile = key;
+        this.config.scene.game.events.emit('player-blocked-tile', target);
+      }
+      return;
+    }
+
+    if (autoSurfStep) {
+      // Switch to SURF before the step lands, not after — surfOnEnter's
+      // _hopToTile then runs the forward hop onto the water tile (matching
+      // the manual A-button mount's animation). Letting GridEngine step
+      // first would put us on water and trigger the alreadyOnWater branch,
+      // skipping the hop. The positionChangeFinished subscription in
+      // interactables/player.js stays as a safety net for non-walked entries
+      // (warps/scripts/ledges onto water) and no-ops if SURF is already on.
+      this.stateMachine.setState(this.stateDef.SURF);
+      store.commit('game/SET_ON_SURF', true);
+      return;
+    }
+
     Character.prototype.handleMove.call(this, dir);
-    if (autoSurfStep) this._setCollidesWithTiles(true);
   }
 
   /**

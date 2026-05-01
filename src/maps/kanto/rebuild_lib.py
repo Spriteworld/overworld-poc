@@ -28,6 +28,17 @@ SRC_DIR     = MAPS_DIR.parent.parent           # src/
 TILESET_DIR = SRC_DIR / 'tileset'
 
 
+def tileset_png_path(ts_json):
+    """Resolve a tileset JSON's 'image' field to an absolute PNG path.
+    Tiled sometimes writes machine-specific absolute paths; fall back to
+    the basename inside TILESET_DIR when the stored path doesn't exist."""
+    raw = ts_json.get('image', '')
+    candidate = TILESET_DIR / raw
+    if candidate.exists():
+        return candidate
+    return TILESET_DIR / pathlib.PurePosixPath(raw).name
+
+
 # ── Layer scaffolding ──────────────────────────────────────────────────────
 
 def make_layer(name, w, h, ge_char_layer=None):
@@ -121,16 +132,22 @@ def sync_layer_properties(layers, layer_char):
 # ── Master-file inspection ──────────────────────────────────────────────────
 
 def load_master(path):
-    """Read a Tiled master JSON and return (data, tilelayers_dict, interactions_objects, maps_layer)."""
+    """Read a Tiled master JSON and return (data, tilelayers_dict, interactions_objects, maps_layer, placeables_objects, scripts_objects)."""
     with open(path) as f:
         master = json.load(f)
     tilelayers = {l['name']: l for l in master['layers'] if l['type'] == 'tilelayer'}
     inter = next((l for l in master['layers']
                   if l['type'] == 'objectgroup' and l['name'] == 'interactions'), None)
     inter_objs = inter['objects'] if inter else []
+    placeable = next((l for l in master['layers']
+                      if l['type'] == 'objectgroup' and l['name'] == 'placeables'), None)
+    placeable_objs = placeable['objects'] if placeable else []
+    scripts = next((l for l in master['layers']
+                    if l['type'] == 'objectgroup' and l['name'] == 'scripts'), None)
+    scripts_objs = scripts['objects'] if scripts else []
     maps_layer = next((l for l in master['layers']
                        if l['name'] == 'maps' and l['type'] == 'objectgroup'), None)
-    return master, tilelayers, inter_objs, maps_layer
+    return master, tilelayers, inter_objs, maps_layer, placeable_objs, scripts_objs
 
 
 def discover_firstgids(master, source_substrings):

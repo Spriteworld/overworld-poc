@@ -1,93 +1,79 @@
 {
  "columns": 16,
  "image": "kanto_outside.png",
- "imageheight": 1472,
+ "imageheight": 1376,
  "imagewidth": 512,
  "margin": 0,
  "name": "kanto_outside",
  "spacing": 0,
- "tilecount": 736,
+ "tilecount": 688,
  "tiledversion": "1.12.1",
  "tileheight": 32,
  "tilewidth": 32,
  "tiles": [
   {
    "id": 0,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
+   "properties": []
   },
   {
    "id": 1,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
+   "properties": []
   },
   {
    "id": 2,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
+   "properties": []
   },
   {
    "id": 3,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
+   "properties": []
   },
   {
    "id": 4,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
+   "properties": []
   },
   {
    "id": 5,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
+   "properties": []
   },
   {
    "id": 6,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    }
-   ]
+   "properties": []
   },
   {
    "id": 7,
-   "properties": [
+   "properties": [],
+   "animation": [
     {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": false
+     "duration": 100,
+     "tileid": 0
+    },
+    {
+     "duration": 100,
+     "tileid": 1
+    },
+    {
+     "duration": 100,
+     "tileid": 2
+    },
+    {
+     "duration": 100,
+     "tileid": 3
+    },
+    {
+     "duration": 100,
+     "tileid": 4
+    },
+    {
+     "duration": 100,
+     "tileid": 5
+    },
+    {
+     "duration": 100,
+     "tileid": 6
+    },
+    {
+     "duration": 100,
+     "tileid": 7
     }
    ]
   },
@@ -98,11 +84,6 @@
      "name": "ge_collide",
      "type": "bool",
      "value": false
-    },
-    {
-     "name": "type",
-     "type": "int",
-     "value": 1
     }
    ]
   },
@@ -112,7 +93,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -122,7 +103,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -132,7 +113,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -183,6 +164,11 @@
      "name": "ge_collide",
      "type": "bool",
      "value": false
+    },
+    {
+     "name": "type",
+     "type": "int",
+     "value": 1
     }
    ]
   },
@@ -232,7 +218,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -262,7 +248,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -272,7 +258,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -282,7 +268,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -292,7 +278,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -302,7 +288,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -332,7 +318,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -352,7 +338,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -732,7 +718,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -742,7 +728,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -752,7 +738,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -1262,7 +1248,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1332,7 +1318,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1432,7 +1418,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1440,29 +1426,9 @@
    "id": 142,
    "properties": [
     {
-     "name": "ge_collide_down",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_up",
+     "name": "ge_collide",
      "type": "bool",
      "value": false
-    },
-    {
-     "name": "sw_jump",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -1472,7 +1438,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -1480,29 +1446,9 @@
    "id": 144,
    "properties": [
     {
-     "name": "ge_collide_down",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_up",
+     "name": "ge_collide",
      "type": "bool",
      "value": false
-    },
-    {
-     "name": "sw_jump",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -1510,29 +1456,9 @@
    "id": 145,
    "properties": [
     {
-     "name": "ge_collide_down",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_right",
+     "name": "ge_collide",
      "type": "bool",
      "value": false
-    },
-    {
-     "name": "ge_collide_up",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_jump",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -1540,29 +1466,9 @@
    "id": 146,
    "properties": [
     {
-     "name": "ge_collide_down",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_left",
+     "name": "ge_collide",
      "type": "bool",
      "value": false
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_up",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_jump",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -1578,7 +1484,13 @@
   },
   {
    "id": 148,
-   "properties": []
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
   },
   {
    "id": 149,
@@ -1634,7 +1546,27 @@
    "id": 152,
    "properties": [
     {
-     "name": "ge_collide",
+     "name": "ge_collide_down",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_up",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "sw_jump",
      "type": "bool",
      "value": true
     }
@@ -1644,7 +1576,27 @@
    "id": 153,
    "properties": [
     {
-     "name": "ge_collide",
+     "name": "ge_collide_down",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_up",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_jump",
      "type": "bool",
      "value": true
     }
@@ -1654,7 +1606,27 @@
    "id": 154,
    "properties": [
     {
-     "name": "ge_collide",
+     "name": "ge_collide_down",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_up",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_jump",
      "type": "bool",
      "value": true
     }
@@ -1672,13 +1644,7 @@
   },
   {
    "id": 156,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    }
-   ]
+   "properties": []
   },
   {
    "id": 157,
@@ -1694,7 +1660,27 @@
    "id": 158,
    "properties": [
     {
-     "name": "ge_collide",
+     "name": "ge_collide_down",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_up",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "sw_jump",
      "type": "bool",
      "value": true
     }
@@ -1827,16 +1813,6 @@
      "name": "ge_collide",
      "type": "bool",
      "value": true
-    },
-    {
-     "name": "sw_smooth_water",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -1847,16 +1823,6 @@
      "name": "ge_collide",
      "type": "bool",
      "value": true
-    },
-    {
-     "name": "sw_smooth_water",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -1865,16 +1831,6 @@
    "properties": [
     {
      "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_smooth_water",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -2027,16 +1983,6 @@
      "name": "ge_collide",
      "type": "bool",
      "value": true
-    },
-    {
-     "name": "sw_smooth_water",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -2045,16 +1991,6 @@
    "properties": [
     {
      "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_smooth_water",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -2087,6 +2023,16 @@
      "name": "ge_collide",
      "type": "bool",
      "value": true
+    },
+    {
+     "name": "sw_smooth_water",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_water",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -2095,6 +2041,16 @@
    "properties": [
     {
      "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_smooth_water",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -2137,6 +2093,16 @@
      "name": "ge_collide",
      "type": "bool",
      "value": true
+    },
+    {
+     "name": "sw_smooth_water",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_water",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -2145,6 +2111,16 @@
    "properties": [
     {
      "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_smooth_water",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -2156,7 +2132,17 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
+    },
+    {
+     "name": "sw_smooth_water",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_water",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -2186,7 +2172,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -2236,7 +2222,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -2266,12 +2252,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
-     "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -2280,11 +2261,6 @@
    "properties": [
     {
      "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -2297,11 +2273,6 @@
      "name": "ge_collide",
      "type": "bool",
      "value": true
-    },
-    {
-     "name": "sw_water",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -2311,7 +2282,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -2320,11 +2291,6 @@
    "properties": [
     {
      "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -2337,11 +2303,6 @@
      "name": "ge_collide",
      "type": "bool",
      "value": true
-    },
-    {
-     "name": "sw_water",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -2350,11 +2311,6 @@
    "properties": [
     {
      "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -2421,7 +2377,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -2430,6 +2386,11 @@
    "properties": [
     {
      "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -2442,6 +2403,11 @@
      "name": "ge_collide",
      "type": "bool",
      "value": true
+    },
+    {
+     "name": "sw_water",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -2450,6 +2416,11 @@
    "properties": [
     {
      "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -2461,7 +2432,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -2471,7 +2442,12 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
+    },
+    {
+     "name": "sw_water",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -2481,7 +2457,12 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
+    },
+    {
+     "name": "sw_water",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -2490,6 +2471,11 @@
    "properties": [
     {
      "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -2551,7 +2537,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -2561,7 +2547,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -2671,7 +2657,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -2681,7 +2667,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -2691,7 +2677,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -2701,7 +2687,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -2751,7 +2737,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -2761,7 +2747,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -2771,7 +2757,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -2921,7 +2907,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -3001,7 +2987,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -4019,14 +4005,9 @@
    "id": 377,
    "properties": [
     {
-     "name": "ge_alwaysTop",
-     "type": "bool",
-     "value": true
-    },
-    {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -4044,24 +4025,9 @@
    "id": 379,
    "properties": [
     {
-     "name": "ge_collide_down",
+     "name": "ge_collide",
      "type": "bool",
      "value": true
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_up",
-     "type": "bool",
-     "value": false
     }
    ]
   },
@@ -4069,24 +4035,9 @@
    "id": 380,
    "properties": [
     {
-     "name": "ge_collide_down",
+     "name": "ge_collide",
      "type": "bool",
      "value": true
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_up",
-     "type": "bool",
-     "value": false
     }
    ]
   },
@@ -4094,24 +4045,9 @@
    "id": 381,
    "properties": [
     {
-     "name": "ge_collide_down",
+     "name": "ge_collide",
      "type": "bool",
      "value": true
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_up",
-     "type": "bool",
-     "value": false
     }
    ]
   },
@@ -4119,22 +4055,7 @@
    "id": 382,
    "properties": [
     {
-     "name": "ge_collide_down",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_up",
+     "name": "ge_collide",
      "type": "bool",
      "value": true
     }
@@ -4144,24 +4065,9 @@
    "id": 383,
    "properties": [
     {
-     "name": "ge_collide_down",
+     "name": "ge_collide",
      "type": "bool",
      "value": true
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_up",
-     "type": "bool",
-     "value": false
     }
    ]
   },
@@ -4169,24 +4075,9 @@
    "id": 384,
    "properties": [
     {
-     "name": "ge_collide_down",
+     "name": "ge_collide",
      "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_up",
-     "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -4194,22 +4085,12 @@
    "id": 385,
    "properties": [
     {
-     "name": "ge_collide_down",
+     "name": "ge_alwaysTop",
      "type": "bool",
-     "value": false
+     "value": true
     },
     {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_right",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_up",
+     "name": "ge_collide",
      "type": "bool",
      "value": false
     }
@@ -4219,24 +4100,9 @@
    "id": 386,
    "properties": [
     {
-     "name": "ge_collide_down",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_left",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "ge_collide_right",
+     "name": "ge_collide",
      "type": "bool",
      "value": true
-    },
-    {
-     "name": "ge_collide_up",
-     "type": "bool",
-     "value": false
     }
    ]
   },
@@ -4246,17 +4112,17 @@
     {
      "name": "ge_collide_down",
      "type": "bool",
-     "value": false
+     "value": true
     },
     {
      "name": "ge_collide_left",
      "type": "bool",
-     "value": true
+     "value": false
     },
     {
      "name": "ge_collide_right",
      "type": "bool",
-     "value": false
+     "value": true
     },
     {
      "name": "ge_collide_up",
@@ -4271,12 +4137,12 @@
     {
      "name": "ge_collide_down",
      "type": "bool",
-     "value": false
+     "value": true
     },
     {
      "name": "ge_collide_left",
      "type": "bool",
-     "value": false
+     "value": true
     },
     {
      "name": "ge_collide_right",
@@ -4296,7 +4162,7 @@
     {
      "name": "ge_collide_down",
      "type": "bool",
-     "value": false
+     "value": true
     },
     {
      "name": "ge_collide_left",
@@ -4306,7 +4172,7 @@
     {
      "name": "ge_collide_right",
      "type": "bool",
-     "value": false
+     "value": true
     },
     {
      "name": "ge_collide_up",
@@ -4326,17 +4192,17 @@
     {
      "name": "ge_collide_left",
      "type": "bool",
-     "value": false
+     "value": true
     },
     {
      "name": "ge_collide_right",
      "type": "bool",
-     "value": true
+     "value": false
     },
     {
      "name": "ge_collide_up",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -4381,12 +4247,12 @@
     {
      "name": "ge_collide_right",
      "type": "bool",
-     "value": true
+     "value": false
     },
     {
      "name": "ge_collide_up",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -4411,12 +4277,37 @@
     {
      "name": "ge_collide_up",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
   {
    "id": 394,
+   "properties": [
+    {
+     "name": "ge_collide_down",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_up",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 395,
    "properties": [
     {
      "name": "ge_collide_down",
@@ -4436,17 +4327,7 @@
     {
      "name": "ge_collide_up",
      "type": "bool",
-     "value": true
-    }
-   ]
-  },
-  {
-   "id": 395,
-   "properties": [
-    {
-     "name": "ge_collide",
-     "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -4454,9 +4335,24 @@
    "id": 396,
    "properties": [
     {
-     "name": "ge_collide",
+     "name": "ge_collide_down",
      "type": "bool",
-     "value": true
+     "value": false
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_up",
+     "type": "bool",
+     "value": false
     }
    ]
   },
@@ -4464,9 +4360,24 @@
    "id": 397,
    "properties": [
     {
-     "name": "ge_collide",
+     "name": "ge_collide_down",
      "type": "bool",
-     "value": true
+     "value": false
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_up",
+     "type": "bool",
+     "value": false
     }
    ]
   },
@@ -4474,9 +4385,24 @@
    "id": 398,
    "properties": [
     {
-     "name": "ge_collide",
+     "name": "ge_collide_down",
      "type": "bool",
      "value": true
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_up",
+     "type": "bool",
+     "value": false
     }
    ]
   },
@@ -4484,9 +4410,24 @@
    "id": 399,
    "properties": [
     {
-     "name": "ge_collide",
+     "name": "ge_collide_down",
      "type": "bool",
      "value": true
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_up",
+     "type": "bool",
+     "value": false
     }
    ]
   },
@@ -4494,7 +4435,22 @@
    "id": 400,
    "properties": [
     {
-     "name": "ge_collide",
+     "name": "ge_collide_down",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_up",
      "type": "bool",
      "value": true
     }
@@ -4504,7 +4460,22 @@
    "id": 401,
    "properties": [
     {
-     "name": "ge_collide",
+     "name": "ge_collide_down",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_up",
      "type": "bool",
      "value": true
     }
@@ -4514,7 +4485,22 @@
    "id": 402,
    "properties": [
     {
-     "name": "ge_collide",
+     "name": "ge_collide_down",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_left",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "ge_collide_right",
+     "type": "bool",
+     "value": false
+    },
+    {
+     "name": "ge_collide_up",
      "type": "bool",
      "value": true
     }
@@ -4766,7 +4752,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -4776,7 +4762,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -4796,7 +4782,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -4826,7 +4812,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -4836,7 +4822,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -4856,7 +4842,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -4876,7 +4862,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -5056,7 +5042,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -5086,7 +5072,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -5136,7 +5122,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -5146,7 +5132,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -5156,7 +5142,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -5306,7 +5292,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -5316,7 +5302,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -5326,7 +5312,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -5386,7 +5372,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -5396,7 +5382,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -5406,7 +5392,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -6056,7 +6042,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -6136,7 +6122,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -6836,7 +6822,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -6906,7 +6892,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -6926,7 +6912,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
     }
    ]
   },
@@ -6965,11 +6951,6 @@
    "properties": [
     {
      "name": "ge_collide",
-     "type": "bool",
-     "value": false
-    },
-    {
-     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -7016,11 +6997,6 @@
      "name": "ge_collide",
      "type": "bool",
      "value": true
-    },
-    {
-     "name": "sw_water",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -7030,12 +7006,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
-     "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -7045,12 +7016,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
-     "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -7060,12 +7026,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
-     "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -7074,11 +7035,6 @@
    "properties": [
     {
      "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -7091,11 +7047,6 @@
      "name": "ge_collide",
      "type": "bool",
      "value": true
-    },
-    {
-     "name": "sw_water",
-     "type": "bool",
-     "value": true
     }
    ]
   },
@@ -7104,11 +7055,6 @@
    "properties": [
     {
      "name": "ge_collide",
-     "type": "bool",
-     "value": true
-    },
-    {
-     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -7121,20 +7067,29 @@
      "name": "ge_collide",
      "type": "bool",
      "value": false
+    },
+    {
+     "name": "sw_water",
+     "type": "bool",
+     "value": true
     }
    ],
    "animation": [
     {
      "duration": 360,
-     "tileid": 655
+     "tileid": 662
     },
     {
      "duration": 360,
-     "tileid": 656
+     "tileid": 661
     },
     {
      "duration": 360,
-     "tileid": 657
+     "tileid": 660
+    },
+    {
+     "duration": 360,
+     "tileid": 659
     },
     {
      "duration": 360,
@@ -7142,7 +7097,15 @@
     },
     {
      "duration": 360,
-     "tileid": 659
+     "tileid": 657
+    },
+    {
+     "duration": 360,
+     "tileid": 656
+    },
+    {
+     "duration": 360,
+     "tileid": 655
     }
    ]
   },
@@ -7152,7 +7115,12 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
+    },
+    {
+     "name": "sw_water",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -7162,7 +7130,12 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
+    },
+    {
+     "name": "sw_water",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -7172,7 +7145,12 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
+    },
+    {
+     "name": "sw_water",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -7182,7 +7160,12 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": false
+     "value": true
+    },
+    {
+     "name": "sw_water",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -7191,6 +7174,11 @@
    "properties": [
     {
      "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -7203,6 +7191,11 @@
      "name": "ge_collide",
      "type": "bool",
      "value": true
+    },
+    {
+     "name": "sw_water",
+     "type": "bool",
+     "value": true
     }
    ]
   },
@@ -7211,6 +7204,11 @@
    "properties": [
     {
      "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "name": "sw_water",
      "type": "bool",
      "value": true
     }
@@ -7222,7 +7220,29 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
+    }
+   ],
+   "animation": [
+    {
+     "duration": 360,
+     "tileid": 663
+    },
+    {
+     "duration": 360,
+     "tileid": 664
+    },
+    {
+     "duration": 360,
+     "tileid": 665
+    },
+    {
+     "duration": 360,
+     "tileid": 666
+    },
+    {
+     "duration": 360,
+     "tileid": 667
     }
    ]
   },
@@ -7232,7 +7252,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -7242,7 +7262,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -7252,7 +7272,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -7262,7 +7282,7 @@
     {
      "name": "ge_collide",
      "type": "bool",
-     "value": true
+     "value": false
     }
    ]
   },
@@ -7368,35 +7388,83 @@
   },
   {
    "id": 678,
-   "properties": []
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
   },
   {
    "id": 679,
-   "properties": []
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
   },
   {
    "id": 680,
-   "properties": []
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
   },
   {
    "id": 681,
-   "properties": []
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
   },
   {
    "id": 682,
-   "properties": []
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
   },
   {
    "id": 683,
-   "properties": []
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
   },
   {
    "id": 684,
-   "properties": []
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
   },
   {
    "id": 685,
-   "properties": []
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
   },
   {
    "id": 686,

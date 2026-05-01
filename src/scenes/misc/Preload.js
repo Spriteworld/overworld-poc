@@ -7,6 +7,7 @@ import { loadGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
 import { getStartScene } from '@Data/startScene.js';
 import { getGameDef } from '@Data/gameDef.js';
+import windowSkins from '@Data/windowSkins.json';
 import { getStartFlags, clearStartFlags } from '@Data/startFlags.js';
 import { getStartDebug, clearStartDebug } from '@Data/startDebug.js';
 import { getStartPlayerLocation, clearStartPlayerLocation } from '@Data/startPlayerLocation.js';
@@ -102,6 +103,10 @@ export default class extends Phaser.Scene {
     TYPE_NAMES.forEach(t     => this._loadResized(`type-${t}`,     `tileset/ui/types/${t}.png`,     24, 24));
     CATEGORY_NAMES.forEach(c => this._loadResized(`category-${c}`, `tileset/ui/categories/${c}.png`, 24, 24));
 
+    for (const skin of windowSkins) {
+      this.load.image(`win_${skin.key}`, `tileset/ui/windows/${skin.file}`);
+    }
+
     this.load.spritesheet('animated_grass', Tileset.animated_grass, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
     this.load.spritesheet('animation', Tileset.animation_sheet, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
     this.load.spritesheet('gen3_inside', Tileset.gen3inside, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
@@ -148,7 +153,7 @@ export default class extends Phaser.Scene {
     this.createTrainerAnimations();
 
     // Capture before clearing so we can reapply after loadGame().
-    const startFlags = getStartFlags();
+    const startState = getStartFlags();
     clearStartFlags();
 
     if (isTestMode()) {
@@ -163,6 +168,13 @@ export default class extends Phaser.Scene {
     } else {
       loadGame();
     }
+
+    // Apply scenario-level game-state overrides (e.g. seed) before RNG init
+    // so the overridden seed takes effect immediately.
+    if (startState?.game) {
+      Object.assign(store.state.game, startState.game);
+    }
+
     initRng(store.state.game.seed);
 
     if (!getInputManager()) {
@@ -171,9 +183,9 @@ export default class extends Phaser.Scene {
 
     // Apply test-harness flags AFTER loadGame() so they override any saved state.
     // Write to both game.config.gameFlags (Phaser-level) and the Vuex store.
-    if (startFlags) {
-      Object.assign(this.game.config.gameFlags, startFlags);
-      store.commit('game/PATCH_FLAGS', startFlags);
+    if (startState?.flags) {
+      Object.assign(this.game.config.gameFlags, startState.flags);
+      store.commit('game/PATCH_FLAGS', startState.flags);
     }
 
     // Test-harness debug overrides — deep-merge into game.config.debug so a
@@ -199,7 +211,7 @@ export default class extends Phaser.Scene {
     //                content to render. Save is blocked while test mode is on,
     //                so nothing here reaches localStorage.
     //   Other test scenes → single Pikachu (legacy behaviour).
-    if (startFlags && store.state.party.list.length === 0) {
+    if (startState && store.state.party.list.length === 0) {
       if (getStartScene() === 'Test') {
         // Visibility rates intentionally inflated above the real drop rates so
         // menu screens actually render the flags most of the time.

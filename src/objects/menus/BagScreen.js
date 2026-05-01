@@ -118,7 +118,7 @@ export default class BagScreen {
       : (key === 'items' && entries.some(e => OVERWORLD_USABLE.has(e.name ?? '')))
         ? '◀▶ switch tab   ▲▼ select   Z  use   X  back'
         : '◀▶ switch tab   ▲▼ scroll   X  back';
-    reg(scene.add.text(SX + 16, SY + SH - 22, hint, TEXT_STYLE_HINT));
+    reg(scene.add.text(SX + SW - 16, SY + SH - 32, hint, TEXT_STYLE_HINT)).setOrigin(1, 0);
 
     // Submenu overlay
     if (this._subMenu) {

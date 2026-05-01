@@ -42,7 +42,7 @@ export default class PokedexScreen {
   rebuild() {
     this.menu._clearSubTexts();
     this.build();
-    this.menu.reg(this.menu.scene.add.text(SX + 16, SY + SH - 22, 'X  back', TEXT_STYLE_HINT));
+    this.menu.reg(this.menu.scene.add.text(SX + SW - 16, SY + SH - 32, 'X  back', TEXT_STYLE_HINT)).setOrigin(1, 0);
   }
 
   build() {

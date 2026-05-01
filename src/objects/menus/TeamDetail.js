@@ -49,6 +49,6 @@ export default class TeamDetail {
   }
 
   _hint() {
-    this.menu.reg(this.menu.scene.add.text(SX + 16, SY + SH - 22, HINT, TEXT_STYLE_HINT));
+    this.menu.reg(this.menu.scene.add.text(SX + SW - 16, SY + SH - 32, HINT, TEXT_STYLE_HINT)).setOrigin(1, 0);
   }
 }

@@ -14,6 +14,9 @@ import UserScreen        from './menus/UserScreen.js';
 import OptionScreen      from './menus/OptionScreen.js';
 import DebugScreen       from './menus/DebugScreen.js';
 import OnlineScreen      from './menus/OnlineScreen.js';
+import { WINDOW_STYLES } from './common/windowStyles.js';
+import tiledNineSlice from './common/tiledNineSlice.js';
+import store from '../store/index.js';
 
 
 const MENU_DEPTH = Number.MAX_SAFE_INTEGER - 100;
@@ -69,6 +72,13 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     this._rebuildMainPanel();
     this._buildSubPanel();
 
+    // Content container — added last so it renders on top of panel backgrounds.
+    // Offset by the window style's padding so all sub-screen objects sit inside
+    // the 9-slice border.
+    this._content = new Phaser.GameObjects.Container(scene, 0, 0);
+    this.add(this._content);
+    this._updateContentOffset();
+
     this.setDepth(MENU_DEPTH);
     this.setVisible(false);
     scene.add.existing(this);
@@ -82,7 +92,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
    * @returns {Phaser.GameObjects.GameObject} The same object, for chaining.
    */
   reg(obj) {
-    this.add(obj);
+    this._content.add(obj);
     this._subTexts.push(obj);
     return obj;
   }
@@ -111,18 +121,26 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     const items  = this._activeItems();
     const panelH = items.length * ITEM_H + PAD * 2;
 
-    this._mainBg = this.scene.add.graphics();
-    this._mainBg.fillStyle(0xf8f8f8, 1);
-    this._mainBg.fillRect(MX, MY, MW, panelH);
-    this._mainBg.lineStyle(3, 0x181818, 1);
-    this._mainBg.strokeRect(MX, MY, MW, panelH);
+    const style = WINDOW_STYLES[store.state.game.windowStyle];
+    const px = style?.padL ?? 0;
+    const py = style?.padY ?? 0;
+    if (style?.texture && this.scene.textures.exists(style.texture)) {
+      this._mainBg = tiledNineSlice(this.scene, style.texture, MW, panelH, style, this._nineSliceScale());
+      this._mainBg.setPosition(MX, MY);
+    } else {
+      this._mainBg = this.scene.add.graphics();
+      this._mainBg.fillStyle(0xf8f8f8, 1);
+      this._mainBg.fillRect(MX, MY, MW, panelH);
+      this._mainBg.lineStyle(3, 0x181818, 1);
+      this._mainBg.strokeRect(MX, MY, MW, panelH);
+    }
     this.add(this._mainBg);
 
-    this._cursorText = this.scene.add.text(MX + PAD, MY + PAD, '▶', TEXT_STYLE);
+    this._cursorText = this.scene.add.text(MX + PAD + px, MY + PAD + py, '▶', TEXT_STYLE);
     this.add(this._cursorText);
 
     items.forEach(({ label }, i) => {
-      const t = this.scene.add.text(MX + PAD + 18, MY + PAD + i * ITEM_H, label, TEXT_STYLE);
+      const t = this.scene.add.text(MX + PAD + 18 + px, MY + PAD + i * ITEM_H + py, label, TEXT_STYLE);
       this.add(t);
       this._mainTexts.push(t);
     });
@@ -130,13 +148,48 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
 
   /** Builds the blank sub-panel background that sub-screens render inside. */
   _buildSubPanel() {
-    this._subBg = this.scene.add.graphics();
-    this._subBg.fillStyle(0xf8f8f8, 1);
-    this._subBg.fillRect(SX, SY, SW, SH);
-    this._subBg.lineStyle(3, 0x181818, 1);
-    this._subBg.strokeRect(SX, SY, SW, SH);
+    this._subBg?.destroy();
+    const style = WINDOW_STYLES[store.state.game.windowStyle];
+    if (style?.texture && this.scene.textures.exists(style.texture)) {
+      this._subBg = tiledNineSlice(this.scene, style.texture, SW, SH, style, this._nineSliceScale());
+      this._subBg.setPosition(SX, SY);
+    } else {
+      this._subBg = this.scene.add.graphics();
+      this._subBg.fillStyle(0xf8f8f8, 1);
+      this._subBg.fillRect(SX, SY, SW, SH);
+      this._subBg.lineStyle(3, 0x181818, 1);
+      this._subBg.strokeRect(SX, SY, SW, SH);
+    }
     this.add(this._subBg);
     this._subBg.setVisible(false);
+  }
+
+  _nineSliceScale() {
+    const { width, height } = this.scene.scale;
+    const uiScale  = store.state.game.uiScale ?? 1;
+    const maxScale = Math.min(width / 800, height / 600);
+    const fitScale = width >= 1024 ? maxScale : width < 768 ? 0.5 : 1;
+    return Math.ceil(Math.min(fitScale * uiScale, maxScale));
+  }
+
+  _updateContentOffset() {
+    const style = WINDOW_STYLES[store.state.game.windowStyle];
+    this._content.setPosition(style?.padL ?? 0, style?.padY ?? 0);
+  }
+
+  refreshWindowStyle() {
+    const wasSubVisible = this._subBg?.visible;
+    this._rebuildMainPanel();
+    this._buildSubPanel();
+    this.bringToTop(this._content);
+    this._updateContentOffset();
+    if (wasSubVisible) this._subBg.setVisible(true);
+    if (this._currentScreen !== null) {
+      this._showSubPanel();
+      this._transitionTo(this._currentScreen);
+    } else {
+      this._updateCursor();
+    }
   }
 
   // ─── Visibility helpers ──────────────────────────────────────────────────
@@ -168,7 +221,8 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
 
   /** Move the cursor arrow to the row matching the current selected index. */
   _updateCursor() {
-    this._cursorText.setY(MY + PAD + this._selectedIndex * ITEM_H);
+    const py = WINDOW_STYLES[store.state.game.windowStyle]?.padY ?? 0;
+    this._cursorText.setY(MY + PAD + this._selectedIndex * ITEM_H + py);
   }
 
   // ─── Screen transitions ──────────────────────────────────────────────────
@@ -206,7 +260,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
         this.userScreen.build();
         break;
       case 'option':
-        this.optionScreen.show();
+        this.optionScreen.build();
         break;
       case 'debug':
         this.debugScreen.build();
@@ -227,7 +281,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
   _buildPlaceholderScreen(name) {
     this.reg(this.scene.add.text(SX + 16, SY + 16, name.toUpperCase(), TEXT_STYLE_BOLD));
     this.reg(this.scene.add.text(SX + 16, SY + 52, 'Not yet implemented.', TEXT_STYLE_BODY));
-    this.reg(this.scene.add.text(SX + 16, SY + SH - 22, 'X  back', TEXT_STYLE_HINT));
+    this.reg(this.scene.add.text(SX + SW - 16, SY + SH - 32, 'X  back', TEXT_STYLE_HINT)).setOrigin(1, 0);
   }
 
   // ─── Public API ──────────────────────────────────────────────────────────
@@ -240,6 +294,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
     this._currentScreen = null;
     this._clearSubTexts();
     this._rebuildMainPanel();
+    this.bringToTop(this._content);
     this._showMainPanel();
     this.setVisible(true);
   }
@@ -400,6 +455,7 @@ export default class PauseMenu extends Phaser.GameObjects.Container {
   showSubScreen(type) {
     if (type === 'team')    this.teamScreen.reset();
     if (type === 'pokedex') this.pokedexScreen.reset();
+    if (type === 'option')  this.optionScreen._cursor = 0;
     this._showSubPanel();
     this._transitionTo(type);
   }

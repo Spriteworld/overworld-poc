@@ -2,19 +2,24 @@
 """
 Sync individual interior map JSON files from spriteworld_inside.json.
 
-spriteworld_inside.json is edited in Tiled using one or two source tilesets:
-  - gen3_inside.png  (firstgid=1, required)
-  - gen3_outside.png (optional — present only when interior tiles re-use
-                       outdoor sprites; firstgids discovered dynamically)
+spriteworld_inside.json is edited in Tiled and may reference any number of
+source tilesets (auto-discovered from the master's tilesets array).
 
-This script converts those combined source GIDs → spriteworld_inside GIDs when
-writing individual map files (which use a single spriteworld_inside tileset).
+This script converts the combined source GIDs from those tilesets into a
+two-tileset layout that the engine consumes:
+  - spriteworld_common  (inherited — written by update_spriteworld.py)
+  - spriteworld_inside  (owned — written here)
+
+Tiles from sources that also appear in the outdoor gid_map.json are resolved
+through it (common range only). ALL OTHER source tiles are assigned compact
+inside-owned GIDs starting at common_count + 1.
 
 What this script does
 ─────────────────────
-1. Reads spriteworld_inside.json's "maps" objectgroup to derive each named area's
+1. Catalogues every source tileset in spriteworld_inside.json.
+2. Reads spriteworld_inside.json's "maps" objectgroup to derive each named area's
    tile bounds.
-2. For each map file:
+3. For each map file:
    - Creates it if it doesn't exist (standard inside-map layer skeleton).
    - Resizes its tilelayers if the tile dimensions have changed.
    - Extracts tile data from spriteworld_inside.json, remapping combined source GIDs
@@ -24,18 +29,20 @@ What this script does
      inside_gid_map.json so subsequent runs keep the assignment stable.
    - Merges interaction objects (matched by name) from spriteworld_inside.json's
      "interactions" objectgroup.
-3. Ensures all overworld item/obstacle tiles (Pokeball, CutTree, Bush,
+4. Ensures all overworld item/obstacle tiles (Pokeball, CutTree, Bush,
    StrengthBoulder) from gen3_outside are present in spriteworld_common so that
    BaseItem subclasses work correctly in interior maps.
-4. Rebuilds spriteworld_inside.png from scratch every run, sourcing pixels from
-   gen3_inside.png.
-5. Writes the updated spriteworld_inside tileset JSON (tile properties synced from
+5. Rebuilds spriteworld_inside.png from scratch every run, sourcing pixels from
+   the appropriate source PNG per tile.
+6. Writes the updated spriteworld_inside tileset JSON (tile properties synced from
    source tilesets for any GID newly added).
-6. For any map not already registered in the JS source files, creates a
+7. For any map not already registered in the JS source files, creates a
    Phaser scene file and updates src/maps/index.js and src/scenes/index.js.
 """
 
 import json
+import pathlib
+import sys
 
 import rebuild_lib as lib
 
@@ -76,22 +83,63 @@ def make_inside_tilesets(common_count):
     ]
 
 
+# ── Master tileset cataloguing ──────────────────────────────────────────────
+
+def catalogue_master_tilesets(master):
+    """Auto-discover all tilesets in the master JSON by resolving each
+    source path to its canonical file in TILESET_DIR.
+    Returns [(firstgid, source_name, tile_count, source_json), ...] sorted
+    by firstgid ascending. Aborts if a tileset JSON cannot be found."""
+    entries = []
+    for ts in master.get('tilesets', []):
+        src = ts.get('source', '')
+        name = pathlib.PurePosixPath(src).stem
+        ts_path = lib.TILESET_DIR / f'{name}.json'
+        if not ts_path.exists():
+            print(f'  ERROR: cannot resolve tileset source "{src}" '
+                  f'— expected {ts_path}')
+            sys.exit(1)
+        with open(ts_path) as f:
+            ts_json = json.load(f)
+        entries.append((ts['firstgid'], name, ts_json.get('tilecount', 0), ts_json))
+    entries.sort(key=lambda e: e[0])
+    return entries
+
+
+def src_gid_to_source(src_gid, catalogue):
+    """Resolve a master GID to (source_name, 0-based tile_id, source_json).
+    Returns (None, None, None) on miss."""
+    for fg, name, count, ts_json in reversed(catalogue):
+        if fg <= src_gid < fg + count:
+            return name, src_gid - fg, ts_json
+    return None, None, None
+
+
 # ── GID conversion ─────────────────────────────────────────────────────────
 
-def build_compact_gid_map(master_tilelayers, gen3_inside_firstgid,
-                           gen3_outside_firstgid, gen3_raw_to_spriteworld, common_count):
+def build_compact_gid_map(master_tilelayers, catalogue,
+                           outdoor_gid_lookup, outdoor_source_names, common_count):
     """
     Build src_gid → map_gid mapping for indoor maps using the two-tileset
     layout:
-    - gen3_outside tiles → spriteworld_common GID (1..common_count) via gid_map.json
-    - gen3_inside  tiles → compact starting at common_count + 1
+    - Tiles from outdoor sources → spriteworld_common GID (1..common_count)
+      via outdoor_gid_lookup, but ONLY if the resolved GID <= common_count
+    - All other tiles → compact inside range starting at common_count + 1
 
-    `gen3_outside_firstgid` may be None if the master no longer references
-    gen3_outside; in that case all tiles come from gen3_inside.
+    Existing assignments in inside_gid_map.json are preserved so that adding
+    a new source tileset doesn't reshuffle every GID.
 
     Returns (src_to_map_gid, map_gid_to_src, gid_map_raw, gid_map_path).
     """
     INSIDE_FIRSTGID = common_count + 1
+    gid_map_path = lib.MAPS_DIR / 'inside_gid_map.json'
+
+    prev_src_to_map = {}
+    if gid_map_path.exists():
+        with open(gid_map_path) as f:
+            prev = json.load(f)
+        prev_src_to_map = {int(k): int(v)
+                           for k, v in prev.get('src_to_map_gid', {}).items()}
 
     all_src_gids = sorted({
         gid
@@ -100,56 +148,65 @@ def build_compact_gid_map(master_tilelayers, gen3_inside_firstgid,
         if gid != 0
     })
 
-    if gen3_outside_firstgid is not None:
-        extra_outside = [gen3_outside_firstgid + tid for tid in ITEM_TILE_IDS]
-        all_src_gids  = sorted(set(all_src_gids) | set(extra_outside))
-        inside_src_gids  = [g for g in all_src_gids if g < gen3_outside_firstgid]
-        outside_src_gids = [g for g in all_src_gids if g >= gen3_outside_firstgid]
-    else:
-        inside_src_gids  = list(all_src_gids)
-        outside_src_gids = []
+    # Ensure ITEM_TILE_IDS from gen3_outside are included if gen3_outside is
+    # among the outdoor sources.
+    if 'gen3_outside' in outdoor_source_names:
+        extra_item_gids = set()
+        for fg, name, count, _ in catalogue:
+            if name == 'gen3_outside':
+                for tid in ITEM_TILE_IDS:
+                    extra_item_gids.add(fg + tid)
+                break
+        all_src_gids = sorted(set(all_src_gids) | extra_item_gids)
 
     src_to_map_gid = {}
-    for src_gid in outside_src_gids:
-        tile_id      = src_gid - gen3_outside_firstgid
-        gen3_raw_gid = tile_id + 1
-        kgid = gen3_raw_to_spriteworld.get(gen3_raw_gid)
-        if kgid is not None:
-            src_to_map_gid[src_gid] = kgid
+    needs_assignment = []
 
-    for i, src_gid in enumerate(inside_src_gids):
-        src_to_map_gid[src_gid] = INSIDE_FIRSTGID + i
+    for src_gid in all_src_gids:
+        name, tid, _ = src_gid_to_source(src_gid, catalogue)
+        if name is None:
+            continue
+        if name in outdoor_source_names:
+            kgid = outdoor_gid_lookup.get((name, tid))
+            if kgid is not None and kgid <= common_count:
+                src_to_map_gid[src_gid] = kgid
+            elif src_gid in prev_src_to_map:
+                src_to_map_gid[src_gid] = prev_src_to_map[src_gid]
+            else:
+                needs_assignment.append(src_gid)
+        elif src_gid in prev_src_to_map:
+            src_to_map_gid[src_gid] = prev_src_to_map[src_gid]
+        else:
+            needs_assignment.append(src_gid)
+
+    existing_inside = [g for g in src_to_map_gid.values() if g >= INSIDE_FIRSTGID]
+    next_gid = max(existing_inside, default=INSIDE_FIRSTGID - 1) + 1
+
+    for src_gid in needs_assignment:
+        src_to_map_gid[src_gid] = next_gid
+        next_gid += 1
 
     map_gid_to_src = {v: k for k, v in src_to_map_gid.items()}
     gid_map_raw    = {
         'src_to_map_gid': {str(k): v for k, v in src_to_map_gid.items()},
         'map_gid_to_src': {str(k): v for k, v in map_gid_to_src.items()},
     }
-    gid_map_path = lib.MAPS_DIR / 'inside_gid_map.json'
     return src_to_map_gid, map_gid_to_src, gid_map_raw, gid_map_path
 
 
-def src_gid_to_tile_id(src_gid, gen3_inside_firstgid, gen3_outside_firstgid):
-    """Resolve a master GID back to (source_name, 0-based tile_id)."""
-    if gen3_outside_firstgid is not None and src_gid >= gen3_outside_firstgid:
-        return 'gen3_outside', src_gid - gen3_outside_firstgid
-    return 'gen3_inside', src_gid - gen3_inside_firstgid
-
-
-def ensure_inside_tile(inside_ts_json, map_gid, src_gid, props_indices,
-                        common_count, gen3_inside_firstgid, gen3_outside_firstgid):
+def ensure_inside_tile(inside_ts_json, map_gid, source, tid,
+                        src_props_indices, common_count):
     """
     Ensure inside tileset JSON has a tile entry for `map_gid` with
     up-to-date properties synced from the source tileset. Only call for
-    gen3_inside tiles (map_gid >= common_count + 1) — common-range tiles
+    inside-owned tiles (map_gid >= common_count + 1) — common-range tiles
     are owned by spriteworld_common.json (written by update_spriteworld.py).
     """
     INSIDE_FIRSTGID = common_count + 1
     tile_id  = map_gid - INSIDE_FIRSTGID
     tiles    = inside_ts_json.setdefault('tiles', [])
 
-    src_name, src_tid = src_gid_to_tile_id(src_gid, gen3_inside_firstgid, gen3_outside_firstgid)
-    props = props_indices.get(src_name, {}).get(src_tid, [])
+    props = src_props_indices.get(source, {}).get(tid, [])
 
     existing = next((t for t in tiles if t['id'] == tile_id), None)
     if existing is None:
@@ -161,10 +218,9 @@ def ensure_inside_tile(inside_ts_json, map_gid, src_gid, props_indices,
     return False
 
 
-def remap_data(data, src_to_map_gid, map_gid_to_src,
-                inside_ts_json, props_indices, gid_map_raw,
-                new_mappings, common_count,
-                gen3_inside_firstgid, gen3_outside_firstgid):
+def remap_data(data, catalogue, src_to_map_gid, map_gid_to_src,
+                inside_ts_json, src_props_indices, gid_map_raw,
+                new_mappings, common_count):
     """
     Convert a flat tile-data array from combined src GIDs to map GIDs.
     Tiles with no existing mapping are assigned the next available map GID
@@ -192,41 +248,77 @@ def remap_data(data, src_to_map_gid, map_gid_to_src,
                 gid_map_raw['src_to_map_gid'][str(src_gid)] = igid
                 gid_map_raw['map_gid_to_src'][str(igid)]    = src_gid
         if igid >= INSIDE_FIRSTGID:
-            if ensure_inside_tile(inside_ts_json, igid, src_gid, props_indices,
-                                  common_count, gen3_inside_firstgid,
-                                  gen3_outside_firstgid):
-                ts_modified = True
+            name, tid, _ = src_gid_to_source(src_gid, catalogue)
+            if name is not None:
+                if ensure_inside_tile(inside_ts_json, igid, name, tid,
+                                      src_props_indices, common_count):
+                    ts_modified = True
         out.append(igid)
 
     return out, ts_modified
 
 
+# ── PNG composition ────────────────────────────────────────────────────────
+
 def update_inside_png(src_to_map_gid, common_count, inside_ts_json,
-                     inside_ts_path, gen3_inside_firstgid, gen3_outside_firstgid):
-    """Rebuild spriteworld_inside.png from gen3_inside tiles only."""
-    INSIDE_FIRSTGID = common_count + 1
-
-    # Only gen3_inside tiles.  When gen3_outside isn't present in the master,
-    # the upper-bound check still excludes any GID that would have come from it.
-    def is_inside_src(src_gid):
-        return (gen3_outside_firstgid is None or src_gid < gen3_outside_firstgid) \
-            and src_gid >= gen3_inside_firstgid
-
-    inside_entries = [
-        (src_gid - gen3_inside_firstgid, map_gid - INSIDE_FIRSTGID)
-        for src_gid, map_gid in src_to_map_gid.items()
-        if map_gid >= INSIDE_FIRSTGID and is_inside_src(src_gid)
-    ]
-    if not inside_entries:
+                      inside_ts_path, catalogue, outdoor_source_names):
+    """Rebuild spriteworld_inside.png from inside-owned source tiles."""
+    try:
+        from PIL import Image
+    except ImportError:
+        print('  WARNING: Pillow not installed — cannot rebuild PNG')
         return False
 
-    return lib.write_tileset_png(
-        inside_entries,
-        lib.TILESET_DIR / 'gen3_inside.png',
-        inside_ts_json,
-        inside_ts_path.parent / inside_ts_json['image'],
-        source_columns=8,
-    )
+    INSIDE_FIRSTGID = common_count + 1
+
+    # Collect (source_name, src_tile_id, dst_tile_id) — dedupe by dst.
+    seen_dst = set()
+    entries  = []
+    for src_gid, map_gid in src_to_map_gid.items():
+        if map_gid < INSIDE_FIRSTGID:
+            continue
+        name, tid, _ = src_gid_to_source(src_gid, catalogue)
+        if name is None:
+            continue
+        dst = map_gid - INSIDE_FIRSTGID
+        if dst in seen_dst:
+            continue
+        seen_dst.add(dst)
+        entries.append((name, tid, dst))
+    if not entries:
+        return False
+
+    # Load source PNGs for inside-owned tilesets.
+    src_imgs = {}
+    src_cols = {}
+    for fg, name, count, ts_json in catalogue:
+        # Include all sources — some outdoor-source tiles might fall into
+        # inside-owned range (outdoor tiles not in common range).
+        ts_path = lib.TILESET_DIR / f'{name}.json'
+        with open(ts_path) as f:
+            ts_data = json.load(f)
+        src_imgs[name] = Image.open(lib.TILESET_DIR / ts_data['image']).convert('RGBA')
+        src_cols[name] = ts_data['columns']
+
+    tw   = inside_ts_json['tilewidth']
+    th   = inside_ts_json['tileheight']
+    cols = inside_ts_json['columns']
+    max_dst = max(dst for _, _, dst in entries)
+    rows    = (max_dst // cols) + 1
+    img     = Image.new('RGBA', (cols * tw, rows * th), (0, 0, 0, 0))
+    for name, src_tid, dst_tid in entries:
+        scol = src_cols[name]
+        sx = (src_tid % scol) * tw
+        sy = (src_tid // scol) * th
+        dx = (dst_tid % cols) * tw
+        dy = (dst_tid // cols) * th
+        img.paste(src_imgs[name].crop((sx, sy, sx + tw, sy + th)), (dx, dy))
+    img.save(inside_ts_path.parent / inside_ts_json['image'])
+    inside_ts_json['imagewidth']  = cols * tw
+    inside_ts_json['imageheight'] = rows * th
+    inside_ts_json['tilecount']   = cols * rows
+    print(f'  rebuilt {inside_ts_json["image"]} ({len(entries)} tiles, {cols}x{rows} grid)')
+    return True
 
 
 # ── Main ────────────────────────────────────────────────────────────────────
@@ -239,67 +331,74 @@ def main():
         print('ERROR: no "maps" objectgroup found in spriteworld_inside.json')
         return
 
-    # Discover firstgids dynamically.  gen3_outside is optional — interior
-    # masters may have removed it once no inside tile relies on outdoor art.
-    ts_map = {}
-    for ts in master.get('tilesets', []):
-        src = ts.get('source', '')
-        if 'gen3_inside' in src:
-            ts_map['gen3_inside'] = ts['firstgid']
-        elif 'gen3_outside' in src:
-            ts_map['gen3_outside'] = ts['firstgid']
-    if 'gen3_inside' not in ts_map:
-        print('ERROR: spriteworld_inside.json must contain a gen3_inside tileset')
-        return
-    gen3_inside_firstgid  = ts_map['gen3_inside']
-    gen3_outside_firstgid = ts_map.get('gen3_outside')
-    print(f'Tilesets: gen3_inside firstgid={gen3_inside_firstgid}, '
-          f'gen3_outside firstgid={gen3_outside_firstgid}')
-
     master_w = master['width']
     master_h = master['height']
     tw, th   = master['tilewidth'], master['tileheight']
 
-    # Read common_count and gen3_to_spriteworld from gid_map.json (written by update_spriteworld.py).
+    catalogue = catalogue_master_tilesets(master)
+    if not catalogue:
+        print('ERROR: spriteworld_inside.json has no recognised tilesets')
+        return
+    print('Master tilesets:')
+    for fg, name, count, _ in catalogue:
+        print(f'  {name}: firstgid={fg}, tilecount={count}')
+
+    # Read common_count and outdoor GID mappings from gid_map.json
+    # (written by update_spriteworld.py).
     with open(lib.MAPS_DIR / 'gid_map.json') as f:
         gid_map_data = json.load(f)
-    gen3_raw_to_spriteworld = {int(k): v for k, v in gid_map_data['gen3_to_spriteworld'].items()}
-    common_count      = gid_map_data['common_count']
-    INSIDE_FIRSTGID   = common_count + 1
+    common_count  = gid_map_data['common_count']
+    INSIDE_FIRSTGID = common_count + 1
+
+    # Build a unified outdoor lookup: (source_name, tile_id) → spriteworld GID.
+    outdoor_gid_lookup = {}
+    outdoor_source_names = set()
+    for raw_str, kgid in gid_map_data.get('gen3_to_spriteworld', {}).items():
+        tid = int(raw_str) - 1
+        outdoor_gid_lookup[('gen3_outside', tid)] = kgid
+        outdoor_source_names.add('gen3_outside')
+    for key_str, kgid in gid_map_data.get('extras_to_spriteworld', {}).items():
+        src, tid_str = key_str.rsplit(':', 1)
+        outdoor_gid_lookup[(src, int(tid_str))] = kgid
+        outdoor_source_names.add(src)
 
     src_to_map_gid, map_gid_to_src, gid_map_raw, gid_map_path = build_compact_gid_map(
-        master_tilelayers, gen3_inside_firstgid, gen3_outside_firstgid,
-        gen3_raw_to_spriteworld, common_count,
+        master_tilelayers, catalogue,
+        outdoor_gid_lookup, outdoor_source_names, common_count,
     )
     inside_count = sum(1 for g in src_to_map_gid.values() if g >= INSIDE_FIRSTGID)
     print(f'Compact GID map: {len(src_to_map_gid)} tiles '
-          f'({inside_count} gen3_inside, {len(src_to_map_gid)-inside_count} gen3_outside/common)')
+          f'({inside_count} inside-owned, '
+          f'{len(src_to_map_gid)-inside_count} inherited from spriteworld_common)')
 
     inside_ts_path = lib.TILESET_DIR / 'maps' / 'spriteworld_inside.json'
     inside_ts_json = lib.load_or_init_tileset(
         inside_ts_path, 'spriteworld_inside', 'spriteworld_inside.png', columns=8, image_width=256,
     )
 
-    with open(lib.TILESET_DIR / 'gen3_inside.json') as f:
-        gen3_inside_ts_json = json.load(f)
+    # Build properties index for all sources.
+    # Non-outdoor sources: use lib.build_props_index() directly.
+    # Outdoor sources: read spriteworld_common.json and map outdoor GIDs
+    # <= common_count to properties.
+    src_props_indices = {}
+    for fg, name, count, ts_json in catalogue:
+        if name not in outdoor_source_names:
+            src_props_indices[name] = lib.build_props_index(ts_json)
 
-    # For gen3_outside tiles in indoor maps, use spriteworld_common.json properties
-    # (authoritative — written by update_spriteworld.py).  Only common tiles are there.
+    # For outdoor-source tiles in indoor maps, use spriteworld_common.json
+    # properties (authoritative — written by update_spriteworld.py).
     spriteworld_common_ts_path = lib.TILESET_DIR / 'maps' / 'spriteworld_common.json'
     with open(spriteworld_common_ts_path) as f:
         spriteworld_common_ts_json_data = json.load(f)
     spriteworld_tile_props = {t['id']: t.get('properties', [])
-                        for t in spriteworld_common_ts_json_data.get('tiles', [])}
-    gen3_outside_via_spriteworld = {
-        gen3_raw_gid - 1: spriteworld_tile_props.get(spriteworld_gid - 1, [])
-        for gen3_raw_gid, spriteworld_gid in gen3_raw_to_spriteworld.items()
-        if spriteworld_gid <= common_count
-    }
+                              for t in spriteworld_common_ts_json_data.get('tiles', [])}
 
-    props_indices = {
-        'gen3_inside':  lib.build_props_index(gen3_inside_ts_json),
-        'gen3_outside': gen3_outside_via_spriteworld,
-    }
+    for src_name in outdoor_source_names:
+        props_for_source = {}
+        for (oname, otid), ogid in outdoor_gid_lookup.items():
+            if oname == src_name and ogid <= common_count:
+                props_for_source[otid] = spriteworld_tile_props.get(ogid - 1, [])
+        src_props_indices[src_name] = props_for_source
 
     # The compact GID rebuild reassigns every inside GID — clear stale tile
     # entries from a previous run so ensure_inside_tile starts clean.
@@ -341,9 +440,9 @@ def main():
                 ox, oy, dst_w, dst_h,
             )
             converted, modified = remap_data(
-                raw, src_to_map_gid, map_gid_to_src,
-                inside_ts_json, props_indices, gid_map_raw, {},
-                common_count, gen3_inside_firstgid, gen3_outside_firstgid,
+                raw, catalogue, src_to_map_gid, map_gid_to_src,
+                inside_ts_json, src_props_indices, gid_map_raw, {},
+                common_count,
             )
             if modified:
                 inside_ts_modified = True
@@ -396,15 +495,17 @@ def main():
     # ── Item-tile report (informational) ──────────────────────────────────
     print('\nItem tile map_gids (spriteworld_common):')
     for tile_id in ITEM_TILE_IDS:
-        if gen3_outside_firstgid is None:
-            print(f'  item tile {tile_id} — no gen3_outside in master, skipped')
+        if 'gen3_outside' not in outdoor_source_names:
+            print(f'  item tile {tile_id} — gen3_outside not in outdoor sources, skipped')
             continue
-        src_gid = gen3_outside_firstgid + tile_id
-        mgid    = src_to_map_gid.get(src_gid)
-        if mgid is None:
-            print(f'  WARNING: item tile {tile_id} missing from GID map')
+        kgid = outdoor_gid_lookup.get(('gen3_outside', tile_id))
+        if kgid is None:
+            print(f'  WARNING: item tile {tile_id} missing from outdoor GID lookup')
+        elif kgid <= common_count:
+            print(f'  item tile {tile_id} (gen3_outside) -> map GID {kgid} (spriteworld_common)')
         else:
-            print(f'  item tile {tile_id} (gen3_outside) -> map GID {mgid} (spriteworld_common)')
+            print(f'  WARNING: item tile {tile_id} (gen3_outside) -> map GID {kgid} '
+                  f'(outside common range {common_count})')
 
     # ── Persist GID map ───────────────────────────────────────────────────
     with open(gid_map_path, 'w') as f:
@@ -412,8 +513,7 @@ def main():
     print(f'\nUpdated inside_gid_map.json ({len(src_to_map_gid)} total entries)')
 
     if update_inside_png(src_to_map_gid, common_count, inside_ts_json,
-                          inside_ts_path, gen3_inside_firstgid,
-                          gen3_outside_firstgid):
+                          inside_ts_path, catalogue, outdoor_source_names):
         inside_ts_modified = True
 
     if inside_ts_modified or not inside_ts_path.exists():

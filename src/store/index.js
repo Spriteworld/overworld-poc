@@ -10,7 +10,7 @@ import { getGameDef, setGameDef } from '@Data/gameDef.js';
 export const SLOT_COUNT = 3;
 const SLOT_KEYS = ['sw_game', 'sw_party', 'sw_bag', 'sw_pokedex', 'sw_overworld'];
 const OPTIONS_KEY = 'sw_options';
-const OPTION_FIELDS = ['textSpeed', 'bgmVolume', 'sfxVolume', 'alwaysRun', 'autoSurf', 'uiScale'];
+const OPTION_FIELDS = ['textSpeed', 'bgmVolume', 'sfxVolume', 'alwaysRun', 'autoSurf', 'uiScale', 'windowStyle'];
 
 const keyFor = (base, slot) => `${base}_slot${slot}`;
 
@@ -241,6 +241,7 @@ const PERSISTING_MUTATIONS = new Set([
   'game/SET_ALWAYS_RUN',
   'game/SET_AUTO_SURF',
   'game/SET_UI_SCALE',
+  'game/SET_WINDOW_STYLE',
   'game/APPLY_OPTIONS',
 ]);
 store.subscribe((mutation) => {

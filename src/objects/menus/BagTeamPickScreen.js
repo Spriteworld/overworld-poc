@@ -63,7 +63,7 @@ export default class BagTeamPickScreen {
       ));
     });
 
-    reg(scene.add.text(SX + PAD, SY + SH - 22, '▲▼ choose   Z  use   X  back', TEXT_STYLE_HINT));
+    reg(scene.add.text(SX + SW - 16, SY + SH - 32, '▲▼ choose   Z  use   X  back', TEXT_STYLE_HINT)).setOrigin(1, 0);
   }
 
   nav(delta) {

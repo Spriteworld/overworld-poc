@@ -46,9 +46,9 @@
           </div>
 
           <!-- State toggles -->
-          <div v-if="Object.keys(m.state).length" class="flex flex-col gap-1 bg-black/20 rounded-lg px-2 py-1.5">
+          <div v-if="m.state?.flags && Object.keys(m.state.flags).length" class="flex flex-col gap-1 bg-black/20 rounded-lg px-2 py-1.5">
             <label
-              v-for="(_, key) in m.state"
+              v-for="(_, key) in m.state.flags"
               :key="key"
               class="flex items-center gap-2 cursor-pointer select-none"
               @click.stop
@@ -97,9 +97,9 @@ import MAPS from './maps.js';
 
 const allMaps = MAPS.flatMap(g => g.maps);
 
-// Build a reactive copy of every map's state so toggles are independent.
+// Build a reactive copy of every map's flags so toggles are independent.
 const liveState = reactive(
-  Object.fromEntries(allMaps.map(m => [m.scene, { ...m.state }]))
+  Object.fromEntries(allMaps.map(m => [m.scene, { ...(m.state?.flags ?? {}) }]))
 );
 
 function formatKey(key) {
@@ -130,7 +130,8 @@ function findMap(hash) {
 
 function launch(map) {
   setTestMode(true);
-  setStartFlags(liveState[map.scene]);
+  const state = { ...map.state, flags: { ...liveState[map.scene] } };
+  setStartFlags(state);
   setStartScene(map.scene);
   setStartPauseScreen(map.pauseScreen ?? null);
   setStartDebug(map.debug ?? null);

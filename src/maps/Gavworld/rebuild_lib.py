@@ -28,6 +28,17 @@ SRC_DIR     = MAPS_DIR.parent.parent           # src/
 TILESET_DIR = SRC_DIR / 'tileset'
 
 
+def tileset_png_path(ts_json):
+    """Resolve a tileset JSON's 'image' field to an absolute PNG path.
+    Tiled sometimes writes machine-specific absolute paths; fall back to
+    the basename inside TILESET_DIR when the stored path doesn't exist."""
+    raw = ts_json.get('image', '')
+    candidate = TILESET_DIR / raw
+    if candidate.exists():
+        return candidate
+    return TILESET_DIR / pathlib.PurePosixPath(raw).name
+
+
 # ── Layer scaffolding ──────────────────────────────────────────────────────
 
 def make_layer(name, w, h, ge_char_layer=None):

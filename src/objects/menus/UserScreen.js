@@ -2,7 +2,7 @@ import { gameState, getPlaytime, saveGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
 import { formatTid } from '@Utilities';
 import { multiplayerClient } from '@/multiplayer/Client.js';
-import { SX, SY, SH, TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT } from './layout.js';
+import { SX, SY, SW, SH, TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT } from './layout.js';
 
 const MAX_NAME_LEN = 10;
 
@@ -33,7 +33,7 @@ export default class UserScreen {
       reg(scene.add.text(SX + 16, SY + 16 + i * 22, line, style));
     });
 
-    reg(scene.add.text(SX + 16, SY + SH - 22, 'Z  rename   X  back', TEXT_STYLE_HINT));
+    reg(scene.add.text(SX + SW - 16, SY + SH - 32, 'Z  rename   X  back', TEXT_STYLE_HINT)).setOrigin(1, 0);
   }
 
   /**

@@ -61,6 +61,7 @@ export default class {
   }
 
   #onPointerDown(pointer) {
+    if (pointer.button !== 0) return;
     if (!this.scene.game.config.debug.clickToMove) return;
     // Phaser's displayScale is a uniform (height-based) scale, which is wrong
     // when the canvas is stretched asymmetrically via CSS. Also, object-fit:contain

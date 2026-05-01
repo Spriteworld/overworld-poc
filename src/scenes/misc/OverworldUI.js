@@ -73,8 +73,10 @@ export default class extends Phaser.Scene {
     this.scale.on('resize', () => this._updateUILayout());
     // Live-apply user UI-scale changes from Options without needing a reload.
     this.game.events.on('ui-scale-change', this._onUiScaleChange, this);
+    this.game.events.on('window-style-change', this._onWindowStyleChange, this);
     this.events.once('shutdown', () => {
       this.game.events.off('ui-scale-change', this._onUiScaleChange, this);
+      this.game.events.off('window-style-change', this._onWindowStyleChange, this);
     });
 
     this.handleEvents();
@@ -117,10 +119,11 @@ export default class extends Phaser.Scene {
       // canvas (with a small/medium step so it stays usable on narrow
       // screens), then multiply by the user's UI-scale preference.
       const uiScale  = store.state.game.uiScale ?? 1;
-      const fitScale = width >= 1024 ? Math.min(width / 800, height / 600)
+      const maxScale = Math.min(width / 800, height / 600);
+      const fitScale = width >= 1024 ? maxScale
         : width < 768 ? 0.5
         : 1;
-      const menuScale = fitScale * uiScale;
+      const menuScale = Math.min(fitScale * uiScale, maxScale);
       this.pauseMenu.setScale(menuScale);
       this.pauseMenu.setPosition(
         Math.max(0, (width - 800 * menuScale) / 2),
@@ -134,6 +137,11 @@ export default class extends Phaser.Scene {
 
   _onUiScaleChange() {
     this._updateUILayout();
+  }
+
+  _onWindowStyleChange() {
+    this.pauseMenu.refreshWindowStyle();
+    this.textbox.setWindowStyle(store.state.game.windowStyle);
   }
 
   /** Open the pause menu and transition directly to a named sub-screen. */
@@ -606,7 +614,10 @@ export default class extends Phaser.Scene {
         this._suppressMenuOpen = false;
         return;
       }
-      if (!this.pauseMenu.visible && this.registry.get('player_input') !== false) {
+      if (this.pauseMenu.visible) {
+        this.pauseMenu.close();
+        this.registry.set('player_input', true);
+      } else if (this.registry.get('player_input') !== false) {
         this.registry.set('player_input', false);
         this.pauseMenu.open();
       }
@@ -625,6 +636,16 @@ export default class extends Phaser.Scene {
       this.game.scene.getScenes(true).forEach(s => {
         if (s !== this) s.anims.globalTimeScale = speed;
       });
+    });
+
+    // F1: hard return to the title screen. Stops every other active scene
+    // (map scene, TimeOverlay, parallel battle/evolution scenes, etc.) so we
+    // don't leak running scenes behind the title.
+    this.input.keyboard.on('keydown-F1', () => {
+      this.game.scene.getScenes(true).forEach(s => {
+        if (s !== this) this.scene.stop(s.scene.key);
+      });
+      this.scene.start('TitleScreen');
     });
   }
 

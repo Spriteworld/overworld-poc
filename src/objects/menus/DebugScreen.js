@@ -174,7 +174,7 @@ export default class DebugScreen {
       reg(scene.add.text(SX + SW - 24, SY + SH - 44, '▼', TEXT_STYLE_HINT));
     }
 
-    reg(scene.add.text(SX + 16, SY + SH - 22, '◀▶ tab   ▲▼ scroll   X  back', TEXT_STYLE_HINT));
+    reg(scene.add.text(SX + SW - 16, SY + SH - 32, '◀▶ tab   ▲▼ scroll   X  back', TEXT_STYLE_HINT)).setOrigin(1, 0);
   }
 
   // ─── Flag read / write ────────────────────────────────────────────────────

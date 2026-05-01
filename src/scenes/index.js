@@ -68,6 +68,14 @@ import KantoMtMoonBF1B from '@Scenes/maps/kanto/KantoMtMoonBF1B.js';
 import KantoMtMoonBF1C from '@Scenes/maps/kanto/KantoMtMoonBF1C.js';
 import KantoPokeMart from '@Scenes/maps/kanto/KantoPokeMart.js';
 import KantoViridianCityHouse from '@Scenes/maps/kanto/KantoViridianCityHouse.js';
+import KantoPewterGym from '@Scenes/maps/kanto/KantoPewterGym.js';
+import KantoCeruleanGym from '@Scenes/maps/kanto/KantoCeruleanGym.js';
+import KantoVermilionGym from '@Scenes/maps/kanto/KantoVermilionGym.js';
+import KantoCeladonGym from '@Scenes/maps/kanto/KantoCeladonGym.js';
+import KantoFushsiaGym from '@Scenes/maps/kanto/KantoFushsiaGym.js';
+import KantoSaffronGym from '@Scenes/maps/kanto/KantoSaffronGym.js';
+import KantoCinnabarGym from '@Scenes/maps/kanto/KantoCinnabarGym.js';
+import KantoViridianGym from '@Scenes/maps/kanto/KantoViridianGym.js';
 
 import GavWorld from '@Scenes/maps/Gavworld/Gavworld.js';
 import GavworldStarterTown from '@Scenes/maps/Gavworld/GavworldStarterTown.js';
@@ -151,4 +159,12 @@ export default {
   GavworldViridianForest,
   GavworldMeadowTown,
   KantoViridianCityHouse,
+  KantoPewterGym,
+  KantoCeruleanGym,
+  KantoVermilionGym,
+  KantoCeladonGym,
+  KantoFushsiaGym,
+  KantoSaffronGym,
+  KantoCinnabarGym,
+  KantoViridianGym,
 };

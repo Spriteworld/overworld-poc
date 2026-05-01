@@ -56,6 +56,14 @@ import KantoMtMoonBF1BMap from './kanto/mt_moon_bf1_b.json';
 import KantoMtMoonBF1CMap from './kanto/mt_moon_bf1_c.json';
 import KantoPokeMartMap from './kanto/poke_mart.json';
 import KantoViridianCityHouseMap from './kanto/viridian_city_house.json';
+import KantoPewterGymMap from './kanto/pewter_gym.json';
+import KantoCeruleanGymMap from './kanto/cerulean_gym.json';
+import KantoVermilionGymMap from './kanto/vermilion_gym.json';
+import KantoCeladonGymMap from './kanto/celadon_gym.json';
+import KantoFushsiaGymMap from './kanto/fushsia_gym.json';
+import KantoSaffronGymMap from './kanto/saffron_gym.json';
+import KantoCinnabarGymMap from './kanto/cinnabar_gym.json';
+import KantoViridianGymMap from './kanto/viridian_gym.json';
 
 import GavWorldMap from './Gavworld/Gavworld.json';
 import GavworldStarterTownMap from './Gavworld/starter_town.json';
@@ -166,6 +174,14 @@ export {
     GavworldViridianForestMap,
     GavworldMeadowTownMap,
     KantoViridianCityHouseMap,
+    KantoPewterGymMap,
+    KantoCeruleanGymMap,
+    KantoVermilionGymMap,
+    KantoCeladonGymMap,
+    KantoFushsiaGymMap,
+    KantoSaffronGymMap,
+    KantoCinnabarGymMap,
+    KantoViridianGymMap,
 };
 
 /** Scene keys for kanto inside / non-world maps, shown in the debug warp list. */
@@ -174,6 +190,14 @@ export const INSIDE_MAP_SCENE_KEYS = [
   'KantoHeroHouseF2',
   'KantoProfessorLab',
   'KantoViridianForest',
+  'KantoPewterGym',
+  'KantoCeruleanGym',
+  'KantoVermilionGym',
+  'KantoCeladonGym',
+  'KantoFushsiaGym',
+  'KantoSaffronGym',
+  'KantoCinnabarGym',
+  'KantoViridianGym',
 ];
 
 export const MAP_REGISTRY = {
@@ -233,4 +257,12 @@ export const MAP_REGISTRY = {
   'GavworldViridianForest': GavworldViridianForestMap,
   'GavworldMeadowTown': GavworldMeadowTownMap,
   'KantoViridianCityHouse': KantoViridianCityHouseMap,
+  'KantoPewterGym': KantoPewterGymMap,
+  'KantoCeruleanGym': KantoCeruleanGymMap,
+  'KantoVermilionGym': KantoVermilionGymMap,
+  'KantoCeladonGym': KantoCeladonGymMap,
+  'KantoFushsiaGym': KantoFushsiaGymMap,
+  'KantoSaffronGym': KantoSaffronGymMap,
+  'KantoCinnabarGym': KantoCinnabarGymMap,
+  'KantoViridianGym': KantoViridianGymMap,
 };

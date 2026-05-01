@@ -41,7 +41,7 @@ export function normalize(cmds) {
 export function validate(commands, path = 'root') {
   const KNOWN = new Set([
     'text', 'yes_no', 'give_item', 'remove_item', 'set_flag', 'if_flag',
-    'if_has_item', 'give_pokemon', 'give_starter', 'enable_input', 'disable_input',
+    'if_has_item', 'give_pokemon', 'give_starter', 'enable_input', 'disable_input', 'random_var',
     'move_player', 'move_npc', 'walk_to_char', 'spawn_npc', 'spawn_pkmn', 'remove_npc',
     'move_to_box', 'if_party_count', 'teach_move', 'warp_player', 'warp_npc',
     'walk_warp_continue', 'teleport_to_pokecenter', 'escape_rope', 'wait',
@@ -54,6 +54,8 @@ export function validate(commands, path = 'root') {
     'parallel',
     'darkness_enable', 'darkness_disable', 'darkness_set_radius',
     'add_light', 'remove_light', 'set_light',
+    'show_placeable', 'hide_placeable', 'move_placeable',
+    'call_script',
   ]);
   const REQUIRED = {
     text:              ['text'],
@@ -75,6 +77,7 @@ export function validate(commands, path = 'root') {
     warp_player:       ['map'],
     warp_npc:          ['character'],
     walk_warp_continue: ['map'],
+    random_var:        ['key', 'values'],
     set_var:           ['key', 'value'],
     if_var:            ['key', 'value'],
     if_variant:        ['value'],
@@ -91,6 +94,10 @@ export function validate(commands, path = 'root') {
     add_light:           ['name'],
     remove_light:        ['name'],
     set_light:           ['name'],
+    show_placeable:      ['name'],
+    hide_placeable:      ['name'],
+    move_placeable:      ['name'],
+    call_script:         ['script'],
   };
   const warnings = [];
   commands.forEach((cmd, i) => {
