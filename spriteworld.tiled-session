@@ -74,11 +74,14 @@
             "scaleInEditor": 1
         },
         "src/maps/Gavworld/Gavworld.json": {
+            "expandedObjectLayers": [
+                5
+            ],
             "scale": 0.75,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 1232,
-                "y": 547.3333333333333
+                "x": 4456,
+                "y": 247.33333333333337
             }
         },
         "src/maps/Gavworld/Gavworld_dungeons.json": {
@@ -202,8 +205,8 @@
             "scale": 0.33,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 8575.757575757576,
-                "y": 7113.636363636364
+                "x": 742.4242424242424,
+                "y": 6077.272727272728
             }
         },
         "src/maps/kanto/kanto_dungeons.json": {
@@ -706,9 +709,24 @@
         "src/maps/tileset/animated_grass.json": {
             "scaleInDock": 1
         },
+        "src/tileset/Balls.json": {
+            "scaleInDock": 1
+        },
+        "src/tileset/Paths.json": {
+            "scaleInDock": 1
+        },
+        "src/tileset/Signs+Fences.json": {
+            "scaleInDock": 1
+        },
         "src/tileset/Transparent_Tiles.json": {
             "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "src/tileset/Trees.json": {
+            "scaleInDock": 1
+        },
+        "src/tileset/Water.json": {
+            "scaleInDock": 1
         },
         "src/tileset/animated_grass.json": {
             "scaleInDock": 1

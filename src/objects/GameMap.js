@@ -42,7 +42,7 @@ const TILESET_REGISTRY = {
   'Water':              { url: Tileset.Water,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'Paths':              { url: Tileset.Paths,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'Balls':              { url: Tileset.Balls,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'Signs+Fences':       { url: Tileset.SignsFences,       frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
+  'Signs_Fences':       { url: Tileset.SignsFences,       frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
   'Trees':              { url: Tileset.Trees,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
 };
 
@@ -70,6 +70,7 @@ const TILESET_JSON_REGISTRY = {
   'Paths':             Tileset.Paths_json,
   'Balls':             Tileset.Balls_json,
   'Signs+Fences':      Tileset.SignsFences_json,
+  'Signs_Fences':      Tileset.SignsFences_json,
   'Trees':             Tileset.Trees_json,
 };
 
@@ -112,11 +113,11 @@ export default class extends Phaser.Scene {
 
     this.ge_init = false;
     this.ge_events_init = false;
-    
+
     this.mapPlugins = new Map();
     this.items = [];
   }
-  
+
   /**
    * Instantiate all map interactable plugins and store them in `this.mapPlugins`.
    * Called during `loadMap()` after the tilemap layers are created.
@@ -237,7 +238,7 @@ export default class extends Phaser.Scene {
       if (!ts) console.warn('[GameMap] addTilesetImage failed for', tileset.name, '— texture exists:', this.textures.exists(tileset.name));
       tilesets.push(ts);
     });
-    
+
     // load all the layers!
     tilemap.layers
       .forEach((layer) => {
@@ -485,7 +486,7 @@ export default class extends Phaser.Scene {
     if (!tile || !tile.properties) {
       return props;
     }
-    
+
     Object.entries(tile.properties).forEach(([prop, value]) => {
       // if we dont have it, add it
       if (typeof props.get(prop) === 'undefined') {
@@ -500,7 +501,7 @@ export default class extends Phaser.Scene {
         // dont care about falses
       }
     });
-    
+
     return props;
   }
 
@@ -532,7 +533,7 @@ export default class extends Phaser.Scene {
     if (!tile || !tile.properties) {
       return [];
     }
-    
+
     if (typeof tile.properties === 'undefined') {
       tile.properties = [];
     }
@@ -574,7 +575,7 @@ export default class extends Phaser.Scene {
 
     return tiles;
   }
-  
+
   /**
    * Returns true if any non-player character currently occupies the given tile.
    * @param {number} x - Tile x coordinate.
@@ -728,7 +729,7 @@ export default class extends Phaser.Scene {
     });
 
     if (this.items.length > 0) {
-      
+
       this.items.forEach((item) => {
         chars.push(new Items.Pokeball({
           scene: this,
@@ -824,7 +825,7 @@ export default class extends Phaser.Scene {
     tick(this.pkmn);
   }
 
-  
+
   /**
    * Proactively fetch tileset images for every map the player can warp to
    * from the current map, so destination scenes find assets already cached.

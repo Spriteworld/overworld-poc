@@ -3859,7 +3859,7 @@
                  "type":"playerSpawn",
                  "visible":true,
                  "width":32,
-                 "x":2464,
+                 "x":2496,
                  "y":6976
                 }, 
                 {
@@ -5659,7 +5659,7 @@
          "source":"..\/..\/tileset\/gen3_outside.json"
         }, 
         {
-         "firstgid":7985,
+         "firstgid":8045,
          "source":"..\/..\/tileset\/animated_grass.json"
         }],
  "tilewidth":32,

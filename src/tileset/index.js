@@ -39,8 +39,8 @@ import Paths from '@Tileset/Paths.png';
 import Paths_json from '@Tileset/Paths.json';
 import Balls from '@Tileset/Balls.png';
 import Balls_json from '@Tileset/Balls.json';
-import SignsFences from '@Tileset/Signs+Fences.png';
-import SignsFences_json from '@Tileset/Signs+Fences.json';
+import SignsFences from '@Tileset/Signs_Fences.png';
+import SignsFences_json from '@Tileset/Signs_Fences.json';
 import Trees from '@Tileset/Trees.png';
 import Trees_json from '@Tileset/Trees.json';
 
