@@ -21,10 +21,14 @@ import defaultDef from './gameDefs/kanto.js';
  *   'vanilla'        — standard rules, no restrictions.
  *   'nuzlocke'       — only the first Pokémon caught per zone may be kept;
  *                      subsequent Pokéball throws in that zone are blocked.
- * @property {'vanilla'|'random'}    learnsets
+ * @property {'vanilla'|'random'|'4random'} learnsets
  *   Move source for wild and trainer Pokémon with no explicit moveset.
  *   'vanilla' — most recently learnable moves from the FRLG level-up learnset.
- *   'random'  — 4 random moves from the full FRLG move pool.
+ *   'random'  — random moves from the full FRLG move pool (same count as
+ *               the vanilla learnset at that level, min 1); at least 1
+ *               damaging move guaranteed.
+ *   '4random' — always 4 random moves from the full FRLG move pool; at least
+ *               1 damaging move guaranteed.
  * @property {'vanilla'|'random'}    encounterTables
  *   'vanilla' — use the encounter table embedded in the Tiled map properties.
  *   'random'  — seeded-random table generated from the availablePokemon pool.

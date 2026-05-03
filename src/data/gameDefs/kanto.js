@@ -54,7 +54,11 @@ export default {
   /**
    * Move learnset source for wild Pokémon and trainer Pokémon with no explicit moves.
    *   'vanilla' — FRLG level-up learnset (most recently learned, up to 4)
-   *   'random'  — 4 random moves from the full FRLG move pool
+   *   'random'  — random moves from the full FRLG move pool (same count as
+   *               the vanilla learnset would give at that level, min 1);
+   *               at least 1 damaging move guaranteed
+   *   '4random' — always 4 random moves from the full FRLG move pool;
+   *               at least 1 damaging move guaranteed
    */
   learnsets:        'vanilla',
 

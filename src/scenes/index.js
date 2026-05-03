@@ -19,6 +19,7 @@ import VermillionGym from '@Scenes/maps/random/VermillionGym.js';
 import TurffieldGym from '@Scenes/maps/random/TurffieldGym.js';
 import DarknessTest from '@Scenes/maps/random/DarknessTest.js';
 import WaterFxCompare from '@Scenes/maps/random/WaterFxCompare.js';
+import WeatherMap from '@Scenes/maps/random/WeatherMap.js';
 
 import Kanto from '@Scenes/maps/kanto/Kanto.js';
 import KantoWorld from '@Scenes/maps/kanto/KantoWorld.js';
@@ -101,6 +102,7 @@ export default {
   TurffieldGym,
   DarknessTest,
   WaterFxCompare,
+  WeatherMap,
 
   Kanto,
   KantoWorld,

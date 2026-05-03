@@ -8,6 +8,7 @@ import ForestMap from './random/forest.json';
 import VermillionGymMap from './random/vermillion_gym.json';
 import TurffieldGymMap from './random/turffield_gym.json';
 import DarknessTestMap from './random/darkness_test.json';
+import WeatherMapMap from './random/weather_map.json';
 
 import KantoMap from './kanto/kanto.json';
 import KantoPalletTownMap from './kanto/pallet.json';
@@ -127,7 +128,7 @@ export const WORLD_MAP_KEYS = {
 };
 
 export {
-    TestMap,SkylandMap,BaseMap,SpriteViewerMap,ForestMap,DarknessTestMap,
+    TestMap,SkylandMap,BaseMap,SpriteViewerMap,ForestMap,DarknessTestMap,WeatherMapMap,
     SpriteworldMap,
     VermillionGymMap, TurffieldGymMap,
 

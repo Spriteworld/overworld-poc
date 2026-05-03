@@ -1,14 +1,14 @@
 import kanto from './kanto.js';
 
 /**
- * Randomizer preset — seeded-random encounter tables and random learnsets.
- * All Gen 1 Pokémon are in the pool; any species can appear anywhere.
+ * Randomizer preset — seeded-random encounter tables, 4 random moves per
+ * Pokémon, and shuffled warp destinations.
  */
 export default {
   ...kanto,
   id: 'randomizer',
   name: 'Kanto Randomizer',
   encounterTables: 'random',
-  learnsets: 'random',
+  learnsets: '4random',
   entranceRandomizer: 'random',
 };

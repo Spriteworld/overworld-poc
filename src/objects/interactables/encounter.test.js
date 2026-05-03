@@ -85,9 +85,16 @@ jest.mock('@spriteworld/pokemon-data', () => {
     const { id, name } = resolveSpecies(species);
     if (id == null) return null;
     const pool = movePool ?? MOVE_POOL;
-    const rollMoves = () => (movesMode === 'random' || name == null)
-      ? pickUnique(pool, 4, r).map(m => ({ name: m.name, pp: { max: m.pp, current: m.pp } }))
-      : buildMovesFromLearnset(name, level, pool, learnsets, r);
+    const toSlot = m => ({ name: m.name, pp: { max: m.pp, current: m.pp } });
+    const rollMoves = () => {
+      if (movesMode === '4random' || name == null) return pickUnique(pool, 4, r).map(toSlot);
+      if (movesMode === 'random') {
+        const ls = learnsets[name?.toUpperCase()];
+        const count = ls?.length ? Math.min(4, ls.filter(([lvl]) => lvl <= level).length) : 4;
+        return pickUnique(pool, count || 1, r).map(toSlot);
+      }
+      return buildMovesFromLearnset(name, level, pool, learnsets, r);
+    };
     const result = {
       game:    mon.game    ?? 'firered',
       pid:     mon.pid     ?? 1,

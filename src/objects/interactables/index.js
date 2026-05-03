@@ -18,6 +18,7 @@ import Trainer from '@Objects/interactables/trainer.js';
 import Script from '@Objects/interactables/script.js';
 import OverworldEncounter from '@Objects/interactables/overworld_encounter.js';
 import Placeable from '@Objects/interactables/placeable.js';
+import EffectZone from '@Objects/interactables/effectzone.js';
 
 export default {
   Computer,
@@ -40,4 +41,5 @@ export default {
   Script,
   OverworldEncounter,
   Placeable,
+  EffectZone,
 }

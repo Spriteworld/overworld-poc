@@ -115,7 +115,7 @@ function pickWeighted(entries) {
  * Respects the active game definition (see src/data/gameDef.js):
  *   availablePokemon  – filters the species pool for fallbacks and random tables
  *   encounterTables   – 'vanilla' uses the map's encounter-table; 'random' generates seeded tables
- *   learnsets         – 'vanilla' uses FRLG learnset; 'random' picks 4 random moves
+ *   learnsets         – 'vanilla' uses FRLG learnset; 'random' randomizes moves (level-appropriate count); '4random' always gives 4 random moves
  *   expRateMultiplier – passed through to the battle config
  *   gameMode          – 'nuzlocke' records first-catch-per-zone flags
  */
@@ -330,7 +330,8 @@ export default class {
    *
    * Learnsets respects the game definition:
    *   - learnsets 'vanilla' → FRLG level-up learnset
-   *   - learnsets 'random'  → 4 random moves from the FRLG move pool
+   *   - learnsets 'random'  → random moves (level-appropriate count, at least 1 damaging)
+   *   - learnsets '4random' → 4 random moves (at least 1 damaging)
    *
    * Rolls for shiny (1 / 8192) and Pokérus (3 / 65536) independently.
    *

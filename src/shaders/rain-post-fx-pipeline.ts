@@ -26,7 +26,9 @@ precision mediump float;
 #endif
 
 uniform sampler2D uMainSampler;
-uniform sampler2D uWaterMask;  // unit 1 — binary, red=water (or all-black 1×1 if absent)
+uniform sampler2D uWaterMask;   // unit 1 — binary, red=water (or all-black 1×1 if absent)
+uniform sampler2D uZoneMask;    // unit 2 — effect zone mask (white = rain here)
+uniform sampler2D uPuddleMask;  // unit 3 — ground tiles (white = valid puddle surface)
 uniform vec2  uResolution;
 uniform vec2  uScroll;
 uniform vec2  uMapSize;        // world-px size; used to convert worldPx -> mask UV
@@ -36,12 +38,14 @@ uniform vec3  uTint;        // rain colour (RGB, 0..1)
 uniform float uWind;        // horizontal drift in px from cell-top to cell-bottom
 uniform float uSpeed;       // fall-speed multiplier (1.0 = baseline)
 uniform float uHasWater;    // 0 or 1 — whether to consult uWaterMask at all
+uniform float uHasZoneMask; // 0 or 1 — whether to restrict rain to zone mask
+uniform float uHasPuddleMask; // 0 or 1 — whether to consult uPuddleMask
 uniform float uDesat;       // 0 = no change, 1 = full grayscale on the scene
 
 varying vec2 outTexCoord;
 
 const vec2 CELL = vec2(20.0, 96.0);   // world-pixel cell size
-const float STREAK_LEN = 14.0;        // streak length in px
+const float STREAK_LEN = 28.0;        // streak length in px
 // Splash dwell time. Both rain types share the SAME duration — only fall
 // speed differs. Land and water diverge: water splashes are surf-trail-style
 // expanding ripples that take noticeably longer to dissipate.
@@ -73,6 +77,17 @@ void main() {
   vec2 worldPx = uv * uResolution + uScroll;
 
   vec4 src = texture2D(uMainSampler, outTexCoord);
+
+  float zone = 1.0;
+  if (uHasZoneMask > 0.5) {
+    vec2 maskUv = worldPx / uMapSize;
+    zone = 0.0;
+    if (maskUv.x >= 0.0 && maskUv.x <= 1.0 && maskUv.y >= 0.0 && maskUv.y <= 1.0) {
+      zone = texture2D(uZoneMask, maskUv).r;
+    }
+    if (zone < 0.01) { gl_FragColor = src; return; }
+  }
+
   // Desaturate the source first so the rain overlays painted later (streaks,
   // splashes, water rings) keep their full chroma against a muted backdrop.
   // Rec. 709 luma weights — perceptually balanced grey.
@@ -114,6 +129,10 @@ void main() {
   float r2c     = hash(cellCoord + vec2(7.0, 13.0)  + ci * 53.0);
   float r3c     = hash(cellCoord + vec2(31.0, 17.0) + ci * 67.0);
   float r4c     = hash(cellCoord + vec2(11.0, 19.0) + ci * 23.0);
+  float r5c     = hash(cellCoord + vec2(43.0, 29.0) + ci * 37.0);
+  vec3 offWhite  = vec3(0.88, 0.90, 0.93);
+  vec3 faintBlue = vec3(0.62, 0.72, 0.88);
+  vec3 dropColor = r5c < 0.33 ? uTint : (r5c < 0.66 ? offWhite : faintBlue);
   float ownDropX = mix(2.0, CELL.x - 2.0, r2c);
   float ownImpX  = ownDropX + uWind;
   // Randomize the impact-Y per cycle so splashes don't all line up on the
@@ -121,15 +140,27 @@ void main() {
   // higher in their cell, long ones reach the floor.
   float ownImpY  = mix(CELL.y * 0.55, CELL.y - 1.5, r4c);
 
+  vec2 ownImpWorld = cellCoord * CELL + vec2(ownImpX, ownImpY);
   float ownOnWater = 0.0;
   if (uHasWater > 0.5) {
-    vec2 impWorld = cellCoord * CELL + vec2(ownImpX, ownImpY);
-    vec2 mUv      = impWorld / uMapSize;
+    vec2 mUv = ownImpWorld / uMapSize;
     if (mUv.x >= 0.0 && mUv.x <= 1.0 && mUv.y >= 0.0 && mUv.y <= 1.0) {
       ownOnWater = step(0.5, texture2D(uWaterMask, mUv).r);
     }
   }
-  float ownSplashDur = mix(SPLASH_DUR_LAND, SPLASH_DUR_WATER, ownOnWater);
+  float ownOnPuddle = 0.0;
+  if (uHasPuddleMask > 0.5 && ownOnWater < 0.5) {
+    vec2 pmUv = ownImpWorld / uMapSize;
+    if (pmUv.x >= 0.0 && pmUv.x <= 1.0 && pmUv.y >= 0.0 && pmUv.y <= 1.0) {
+      float groundHit = texture2D(uPuddleMask, pmUv).r;
+      vec2 impTile = floor(ownImpWorld / vec2(32.0, 32.0));
+      float impHash = hash(impTile + vec2(77.0, 131.0));
+      float thresh = 0.88 - uIntensity * 0.25;
+      ownOnPuddle = step(0.5, groundHit) * step(thresh, impHash);
+    }
+  }
+  float ownOnRippleSurface = max(ownOnWater, ownOnPuddle);
+  float ownSplashDur = mix(SPLASH_DUR_LAND, SPLASH_DUR_WATER, ownOnRippleSurface);
   float ownFallDur   = mix(0.55, 0.95, r3c) * 0.85 / max(uSpeed, 0.01);
 
   bool ownActive = (gate < uIntensity) && (ownT < ownFallDur + ownSplashDur);
@@ -146,9 +177,9 @@ void main() {
       float head  = 1.0 - (dyHead / STREAK_LEN);
       float xFade = 1.0 - smoothstep(0.0, 1.4, xDist);
       float a     = head * xFade * 0.55;
-      col = mix(col, uTint, a);
+      col = mix(col, dropColor, a);
     }
-  } else if (ownActive && ownOnWater < 0.5) {
+  } else if (ownActive && ownOnRippleSurface < 0.5) {
     // Land splash — tight quick ring (own cell only; small enough to fit).
     float sp   = (ownT - ownFallDur) / ownSplashDur;
     vec2  d    = vec2(cellLocal.x - ownImpX, (cellLocal.y - ownImpY) * 1.8);
@@ -156,7 +187,7 @@ void main() {
     float r    = mix(SPLASH_R0, SPLASH_R1, sp);
     float ring = 1.0 - smoothstep(0.6, 1.4, abs(dist - r));
     float a    = ring * (1.0 - sp) * 0.7;
-    col = mix(col, uTint, a);
+    col = mix(col, dropColor, a);
   }
 
   // ───── 3×3 neighborhood: water ring aggregation ───────────────────────────
@@ -189,15 +220,26 @@ void main() {
       float nImpX  = nDropX + uWind;
       float nImpY  = mix(CELL.y * 0.55, CELL.y - 1.5, nr4c);
 
+      vec2 nImpWorld = ncCoord * CELL + vec2(nImpX, nImpY);
       float nOnWater = 0.0;
       if (uHasWater > 0.5) {
-        vec2 impWorld = ncCoord * CELL + vec2(nImpX, nImpY);
-        vec2 mUv      = impWorld / uMapSize;
+        vec2 mUv = nImpWorld / uMapSize;
         if (mUv.x >= 0.0 && mUv.x <= 1.0 && mUv.y >= 0.0 && mUv.y <= 1.0) {
           nOnWater = step(0.5, texture2D(uWaterMask, mUv).r);
         }
       }
-      if (nOnWater < 0.5) continue;
+      float nOnPuddle = 0.0;
+      if (uHasPuddleMask > 0.5 && nOnWater < 0.5) {
+        vec2 pmUv = nImpWorld / uMapSize;
+        if (pmUv.x >= 0.0 && pmUv.x <= 1.0 && pmUv.y >= 0.0 && pmUv.y <= 1.0) {
+          float gHit = texture2D(uPuddleMask, pmUv).r;
+          vec2 nImpTile = floor(nImpWorld / vec2(32.0, 32.0));
+          float nImpHash = hash(nImpTile + vec2(77.0, 131.0));
+          float thresh = 0.88 - uIntensity * 0.25;
+          nOnPuddle = step(0.5, gHit) * step(thresh, nImpHash);
+        }
+      }
+      if (nOnWater < 0.5 && nOnPuddle < 0.5) continue;
 
       float fallDur  = mix(0.55, 0.95, nr3c) * 0.85 / max(uSpeed, 0.01);
       if (nT < fallDur) continue;
@@ -222,6 +264,11 @@ void main() {
     col = mix(col, vec3(0.95, 0.97, 1.0), waterRingA);
   }
 
+
+  if (uHasZoneMask > 0.5) {
+    col = mix(src.rgb, col, zone);
+  }
+
   gl_FragColor = vec4(col, src.a);
 }
 `;
@@ -239,6 +286,8 @@ export class RainPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPi
   private _desat: number;
   private _waterTex: Phaser.Renderer.WebGL.Wrappers.WebGLTextureWrapper | null;
   private _waterKey: string | null;
+  private _zoneMaskTex: any;
+  private _puddleMaskTex: any;
   private _mapW: number;
   private _mapH: number;
   private _cam: Phaser.Cameras.Scene2D.Camera | null;
@@ -257,6 +306,8 @@ export class RainPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPi
     this._desat      = 0;
     this._waterTex   = null;
     this._waterKey   = null;
+    this._zoneMaskTex = null;
+    this._puddleMaskTex = null;
     this._mapW       = 1;
     this._mapH       = 1;
     this._cam        = null;
@@ -290,6 +341,30 @@ export class RainPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPi
     this._waterTex = null;
   }
 
+  setZoneMask(key: string, mapW: number, mapH: number) {
+    this._mapW = Math.max(1, mapW);
+    this._mapH = Math.max(1, mapH);
+    if (!this.game.textures.exists(key)) { this._zoneMaskTex = null; return; }
+    const frame = this.game.textures.getFrame(key);
+    this._zoneMaskTex = frame?.glTexture ?? null;
+  }
+
+  clearZoneMask() {
+    this._zoneMaskTex = null;
+  }
+
+  setPuddleMask(key: string, mapW: number, mapH: number) {
+    this._mapW = Math.max(1, mapW);
+    this._mapH = Math.max(1, mapH);
+    if (!this.game.textures.exists(key)) { this._puddleMaskTex = null; return; }
+    const frame = this.game.textures.getFrame(key);
+    this._puddleMaskTex = frame?.glTexture ?? null;
+  }
+
+  clearPuddleMask() {
+    this._puddleMaskTex = null;
+  }
+
   private _bindWater(key: string) {
     if (!this.game.textures.exists(key)) { this._waterTex = null; return; }
     const frame = this.game.textures.getFrame(key);
@@ -314,12 +389,18 @@ export class RainPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPi
     this.set1f('uSpeed',      this._speed);
     this.set1f('uDesat',      this._desat);
     this.set2f('uMapSize',    this._mapW, this._mapH);
-    this.set1f('uHasWater',   this._waterTex ? 1.0 : 0.0);
-    this.set1i('uWaterMask',  1);
+    this.set1f('uHasWater',      this._waterTex ? 1.0 : 0.0);
+    this.set1f('uHasZoneMask',  this._zoneMaskTex ? 1.0 : 0.0);
+    this.set1f('uHasPuddleMask', this._puddleMaskTex ? 1.0 : 0.0);
+    this.set1i('uWaterMask',   1);
+    this.set1i('uZoneMask',    2);
+    this.set1i('uPuddleMask',  3);
   }
 
   onDraw(renderTarget: Phaser.Renderer.WebGL.RenderTarget) {
     if (this._waterTex) this.bindTexture(this._waterTex, 1);
+    if (this._zoneMaskTex) this.bindTexture(this._zoneMaskTex, 2);
+    if (this._puddleMaskTex) this.bindTexture(this._puddleMaskTex, 3);
     this.bindAndDraw(renderTarget);
   }
 }

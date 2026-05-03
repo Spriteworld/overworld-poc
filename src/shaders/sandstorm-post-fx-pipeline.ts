@@ -36,7 +36,10 @@ precision mediump float;
 
 uniform sampler2D uMainSampler;
 uniform sampler2D uSandTex;       // unit 1 — cloud-sheet / whorl source texture
+uniform sampler2D uZoneMask;      // unit 2 — effect zone mask
 uniform vec2  uResolution;
+uniform vec2  uScroll;
+uniform vec2  uMapSize;
 uniform vec2  uTexSize;
 uniform float uTime;
 uniform vec3  uTint;              // muddy orange — base scene tint
@@ -46,6 +49,7 @@ uniform vec3  uParticleColor;     // warm sand colour for cloud sheet + whorls
 uniform float uParticleStrength;  // base alpha of cloud-sheet sample
 uniform float uDriftX;            // px/sec — base horizontal drift speed
 uniform float uIntensity;         // 0..1 — overall effect, lets controller fade in/out
+uniform float uHasZoneMask;
 
 varying vec2 outTexCoord;
 
@@ -156,6 +160,16 @@ void main() {
   col = mix(col, uParticleColor,        clouds * uParticleStrength * uIntensity);
   col = mix(col, uParticleColor * 0.55, whorls * 0.85 * uIntensity);
 
+  if (uHasZoneMask > 0.5) {
+    vec2 worldPx = screenPx + uScroll;
+    vec2 maskUv = worldPx / uMapSize;
+    float zone = 0.0;
+    if (maskUv.x >= 0.0 && maskUv.x <= 1.0 && maskUv.y >= 0.0 && maskUv.y <= 1.0) {
+      zone = texture2D(uZoneMask, maskUv).r;
+    }
+    col = mix(src.rgb, col, zone);
+  }
+
   gl_FragColor = vec4(col, src.a);
 }
 `;
@@ -177,6 +191,9 @@ export class SandstormPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.Pos
   private _intensity: number;
   private _sandTex: Phaser.Renderer.WebGL.Wrappers.WebGLTextureWrapper | null;
   private _sandKey: string | null;
+  private _zoneMaskTex: any;
+  private _mapW: number;
+  private _mapH: number;
   private _texW: number;
   private _texH: number;
   private _cam: Phaser.Cameras.Scene2D.Camera | null;
@@ -197,6 +214,9 @@ export class SandstormPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.Pos
     this._intensity        = 1.0;
     this._sandTex          = null;
     this._sandKey          = null;
+    this._zoneMaskTex      = null;
+    this._mapW             = 1;
+    this._mapH             = 1;
     this._texW             = 1;
     this._texH             = 1;
     this._cam              = null;
@@ -223,6 +243,18 @@ export class SandstormPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.Pos
     this._bind(key);
   }
 
+  setZoneMask(key: string, mapW: number, mapH: number) {
+    this._mapW = Math.max(1, mapW);
+    this._mapH = Math.max(1, mapH);
+    if (!this.game.textures.exists(key)) { this._zoneMaskTex = null; return; }
+    const frame = this.game.textures.getFrame(key);
+    this._zoneMaskTex = frame?.glTexture ?? null;
+  }
+
+  clearZoneMask() {
+    this._zoneMaskTex = null;
+  }
+
   private _bind(key: string) {
     if (!this.game.textures.exists(key)) {
       this._sandTex = null;
@@ -237,11 +269,15 @@ export class SandstormPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.Pos
   }
 
   onPreRender(): void {
-    // World-pixel uResolution — see the darkness pipeline for the rationale.
+    const cam = this._cam;
+    const sx  = cam ? cam.worldView.x : this._scrollX;
+    const sy  = cam ? cam.worldView.y : this._scrollY;
     const rw = this._resW || this.renderTargets?.[0]?.width  || this.renderer.width;
     const rh = this._resH || this.renderTargets?.[0]?.height || this.renderer.height;
 
     this.set2f('uResolution',       rw, rh);
+    this.set2f('uScroll',           sx, sy);
+    this.set2f('uMapSize',          this._mapW, this._mapH);
     this.set2f('uTexSize',          this._texW, this._texH);
     this.set1f('uTime',             this._time);
     this.set3f('uTint',             this._tint[0], this._tint[1], this._tint[2]);
@@ -251,11 +287,14 @@ export class SandstormPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.Pos
     this.set1f('uParticleStrength', this._particleStrength);
     this.set1f('uDriftX',           this._drift);
     this.set1f('uIntensity',        this._intensity);
+    this.set1f('uHasZoneMask',      this._zoneMaskTex ? 1.0 : 0.0);
     this.set1i('uSandTex',          1);
+    this.set1i('uZoneMask',         2);
   }
 
   onDraw(renderTarget: Phaser.Renderer.WebGL.RenderTarget) {
     if (this._sandTex) this.bindTexture(this._sandTex, 1);
+    if (this._zoneMaskTex) this.bindTexture(this._zoneMaskTex, 2);
     this.bindAndDraw(renderTarget);
   }
 }

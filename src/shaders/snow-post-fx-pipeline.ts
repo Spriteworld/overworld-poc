@@ -40,7 +40,10 @@ precision mediump float;
 uniform sampler2D uMainSampler;
 uniform sampler2D uSnow0;        // bigger flake stamp (mid + hero layers)
 uniform sampler2D uSnow1;        // smaller flake stamp (bulk layer)
+uniform sampler2D uZoneMask;     // unit 3 — effect zone mask
 uniform vec2  uResolution;
+uniform vec2  uScroll;
+uniform vec2  uMapSize;
 uniform float uTime;
 uniform float uIntensity;
 uniform float uDensity;
@@ -52,6 +55,7 @@ uniform float uFallSpeed;        // px/sec — base vertical speed
 uniform float uSpeedJitter;      // 0..1 — fraction of base speed each flake can vary by
 uniform float uMaxDrift;         // px/sec — max horizontal velocity each flake can have, ±
 uniform float uContrast;         // 1.0 = no change; > 1 boosts contrast on the underlying scene
+uniform float uHasZoneMask;
 
 varying vec2 outTexCoord;
 
@@ -62,10 +66,22 @@ float hash(vec2 p) {
 }
 
 void main() {
-  vec2 uv      = vec2(outTexCoord.x, 1.0 - outTexCoord.y);
+  vec2 uv       = vec2(outTexCoord.x, 1.0 - outTexCoord.y);
   vec2 screenPx = uv * uResolution;
+  vec2 worldPx  = screenPx + uScroll;
 
   vec4 src = texture2D(uMainSampler, outTexCoord);
+
+  float zone = 1.0;
+  if (uHasZoneMask > 0.5) {
+    vec2 maskUv = worldPx / uMapSize;
+    zone = 0.0;
+    if (maskUv.x >= 0.0 && maskUv.x <= 1.0 && maskUv.y >= 0.0 && maskUv.y <= 1.0) {
+      zone = texture2D(uZoneMask, maskUv).r;
+    }
+    if (zone < 0.01) { gl_FragColor = src; return; }
+  }
+
   vec3 col = src.rgb;
 
   // Optional contrast boost on the underlying scene — pivot at midtone so
@@ -109,8 +125,8 @@ void main() {
       float startX    = r3c * uResolution.x;
 
       float swayPhase = uTime * (1.0 + r5c * 0.5) + r1S * 6.28;
-      float flakeX    = startX + drift * t + sin(swayPhase) * 2.5;
-      float flakeY    = t * fallSpeed;
+      float flakeX    = mod(startX + drift * t + sin(swayPhase) * 2.5 - uScroll.x, uResolution.x);
+      float flakeY    = mod(t * fallSpeed - uScroll.y, uResolution.y);
 
       vec2 d = screenPx - vec2(flakeX, flakeY);
       vec2 flakeUv = (d / (RADIUS * 2.0)) + 0.5;
@@ -148,8 +164,8 @@ void main() {
       float startX    = r3c * uResolution.x;
 
       float swayPhase = uTime * (1.0 + r5c * 0.5) + r1S * 6.28;
-      float flakeX    = startX + drift * t + sin(swayPhase) * 3.0;
-      float flakeY    = t * fallSpeed;
+      float flakeX    = mod(startX + drift * t + sin(swayPhase) * 3.0 - uScroll.x, uResolution.x);
+      float flakeY    = mod(t * fallSpeed - uScroll.y, uResolution.y);
 
       vec2 d = screenPx - vec2(flakeX, flakeY);
       vec2 flakeUv = (d / (RADIUS * 2.0)) + 0.5;
@@ -183,12 +199,12 @@ void main() {
       float r5c = hash(vec2(fi, 5.0) + ci * 11.07);
 
       float fallSpeed = uFallSpeed * SPEED_MULT * mix(1.0 - uSpeedJitter, 1.0 + uSpeedJitter, r4c);
-      float drift     = mix(-uMaxDrift, uMaxDrift, r5c) * 0.6;   // slower flakes drift less
+      float drift     = mix(-uMaxDrift, uMaxDrift, r5c) * 0.6;
       float startX    = r3c * uResolution.x;
 
       float swayPhase = uTime * (0.7 + r5c * 0.4) + r1S * 6.28;
-      float flakeX    = startX + drift * t + sin(swayPhase) * 4.0;
-      float flakeY    = t * fallSpeed;
+      float flakeX    = mod(startX + drift * t + sin(swayPhase) * 4.0 - uScroll.x, uResolution.x);
+      float flakeY    = mod(t * fallSpeed - uScroll.y, uResolution.y);
 
       vec2 d = screenPx - vec2(flakeX, flakeY);
       vec2 flakeUv = (d / (RADIUS * 2.0)) + 0.5;
@@ -200,6 +216,11 @@ void main() {
   }
 
   col = mix(col, uFlakeColor, flakeAlpha * uIntensity);
+
+  if (uHasZoneMask > 0.5) {
+    col = mix(src.rgb, col, zone);
+  }
+
   gl_FragColor = vec4(col, src.a);
 }
 `;
@@ -226,6 +247,12 @@ export class SnowPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPi
   private _snow1: Phaser.Renderer.WebGL.Wrappers.WebGLTextureWrapper | null;
   private _key0: string | null;
   private _key1: string | null;
+  private _zoneMaskTex: any;
+  private _mapW: number;
+  private _mapH: number;
+  private _scrollX: number;
+  private _scrollY: number;
+  private _cam: Phaser.Cameras.Scene2D.Camera | null;
 
   constructor(game: Phaser.Game) {
     super({ game, fragShader: frag });
@@ -246,6 +273,12 @@ export class SnowPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPi
     this._snow1       = null;
     this._key0        = null;
     this._key1        = null;
+    this._zoneMaskTex = null;
+    this._mapW        = 1;
+    this._mapH        = 1;
+    this._scrollX     = 0;
+    this._scrollY     = 0;
+    this._cam         = null;
   }
 
   onBoot(): void {
@@ -266,8 +299,22 @@ export class SnowPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPi
   setContrast(v: number)           { this._contrast = Math.max(0, v); }
   setResolution(w: number, h: number) { this._resW = w; this._resH = h; }
 
+  setCamera(cam: Phaser.Cameras.Scene2D.Camera | null) { this._cam = cam; }
+  setScroll(x: number, y: number)  { this._scrollX = x; this._scrollY = y; }
   setSnow0Texture(key: string) { this._key0 = key; this._bind(0, key); }
   setSnow1Texture(key: string) { this._key1 = key; this._bind(1, key); }
+
+  setZoneMask(key: string, mapW: number, mapH: number) {
+    this._mapW = Math.max(1, mapW);
+    this._mapH = Math.max(1, mapH);
+    if (!this.game.textures.exists(key)) { this._zoneMaskTex = null; return; }
+    const frame = this.game.textures.getFrame(key);
+    this._zoneMaskTex = frame?.glTexture ?? null;
+  }
+
+  clearZoneMask() {
+    this._zoneMaskTex = null;
+  }
 
   private _bind(slot: 0 | 1, key: string) {
     if (!this.game.textures.exists(key)) {
@@ -282,11 +329,15 @@ export class SnowPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPi
   }
 
   onPreRender(): void {
-    // World-pixel uResolution — see the darkness pipeline for the rationale.
+    const cam = this._cam;
+    const sx  = cam ? cam.worldView.x : this._scrollX;
+    const sy  = cam ? cam.worldView.y : this._scrollY;
     const rw = this._resW || this.renderTargets?.[0]?.width  || this.renderer.width;
     const rh = this._resH || this.renderTargets?.[0]?.height || this.renderer.height;
 
     this.set2f('uResolution',  rw, rh);
+    this.set2f('uScroll',      sx, sy);
+    this.set2f('uMapSize',     this._mapW, this._mapH);
     this.set1f('uTime',        this._time);
     this.set1f('uIntensity',   this._intensity);
     this.set1f('uDensity',     this._density);
@@ -298,13 +349,16 @@ export class SnowPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPi
     this.set1f('uSpeedJitter', this._speedJitter);
     this.set1f('uMaxDrift',    this._maxDrift);
     this.set1f('uContrast',    this._contrast);
+    this.set1f('uHasZoneMask', this._zoneMaskTex ? 1.0 : 0.0);
     this.set1i('uSnow0',       1);
     this.set1i('uSnow1',       2);
+    this.set1i('uZoneMask',    3);
   }
 
   onDraw(renderTarget: Phaser.Renderer.WebGL.RenderTarget) {
     if (this._snow0) this.bindTexture(this._snow0, 1);
     if (this._snow1) this.bindTexture(this._snow1, 2);
+    if (this._zoneMaskTex) this.bindTexture(this._zoneMaskTex, 3);
     this.bindAndDraw(renderTarget);
   }
 }

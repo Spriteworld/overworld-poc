@@ -25,12 +25,15 @@ precision mediump float;
 #endif
 
 uniform sampler2D uMainSampler;
+uniform sampler2D uZoneMask;
 uniform vec2  uResolution;
 uniform vec2  uScroll;
+uniform vec2  uMapSize;
 uniform vec3  uLights[MAX_LIGHTS];
 uniform int   uLightCount;
 uniform float uThreshold;
 uniform float uSoftness;
+uniform float uHasZoneMask;
 
 varying vec2 outTexCoord;
 
@@ -56,8 +59,18 @@ void main() {
   float hi  = uThreshold * (1.0 + uSoftness);
   float lit = smoothstep(lo, hi, field);
 
+  float zoneFactor = 1.0;
+  if (uHasZoneMask > 0.5) {
+    vec2 maskUv = worldPx / uMapSize;
+    zoneFactor = 0.0;
+    if (maskUv.x >= 0.0 && maskUv.x <= 1.0 && maskUv.y >= 0.0 && maskUv.y <= 1.0) {
+      zoneFactor = texture2D(uZoneMask, maskUv).r;
+    }
+  }
+
   vec4 src = texture2D(uMainSampler, outTexCoord);
-  gl_FragColor = vec4(src.rgb * lit, 1.0);
+  float finalLit = mix(1.0, lit, zoneFactor);
+  gl_FragColor = vec4(src.rgb * finalLit, 1.0);
 }
 `;
 
@@ -73,6 +86,9 @@ export class DarknessPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.Post
   private _scrollX: number;
   private _scrollY: number;
   private _cam: Phaser.Cameras.Scene2D.Camera | null;
+  private _zoneMaskTex: any;
+  private _mapW: number;
+  private _mapH: number;
 
   constructor(game: Phaser.Game) {
     super({ game, fragShader: frag });
@@ -85,6 +101,9 @@ export class DarknessPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.Post
     this._scrollX    = 0;
     this._scrollY    = 0;
     this._cam        = null;
+    this._zoneMaskTex = null;
+    this._mapW       = 1;
+    this._mapH       = 1;
   }
 
   setCamera(cam: Phaser.Cameras.Scene2D.Camera | null) {
@@ -119,6 +138,18 @@ export class DarknessPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.Post
     this._scrollY = y;
   }
 
+  setZoneMask(key: string, mapW: number, mapH: number) {
+    this._mapW = Math.max(1, mapW);
+    this._mapH = Math.max(1, mapH);
+    if (!this.game.textures.exists(key)) { this._zoneMaskTex = null; return; }
+    const frame = this.game.textures.getFrame(key);
+    this._zoneMaskTex = frame?.glTexture ?? null;
+  }
+
+  clearZoneMask() {
+    this._zoneMaskTex = null;
+  }
+
   onPreRender(): void {
     // Read scroll directly from the bound camera at render time rather than
     // from values cached during scene UPDATE — Phaser updates camera scroll
@@ -150,5 +181,13 @@ export class DarknessPostFxPipeline extends Phaser.Renderer.WebGL.Pipelines.Post
     this.set1f('uSoftness',  this._softness);
     this.set2f('uResolution', rw, rh);
     this.set2f('uScroll',     sx, sy);
+    this.set2f('uMapSize',    this._mapW, this._mapH);
+    this.set1f('uHasZoneMask', this._zoneMaskTex ? 1.0 : 0.0);
+    this.set1i('uZoneMask',   1);
+  }
+
+  onDraw(renderTarget: Phaser.Renderer.WebGL.RenderTarget) {
+    if (this._zoneMaskTex) this.bindTexture(this._zoneMaskTex, 1);
+    this.bindAndDraw(renderTarget);
   }
 }

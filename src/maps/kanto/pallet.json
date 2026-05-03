@@ -4901,7 +4901,7 @@
         "can_run": true,
         "can_see": true,
         "encounter-table": [],
-        "weather_type": "none"
+        "weather_type": "heavy_rain"
       }
     }
   ],

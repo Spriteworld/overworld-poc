@@ -61,6 +61,10 @@ export default class Darkness {
     if (idx >= 0) this._lightSpecs.splice(idx, 1);
   }
 
+  setZoneMask(key, mapW, mapH) {
+    this.pipeline?.setZoneMask?.(key, mapW, mapH);
+  }
+
   useFlash() {
     if (this.flashUsed || this._destroyed) return;
     this.flashUsed = true;

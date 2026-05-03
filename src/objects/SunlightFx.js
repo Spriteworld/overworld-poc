@@ -30,6 +30,7 @@ export default class SunlightFx {
     this.pipeline = this.camera.getPostPipeline(SHADER_KEYS.SUNLIGHT);
     if (!this.pipeline) { this._dead = true; return; }
 
+    this.pipeline.setCamera?.(this.camera);
     if (opts.intensity       != null) this.pipeline.setIntensity?.(opts.intensity);
     if (opts.tint)                    this.pipeline.setTint?.(opts.tint[0], opts.tint[1], opts.tint[2]);
     if (opts.contrast        != null) this.pipeline.setContrast?.(opts.contrast);
@@ -37,9 +38,11 @@ export default class SunlightFx {
     if (opts.highlightWarmth != null) this.pipeline.setHighlightWarmth?.(opts.highlightWarmth);
   }
 
-  /** No per-frame state — kept for parity with the other weather Fx so the
-   *  GameMap update loop can call it unconditionally. */
-  update() {}
+  update() {
+    if (this._destroyed || !this.pipeline || !this.camera) return;
+    const zoom = this.camera.zoom || 1;
+    this.pipeline.setResolution(this.camera.width / zoom, this.camera.height / zoom);
+  }
 
   destroy() {
     if (this._destroyed) return;

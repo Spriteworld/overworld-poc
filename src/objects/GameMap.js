@@ -144,6 +144,7 @@ export default class extends Phaser.Scene {
     this.mapPlugins['script']             = new Interactables.Script(this);
     // must be after 'pokemon' so addToScene() is available during init()
     this.mapPlugins['overworld_encounter'] = new Interactables.OverworldEncounter(this);
+    this.mapPlugins['effectzone']           = new Interactables.EffectZone(this);
     this.mapPlugins['roomsync']            = new RoomSync(this);
 
     // Cache the subset of plugins that actually define update() so the
@@ -367,12 +368,16 @@ export default class extends Phaser.Scene {
       this.waterFx = null;
       this.rainFx?.destroy();
       this.rainFx = null;
+      this.heavyRainFx?.destroy();
+      this.heavyRainFx = null;
       this.fogFx?.destroy();
       this.fogFx = null;
       this.sandstormFx?.destroy();
       this.sandstormFx = null;
       this.snowFx?.destroy();
       this.snowFx = null;
+      this.heavySnowFx?.destroy();
+      this.heavySnowFx = null;
       this.sunlightFx?.destroy();
       this.sunlightFx = null;
       this.timeOverlayFx?.destroy();
@@ -780,9 +785,11 @@ export default class extends Phaser.Scene {
     // the trail samples the player's just-stepped position, not last frame's.
     this.waterFx?.update(time, scaledDelta);
     this.rainFx?.update(time, scaledDelta);
+    this.heavyRainFx?.update(time, scaledDelta);
     this.fogFx?.update(time, scaledDelta);
     this.sandstormFx?.update(time, scaledDelta);
     this.snowFx?.update(time, scaledDelta);
+    this.heavySnowFx?.update(time, scaledDelta);
     this.sunlightFx?.update(time, scaledDelta);
     this.timeOverlayFx?.update();
     this.timeOverlayDebug?.update();

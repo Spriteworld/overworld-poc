@@ -43,12 +43,14 @@ export default class SnowFx {
     this.scene  = scene;
     this.camera = scene.cameras.main;
     this._destroyed = false;
+    this._shaderKey = opts.shaderKey ?? SHADER_KEYS.SNOW;
 
     if (!this.camera) { this._dead = true; return; }
 
-    this.camera.setPostPipeline(SHADER_KEYS.SNOW);
-    this.pipeline = this.camera.getPostPipeline(SHADER_KEYS.SNOW);
+    this.camera.setPostPipeline(this._shaderKey);
+    this.pipeline = this.camera.getPostPipeline(this._shaderKey);
     if (!this.pipeline) { this._dead = true; return; }
+    this.pipeline.setCamera?.(this.camera);
 
     if (opts.density != null)   this.pipeline.setDensity?.(opts.density);
     if (opts.tint)              this.pipeline.setTint?.(opts.tint[0], opts.tint[1], opts.tint[2]);
@@ -83,7 +85,7 @@ export default class SnowFx {
     const status = this.scene?.sys?.settings?.status;
     const sceneDown = typeof status === 'number' && status >= 8;
     if (!sceneDown) {
-      try { this.camera?.removePostPipeline(SHADER_KEYS.SNOW); } catch (_) {}
+      try { this.camera?.removePostPipeline(this._shaderKey); } catch (_) {}
     }
 
     this.scene    = null;

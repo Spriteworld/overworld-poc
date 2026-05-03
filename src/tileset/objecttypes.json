@@ -3184,5 +3184,46 @@
         "useAs": [
             "property"
         ]
+    },
+    {
+        "id": 134,
+        "name": "effect-zone-type",
+        "storageType": "string",
+        "type": "enum",
+        "values": [
+            "darkness",
+            "light_rain",
+            "heavy_rain",
+            "fog",
+            "light_fog",
+            "sandstorm",
+            "snow",
+            "heavy_snow",
+            "harsh_sunlight"
+        ],
+        "valuesAsFlags": false
+    },
+    {
+        "color": "#ff6040c0",
+        "drawFill": true,
+        "id": 135,
+        "members": [
+            {
+                "name": "effect_type",
+                "propertyType": "effect-zone-type",
+                "type": "string",
+                "value": "darkness"
+            },
+            {
+                "name": "feather",
+                "type": "int",
+                "value": 0
+            }
+        ],
+        "name": "effect_zone",
+        "type": "class",
+        "useAs": [
+            "object"
+        ]
     }
 ]

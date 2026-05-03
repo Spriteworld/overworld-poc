@@ -534,6 +534,21 @@ const MAPS = [
                     },
                 },
             },
+            {
+                id: "effect-zones",
+                scene: "WeatherMap",
+                title: "Effect Zones — All Types",
+                description:
+                    "Test map with six polygon-based effect zones: darkness, rain, sandstorm, snow, fog, and sunlight. Each zone is confined to a region — walk between them to verify soft-edged boundaries and per-zone isolation.",
+                color: "#ff6040",
+                tags: ["debug", "shader", "weather", "darkness", "effect-zone"],
+                state: {
+                    flags: {
+                        has_pokemon: false,
+                    },
+                },
+                playerLocation: { x: 10, y: 0, charLayer: "ground" },
+            },
         ],
     },
 ];

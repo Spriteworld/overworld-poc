@@ -18,6 +18,7 @@ import { FogPostFxPipeline } from './fog-post-fx-pipeline';
 import { SandstormPostFxPipeline } from './sandstorm-post-fx-pipeline';
 import { SnowPostFxPipeline } from './snow-post-fx-pipeline';
 import { SunlightPostFxPipeline } from './sunlight-post-fx-pipeline';
+import { PuddlePostFxPipeline } from './puddle-post-fx-pipeline';
 import { TimeOverlayPostFxPipeline } from './time-overlay-post-fx-pipeline';
 import { SHADER_KEYS } from './keys.js';
 
@@ -28,10 +29,13 @@ const PIPELINES = [
   [SHADER_KEYS.DARKNESS,     DarknessPostFxPipeline],
   [SHADER_KEYS.WATER,        WaterPostFxPipeline],
   [SHADER_KEYS.RAIN,         RainPostFxPipeline],
+  [SHADER_KEYS.HEAVY_RAIN,   RainPostFxPipeline],
   [SHADER_KEYS.FOG,          FogPostFxPipeline],
   [SHADER_KEYS.SANDSTORM,    SandstormPostFxPipeline],
   [SHADER_KEYS.SNOW,         SnowPostFxPipeline],
+  [SHADER_KEYS.HEAVY_SNOW,   SnowPostFxPipeline],
   [SHADER_KEYS.SUNLIGHT,     SunlightPostFxPipeline],
+  [SHADER_KEYS.PUDDLE,       PuddlePostFxPipeline],
   [SHADER_KEYS.TIME_OVERLAY, TimeOverlayPostFxPipeline],
 ];
 
