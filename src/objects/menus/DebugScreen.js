@@ -4,6 +4,7 @@ import {
   SX, SY, SW, SH,
   TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT,
 } from './layout.js';
+import { safeSetPosition } from '@Utilities/safeSetPosition.js';
 import store from '../../store/index.js';
 
 const SKIP_SCENES = ['Preload', 'Base', 'OverworldUI', 'TimeOverlay'];
@@ -241,10 +242,12 @@ export default class DebugScreen {
         char.disableMovement();
         mapScene.cameras.main.fadeOut(500, 0, 0, 0);
         mapScene.cameras.main.once('camerafadeoutcomplete', () => {
-          mapScene.gridEngine.setPosition(char.name, { x: loc.x, y: loc.y }, loc.charLayer);
-          char.look('down');
-          mapScene.cameras.main.fadeIn(500, 0, 0, 0);
-          char.enableMovement();
+          safeSetPosition(mapScene, char.name, { x: loc.x, y: loc.y }, loc.charLayer, { sweepIndex: false })
+            .then(() => {
+              char.look('down');
+              mapScene.cameras.main.fadeIn(500, 0, 0, 0);
+              char.enableMovement();
+            });
         });
       } else {
         // Start KantoWorld and place the player at the target zone.

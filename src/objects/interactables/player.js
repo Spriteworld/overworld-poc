@@ -1,5 +1,6 @@
 import { Tile, Player } from '@Objects';
 import { EventBus, getPropertyValue } from '@Utilities';
+import { safeSetPosition } from '@Utilities/safeSetPosition.js';
 import { gameState } from '@Data/gameState.js';
 import store from '../../store/index.js';
 import TimeOverlayDebug from '@Objects/TimeOverlayDebug.js';
@@ -161,7 +162,11 @@ export default class {
     const ge = this.scene.gridEngine;
     const followerId = this.playerMon?.config?.id ?? 'playerMon';
     if (!ge?.hasCharacter(followerId)) return;
-    ge.setPosition(followerId, this._behindPlayerTile(playerTile), ge.getCharLayer('player'));
+    if (this._followerSnapPending) return;
+    this._followerSnapPending = true;
+    safeSetPosition(this.scene, followerId, this._behindPlayerTile(playerTile), ge.getCharLayer('player'), {
+      sprite: this.playerMon,
+    }).then(() => { this._followerSnapPending = false; });
   }
 
   _walkFollowerBehind(playerTile) {

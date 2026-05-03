@@ -1,3 +1,5 @@
+import { safeSetPosition } from '../../utilities/safeSetPosition.js';
+
 const EXCLAIM_ANIM_KEY = 'trainer-spotted';
 
 function resolveChar(scene, name) {
@@ -97,7 +99,8 @@ export default {
     const { dx, dy } = runner._resolveKnockbackDirection(cmd.direction ?? 'away_from_player', targetId, cmd.source);
     const tiles = cmd.tiles ?? 1;
     const dest  = { x: pos.x + dx * tiles, y: pos.y + dy * tiles };
-    runner._scene.gridEngine.setPosition(targetId, dest);
-    runner._step();
+    const char = resolveChar(runner._scene, targetId);
+    safeSetPosition(runner._scene, targetId, dest, undefined, { sprite: char })
+      .then(() => runner._step());
   },
 };

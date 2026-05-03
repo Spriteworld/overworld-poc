@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import * as Direction from '../Direction.js';
 import { Vector2 } from '@Utilities';
+import { purgeGEBlockerCache } from '@Utilities/safeSetPosition.js';
 
 export default class MovableSprite extends Phaser.GameObjects.Sprite {
   /**
@@ -323,6 +324,7 @@ export default class MovableSprite extends Phaser.GameObjects.Sprite {
     // doesn't hold a reference to a destroyed sprite. Always attempt the
     // removal — never skip based on hasCharacter, which can lie in edge cases.
     if (ge) {
+      purgeGEBlockerCache(ge, id);
       try { ge.stopMovement(id); }    catch (_) {}
       try { ge.removeCharacter(id); } catch (_) {}
     }

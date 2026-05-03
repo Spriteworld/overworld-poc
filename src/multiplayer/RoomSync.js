@@ -1,6 +1,7 @@
 import { multiplayerClient } from './Client.js';
 import { C2S, S2C } from './protocol.js';
 import RemotePlayer from './RemotePlayer.js';
+import { safeSetPosition } from '../utilities/safeSetPosition.js';
 
 export default class RoomSync {
   constructor(scene) {
@@ -130,17 +131,13 @@ export default class RoomSync {
           const remote = this._remotePlayers.get(sessionId);
           if (ge && remote) {
             const layer = ge.getCharLayer(remote.config.id);
-            ge.stopMovement?.(remote.config.id);
-            ge.setPosition(remote.config.id, spawn, layer);
-            // MovableSprite.look is self-guarding against uninitialised frame
-            // data, so this is safe to call on a just-spawned remote peer.
+            safeSetPosition(this.scene, remote.config.id, spawn, layer, { sprite: remote });
             if (facing) remote.look(facing.toUpperCase());
           }
           const follower = this._remoteFollowers.get(sessionId);
           if (ge && follower) {
             const fLayer = ge.getCharLayer(follower.config.id);
-            ge.stopMovement?.(follower.config.id);
-            ge.setPosition(follower.config.id, this._behindTile(spawn, facing ?? 'down'), fLayer);
+            safeSetPosition(this.scene, follower.config.id, this._behindTile(spawn, facing ?? 'down'), fLayer, { sprite: follower });
           }
         }
       }),

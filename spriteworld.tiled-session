@@ -80,8 +80,8 @@
             "scale": 0.75,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 4456,
-                "y": 247.33333333333337
+                "x": 5514,
+                "y": 404.66666666666663
             }
         },
         "src/maps/Gavworld/Gavworld_dungeons.json": {
@@ -202,11 +202,11 @@
             "expandedObjectLayers": [
                 12
             ],
-            "scale": 0.33,
+            "scale": 1,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 742.4242424242424,
-                "y": 6077.272727272728
+                "x": 3236.5,
+                "y": 7189.5
             }
         },
         "src/maps/kanto/kanto_dungeons.json": {
@@ -667,11 +667,11 @@
             "expandedObjectLayers": [
                 5
             ],
-            "scale": 2,
+            "scale": 1,
             "selectedLayer": 8,
             "viewCenter": {
-                "x": 1086.25,
-                "y": 1074.25
+                "x": 1008.5,
+                "y": 1009.5
             }
         },
         "src/maps/random/test.json#rse_outside": {
@@ -696,6 +696,17 @@
             "viewCenter": {
                 "x": 176,
                 "y": 396.25
+            }
+        },
+        "src/maps/random/weather_map.json": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 0.75,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 1760.6666666666665,
+                "y": 447.33333333333326
             }
         },
         "src/maps/spriteworld/spriteworld.json": {
@@ -807,6 +818,7 @@
     "project": "spriteworld.tiled-project",
     "property.type": "bool",
     "recentFiles": [
+        "src/maps/random/weather_map.json",
         "src/maps/kanto/prof_lab.json",
         "src/maps/kanto/kanto_inside.json",
         "src/maps/Gavworld/Gavworld_inside.json",
@@ -817,8 +829,7 @@
         "src/maps/kanto/vermillion_city.json",
         "src/maps/kanto/rival_house.json",
         "src/maps/kanto/saffron_city.json",
-        "src/maps/kanto/vermilion_gym.json",
-        "src/tileset/gen3_gyms_inside.json"
+        "src/maps/kanto/vermilion_gym.json"
     ],
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFilter": "All Files (*)",

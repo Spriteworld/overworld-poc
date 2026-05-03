@@ -19,6 +19,8 @@
     "@spriteworld/battle": "../battle",
     "@spriteworld/pokemon-data": "../data",
     "@tailwindcss/vite": "^4.2.2",
+    "baseline-browser-mapping": "^2.10.25",
+    "caniuse-lite": "^1.0.30001791",
     "grid-engine": "^2.48.2",
     "phaser-animated-tiles-phaser3.5": "^2.0.5",
     "phaser-tiled-json-external-loader": "^0.1.1",

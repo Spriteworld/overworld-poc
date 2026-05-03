@@ -1,6 +1,7 @@
 import Debug from '@Data/debug.js';
 import { ObjectTypes, Tile } from '@Objects';
 import { getValue, checkOnlyIf } from '@Utilities';
+import { safeSetPosition } from '@Utilities/safeSetPosition.js';
 import store from '../../store/index.js';
 
 export default class {
@@ -97,11 +98,8 @@ export default class {
     const world = this.scene.cameras.main.getWorldPoint(gameX, gameY);
     const tileX = Math.floor(world.x / Tile.WIDTH);
     const tileY = Math.floor(world.y / Tile.HEIGHT);
-    // Preserve the current char layer — without the third arg setPosition
-    // resets the player to the default char layer, which would silently
-    // dump them off a bridge / mountain / overworld upper level.
     const layer = this.scene.gridEngine.getCharLayer?.('player');
-    this.scene.gridEngine.setPosition('player', { x: tileX, y: tileY }, layer);
+    safeSetPosition(this.scene, 'player', { x: tileX, y: tileY }, layer, { sweepIndex: false });
   }
 
   showGrid() {
