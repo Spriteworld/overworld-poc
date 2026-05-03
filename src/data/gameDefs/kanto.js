@@ -127,4 +127,10 @@ export default {
    * of this flag.
    */
   impassibleSpinners: false,
+
+  /** Maximum money the player can hold. Gains are clamped to this ceiling. */
+  maxMoney: 999_999,
+
+  /** Maximum Pokémon level. Level-ups and Rare Candies stop at this cap. */
+  maxLevel: 100,
 };

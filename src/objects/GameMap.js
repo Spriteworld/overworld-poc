@@ -231,6 +231,7 @@ export default class extends Phaser.Scene {
     }
     var tilemap = this.make.tilemap({ key: this.config.mapName });
     this.config.tilemap = tilemap;
+    this.cameras.main.setRoundPixels(true);
 
     // all the tilesets!
     let tilesets = [];

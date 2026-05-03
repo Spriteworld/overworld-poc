@@ -35,11 +35,12 @@ function getMoveByName(name) {
  */
 export function applyRareCandy(pokemon) {
   const currentLevel = pokemon.level ?? 1;
+  const maxLevel     = getGameDef().maxLevel ?? 100;
 
-  if (currentLevel >= 100) {
+  if (currentLevel >= maxLevel) {
     return {
       success:             false,
-      message:             'Already at level 100!',
+      message:             `Already at level ${maxLevel}!`,
       newLevel:            currentLevel,
       newExp:              pokemon.exp ?? 0,
       readyToEvolve:       null,

@@ -2,6 +2,7 @@ import { BasePokemon, EXPERIENCE_TABLES, GROWTH } from '@spriteworld/pokemon-dat
 import TypeBadge from '../common/TypeBadge.js';
 import { makeStatusIcon, STATUS_ICON_W, STATUS_ICON_H } from '../common/iconSheets.js';
 import { TEXT_STYLE_SM } from './layout.js';
+import { getGameDef } from '@Data/gameDef.js';
 
 // Re-export pieces that have moved into dedicated common/ modules, so existing
 // callers importing from this file keep working.
@@ -77,7 +78,7 @@ export function drawExpRow(menu, x, y, width, mon, entry) {
   const exp    = mon.exp   ?? 0;
 
   let ratio = 1;
-  if (level < 100) {
+  if (level < (getGameDef().maxLevel ?? 100)) {
     const lo = table[level - 1] ?? 0;
     const hi = table[level]     ?? lo + 1;
     // Default exp to the level floor so uninitialized mons show 0% rather than negative

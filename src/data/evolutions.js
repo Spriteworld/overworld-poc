@@ -335,6 +335,3 @@ export const EVOLUTIONS = {
   // Psychic (baby, cross-gen → Gen 2 Wobbuffet)
   360: [{ label: 'Lv.15',          target: 202 }],
 };
-
-/** @deprecated Use EVOLUTIONS instead */
-export const GEN1_EVOLUTIONS = EVOLUTIONS;

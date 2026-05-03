@@ -5,7 +5,6 @@ import GameMap from './GameMap.js';
 import Interactables from './interactables/index.js';
 import Items from './items/index.js';
 
-import MovableSprite from './characters/MovableSprite.js';
 import Character from './characters/Character.js';
 import Player from './characters/Player.js';
 import NPC from './characters/NPC.js';
@@ -25,7 +24,6 @@ export {
   Interactables,
   Items,
 
-  MovableSprite,
   Character,
   Player,
   NPC,

@@ -13,7 +13,7 @@ import {
 } from './helpers.js';
 import TypeBadge, { TYPE_COLORS } from '../common/TypeBadge.js';
 
-export const BALL_COLORS = {
+const BALL_COLORS = {
   poke:    0xee1111,
   great:   0x2255bb,
   ultra:   0xeebb00,

@@ -74,7 +74,7 @@ export default {
     if (!runner._scene.anims.exists(EXCLAIM_ANIM_KEY)) {
       runner._scene.anims.create({
         key:       EXCLAIM_ANIM_KEY,
-        frames:    runner._scene.anims.generateFrameNumbers('animation', { start: 13, end: 16 }),
+        frames:    runner._scene.anims.generateFrameNumbers('animation', { start: 21, end: 24 }),
         frameRate: 10,
       });
     }
@@ -82,7 +82,7 @@ export default {
       char.x + char.width / 2,
       char.y - 2,
       'animation',
-      13,
+      21,
     ).setDepth(9999).setOrigin(0.5, 1);
     ex.play(EXCLAIM_ANIM_KEY);
     runner._scene.time.delayedCall(700, () => {

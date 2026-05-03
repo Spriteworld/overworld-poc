@@ -59,6 +59,12 @@ import defaultDef from './gameDefs/kanto.js';
  *   once, so the player can never sneak past while they're turned away.
  *   When false (default), spinners only see in their current facing
  *   direction. Static (non-spinning) trainers are unaffected.
+ * @property {number}                maxMoney
+ *   Hard ceiling for the player's money. ADD_MONEY clamps to this value.
+ *   Default: 999_999 (Gen 3 cap).
+ * @property {number}                maxLevel
+ *   Maximum Pokémon level. Rare Candy use, EXP gains, and level-up checks
+ *   all stop at this cap. Default: 100.
  */
 
 let _active = defaultDef;

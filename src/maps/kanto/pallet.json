@@ -4507,7 +4507,7 @@
                   "propertytype": "cmd-spawn_npc",
                   "type": "class",
                   "value": {
-                    "anchor": "oakRunningAfterPlayer",
+                    "anchor": "OakRunningAfterPlayer",
                     "facing": "up",
                     "name": "Oak",
                     "texture": "professor_oak"
@@ -4572,7 +4572,7 @@
                   "propertytype": "cmd-warp_npc",
                   "type": "class",
                   "value": {
-                    "anchor": "oakAway",
+                    "anchor": "OakAway",
                     "character": "Oak"
                   }
                 },
@@ -4589,7 +4589,7 @@
                   "type": "class",
                   "value": {
                     "anchor": "PalletTownEntry",
-                    "map": "ProfessorLab",
+                    "map": "KantoProfessorLab",
                     "variant": "oak_gives_mon"
                   }
                 },

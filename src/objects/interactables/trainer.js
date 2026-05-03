@@ -58,7 +58,7 @@ function buildBattleInventory() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const EXCLAIM_ANIM_KEY  = 'trainer-spotted';
-const EXCLAIM_FRAMES    = { start: 13, end: 16 };
+const EXCLAIM_FRAMES    = { start: 21, end: 24 };
 const EXCLAIM_FRAME_RATE = 10;
 // Delay (ms) before the trainer starts walking after the exclamation plays.
 const EXCLAIM_DURATION  = 700;

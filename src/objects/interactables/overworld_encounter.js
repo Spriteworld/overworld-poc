@@ -576,7 +576,7 @@ export default class OverworldEncounter {
     if (!scene.anims.exists(EXCLAIM_ANIM_KEY)) {
       scene.anims.create({
         key:       EXCLAIM_ANIM_KEY,
-        frames:    scene.anims.generateFrameNumbers('animation', { start: 13, end: 16 }),
+        frames:    scene.anims.generateFrameNumbers('animation', { start: 21, end: 24 }),
         frameRate: 10,
       });
     }
@@ -586,7 +586,7 @@ export default class OverworldEncounter {
       bounds.centerX,
       bounds.top - 2,
       'animation',
-      13,
+      21,
     ).setOrigin(0.5, 1).setDepth(9999);
     ex.play(EXCLAIM_ANIM_KEY);
     if (b) b.exclaimSprite = ex;

@@ -124,7 +124,8 @@ export default class {
     else if (w >= 1024) targetTiles = 20;
     else if (w >= 768) targetTiles = 16;
     else targetTiles = 12;
-    const zoom = w / (targetTiles * Tile.WIDTH);
+    const rawZoom = w / (targetTiles * Tile.WIDTH);
+    const zoom = Math.max(1, Math.round(rawZoom));
     this.scene.cameras.main.setZoom(zoom);
   }
 

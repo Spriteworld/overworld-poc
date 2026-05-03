@@ -125,7 +125,8 @@ export default {
     },
 
     ADD_MONEY(state, amount) {
-      state.money = Math.max(0, state.money + amount);
+      const max = getGameDef().maxMoney ?? 999_999;
+      state.money = Math.max(0, Math.min(max, state.money + amount));
     },
 
     SET_HEAL_LOCATION(state, location) {

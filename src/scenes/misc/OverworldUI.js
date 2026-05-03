@@ -48,14 +48,14 @@ export default class extends Phaser.Scene {
     // Input manager — created before textbox so textbox can register with it
     createInputManager(this);
 
-    // textbox
-    if (this.textbox === null) {
-      this.textbox = textBox(this, 100, 400, {
-        wrapWidth: 500,
-        fixedWidth: 500,
-        fixedHeight: 65
-      });
-    }
+    // textbox — always create fresh. Phaser reuses the same scene instance
+    // across start/stop cycles, so a previous textbox's display objects were
+    // destroyed on the prior shutdown but the reference would still be set.
+    this.textbox = textBox(this, 100, 400, {
+      wrapWidth: 500,
+      fixedWidth: 500,
+      fixedHeight: 65
+    });
     this.textbox.setVisible(false);
 
     // full-screen overlay used for encounter transitions
@@ -68,6 +68,7 @@ export default class extends Phaser.Scene {
     this.pauseMenu = new PauseMenu(this);
 
     this._scriptDepth = 0;
+    this._gameEventListeners = [];
 
     this._updateUILayout();
     this.scale.on('resize', () => this._updateUILayout());
@@ -77,6 +78,13 @@ export default class extends Phaser.Scene {
     this.events.once('shutdown', () => {
       this.game.events.off('ui-scale-change', this._onUiScaleChange, this);
       this.game.events.off('window-style-change', this._onWindowStyleChange, this);
+      // Remove every listener registered via _onGameEvent so a re-created
+      // OverworldUI (e.g. F1 → title → New Game) doesn't have stale closures
+      // calling setText on a destroyed Toast/Text.
+      for (const [name, fn] of this._gameEventListeners) {
+        this.game.events.off(name, fn, this);
+      }
+      this._gameEventListeners = [];
     });
 
     this.handleEvents();
@@ -161,23 +169,34 @@ export default class extends Phaser.Scene {
   }
 
   /**
+   * Register a listener on the global game event bus and track it so the
+   * scene's shutdown handler can remove it. Required because game.events
+   * outlives this scene; without removal, restarted scenes leak handlers
+   * that close over destroyed display-list objects.
+   */
+  _onGameEvent(name, fn) {
+    this.game.events.on(name, fn, this);
+    this._gameEventListeners.push([name, fn]);
+  }
+
+  /**
    * Register all game-level event listeners (item pickup, toast, map enter,
    * textbox control, battle transitions, overworld evolution, and keyboard input).
    */
   handleEvents() {
-    this.game.events.on('item-pickup', (payload) => {
+    this._onGameEvent('item-pickup', (payload) => {
       const name = typeof payload === 'string' ? payload : payload.name;
       const qty  = typeof payload === 'object'  ? payload.qty : null;
       const isKey = KEY_ITEMS.has(name);
       store.commit('bag/PICKUP', { name, qty: isKey ? null : (qty ?? 1) });
     });
 
-    this.game.events.on('toast', (value) => {
+    this._onGameEvent('toast', (value) => {
       if (!this.game.config.debug.toasts) return;
       this.toast.showMessage(value);
     });
 
-    this.game.events.on('map-enter', (mapName) => {
+    this._onGameEvent('map-enter', (mapName) => {
       // Auto-dismount the bike when entering a map that disallows it
       // (map-settings.can_bike = false, or `inside: true` scenes). Without
       // this, a player who hopped on the bike outdoors and then warped
@@ -202,11 +221,11 @@ export default class extends Phaser.Scene {
       this.toast.showMessage(display);
     });
 
-    this.game.events.on('script-runner-start', () => {
+    this._onGameEvent('script-runner-start', () => {
       this._scriptDepth++;
       this.registry.set('player_input', false);
     });
-    this.game.events.on('script-runner-end',   () => {
+    this._onGameEvent('script-runner-end',   () => {
       this._scriptDepth = Math.max(0, this._scriptDepth - 1);
       // If the script ended without closing via a textbox (e.g. heal_party as
       // the last command), player-move-enable was never re-emitted from the
@@ -217,7 +236,7 @@ export default class extends Phaser.Scene {
       }
     });
 
-    this.game.events.on('textbox-disable', () => {
+    this._onGameEvent('textbox-disable', () => {
       this.textbox.setVisible(false);
       // Don't auto-re-enable input mid-script. Closing a textbox during a
       // running script (e.g. between a `text` and the next `move_npc` /
@@ -229,18 +248,18 @@ export default class extends Phaser.Scene {
       }
     });
 
-    this.game.events.on('textbox-changedata', (value) => {
+    this._onGameEvent('textbox-changedata', (value) => {
       this.textbox.start(value);
       this.textbox.setVisible(true);
       EventBus.emit('player-move-disable');
     });
 
-    this.game.events.on('computer-open', ({ type }) => {
+    this._onGameEvent('computer-open', ({ type }) => {
       EventBus.emit('player-move-disable');
       this.game.events.emit('computer-ui-open', { type });
     });
 
-    this.game.events.on('battle-start', (data) => {
+    this._onGameEvent('battle-start', (data) => {
       console.log('[OverworldUI] battle-start received, launching BattleScene2 with data=', data);
       const mapName = this.registry.get('map');
       // Close menu if somehow open when battle fires
@@ -409,7 +428,7 @@ export default class extends Phaser.Scene {
     });
 
     // ─── Key item self-use (e.g. Bicycle, Surf) ──────────────────────────
-    this.game.events.on('use-key-item', (itemName) => {
+    this._onGameEvent('use-key-item', (itemName) => {
       const mapName  = this.registry.get('map');
       const mapScene = mapName ? this.scene.get(mapName) : null;
       const player   = mapScene?.mapPlugins?.player?.player;
@@ -449,7 +468,7 @@ export default class extends Phaser.Scene {
     });
 
     // ─── Player sprite change (Options screen) ────────────────────────────
-    this.game.events.on('player-sprite-change', (sprite) => {
+    this._onGameEvent('player-sprite-change', (sprite) => {
       const mapName  = this.registry.get('map');
       const mapScene = mapName ? this.scene.get(mapName) : null;
       const player   = mapScene?.mapPlugins?.player?.player;
@@ -467,7 +486,7 @@ export default class extends Phaser.Scene {
     });
 
     // ─── Overworld item use (e.g. Rare Candy) → evolution ────────────────
-    this.game.events.on('overworld-item-result', ({ pid, readyToEvolve }) => {
+    this._onGameEvent('overworld-item-result', ({ pid, readyToEvolve }) => {
       if (!readyToEvolve) return;
 
       const p = gameState.party.find(mon => mon.pid === pid);
@@ -510,7 +529,7 @@ export default class extends Phaser.Scene {
     });
 
     // ─── Script teach-move interactive flow ───────────────────────────────
-    this.game.events.on('overworld-teach-move', ({ pid, move, pp }) => {
+    this._onGameEvent('overworld-teach-move', ({ pid, move, pp }) => {
       const mon = store.state.party.list.find(m => m.pid === pid);
       if (!mon) { this.game.events.emit('overworld-teach-move-complete'); return; }
 
