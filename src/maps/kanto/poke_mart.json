@@ -777,7 +777,7 @@
           "type": "warpLocation",
           "visible": true,
           "width": 32,
-          "x": 160,
+          "x": 128,
           "y": 256
         },
         {
@@ -796,8 +796,103 @@
           "type": "warp",
           "visible": true,
           "width": 32,
-          "x": 160,
+          "x": 128,
           "y": 288
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "MartClerk",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "nurse_joy"
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 32,
+          "x": 64,
+          "y": 128
+        },
+        {
+          "height": 32,
+          "id": 4,
+          "name": "MartMenu1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "only_if",
+              "propertytype": "only-if",
+              "type": "class",
+              "value": {
+                "comparison": "eq",
+                "key": "has_pokedex",
+                "type": "flag",
+                "value": ["true"]
+              }
+            },
+            {
+              "name": "trigger",
+              "propertytype": "trigger-list",
+              "type": "string",
+              "value": "interact"
+            },
+            {
+              "name": "script",
+              "type": "list",
+              "value": [
+                { "cmd": "open_shop" }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trigger",
+          "visible": true,
+          "width": 32,
+          "x": 64,
+          "y": 160
+        },
+        {
+          "height": 32,
+          "id": 5,
+          "name": "MartMenu2",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "only_if",
+              "propertytype": "only-if",
+              "type": "class",
+              "value": {
+                "comparison": "eq",
+                "key": "has_pokedex",
+                "type": "flag",
+                "value": ["true"]
+              }
+            },
+            {
+              "name": "trigger",
+              "propertytype": "trigger-list",
+              "type": "string",
+              "value": "interact"
+            },
+            {
+              "name": "script",
+              "type": "list",
+              "value": [
+                { "cmd": "open_shop" }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trigger",
+          "visible": true,
+          "width": 32,
+          "x": 96,
+          "y": 128
         }
       ]
     }
@@ -805,7 +900,7 @@
   "infinite": false,
   "compressionlevel": -1,
   "nextlayerid": 7,
-  "nextobjectid": 3,
+  "nextobjectid": 6,
   "properties": [
     {
       "name": "map-settings",

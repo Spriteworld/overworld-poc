@@ -2727,6 +2727,11 @@
                          "value":2
                         }, 
                         {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"scientist"
+                        }, 
+                        {
                          "name":"seen-character",
                          "type":"string",
                          "value":""
@@ -2750,11 +2755,6 @@
                          "name":"text-onComplete",
                          "type":"string",
                          "value":"item:potion"
-                        }, 
-                        {
-                         "name":"texture",
-                         "type":"string",
-                         "value":"ace_trainer"
                         }],
                  "rotation":0,
                  "type":"npc",
@@ -5643,7 +5643,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }],

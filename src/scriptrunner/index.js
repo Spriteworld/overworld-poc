@@ -14,6 +14,7 @@ import battleCmds    from './commands/battle.js';
 import controlCmds   from './commands/control.js';
 import darknessCmds    from './commands/darkness.js';
 import placeableCmds   from './commands/placeable.js';
+import shopCmds        from './commands/shop.js';
 
 const HANDLERS = {
   ...dialogueCmds,
@@ -31,6 +32,7 @@ const HANDLERS = {
   ...controlCmds,
   ...darknessCmds,
   ...placeableCmds,
+  ...shopCmds,
 };
 
 /**

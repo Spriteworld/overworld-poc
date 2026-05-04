@@ -8835,6 +8835,11 @@
               "value": 2
             },
             {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "scientist"
+            },
+            {
               "name": "seen-character",
               "type": "string",
               "value": ""
@@ -8858,11 +8863,6 @@
               "name": "text-onComplete",
               "type": "string",
               "value": "item:potion"
-            },
-            {
-              "name": "texture",
-              "type": "string",
-              "value": "ace_trainer"
             }
           ],
           "rotation": 0,

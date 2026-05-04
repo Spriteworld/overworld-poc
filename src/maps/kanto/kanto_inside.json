@@ -1384,7 +1384,7 @@
                  "type":"warpLocation",
                  "visible":true,
                  "width":32,
-                 "x":2048,
+                 "x":2016,
                  "y":288
                 }, 
                 {
@@ -1402,7 +1402,7 @@
                  "type":"warp",
                  "visible":true,
                  "width":32,
-                 "x":2048,
+                 "x":2016,
                  "y":320
                 }, 
                 {
@@ -2286,6 +2286,48 @@
                  "width":160,
                  "x":2176,
                  "y":1344
+                }, 
+                {
+                 "height":32,
+                 "id":67,
+                 "name":"MartClerk",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"overworld-texture",
+                         "type":"string",
+                         "value":"nurse_joy"
+                        }],
+                 "rotation":0,
+                 "type":"npc",
+                 "visible":true,
+                 "width":32,
+                 "x":1952,
+                 "y":160
+                }, 
+                {
+                 "height":32,
+                 "id":68,
+                 "name":"MartMenu1",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"trigger",
+                 "visible":true,
+                 "width":32,
+                 "x":1952,
+                 "y":192
+                }, 
+                {
+                 "height":32,
+                 "id":69,
+                 "name":"MartMenu2",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"trigger",
+                 "visible":true,
+                 "width":32,
+                 "x":1984,
+                 "y":160
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -3541,7 +3583,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":67,
+ "nextobjectid":70,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",

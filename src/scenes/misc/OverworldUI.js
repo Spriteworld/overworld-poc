@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { textBox, toast, EventBus, createInputManager, getInputManager, Action } from '@Utilities';
 import { playBattleStartTransition } from '@Utilities/battleTransition.js';
 import ChoicePrompt from '@Utilities/ChoicePrompt.js';
+import ShopMenu from '@Utilities/ShopMenu.js';
 import { PauseMenu } from '@Objects';
 import { gameState, saveGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
@@ -252,6 +253,17 @@ export default class extends Phaser.Scene {
       this.textbox.start(value);
       this.textbox.setVisible(true);
       EventBus.emit('player-move-disable');
+    });
+
+    this._onGameEvent('shop-open', ({ items }) => {
+      this._shopMenu = new ShopMenu(this, {
+        items,
+        onClose: () => {
+          this._shopMenu = null;
+          this.textbox.setVisible(false);
+          this.game.events.emit('shop-close');
+        },
+      });
     });
 
     this._onGameEvent('computer-open', ({ type }) => {

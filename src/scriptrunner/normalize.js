@@ -56,6 +56,7 @@ export function validate(commands, path = 'root') {
     'add_light', 'remove_light', 'set_light',
     'show_placeable', 'hide_placeable', 'move_placeable',
     'call_script',
+    'open_shop',
   ]);
   const REQUIRED = {
     text:              ['text'],
