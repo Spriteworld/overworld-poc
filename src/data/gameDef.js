@@ -1,4 +1,5 @@
-import defaultDef from './gameDefs/kanto.js';
+import { WORLD_GAME_DEFS } from '@/worlds/registry.js';
+import { GAMES } from '@spriteworld/pokemon-data';
 
 /**
  * @typedef {object} GameDef
@@ -67,7 +68,11 @@ import defaultDef from './gameDefs/kanto.js';
  *   all stop at this cap. Default: 100.
  */
 
-let _active = defaultDef;
+let _active = null;
+
+function getDefaultDef() {
+  return WORLD_GAME_DEFS.kanto ?? Object.values(WORLD_GAME_DEFS)[0] ?? { game: GAMES.POKEMON_FIRE_RED };
+}
 
 /** Generation nat_dex_id ranges (inclusive). */
 export const GEN_RANGES = {
@@ -77,14 +82,14 @@ export const GEN_RANGES = {
 };
 
 /** Returns the currently active game definition. */
-export function getGameDef() { return _active; }
+export function getGameDef() { return _active ?? getDefaultDef(); }
 
 /**
  * Replaces the active game definition.  Merges over the default kanto preset
  * so partial overrides are safe.
  * @param {object} def
  */
-export function setGameDef(def) { _active = { ...defaultDef, ...def }; }
+export function setGameDef(def) { _active = { ...getDefaultDef(), ...def }; }
 
 /**
  * Filters a full species array to only those allowed by the definition's
@@ -94,7 +99,7 @@ export function setGameDef(def) { _active = { ...defaultDef, ...def }; }
  * @param {string|number[]} [spec]  - Defaults to _active.availablePokemon.
  * @returns {object[]}
  */
-export function filterByAvailablePokemon(allSpecies, spec = _active.availablePokemon) {
+export function filterByAvailablePokemon(allSpecies, spec = getGameDef().availablePokemon) {
   if (typeof spec === 'string' && GEN_RANGES[spec]) {
     const [min, max] = GEN_RANGES[spec];
     return allSpecies.filter(p => p.nat_dex_id >= min && p.nat_dex_id <= max);

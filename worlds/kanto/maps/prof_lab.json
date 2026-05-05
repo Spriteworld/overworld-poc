@@ -1,0 +1,1916 @@
+{
+  "compressionlevel": -1,
+  "height": 15,
+  "infinite": false,
+  "layers": [
+    {
+      "data": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        5,
+        5,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        5,
+        5,
+        119,
+        118,
+        118,
+        118,
+        118,
+        118,
+        116,
+        116,
+        116,
+        118,
+        118,
+        118,
+        118,
+        5,
+        5,
+        115,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        5,
+        5,
+        115,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        5,
+        5,
+        115,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        117,
+        117,
+        117,
+        116,
+        116,
+        5,
+        5,
+        115,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        5,
+        5,
+        115,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        5,
+        5,
+        115,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        5,
+        5,
+        119,
+        118,
+        118,
+        118,
+        118,
+        116,
+        116,
+        116,
+        118,
+        118,
+        118,
+        118,
+        118,
+        5,
+        5,
+        115,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        5,
+        5,
+        115,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        5,
+        5,
+        115,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        116,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        62,
+        62,
+        62,
+        62,
+        62,
+        5
+      ],
+      "height": 15,
+      "id": 2,
+      "name": "floor",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 15,
+      "x": 0,
+      "y": 0,
+      "properties": []
+    },
+    {
+      "data": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        135,
+        136,
+        135,
+        136,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        140,
+        141,
+        140,
+        141,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        83,
+        88,
+        84,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        85,
+        87,
+        86,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        135,
+        135,
+        136,
+        135,
+        136,
+        0,
+        0,
+        0,
+        135,
+        136,
+        135,
+        136,
+        136,
+        0,
+        0,
+        140,
+        140,
+        141,
+        140,
+        141,
+        0,
+        0,
+        0,
+        140,
+        141,
+        140,
+        141,
+        141,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        27,
+        0,
+        0,
+        0,
+        0,
+        89,
+        90,
+        91,
+        0,
+        0,
+        0,
+        0,
+        27,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        97,
+        98,
+        99,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "height": 15,
+      "id": 8,
+      "name": "subground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 15,
+      "x": 0,
+      "y": 0,
+      "properties": []
+    },
+    {
+      "data": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        68,
+        0,
+        77,
+        78,
+        0,
+        0,
+        9,
+        9,
+        17,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        72,
+        60,
+        79,
+        80,
+        107,
+        108,
+        13,
+        13,
+        21,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        76,
+        63,
+        81,
+        82,
+        109,
+        110,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        65,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        65,
+        70,
+        71,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        0,
+        74,
+        75,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        0,
+        0,
+        0,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "height": 15,
+      "id": 1,
+      "name": "ground",
+      "opacity": 1,
+      "properties": [
+        {
+          "name": "ge_charLayer",
+          "type": "string",
+          "value": "ground"
+        }
+      ],
+      "type": "tilelayer",
+      "visible": true,
+      "width": 15,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        132,
+        133,
+        132,
+        133,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        66,
+        67,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        132,
+        132,
+        133,
+        132,
+        133,
+        0,
+        0,
+        0,
+        132,
+        133,
+        132,
+        133,
+        133,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        24,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        24,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "height": 15,
+      "id": 4,
+      "name": "top",
+      "opacity": 1,
+      "properties": [
+        {
+          "name": "ge_charLayer",
+          "type": "string",
+          "value": "top"
+        }
+      ],
+      "type": "tilelayer",
+      "visible": true,
+      "width": 15,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 7,
+      "name": "interactions",
+      "objects": [
+        {
+          "height": 32,
+          "id": 1,
+          "name": "PalletTownEntry",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp-dir",
+              "type": "string",
+              "value": "down"
+            }
+          ],
+          "rotation": 0,
+          "type": "warpLocation",
+          "visible": true,
+          "width": 32,
+          "x": 224,
+          "y": 416
+        },
+        {
+          "height": 32,
+          "id": 2,
+          "name": "PalletTownWarp",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "KantoWorld"
+            },
+            {
+              "name": "warp-location",
+              "type": "string",
+              "value": "ProfessorLabExit"
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 224,
+          "y": 448
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "playerAnchor",
+          "opacity": 1,
+          "rotation": 0,
+          "type": "location-anchor",
+          "visible": true,
+          "width": 32,
+          "x": 224,
+          "y": 160
+        },
+        {
+          "height": 32,
+          "id": 4,
+          "name": "PalletCantEscapeLab",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "once",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "only_if",
+              "propertytype": "only-if",
+              "type": "class",
+              "value": {
+                "key": "lock_lab",
+                "type": "variable",
+                "value": [
+                  {
+                    "type": "string",
+                    "value": "true"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "OAK: Hey!\nDon't go away yet!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-knockback",
+                  "type": "class",
+                  "value": {
+                    "direction": "up",
+                    "target": "player"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "trigger",
+              "propertytype": "trigger-list",
+              "type": "string",
+              "value": "enter"
+            }
+          ],
+          "rotation": 0,
+          "type": "trigger",
+          "visible": true,
+          "width": 96,
+          "x": 192,
+          "y": 288
+        },
+        {
+          "height": 32,
+          "id": 5,
+          "name": "aide1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "propertytype": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "scientist"
+            },
+            {
+              "name": "text",
+              "type": "string",
+              "value": "I study POK{e}MON as PRO. OAK's AIDE."
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 32,
+          "x": 384,
+          "y": 352
+        },
+        {
+          "height": 32,
+          "id": 6,
+          "name": "aide2",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "propertytype": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "scientist"
+            },
+            {
+              "name": "text",
+              "type": "string",
+              "value": "I study POK{e}MON as PRO. OAK's AIDE."
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 32,
+          "x": 128,
+          "y": 384
+        },
+        {
+          "height": 32,
+          "id": 7,
+          "name": "oakAnchor",
+          "opacity": 1,
+          "rotation": 0,
+          "type": "location-anchor",
+          "visible": true,
+          "width": 32,
+          "x": 224,
+          "y": 128
+        },
+        {
+          "height": 32,
+          "id": 8,
+          "name": "garyAnchor",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "propertytype": "facing-direction",
+              "type": "string",
+              "value": "right"
+            }
+          ],
+          "rotation": 0,
+          "type": "location-anchor",
+          "visible": true,
+          "width": 32,
+          "x": 192,
+          "y": 160
+        },
+        {
+          "height": 32,
+          "id": 9,
+          "name": "pokeball1",
+          "opacity": 1,
+          "rotation": 0,
+          "type": "location-anchor",
+          "visible": true,
+          "width": 32,
+          "x": 288,
+          "y": 160
+        },
+        {
+          "height": 32,
+          "id": 10,
+          "name": "pokeball2",
+          "opacity": 1,
+          "rotation": 0,
+          "type": "location-anchor",
+          "visible": true,
+          "width": 32,
+          "x": 320,
+          "y": 160
+        },
+        {
+          "height": 32,
+          "id": 11,
+          "name": "pokeball3",
+          "opacity": 1,
+          "rotation": 0,
+          "type": "location-anchor",
+          "visible": true,
+          "width": 32,
+          "x": 352,
+          "y": 160
+        },
+        {
+          "height": 32,
+          "id": 12,
+          "name": "Daisy",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "propertytype": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "move",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "daisy"
+            },
+            {
+              "name": "text",
+              "type": "string",
+              "value": "I study POK{e}MON as PRO. OAK's AIDE."
+            }
+          ],
+          "rotation": 0,
+          "type": "npc",
+          "visible": true,
+          "width": 32,
+          "x": 96,
+          "y": 384
+        },
+        {
+          "height": 32,
+          "id": 13,
+          "name": "PalletFirstRivalBattle",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "once",
+              "type": "bool",
+              "value": false
+            },
+            {
+              "name": "only_if",
+              "propertytype": "only-if",
+              "type": "class",
+              "value": {
+                "key": "first_battle",
+                "type": "variable",
+                "value": [
+                  {
+                    "type": "string",
+                    "value": "true"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-show_exclamation",
+                  "type": "class",
+                  "value": {
+                    "target": "Gary"
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{rival}: Wait, {player}!\nLet's check out our POK{e}MON!\nCome on, I'll take you on!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-walk_to_char",
+                  "type": "class",
+                  "value": {
+                    "character1": "Gary",
+                    "character2": "player",
+                    "side": "up"
+                  }
+                },
+                {
+                  "propertytype": "cmd-if_flag",
+                  "type": "class",
+                  "value": {
+                    "key": "rival_has_charmander",
+                    "then": [
+                      {
+                        "propertytype": "cmd-start_battle",
+                        "type": "class",
+                        "value": {
+                          "battle_texture": "gary",
+                          "name": "Gary",
+                          "team": [
+                            {
+                              "propertytype": "trainer-pokemon",
+                              "type": "class",
+                              "value": {
+                                "level": 5,
+                                "species": "charmander"
+                              }
+                            }
+                          ],
+                          "type": "trainer",
+                          "use-ai": "trainer"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "propertytype": "cmd-if_flag",
+                  "type": "class",
+                  "value": {
+                    "key": "rival_has_bulbasaur",
+                    "then": [
+                      {
+                        "propertytype": "cmd-start_battle",
+                        "type": "class",
+                        "value": {
+                          "battle_texture": "gary",
+                          "name": "Gary",
+                          "team": [
+                            {
+                              "propertytype": "trainer-pokemon",
+                              "type": "class",
+                              "value": {
+                                "level": 5,
+                                "species": "bulbasaur"
+                              }
+                            }
+                          ],
+                          "type": "trainer",
+                          "use-ai": "trainer"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "propertytype": "cmd-if_flag",
+                  "type": "class",
+                  "value": {
+                    "key": "rival_has_squirtle",
+                    "then": [
+                      {
+                        "propertytype": "cmd-start_battle",
+                        "type": "class",
+                        "value": {
+                          "battle_texture": "gary",
+                          "name": "Gary",
+                          "team": [
+                            {
+                              "propertytype": "trainer-pokemon",
+                              "type": "class",
+                              "value": {
+                                "level": 5,
+                                "species": "squirtle"
+                              }
+                            }
+                          ],
+                          "type": "trainer",
+                          "use-ai": "trainer"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "propertytype": "cmd-set_var",
+                  "type": "class",
+                  "value": {
+                    "key": "first_battle",
+                    "value": "false"
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{rival}: Okay! I'll make my\nPOK{e}MON battle to toughen it up!\n{player}! Gramps!\nSmell you later!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-move_npc",
+                  "type": "class",
+                  "value": {
+                    "character": "Gary",
+                    "speed": 6,
+                    "x": 8,
+                    "y": 13
+                  }
+                },
+                {
+                  "propertytype": "cmd-remove_npc",
+                  "type": "class",
+                  "value": {
+                    "name": "Gary"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "trigger",
+              "propertytype": "trigger-list",
+              "type": "string",
+              "value": "enter"
+            }
+          ],
+          "rotation": 0,
+          "type": "trigger",
+          "visible": true,
+          "width": 96,
+          "x": 192,
+          "y": 288
+        }
+      ],
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "nextlayerid": 8,
+  "nextobjectid": 14,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.12.1",
+  "tileheight": 32,
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "source": "../tilesets/kanto_common.json"
+    },
+    {
+      "firstgid": 5,
+      "source": "../tilesets/kanto_inside.json"
+    }
+  ],
+  "tilewidth": 32,
+  "type": "map",
+  "version": "1.11",
+  "width": 15,
+  "properties": [
+    {
+      "name": "map-settings",
+      "propertytype": "map-settings",
+      "type": "class",
+      "value": {
+        "bgm": "prof_oak_lab",
+        "can_bike": false,
+        "can_escape": false,
+        "can_run": true,
+        "can_see": true,
+        "script": {
+          "script": [
+            {
+              "propertytype": "cmd-if_variant",
+              "type": "class",
+              "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-spawn_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "garyAnchor",
+                      "facing": "right",
+                      "name": "Gary",
+                      "texture": "gary",
+                      "trigger": {
+                        "script": [
+                          {
+                            "propertytype": "cmd-text",
+                            "type": "class",
+                            "value": {
+                              "text": "GARY: What, it's only {player}?\nGramps isn't around."
+                            }
+                          }
+                        ],
+                        "trigger": "interact"
+                      }
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-spawn_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "pokeball1",
+                      "name": "pokeball1",
+                      "texture": "pokeball",
+                      "trigger": {
+                        "script": [
+                          {
+                            "propertytype": "cmd-text",
+                            "type": "class",
+                            "value": {
+                              "text": "One of Prof.Oak's POK{e} BALLS.\nI wonder what's inside!"
+                            }
+                          }
+                        ],
+                        "trigger": "interact"
+                      }
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-spawn_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "pokeball2",
+                      "name": "pokeball2",
+                      "texture": "pokeball",
+                      "trigger": {
+                        "script": [
+                          {
+                            "propertytype": "cmd-text",
+                            "type": "class",
+                            "value": {
+                              "text": "One of Prof.Oak's POK{e} BALLS.\nI wonder what's inside!"
+                            }
+                          }
+                        ],
+                        "trigger": "interact"
+                      }
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-spawn_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "pokeball3",
+                      "name": "pokeball3",
+                      "texture": "pokeball",
+                      "trigger": {
+                        "script": [
+                          {
+                            "propertytype": "cmd-text",
+                            "type": "class",
+                            "value": {
+                              "text": "One of Prof.Oak's POK{e} BALLS.\nI wonder what's inside!"
+                            }
+                          }
+                        ],
+                        "trigger": "interact"
+                      }
+                    }
+                  }
+                ],
+                "value": "null"
+              }
+            },
+            {
+              "propertytype": "cmd-if_variant",
+              "type": "class",
+              "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-spawn_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "garyAnchor",
+                      "facing": "right",
+                      "name": "Gary",
+                      "texture": "gary",
+                      "trigger": {
+                        "script": [
+                          {
+                            "propertytype": "cmd-text",
+                            "type": "class",
+                            "value": {
+                              "text": "{rival}: Heh, I do't need to be greedy like you. I'm mature!\nGo ahead and choose, {player}!"
+                            }
+                          }
+                        ],
+                        "trigger": "interact"
+                      }
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-spawn_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "oakAnchor",
+                      "facing": "down",
+                      "name": "Oak",
+                      "texture": "professor_oak",
+                      "trigger": {
+                        "script": [
+                          {
+                            "propertytype": "cmd-text",
+                            "type": "class",
+                            "value": {
+                              "text": "OAK: Now, {player}!\nInside those three POK{e} BALLS are POK{e}MON.\nWhich one will you choose for yourself?"
+                            }
+                          }
+                        ],
+                        "trigger": "interact"
+                      }
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-spawn_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "pokeball1",
+                      "name": "pokeball1",
+                      "texture": "pokeball",
+                      "trigger": {
+                        "script": [
+                          {
+                            "propertytype": "cmd-yes_no",
+                            "type": "class",
+                            "value": {
+                              "text": "Will you choose {starter:1}?",
+                              "yes": [
+                                {
+                                  "propertytype": "cmd-give_starter",
+                                  "type": "class",
+                                  "value": {
+                                    "index": 1
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-remove_npc",
+                                  "type": "class",
+                                  "value": {
+                                    "name": "pokeball1"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-walk_to_char",
+                                  "type": "class",
+                                  "value": {
+                                    "character1": "Gary",
+                                    "character2": "pokeball3",
+                                    "side": "down"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-remove_npc",
+                                  "type": "class",
+                                  "value": {
+                                    "name": "pokeball3"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-text",
+                                  "type": "class",
+                                  "value": {
+                                    "text": "{rival}: I'll take this one, then!"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-set_var",
+                                  "type": "class",
+                                  "value": {
+                                    "key": "lock_lab",
+                                    "value": "false"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-set_var",
+                                  "type": "class",
+                                  "value": {
+                                    "key": "first_battle",
+                                    "value": "true"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-set_flag",
+                                  "type": "class",
+                                  "value": {
+                                    "key": "has_pokemon",
+                                    "value": true
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-set_flag",
+                                  "type": "class",
+                                  "value": {
+                                    "key": "rival_has_charmander",
+                                    "value": true
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "trigger": "interact"
+                      }
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-spawn_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "pokeball2",
+                      "name": "pokeball2",
+                      "texture": "pokeball",
+                      "trigger": {
+                        "script": [
+                          {
+                            "propertytype": "cmd-yes_no",
+                            "type": "class",
+                            "value": {
+                              "text": "Will you choose {starter:2}?",
+                              "yes": [
+                                {
+                                  "propertytype": "cmd-give_starter",
+                                  "type": "class",
+                                  "value": {
+                                    "index": 2
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-remove_npc",
+                                  "type": "class",
+                                  "value": {
+                                    "name": "pokeball2"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-walk_to_char",
+                                  "type": "class",
+                                  "value": {
+                                    "character1": "Gary",
+                                    "character2": "pokeball1",
+                                    "side": "down"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-remove_npc",
+                                  "type": "class",
+                                  "value": {
+                                    "name": "pokeball1"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-text",
+                                  "type": "class",
+                                  "value": {
+                                    "text": "{rival}: I'll take this one, then!"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-set_var",
+                                  "type": "class",
+                                  "value": {
+                                    "key": "lock_lab",
+                                    "value": "false"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-set_var",
+                                  "type": "class",
+                                  "value": {
+                                    "key": "first_battle",
+                                    "value": "true"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-set_flag",
+                                  "type": "class",
+                                  "value": {
+                                    "key": "has_pokemon",
+                                    "value": true
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-set_flag",
+                                  "type": "class",
+                                  "value": {
+                                    "key": "rival_has_bulbasaur",
+                                    "value": true
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "trigger": "interact"
+                      }
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-spawn_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "pokeball3",
+                      "name": "pokeball3",
+                      "texture": "pokeball",
+                      "trigger": {
+                        "script": [
+                          {
+                            "propertytype": "cmd-yes_no",
+                            "type": "class",
+                            "value": {
+                              "text": "Will you choose {starter:3}?",
+                              "yes": [
+                                {
+                                  "propertytype": "cmd-give_starter",
+                                  "type": "class",
+                                  "value": {
+                                    "index": 3
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-remove_npc",
+                                  "type": "class",
+                                  "value": {
+                                    "name": "pokeball3"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-walk_to_char",
+                                  "type": "class",
+                                  "value": {
+                                    "character1": "Gary",
+                                    "character2": "pokeball2",
+                                    "side": "down"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-remove_npc",
+                                  "type": "class",
+                                  "value": {
+                                    "name": "pokeball2"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-text",
+                                  "type": "class",
+                                  "value": {
+                                    "text": "{rival}: I'll take this one, then!"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-set_var",
+                                  "type": "class",
+                                  "value": {
+                                    "key": "lock_lab",
+                                    "value": "false"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-set_var",
+                                  "type": "class",
+                                  "value": {
+                                    "key": "first_battle",
+                                    "value": "true"
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-set_flag",
+                                  "type": "class",
+                                  "value": {
+                                    "key": "has_pokemon",
+                                    "value": true
+                                  }
+                                },
+                                {
+                                  "propertytype": "cmd-set_flag",
+                                  "type": "class",
+                                  "value": {
+                                    "key": "rival_has_squirtle",
+                                    "value": true
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "trigger": "interact"
+                      }
+                    }
+                  }
+                ],
+                "value": "oak_gives_mon"
+              }
+            }
+          ],
+          "trigger": "map_enter"
+        }
+      }
+    }
+  ]
+}

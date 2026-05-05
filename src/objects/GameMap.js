@@ -7,8 +7,7 @@ import * as Tile from '@Objects/Tile.js';
 import { getValue, EventBus, getPropertyValue } from '@Utilities';
 import { gameState } from '@Data/gameState.js';
 import store from '../store/index.js';
-import Tileset from '@Tileset';
-import { MAP_REGISTRY } from '@Maps';
+import { MAP_REGISTRY, TILESET_REGISTRY, TILESET_JSON_REGISTRY } from '@/worlds/registry.js';
 import RoomSync from '@/multiplayer/RoomSync.js';
 import Darkness from '@Objects/Darkness.js';
 import WaterFx from '@Objects/WaterFx.js';
@@ -19,60 +18,6 @@ import SnowFx, { SNOW_VARIANTS } from '@Objects/SnowFx.js';
 import SunlightFx, { SUNLIGHT_VARIANTS } from '@Objects/SunlightFx.js';
 import TimeOverlayFx from '@Objects/TimeOverlayFx.js';
 
-/**
- * Maps the tileset name (derived from the map JSON source filename) to the
- * Vite-processed image URL and frame dimensions for lazy loading.
- */
-const TILESET_REGISTRY = {
-  'gen3_inside':        { url: Tileset.gen3inside,    frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'gen3_outside':       { url: Tileset.gen3outside,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'rse_inside':         { url: Tileset.rse_inside,    frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'rse_outside':        { url: Tileset.rse_outside,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'Transparent_Tiles':  { url: Tileset.Transparent_Tiles, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'animated_grass':     { url: Tileset.animated_grass,    frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'caves':              { url: Tileset.caves,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'kanto_common':       { url: Tileset.kanto_common,  frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'kanto_outside':      { url: Tileset.kanto_outside, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'kanto_inside':       { url: Tileset.kanto_inside,  frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'kanto_dungeons':     { url: Tileset.kanto_dungeons, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'Gavworld_common':    { url: Tileset.Gavworld_common,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'Gavworld_outside':   { url: Tileset.Gavworld_outside,  frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'Gavworld_inside':    { url: Tileset.Gavworld_inside,   frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'Gavworld_dungeons':  { url: Tileset.Gavworld_dungeons, frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'Water':              { url: Tileset.Water,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'Paths':              { url: Tileset.Paths,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'Balls':              { url: Tileset.Balls,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'Signs_Fences':       { url: Tileset.SignsFences,       frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-  'Trees':              { url: Tileset.Trees,             frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT },
-};
-
-/**
- * Maps tileset source name to its bundled JSON data.
- * Used to inline external tileset references before passing to Phaser.
- */
-const TILESET_JSON_REGISTRY = {
-  'gen3_inside':       Tileset.gen3inside_json,
-  'gen3_outside':      Tileset.gen3outside_json,
-  'rse_inside':        Tileset.rse_inside_json,
-  'rse_outside':       Tileset.rse_outside_json,
-  'Transparent_Tiles': Tileset.Transparent_Tiles_json,
-  'animated_grass':    Tileset.animated_grass_json,
-  'caves':             Tileset.caves_json,
-  'kanto_common':      Tileset.kanto_common_json,
-  'kanto_outside':     Tileset.kanto_outside_json,
-  'kanto_inside':      Tileset.kanto_inside_json,
-  'kanto_dungeons':    Tileset.kanto_dungeons_json,
-  'Gavworld_common':   Tileset.Gavworld_common_json,
-  'Gavworld_outside':  Tileset.Gavworld_outside_json,
-  'Gavworld_inside':   Tileset.Gavworld_inside_json,
-  'Gavworld_dungeons': Tileset.Gavworld_dungeons_json,
-  'Water':             Tileset.Water_json,
-  'Paths':             Tileset.Paths_json,
-  'Balls':             Tileset.Balls_json,
-  'Signs+Fences':      Tileset.SignsFences_json,
-  'Signs_Fences':      Tileset.SignsFences_json,
-  'Trees':             Tileset.Trees_json,
-};
 
 /**
  * Resolves external tileset references in a Tiled map JSON object,
@@ -217,6 +162,13 @@ export default class extends Phaser.Scene {
         console.warn(`[GameMap] No registry entry for tileset '${name}' — add it to TILESET_REGISTRY in GameMap.js`);
       }
     });
+
+    // Interactables (cut tree, bush, boulder, pokeball) are used programmatically
+    // by BaseItem and may not appear in every map's tileset list.
+    if (!this.textures.exists('interactables')) {
+      const ia = TILESET_REGISTRY['interactables'];
+      if (ia) this.load.spritesheet('interactables', ia.url, { frameWidth: ia.frameWidth, frameHeight: ia.frameHeight });
+    }
   }
 
   /**

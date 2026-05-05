@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Tile } from '@Objects';
 import Tileset from '@Tileset';
 import Scenes from '@Scenes';
+import { WORLD_SCENES } from '@/worlds/registry.js';
 import Debug from '@Data/debug.js';
 import { loadGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
@@ -40,7 +41,7 @@ export default class extends Phaser.Scene {
     if (this.game.config.debug.console.preload) {
       console.group('Preload::start');
     }
-    
+
     if (this.game.config.debug.inspector) {
       this.load.scripts('inspector', [
         'https://cdn.jsdelivr.net/npm/tweakpane@3.1.0/dist/tweakpane.js',
@@ -74,7 +75,7 @@ export default class extends Phaser.Scene {
     this.load.image(SHADER_ASSET_KEYS.SANDSTORM,      shader_sandstorm);
     this.load.image(SHADER_ASSET_KEYS.SNOW_0,         shader_snow0);
     this.load.image(SHADER_ASSET_KEYS.SNOW_1,         shader_snow1);
-    
+
     this.load.spritesheet('red', Tileset.red, {frameWidth: 32, frameHeight: 48});
     this.load.spritesheet('red_bike', Tileset.red_bike, {frameWidth: 48, frameHeight: 48});
     this.load.spritesheet('red_surf', Tileset.red_surf, {frameWidth: 32, frameHeight: 48});
@@ -120,6 +121,10 @@ export default class extends Phaser.Scene {
         this.scene.add(Scenes[scene].name, Scenes[scene], false);
       })
     ;
+
+    Object.keys(WORLD_SCENES).forEach((key) => {
+      this.scene.add(key, WORLD_SCENES[key], false);
+    });
 
     if (this.game.config.debug.console.preload) {
       console.log('Preload::complete');

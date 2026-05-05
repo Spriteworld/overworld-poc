@@ -1,5 +1,5 @@
 import Scenes from '@Scenes';
-import { WORLD_FILE, WORLD_MAP_KEYS, INSIDE_MAP_SCENE_KEYS } from '@Maps';
+import { WORLD_FILES, WORLD_MAP_KEYS, INSIDE_MAP_SCENE_KEYS } from '@/worlds/registry.js';
 import {
   SX, SY, SW, SH,
   TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT,
@@ -70,7 +70,7 @@ export default class DebugScreen {
       { type: 'warp', label: 'Test' },
     ];
 
-    const maps = WORLD_FILE.maps;
+    const maps = WORLD_FILES.flatMap(wf => wf.maps);
     const minX  = Math.min(...maps.map(m => m.x));
     const minY  = Math.min(...maps.map(m => m.y));
     const world = maps.map(entry => {

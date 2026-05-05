@@ -27,8 +27,8 @@ export default class {
 
       let item = new Items.Pokeball({
         scene: this.scene,
-        x: obj.x / Tile.WIDTH,
-        y: (obj.gid ? obj.y - obj.height : obj.y) / Tile.HEIGHT,
+        x: Math.floor(obj.x / Tile.WIDTH),
+        y: Math.floor((obj.gid ? obj.y - obj.height : obj.y) / Tile.HEIGHT),
         item: itemName,
         overworldKey: obj.name,
       });

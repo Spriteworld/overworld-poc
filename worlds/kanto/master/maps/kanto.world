@@ -1,0 +1,104 @@
+{
+    "onlyShowAdjacentMaps": false,
+    "type": "world",
+    "maps": [
+        {
+            "fileName": "pallet.json",
+            "x": -928,
+            "y": 1312,
+            "width": 1664,
+            "height": 640
+        },
+        {
+            "fileName": "route1.json",
+            "x": -928,
+            "y": 0,
+            "width": 1664,
+            "height": 1312
+        },
+        {
+            "fileName": "viridian_city.json",
+            "x": -608,
+            "y": -1312,
+            "width": 1536,
+            "height": 1312
+        },
+        {
+            "fileName": "route22.json",
+            "x": -2592,
+            "y": -1312,
+            "width": 1984,
+            "height": 1312
+        },
+        {
+            "fileName": "route2.json",
+            "x": -928,
+            "y": -4000,
+            "width": 1856,
+            "height": 2688
+        },
+        {
+            "fileName": "pewter_city.json",
+            "x": -1120,
+            "y": -5472,
+            "width": 1888,
+            "height": 1472
+        },
+        {
+            "fileName": "route21.json",
+            "x": -928,
+            "y": 1952,
+            "width": 1664,
+            "height": 2720
+        },
+        {
+            "fileName": "route3.json",
+            "x": 768,
+            "y": -5728,
+            "width": 2784,
+            "height": 1728
+        },
+        {
+            "fileName": "route4.json",
+            "x": 3552,
+            "y": -5728,
+            "width": 2592,
+            "height": 1728
+        },
+        {
+            "fileName": "cerulean_city.json",
+            "x": 6144,
+            "y": -5792,
+            "width": 1536,
+            "height": 1280
+        },
+        {
+            "fileName": "route24.json",
+            "x": 6144,
+            "y": -7264,
+            "width": 1312,
+            "height": 1472
+        },
+        {
+            "fileName": "route25.json",
+            "x": 7456,
+            "y": -7264,
+            "width": 2112,
+            "height": 1472
+        },
+        {
+            "fileName": "route9.json",
+            "x": 7680,
+            "y": -5792,
+            "width": 2304,
+            "height": 1184
+        },
+        {
+            "fileName": "route5.json",
+            "x": 6144,
+            "y": -4512,
+            "width": 1536,
+            "height": 1440
+        }
+    ]
+}

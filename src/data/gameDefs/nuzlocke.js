@@ -1,4 +1,4 @@
-import kanto from './kanto.js';
+import kanto from '@Worlds/kanto/gameDef.js';
 
 /**
  * Nuzlocke ruleset on top of the standard Kanto definition.

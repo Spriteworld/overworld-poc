@@ -1,5 +1,6 @@
 import { GameMap, Tile } from '@Objects';
-import { KantoRoute21Map } from '@Maps';
+import { MAP_REGISTRY } from '@/worlds/registry.js';
+const KantoRoute21Map = MAP_REGISTRY['KantoRoute21'];
 import { SHADER_KEYS } from '@/shaders/keys.js';
 import store from '@/store/index.js';
 

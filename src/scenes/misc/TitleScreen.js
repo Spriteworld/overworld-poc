@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 import store, { listSaves, saveOptions } from '../../store/index.js';
 import { getGameDef, setGameDef } from '@Data/gameDef.js';
-import * as gameDefPresets from '@Data/gameDefs/index.js';
+import { WORLD_GAME_DEFS as gameDefPresets, WORLD_SCENES } from '@/worlds/registry.js';
+import { loadWorld, worldFromSceneKey } from '@/worlds/manifest.js';
 import { initRng } from '@Utilities/rng.js';
 import { getInputManager } from '@Utilities';
 
@@ -317,7 +318,7 @@ export default class TitleScreen extends Phaser.Scene {
     return out;
   }
 
-  _finaliseWizard() {
+  async _finaliseWizard() {
     const slot = this._selectedSlot;
     const values = this._wizardValues;
 
@@ -334,15 +335,18 @@ export default class TitleScreen extends Phaser.Scene {
     const startScene = effective.startScene;
     const startTile  = { ...effective.startTile };
 
-    store.dispatch('clearSave', slot).then(() => {
-      store.commit('game/SET_ACTIVE_SLOT', slot);
-      localStorage.setItem('sw_active_slot', String(slot));
-      initRng(store.state.game.seed);
-      store.commit('game/SET_MAP', startScene);
-      store.commit('game/SET_PLAYER_TILE', startTile);
-      store.dispatch('saveGame');
-      this._launch(startScene, startTile);
-    });
+    const worldId = worldFromSceneKey(startScene);
+    if (worldId) await loadWorld(worldId);
+    this._registerNewWorldScenes();
+
+    await store.dispatch('clearSave', slot);
+    store.commit('game/SET_ACTIVE_SLOT', slot);
+    localStorage.setItem('sw_active_slot', String(slot));
+    initRng(store.state.game.seed);
+    store.commit('game/SET_MAP', startScene);
+    store.commit('game/SET_PLAYER_TILE', startTile);
+    store.dispatch('saveGame');
+    this._launch(startScene, startTile);
   }
 
   // ─── Options screen ───────────────────────────────────────────────────────
@@ -619,11 +623,24 @@ export default class TitleScreen extends Phaser.Scene {
     if (!ok) return; // empty slot shouldn't reach here, defensive
     initRng(store.state.game.seed);
     const map  = store.state.game.currentMap || getGameDef().overworldScene;
+
+    const worldId = worldFromSceneKey(map);
+    if (worldId) await loadWorld(worldId);
+    this._registerNewWorldScenes();
+
     const tile = store.state.game.playerTile;
     const playerLocation = (tile && (tile.x || tile.y))
       ? { x: tile.x, y: tile.y, charLayer: tile.charLayer }
       : {};
     this._launch(map, playerLocation);
+  }
+
+  _registerNewWorldScenes() {
+    for (const [key, SceneClass] of Object.entries(WORLD_SCENES)) {
+      if (!this.scene.manager.keys[key]) {
+        this.scene.add(key, SceneClass, false);
+      }
+    }
   }
 
   _cleanupIM() {
