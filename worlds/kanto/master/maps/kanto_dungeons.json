@@ -152482,11 +152482,11 @@
  "tilesets": [
   {
    "firstgid": 1,
-   "source":"..\/..\/..\/src\/tileset\/gen3_outside.json"
+   "source": "../../../../src/tileset/gen3_outside.json"
   },
   {
    "firstgid": 7985,
-   "source":"..\/..\/..\/src\/tileset\/caves.json"
+   "source": "../../../../src/tileset/caves.json"
   }
  ],
  "tilewidth": 32,

@@ -75,7 +75,7 @@ ITEM_TILE_IDS = [17, 18, 35, 53]  # CutTree, Bush, StrengthBoulder, Pokeball
 
 def make_outdoor_tilesets(common_count):
     return [
-        {'firstgid': 1,                'source': '../tilesets/kanto_common.json'},
+        {'firstgid': 1,                'source': '../../../src/tileset/interactables/interactables.json'},
         {'firstgid': common_count + 1, 'source': '../tilesets/kanto_outside.json'},
     ]
 
@@ -540,10 +540,10 @@ def main():
         for fg, name, count, ts_json in catalogue
     }
 
-    kanto_common_ts_path  = lib.TILESET_DIR / 'kanto_common.json'
+    kanto_common_ts_path  = lib.INTERACTABLES_DIR / 'interactables.json'
     kanto_outside_ts_path = lib.TILESET_DIR / 'kanto_outside.json'
     kanto_common_ts_json  = lib.load_or_init_tileset(
-        kanto_common_ts_path,  'kanto_common',  'kanto_common.png',  columns=16, image_width=512)
+        kanto_common_ts_path,  'interactables',  'interactables.png',  columns=16, image_width=512)
     kanto_outside_ts_json = lib.load_or_init_tileset(
         kanto_outside_ts_path, 'kanto_outside', 'kanto_outside.png', columns=16, image_width=512)
 
@@ -625,7 +625,7 @@ def main():
         }
         fname_to_key[zone['fname']] = WORLD_PREFIX + zone['name']
 
-    world_path = lib.MAPS_DIR / 'kanto.world'
+    world_path = lib.OUTPUT_DIR / 'kanto.world'
     if world_path.exists():
         with open(world_path) as f:
             world = json.load(f)
@@ -817,10 +817,10 @@ def main():
 
     # Flat common-only map for BaseItem.js (gen3_outside entries only).
     common_flat = {k: v for k, v in gid_map['gen3_to_kanto'].items() if int(v) <= common_count}
-    flat_path = lib.MAPS_DIR / 'gen3_to_kanto_common.json'
+    flat_path = lib.INTERACTABLES_DIR / 'gen3_to_interactables.json'
     with open(flat_path, 'w') as f:
         json.dump(common_flat, f, indent=2)
-    print(f'Updated gen3_to_kanto_common.json ({len(common_flat)} entries)')
+    print(f'Updated gen3_to_interactables.json ({len(common_flat)} entries)')
 
     common_png_modified, outside_png_modified = update_split_pngs(
         catalogue, src_to_kanto, common_count,

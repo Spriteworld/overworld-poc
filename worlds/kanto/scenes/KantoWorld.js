@@ -3,8 +3,8 @@ import { lazyLoadBgm } from '@Utilities/AudioManager.js';
 import { MAP_REGISTRY, WORLD_MAP_KEYS } from '@/worlds/registry.js';
 import { gameState } from '@Data/gameState.js';
 import KantoMap from '../master/maps/kanto.json';
-import kantoWorldRaw from '../master/maps/kanto.world?raw';
-import kantoCommonJson from '../tilesets/kanto_common.json';
+import kantoWorldRaw from '../maps/kanto.world?raw';
+import kantoCommonJson from '@Tileset/interactables/interactables.json';
 import kantoOutsideJson from '../tilesets/kanto_outside.json';
 import gen3outsideTilesetJson from '@Tileset/gen3_outside.json';
 import Tileset from '@Tileset';
@@ -24,7 +24,7 @@ const KANTO_OFFSET_X = 2592;
 const KANTO_OFFSET_Y = 7616;
 
 const TILESET_BY_NAME = {
-  'kanto_common':  kantoCommonJson,
+  'interactables': kantoCommonJson,
   'kanto_outside': kantoOutsideJson,
   'gen3_outside':  gen3outsideTilesetJson,
 };

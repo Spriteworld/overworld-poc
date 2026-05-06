@@ -9,7 +9,7 @@ import '@/assets/app.css';
 import Phaser from 'phaser';
 import registerTiledJSONExternalLoader from 'phaser-tiled-json-external-loader';
 
-import { resolveWorldAtBoot, loadWorld } from '@/worlds/manifest.js';
+import { resolveWorldAtBoot, loadWorld } from '@Worlds/manifest.js';
 
 registerTiledJSONExternalLoader(Phaser);
 

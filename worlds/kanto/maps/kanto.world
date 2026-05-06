@@ -1,4 +1,6 @@
 {
+    "onlyShowAdjacentMaps": false,
+    "type": "world",
     "maps": [
         {
             "fileName": "pallet.json",
@@ -101,144 +103,9 @@
         {
             "fileName": "saffron_city.json",
             "x": 6144,
-            "y": -3680,
-            "width": 1792,
-            "height": 1472
-        },
-        {
-            "fileName": "route6.json",
-            "x": 6144,
-            "y": -2208,
-            "width": 1792,
-            "height": 640
-        },
-        {
-            "fileName": "vermillion_city.json",
-            "x": 6144,
-            "y": -1568,
-            "width": 1792,
-            "height": 1472
-        },
-        {
-            "fileName": "route8.json",
-            "x": 7936,
-            "y": -3680,
-            "width": 1792,
-            "height": 640
-        },
-        {
-            "fileName": "lavender_town.json",
-            "x": 9728,
-            "y": -3680,
-            "width": 1280,
+            "y": -3072,
+            "width": 1536,
             "height": 1280
-        },
-        {
-            "fileName": "route11.json",
-            "x": 7936,
-            "y": -1568,
-            "width": 2560,
-            "height": 640
-        },
-        {
-            "fileName": "route12.json",
-            "x": 9728,
-            "y": -2400,
-            "width": 1280,
-            "height": 1312
-        },
-        {
-            "fileName": "route13.json",
-            "x": 10496,
-            "y": -2400,
-            "width": 640,
-            "height": 1472
-        },
-        {
-            "fileName": "route14.json",
-            "x": 10496,
-            "y": -928,
-            "width": 640,
-            "height": 1472
-        },
-        {
-            "fileName": "route15.json",
-            "x": 7936,
-            "y": 544,
-            "width": 2560,
-            "height": 640
-        },
-        {
-            "fileName": "route7.json",
-            "x": 5184,
-            "y": -3680,
-            "width": 960,
-            "height": 1472
-        },
-        {
-            "fileName": "celadon_city.json",
-            "x": 2784,
-            "y": -4000,
-            "width": 2400,
-            "height": 1760
-        },
-        {
-            "fileName": "route16.json",
-            "x": 1696,
-            "y": -3680,
-            "width": 1088,
-            "height": 640
-        },
-        {
-            "fileName": "route17.json",
-            "x": 1696,
-            "y": -3040,
-            "width": 640,
-            "height": 2048
-        },
-        {
-            "fileName": "route18.json",
-            "x": 1696,
-            "y": -992,
-            "width": 1088,
-            "height": 640
-        },
-        {
-            "fileName": "fuchsia_city.json",
-            "x": 6144,
-            "y": -96,
-            "width": 1792,
-            "height": 1472
-        },
-        {
-            "fileName": "route19.json",
-            "x": 6144,
-            "y": 1376,
-            "width": 1792,
-            "height": 640
-        },
-        {
-            "fileName": "route20.json",
-            "x": 2496,
-            "y": 1376,
-            "width": 3648,
-            "height": 640
-        },
-        {
-            "fileName": "cinnabar_island.json",
-            "x": 2496,
-            "y": 2016,
-            "width": 1664,
-            "height": 1664
-        },
-        {
-            "fileName": "route23.json",
-            "x": -2592,
-            "y": -7616,
-            "width": 1984,
-            "height": 1440
         }
-    ],
-    "onlyShowAdjacentMaps": false,
-    "type": "world"
+    ]
 }

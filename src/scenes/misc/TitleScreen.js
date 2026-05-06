@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import store, { listSaves, saveOptions } from '../../store/index.js';
 import { getGameDef, setGameDef } from '@Data/gameDef.js';
 import { WORLD_GAME_DEFS as gameDefPresets, WORLD_SCENES } from '@/worlds/registry.js';
-import { loadWorld, worldFromSceneKey } from '@/worlds/manifest.js';
+import { loadWorld, worldFromSceneKey } from '@Worlds/manifest.js';
 import { initRng } from '@Utilities/rng.js';
 import { getInputManager } from '@Utilities';
 

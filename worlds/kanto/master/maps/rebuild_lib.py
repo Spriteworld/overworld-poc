@@ -30,6 +30,7 @@ SRC_DIR     = PROJECT_DIR / 'src'
 OUTPUT_DIR  = WORLD_DIR / 'maps'                     # derived per-zone maps output
 TILESET_DIR = WORLD_DIR / 'tilesets'
 SHARED_TILESET_DIR = SRC_DIR / 'tileset'
+INTERACTABLES_DIR = SHARED_TILESET_DIR / 'interactables'
 
 
 def resolve_tileset_json(name):

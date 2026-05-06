@@ -6,28 +6,32 @@ import tailwindcss from '@tailwindcss/vite';
 
 
 const MAP_REBUILDS = [
-  ['kanto/kanto.json',              'kanto/update_kanto.py'],
-  ['kanto/kanto_inside.json',       'kanto/update_kanto_insides.py'],
-  ['kanto/kanto_dungeons.json',     'kanto/update_kanto_dungeons.py'],
-  ['Gavworld/Gavworld.json',       'Gavworld/update_Gavworld.py'],
-  ['Gavworld/Gavworld_inside.json', 'Gavworld/update_Gavworld_insides.py'],
-  ['Gavworld/Gavworld_dungeons.json','Gavworld/update_Gavworld_dungeons.py'],
-  ['spriteworld/spriteworld.json',         'spriteworld/update_spriteworld.py'],
-  ['spriteworld/spriteworld_inside.json',  'spriteworld/update_spriteworld_insides.py'],
-  ['spriteworld/spriteworld_dungeons.json','spriteworld/update_spriteworld_dungeons.py'],
+  ['kanto/master/maps/kanto.json', 'kanto/master/maps/update_kanto.py', 'worlds'],
+  ['kanto/master/maps/kanto_inside.json', 'kanto/master/maps/update_kanto_insides.py', 'worlds'],
+  ['kanto/master/maps/kanto_dungeons.json', 'kanto/master/maps/update_kanto_dungeons.py', 'worlds'],
+  ['gavworld/master/maps/Gavworld.json', 'gavworld/master/maps/update_Gavworld.py', 'worlds'],
+  ['gavworld/master/maps/Gavworld_inside.json', 'gavworld/master/maps/update_Gavworld_insides.py', 'worlds'],
+  ['gavworld/master/maps/Gavworld_dungeons.json', 'gavworld/master/maps/update_Gavworld_dungeons.py', 'worlds'],
+  ['spriteworld/spriteworld.json', 'spriteworld/update_spriteworld.py', 'src/maps'],
+  ['spriteworld/spriteworld_inside.json', 'spriteworld/update_spriteworld_insides.py', 'src/maps'],
+  ['spriteworld/spriteworld_dungeons.json', 'spriteworld/update_spriteworld_dungeons.py', 'src/maps'],
 ];
 
 function mapRebuildPlugin() {
-  const mapsDir = resolve(__dirname, 'src/maps');
   return {
     name: 'map-rebuild',
     handleHotUpdate({ file, server }) {
-      for (const [mapFile, script] of MAP_REBUILDS) {
-        if (file === resolve(mapsDir, mapFile)) {
-          const scriptPath = resolve(mapsDir, script);
+      for (const [mapFile, script, baseDir] of MAP_REBUILDS) {
+        const base = resolve(__dirname, baseDir);
+        if (file === resolve(base, mapFile)) {
+          const scriptPath = resolve(base, script);
           server.config.logger.info(`[map-rebuild] ${mapFile} changed — running ${script}`);
           try {
             execFileSync('python3', [scriptPath], { cwd: __dirname, stdio: 'inherit' });
+            if (baseDir === 'worlds' && mapFile.startsWith('kanto/')) {
+              execFileSync('python3', [resolve(base, 'kanto/master/maps/export_scripts.py')], { cwd: __dirname, stdio: 'inherit' });
+            }
+
             server.config.logger.info(`[map-rebuild] ${mapFile}: done`);
           } catch (e) {
             server.config.logger.error(`[map-rebuild] ${mapFile}: script failed (exit ${e.status})`);
@@ -46,6 +50,7 @@ function phaserHmrPlugin() {
       if (
         file.includes('/scenes/') ||
         file.includes('/objects/') ||
+        file.includes('/worlds/') ||
         file.includes('/data/config') ||
         file.includes('@spriteworld')
       ) {
@@ -66,6 +71,12 @@ export default defineConfig({
   resolve: {
     dedupe: ['phaser'],
     alias: {
+      // Force every `import 'phaser'` to the root copy. Without this, the
+      // nested copy at @spriteworld/battle/node_modules/phaser gets bundled
+      // alongside the root one — esbuild emits Frame2/Text2 class duplicates
+      // and Text instances created by one copy crash inside Frame methods
+      // from the other (null `frame.data.drawImage`).
+      phaser: resolve(__dirname, 'node_modules/phaser'),
       '@': resolve(__dirname, 'src'),
       '@Data': resolve(__dirname, 'src/data/'),
       '@Maps': resolve(__dirname, 'src/maps/'),
@@ -73,6 +84,7 @@ export default defineConfig({
       '@Tileset': resolve(__dirname, 'src/tileset/'),
       '@Scenes': resolve(__dirname, 'src/scenes/'),
       '@Utilities': resolve(__dirname, 'src/utilities/'),
+      '@Worlds': resolve(__dirname, 'worlds/'),
     }
   },
   server: {
@@ -80,7 +92,7 @@ export default defineConfig({
     port: 8085,
     allowedHosts: true,
     watch: {
-      ignored: ['!**/src/**'],
+      ignored: ['!**/src/**', '!**/worlds/**'],
     },
   },
   define: {

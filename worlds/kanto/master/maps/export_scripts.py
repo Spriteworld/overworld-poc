@@ -33,7 +33,7 @@ MASTERS  = ['kanto.json', 'kanto_inside.json', 'kanto_dungeons.json']
 EXCLUDED = set(MASTERS) | {
     # Tileset / index artefacts that happen to have .json extensions.
     'gid_map.json', 'dungeon_gid_map.json', 'inside_gid_map.json',
-    'gen3_to_kanto_common.json', 'kanto_to_gen3.json',
+    'kanto_to_gen3.json',
 }
 
 

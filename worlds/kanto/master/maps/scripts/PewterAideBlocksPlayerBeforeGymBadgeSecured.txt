@@ -1,59 +1,39 @@
 [
   {
-    "propertytype": "cmd-if_flag",
     "type": "class",
     "value": {
       "comparison": "eq",
       "else": [
         {
-          "propertytype": "cmd-text",
-          "type": "class",
-          "value": {}
+          "type": "",
+          "value": null
         }
       ],
       "key": "has_boulderbadge",
       "then": [
         {
-          "propertytype": "cmd-text",
-          "type": "class",
-          "value": {
-            "text": "You're a TRAINER, right?\nBROCK's looking for new challengers.\nFollow me!"
-          }
+          "type": "",
+          "value": null
         },
         {
-          "propertytype": "cmd-disable_input",
-          "type": "class",
-          "value": {}
+          "type": "",
+          "value": null
         },
         {
-          "propertytype": "cmd-movement_behavior",
-          "type": "class",
-          "value": {
-            "character1": "player",
-            "character2": "pewterAide",
-            "value": "follow"
-          }
+          "type": "",
+          "value": null
         },
         {
-          "propertytype": "cmd-move_npc",
-          "type": "class",
-          "value": {
-            "anchor": "pewterGym",
-            "character": "pewterAide"
-          }
+          "type": "",
+          "value": null
         },
         {
-          "propertytype": "cmd-movement_behavior",
-          "type": "class",
-          "value": {
-            "character1": "player",
-            "value": "none"
-          }
+          "type": "",
+          "value": null
         },
         {
-          "propertytype": "cmd-enable_input",
-          "type": "class",
-          "value": {}
+          "type": "",
+          "value": null
         }
       ],
       "value": "true"

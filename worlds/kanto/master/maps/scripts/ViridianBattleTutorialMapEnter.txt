@@ -1,27 +1,16 @@
 [
   {
-    "propertytype": "cmd-if_flag",
     "type": "class",
     "value": {
       "key": "done_battle_tutorial",
       "then": [
         {
-          "propertytype": "cmd-remove_npc",
-          "type": "class",
-          "value": {
-            "name": "battle_tutor"
-          }
+          "type": "",
+          "value": null
         },
         {
-          "propertytype": "cmd-spawn_npc",
-          "type": "class",
-          "value": {
-            "facing": "right",
-            "name": "battle_tutor",
-            "texture": "old_man",
-            "x": 12,
-            "y": 6
-          }
+          "type": "",
+          "value": null
         }
       ]
     }

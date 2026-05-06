@@ -79,7 +79,7 @@ ITEM_TILE_IDS = [17, 18, 35, 53]
 
 def make_inside_tilesets(common_count):
     return [
-        {'firstgid': 1,                'source': '../tilesets/kanto_common.json'},
+        {'firstgid': 1,                'source': '../../../src/tileset/interactables/interactables.json'},
         {'firstgid': common_count + 1, 'source': '../tilesets/kanto_inside.json'},
     ]
 
@@ -387,7 +387,7 @@ def main():
             src_props_indices[name] = lib.build_props_index(ts_json)
 
     # For outdoor sources, build props from kanto_common.json.
-    kanto_common_ts_path = lib.TILESET_DIR / 'kanto_common.json'
+    kanto_common_ts_path = lib.INTERACTABLES_DIR / 'interactables.json'
     with open(kanto_common_ts_path) as f:
         kanto_common_ts_json_data = json.load(f)
     kanto_tile_props = {t['id']: t.get('properties', [])

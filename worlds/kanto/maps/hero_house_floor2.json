@@ -769,7 +769,7 @@
   "tilesets": [
     {
       "firstgid": 1,
-      "source": "../tilesets/kanto_common.json"
+      "source": "../../../src/tileset/interactables/interactables.json"
     },
     {
       "firstgid": 5,

@@ -1,6 +1,5 @@
 [
   {
-    "propertytype": "cmd-text",
     "type": "class",
     "value": {
       "text": "...Zzz..."

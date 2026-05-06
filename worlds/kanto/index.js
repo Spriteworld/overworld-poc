@@ -1,7 +1,6 @@
 import { registerWorld } from '@/worlds/registry.js';
 
 // Maps
-import KantoMap from './master/maps/kanto.json';
 import KantoPalletTownMap from './maps/pallet.json';
 import KantoHeroHouseF1Map from './maps/hero_house_floor1.json';
 import KantoHeroHouseF2Map from './maps/hero_house_floor2.json';
@@ -56,11 +55,9 @@ import KantoFushsiaGymMap from './maps/fushsia_gym.json';
 import KantoSaffronGymMap from './maps/saffron_gym.json';
 import KantoCinnabarGymMap from './maps/cinnabar_gym.json';
 import KantoViridianGymMap from './maps/viridian_gym.json';
-import kantoWorldRaw from './master/maps/kanto.world?raw';
+import kantoWorldRaw from './maps/kanto.world?raw';
 
 // Tilesets
-import kanto_common from './tilesets/kanto_common.png';
-import kanto_common_json from './tilesets/kanto_common.json';
 import kanto_outside from './tilesets/kanto_outside.png';
 import kanto_outside_json from './tilesets/kanto_outside.json';
 import kanto_inside from './tilesets/kanto_inside.png';
@@ -69,7 +66,6 @@ import kanto_dungeons from './tilesets/kanto_dungeons.png';
 import kanto_dungeons_json from './tilesets/kanto_dungeons.json';
 
 // Scenes
-import Kanto from './scenes/Kanto.js';
 import KantoCeladonCity from './scenes/KantoCeladonCity.js';
 import KantoCeladonGym from './scenes/KantoCeladonGym.js';
 import KantoCeruleanCity from './scenes/KantoCeruleanCity.js';
@@ -131,7 +127,6 @@ import gameDef from './gameDef.js';
 
 registerWorld({
   maps: {
-    'Kanto': KantoMap,
     'KantoPalletTown': KantoPalletTownMap,
     'KantoHeroHouseF1': KantoHeroHouseF1Map,
     'KantoHeroHouseF2': KantoHeroHouseF2Map,
@@ -188,7 +183,6 @@ registerWorld({
     'KantoViridianGym': KantoViridianGymMap,
   },
   tilesets: {
-    'kanto_common':  { url: kanto_common,  json: kanto_common_json },
     'kanto_outside': { url: kanto_outside, json: kanto_outside_json },
     'kanto_inside':  { url: kanto_inside,  json: kanto_inside_json },
     'kanto_dungeons': { url: kanto_dungeons, json: kanto_dungeons_json },
@@ -245,7 +239,6 @@ registerWorld({
     'KantoViridianGym',
   ],
   scenes: {
-    Kanto,
     KantoCeladonCity,
     KantoCeladonGym,
     KantoCeruleanCity,
