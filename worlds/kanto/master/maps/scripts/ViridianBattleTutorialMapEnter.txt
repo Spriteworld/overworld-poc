@@ -1,0 +1,18 @@
+[
+  {
+    "type": "class",
+    "value": {
+      "key": "done_battle_tutorial",
+      "then": [
+        {
+          "type": "",
+          "value": null
+        },
+        {
+          "type": "",
+          "value": null
+        }
+      ]
+    }
+  }
+]

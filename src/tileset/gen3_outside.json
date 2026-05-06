@@ -6,7 +6,7 @@
  "name":"gen3_outside",
  "spacing":0,
  "tilecount":7984,
- "tiledversion":"1.11.2",
+ "tiledversion":"1.12.1",
  "tileheight":32,
  "tiles":[
         {
@@ -506,7 +506,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -3231,6 +3231,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3238,6 +3243,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -3435,6 +3445,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3444,6 +3459,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3451,11 +3471,6 @@
          "properties":[
                 {
                  "name":"ge_collide",
-                 "type":"bool",
-                 "value":true
-                }, 
-                {
-                 "name":"sw_jump",
                  "type":"bool",
                  "value":true
                 }]
@@ -3626,6 +3641,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3633,6 +3653,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -3770,6 +3795,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3777,6 +3807,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -3977,6 +4012,16 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3986,6 +4031,16 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -3993,6 +4048,16 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4121,6 +4186,16 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4128,6 +4203,16 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4139,6 +4224,16 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4146,6 +4241,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4157,6 +4257,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4164,6 +4269,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4265,6 +4375,16 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4272,6 +4392,16 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4283,6 +4413,16 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4290,6 +4430,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4301,6 +4446,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4308,6 +4458,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4418,6 +4573,16 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4425,6 +4590,16 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4436,6 +4611,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4443,6 +4623,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4454,6 +4639,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4461,6 +4651,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4472,6 +4667,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4479,6 +4679,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4562,6 +4767,16 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4569,6 +4784,16 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_smooth_water",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4580,6 +4805,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4587,6 +4817,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4598,6 +4833,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4605,6 +4845,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4616,6 +4861,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4623,6 +4873,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4724,6 +4979,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4731,6 +4991,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4742,6 +5007,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4749,6 +5019,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4760,6 +5035,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4767,6 +5047,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4796,6 +5081,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4805,6 +5095,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4812,6 +5107,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4868,6 +5168,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4875,6 +5180,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4886,6 +5196,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4893,6 +5208,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4904,6 +5224,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4911,6 +5236,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -4940,6 +5270,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4949,6 +5284,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -4956,6 +5296,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -5027,6 +5372,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5036,6 +5386,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5043,6 +5398,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -5099,6 +5459,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5108,6 +5473,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5115,6 +5485,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -5171,6 +5546,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5180,6 +5560,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5187,6 +5572,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -5315,6 +5705,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5324,6 +5719,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5331,6 +5731,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -5386,7 +5791,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -5459,6 +5864,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5468,6 +5878,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -5475,6 +5890,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -6571,7 +6991,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -6616,7 +7036,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -7381,7 +7801,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -7984,7 +8404,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -8524,7 +8944,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -9406,7 +9826,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -9703,7 +10123,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -10387,7 +10807,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -10855,7 +11275,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -11404,7 +11824,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -11665,7 +12085,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -11917,7 +12337,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -12862,7 +13282,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -13177,7 +13597,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -13465,7 +13885,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -13798,7 +14218,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -14320,7 +14740,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -14527,7 +14947,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -15112,7 +15532,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -15148,7 +15568,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -15652,7 +16072,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -15688,7 +16108,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -16390,7 +16810,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -16732,7 +17152,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -17182,7 +17602,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -17884,7 +18304,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -17929,7 +18349,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -17965,7 +18385,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -17992,7 +18412,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -18631,7 +19051,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -19284,7 +19704,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -19356,7 +19776,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -19761,7 +20181,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -19788,7 +20208,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -19948,18 +20368,48 @@
          "id":2182,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2183,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
@@ -20065,18 +20515,48 @@
          "id":2195,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2196,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
@@ -20337,7 +20817,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -20544,7 +21024,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -20614,18 +21094,48 @@
          "id":2256,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2257,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
@@ -20758,18 +21268,48 @@
          "id":2272,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2273,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
@@ -20787,7 +21327,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -20902,34 +21442,94 @@
          "id":2288,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2289,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2290,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2291,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
                  "type":"bool",
                  "value":true
                 }]
@@ -20938,9 +21538,24 @@
          "id":2292,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
@@ -20956,18 +21571,48 @@
          "id":2294,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
-                 "value":true
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2295,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
-                 "value":true
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
@@ -21046,27 +21691,72 @@
          "id":2304,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2305,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2306,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
@@ -21082,9 +21772,24 @@
          "id":2308,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
@@ -21100,18 +21805,48 @@
          "id":2310,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
-                 "value":true
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2311,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
-                 "value":true
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
@@ -21129,7 +21864,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -21165,7 +21900,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -21190,25 +21925,70 @@
          "id":2320,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2321,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }]
         }, 
         {
          "id":2322,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_up",
                  "type":"bool",
                  "value":true
                 }]
@@ -21217,7 +21997,22 @@
          "id":2323,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
                  "type":"bool",
                  "value":true
                 }]
@@ -21226,7 +22021,22 @@
          "id":2324,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
                  "type":"bool",
                  "value":true
                 }]
@@ -21714,7 +22524,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -22497,7 +23307,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -22506,7 +23316,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -22533,7 +23343,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -22686,7 +23496,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -23352,7 +24162,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -23685,7 +24495,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -23793,7 +24603,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -23802,7 +24612,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -23811,7 +24621,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -23937,7 +24747,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -23946,7 +24756,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -23955,7 +24765,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -24081,7 +24891,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -24090,7 +24900,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -24099,7 +24909,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -24225,7 +25035,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -24234,7 +25044,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -24243,7 +25053,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -25980,7 +26790,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -26241,7 +27051,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -26331,7 +27141,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -26889,7 +27699,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -27609,7 +28419,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -27717,7 +28527,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -27969,7 +28779,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -28185,7 +28995,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -28545,7 +29355,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -29481,7 +30291,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -29517,7 +30327,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -29562,7 +30372,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -30021,7 +30831,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -30777,7 +31587,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -30813,7 +31623,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -31362,7 +32172,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -31443,7 +32253,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -32316,7 +33126,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -32361,7 +33171,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -32406,7 +33216,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -32982,7 +33792,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -33027,7 +33837,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -33630,7 +34440,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -33828,7 +34638,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -34197,7 +35007,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -34305,7 +35115,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -34827,7 +35637,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -35907,7 +36717,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -36708,7 +37518,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -37498,6 +38308,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":false
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -37505,6 +38320,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -37516,6 +38336,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -37523,6 +38348,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -37534,6 +38364,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -37541,6 +38376,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -37552,6 +38392,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -37559,6 +38404,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -37761,7 +38611,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -38319,7 +39169,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -39039,7 +39889,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -40137,7 +40987,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }]
         }, 
         {
@@ -54978,7 +55828,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -55266,7 +56116,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -59469,7 +60319,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -60316,6 +61166,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -60325,6 +61180,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -60332,6 +61192,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -60460,6 +61325,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -60469,6 +61339,11 @@
                  "name":"ge_collide",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"sw_water",
+                 "type":"bool",
+                 "value":true
                 }]
         }, 
         {
@@ -60476,6 +61351,11 @@
          "properties":[
                 {
                  "name":"ge_collide",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"sw_water",
                  "type":"bool",
                  "value":true
                 }]
@@ -63708,7 +64588,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -69319,6 +70199,19 @@
                 }]
         }, 
         {
+         "animation":[
+                {
+                 "duration":100,
+                 "tileid":7694
+                }, 
+                {
+                 "duration":100,
+                 "tileid":7710
+                }, 
+                {
+                 "duration":300,
+                 "tileid":7726
+                }],
          "id":7662,
          "properties":[
                 {

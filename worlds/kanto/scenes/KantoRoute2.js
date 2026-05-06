@@ -1,0 +1,27 @@
+import { GameMap } from '@Objects';
+import KantoRoute2Map from '../maps/route2.json';
+
+export default class extends GameMap {
+  constructor() {
+    super({
+      mapName: 'KantoRoute2',
+      map: KantoRoute2Map,
+      active: false,
+      visible: false,
+      inside: true
+    });
+  }
+
+  preload() {
+    this.preloadMap();
+  }
+
+  create() {
+    this.loadMap();
+    this.createCharacters();
+  }
+
+  update(time, delta) {
+    this.updateCharacters(time, delta);
+  }
+}

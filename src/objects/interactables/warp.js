@@ -1,8 +1,19 @@
 import Phaser from 'phaser';
 import { Tile, Interactables, GameMap, Direction } from '@Objects';
-import { getPropertyValue } from '@Utilities';
+import { getPropertyValue, checkOnlyIf } from '@Utilities';
+import { getGameDef, seededRng } from '@Data/gameDef.js';
+import store from '../../store/index.js';
+
+function hashStr(s) {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(h, 33) ^ s.charCodeAt(i)) >>> 0;
+  return h;
+}
 
 export default class {
+  /**
+   * @param {GameMap} scene - The map scene that owns this plugin.
+   */
   constructor(scene) {
     /** @type {GameMap} */
     this.scene = scene;
@@ -10,6 +21,10 @@ export default class {
     this.player = {};
   }
 
+  /**
+   * Discover all warp objects on the map and expand multi-tile warps into
+   * individual single-tile warp entries in the scene registry.
+   */
   init() {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::warp', this.scene.game.config.mapName);
@@ -17,6 +32,7 @@ export default class {
 
     let warps = this.scene.findInteractions('warp');
     if (warps.length === 0) { return; }
+    console.log(`[Warp] found ${warps.length} warp objects on this map`, warps);
 
     // empty the warps, and reset them to the current maps warps
     this.scene.registry.set('warps', []);
@@ -32,56 +48,59 @@ export default class {
       for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
           let objCopy = JSON.parse(JSON.stringify(obj));
-          
+          objCopy.x = objCopy.x + (x * Tile.WIDTH);
+          objCopy.y = objCopy.y + (y * Tile.HEIGHT);
+
           let targetXIdx = objCopy.properties.findIndex(w => w.name === 'warp-x');
-          objCopy.properties[targetXIdx].value = obj.properties[targetXIdx].value + x;
-          objCopy.x = (objCopy.x / Tile.WIDTH) + x;
-            
+          if (targetXIdx !== -1) objCopy.properties[targetXIdx].value = obj.properties[targetXIdx].value + x;
+
           let targetYIdx = objCopy.properties.findIndex(w => w.name === 'warp-y');
-          objCopy.properties[targetYIdx].value = obj.properties[targetYIdx].value + y;
-          objCopy.y = (objCopy.y / Tile.HEIGHT) + y;
+          if (targetYIdx !== -1) objCopy.properties[targetYIdx].value = obj.properties[targetYIdx].value + y;
 
           this.addWarp(objCopy);
         }
       }
     });
     this.warps = this.scene.registry.get('warps');
+
+    if (getGameDef().entranceRandomizer === 'random') {
+      this._shuffleDestinations();
+    }
   }
 
+  /**
+   * Register a single tile-sized warp object into the scene's warp registry.
+   * @param {object} obj - A Tiled object with warp-x and warp-y properties.
+   */
   addWarp(obj) {
-    let warpxIdx = obj.properties.findIndex(w => w.name === 'warp-x');
-    let warpyIdx = obj.properties.findIndex(w => w.name === 'warp-y');
-    if (this.scene.game.config.debug.console.interactableShout) {
-      console.log(['Interactables::warp::addWarp', parseInt(obj.x), parseInt(obj.y), obj.properties[warpxIdx].value, obj.properties[warpyIdx].value]);
-    }
     this.scene.registry.get('warps').push({
       name: obj.id,
-      x: parseInt(obj.x),
-      y: parseInt(obj.y),
+      x: parseInt(obj.x / Tile.WIDTH),
+      y: parseInt(obj.y / Tile.HEIGHT),
       obj: obj
     });
     if (this.scene.game.config.debug.console.interactableShout) {
-      let rect = this.scene.add.rectangle(
-        obj.x * Tile.WIDTH, obj.y * Tile.HEIGHT,
-        Tile.WIDTH, Tile.HEIGHT,
-        0x000000, 0.5
-      ).setOrigin(0,0);
-
-      /** @type {Interactables.Debug} */
-      this.scene.mapPlugins['debug'].debugObject(rect, [
-        obj.properties[warpxIdx].value,
-        obj.properties[warpyIdx].value,
-      ].join(','));
+      const props = obj.properties ?? [];
+      const warpxProp = props.find(w => w.name === 'warp-x');
+      const warpyProp = props.find(w => w.name === 'warp-y');
+      const warpProp  = props.find(w => w.name === 'warp');
+      console.log(['Interactables::warp::addWarp', parseInt(obj.x), parseInt(obj.y),
+        warpxProp?.value ?? warpProp?.value, warpyProp?.value]);
     }
   }
 
+  /**
+   * Subscribe to GridEngine position-change events and route characters
+   * through any warp tile they step on.
+   */
   event() {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log(['Interactables::warp::event', this.scene])
     }
+    if (this.warps.length === 0) return;
 
-    // handle warp tiles
-    this.scene.gridEngine
+    // handle warp tiles — triggered when the player steps onto a warp tile
+    this._sub = this.scene.gridEngine
       .positionChangeStarted()
       .subscribe(({ charId, exitTile, enterTile }) => {
         let char = this.scene.characters.get(charId);
@@ -90,95 +109,356 @@ export default class {
 
         this.handleWarps(char, exitTile, enterTile);
       });
+
+    // handle wall warps — triggered when the player walks into a blocked tile
+    this._blockedHandler = (target) => {
+      const char = this.scene.characters.get('player');
+      if (!char) return;
+      this.handleWarps(char, char.getPosition(), target);
+    };
+    this.scene.game.events.on('player-blocked-tile', this._blockedHandler);
   }
 
+  /** Unsubscribe from GridEngine events to prevent memory leaks. */
+  destroy() {
+    this._sub?.unsubscribe();
+    if (this._blockedHandler) {
+      this.scene.game.events.off('player-blocked-tile', this._blockedHandler);
+    }
+  }
+
+  /**
+   * Resolve a warpLocation object by name to a playerLocation coordinate set.
+   * Searches the current scene's interactions for a `warpLocation` object
+   * whose name matches the given string.
+   * @param {string} name - The warpLocation object name.
+   * @returns {{x:number,y:number,dir:string,charLayer:string}|null}
+   */
+  resolveWarpLocation(name) {
+    const locations = this.scene.findInteractions('warpLocation');
+    console.log('[Warp] resolveWarpLocation', JSON.stringify(name), '— available:', locations.map(l => l.name));
+    const obj = locations.find(l => l.name === name);
+    if (!obj) {
+      console.warn(`[Warp] warpLocation "${name}" not found on this map`);
+      return null;
+    }
+    return {
+      x: parseInt(obj.x / Tile.WIDTH),
+      y: parseInt(obj.y / Tile.HEIGHT),
+      dir: getPropertyValue(obj.properties ?? [], 'warp-dir', Direction.DOWN),
+      charLayer: getPropertyValue(obj.properties ?? [], 'layer', 'ground'),
+    };
+  }
+
+  /**
+   * Check whether a character has stepped onto a warp tile and, if so,
+   * initiate the appropriate warp action.
+   * @param {Character} char - The character that moved.
+   * @param {{x:number,y:number}} exitTile - The tile the character left.
+   * @param {{x:number,y:number}} enterTile - The tile the character entered.
+   */
   handleWarps(char, exitTile, enterTile) {
+    // console.log('[Warp] positionChange', char.name, 'exit', exitTile, 'enter', enterTile);
     if (this.warps.length === 0) { return; }
 
-    let warp = this.warps.find(p => p.x / Tile.WIDTH === enterTile.x && p.y / Tile.HEIGHT === enterTile.y);
-    if (typeof warp === 'undefined') { return; }
-
-    let warpProps = warp.obj.properties;
-    let warpLocation = getPropertyValue(warpProps, 'warp', null);
-    if (warpLocation === null || warpLocation === ''){ return; }
-    let playerLocation = {
-      x: getPropertyValue(warpProps, 'warp-x', 0),
-      y: getPropertyValue(warpProps, 'warp-y', 0),
-      dir: getPropertyValue(warpProps, 'warp-dir', Direction.DOWN),
-      charLayer: getPropertyValue(warpProps, 'layer', 'ground')
-    };
-
-    if (this.scene.game.config.debug.console.interactableShout) {
-      console.log(['Interactables::warp::handleWarps', 'char is trying to warp', char.name, 'to', warpLocation]);
+    const tileWarps = this.warps.filter(p => p.x === enterTile.x && p.y === enterTile.y);
+    if (tileWarps.length === 0) {
+      // console.log('[Warp] no warp at', enterTile, '— registered warps:', this.warps.map(w => `(${w.x},${w.y})`));
+      return;
     }
+
+    const variant  = this.scene.config.variant ?? null;
+    const mapVars  = this.scene.mapVars ?? {};
+    const gameFlags = store.state.game.gameFlags;
+    const warp = tileWarps.find(w => {
+      const onlyIf = getPropertyValue(w.obj.properties, 'only_if');
+      const pass   = checkOnlyIf(onlyIf, gameFlags, variant, mapVars);
+      if (onlyIf) {
+        let actual;
+        if (!onlyIf.type || onlyIf.type === 'flag') {
+          const key = onlyIf.key ?? null;
+          actual = key ? (key in mapVars ? mapVars[key] : gameFlags[key]) : onlyIf.value?.map(v => `${v}=${!!gameFlags[v]}`).join(', ');
+        } else if (onlyIf.type === 'variant') {
+          actual = variant;
+        } else if (onlyIf.type === 'variable') {
+          const key = onlyIf.key ?? onlyIf.value?.[0];
+          actual = mapVars[key];
+        }
+        console.log(`[Warp] only_if check — "${w.obj.name}" actual=${JSON.stringify(actual)} → ${pass ? 'pass' : 'fail'}`, onlyIf);
+      }
+      return pass;
+    });
+    if (!warp) return;
+
+    let warpProps        = warp.obj.properties;
+    let warpTarget       = getPropertyValue(warpProps, 'warp', null);
+    let warpLocationName = getPropertyValue(warpProps, 'warp-location', null);
+    let warpVariant      = getPropertyValue(warpProps, 'warp-variant', null);
+    console.log('[Warp] matched warp tile → target:', warpTarget, '| location:', warpLocationName, '| variant:', warpVariant, '| props:', warpProps);
+
+    if (warpTarget === null || warpTarget === '') {
+      console.warn('[Warp] warp tile has no target scene (warp property missing or empty)');
+      return;
+    }
+
     if (char.config.type !== 'player') {
-      if (this.scene.registry.get('map') === warpLocation) {
-        this.warpPlayerInMap(char, playerLocation);
+      if (this.scene.registry.get('map') === warpTarget) {
+        const loc = this.resolveWarpLocation(warpLocationName);
+        if (loc) { this.warpPlayerInMap(char, loc); }
       }
       char.visible = false;
       return;
     }
 
-    this.warpPlayerToMap(char, warpLocation, playerLocation);
+    this.warpPlayerToMap(char, warpTarget, warpLocationName, warpVariant);
   }
 
-  warpPlayerInMap(char, playerLocation) {
-    let pos = {
-      x: playerLocation.x,
-      y: playerLocation.y
-    };
+  /**
+   * Teleport a character to a new position within the current map.
+   * @param {Character} char - The character to teleport.
+   * @param {{x:number,y:number,dir:string,layer:string}} playerLocation - Target tile and direction.
+   */
+  async warpPlayerInMap(char, playerLocation) {
+    const pos = { x: playerLocation.x, y: playerLocation.y };
 
-    // move the player
-    this.scene.gridEngine.setPosition(char.name, pos, playerLocation.layer);
-    char.look(playerLocation.dir);
+    const playerPlugin = this.scene.mapPlugins?.['player'];
+    const followerId = playerPlugin?.hasPlayerMon
+      ? playerPlugin.playerMon?.config?.id
+      : null;
 
-    if (this.scene.mapPlugins['player'].hasPlayerMon) {
-      // get the pokemon to be in the right spot
-      this.scene.gridEngine.setPosition(
-        this.playerMon.config.id,
-        char.getPosInBehindDirection(),
-        playerLocation.layer
-      );
+    // handleWarps fires on positionChangeStarted, so the char (and the
+    // player's follower, which trails one step behind) may be mid-step here.
+    // Calling setPosition mid-step seeds grid-engine's zombie blocker on the
+    // from-tile (see docs/grid-engine-ticket.md) — it survives every public
+    // API we have and permanently blocks the tile. Wait for both characters
+    // to land before teleporting.
+    await Promise.all([
+      this._waitTileAligned(char.name),
+      followerId ? this._waitTileAligned(followerId) : Promise.resolve(),
+    ]);
+
+    // The scene may have torn down during the await (e.g. the player hit a
+    // cross-map warp in the meantime); bail if gridEngine is gone.
+    const ge = this.scene?.gridEngine;
+    if (!ge?.hasCharacter?.(char.name)) return;
+
+    ge.setPosition(char.name, pos, playerLocation.layer);
+    char.look(char.getFacingDirection());
+
+    if (followerId && ge.hasCharacter(followerId)) {
+      ge.setPosition(followerId, char.getPosInBehindDirection(), playerLocation.layer);
     }
   }
 
-  warpPlayerToMap(char, warpLocation, playerLocation) {
+  /**
+   * Resolve once the given grid-engine character is tile-aligned (not in the
+   * middle of an animated step). If the character is already idle, resolves
+   * synchronously on the next microtask. Has a 1s fallback so a lost event
+   * doesn't hang the warp.
+   * @param {string} charId
+   * @param {number} [timeoutMs=1000]
+   * @returns {Promise<void>}
+   */
+  _waitTileAligned(charId, timeoutMs = 1000) {
+    return new Promise(resolve => {
+      const ge = this.scene?.gridEngine;
+      if (!ge?.hasCharacter?.(charId) || !ge.isMoving?.(charId)) {
+        resolve();
+        return;
+      }
+      let settled = false;
+      let posSub = null;
+      let stopSub = null;
+      let timeout = null;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        posSub?.unsubscribe?.();
+        stopSub?.unsubscribe?.();
+        if (timeout) clearTimeout(timeout);
+        resolve();
+      };
+      posSub = ge.positionChangeFinished?.().subscribe(({ charId: id }) => {
+        if (id === charId) finish();
+      });
+      stopSub = ge.movementStopped?.().subscribe(({ charId: id }) => {
+        if (id === charId) finish();
+      });
+      timeout = setTimeout(finish, timeoutMs);
+    });
+  }
+
+  /**
+   * Fade out the camera then switch to a different map scene, placing the
+   * character at the named warpLocation on arrival.
+   * @param {Character} char - The character to warp.
+   * @param {string} warpTarget - Scene key of the destination map, or '_this_'.
+   * @param {string} warpLocationName - Name of the warpLocation object on the destination map.
+   */
+  warpPlayerToMap(char, warpTarget, warpLocationName, warpVariant = null) {
+    // `_lastmap_` sentinel — resolve from the Vuex-persisted last-outdoor
+    // location so exit doors don't each need their own hard-coded destination.
+    // Ignores `warp-location` / `warp-variant` on the triggering warp object;
+    // the player lands on the exact tile they last stood on outside.
+    let playerLocationOverride = null;
+    if (warpTarget === '_lastmap_') {
+      const out = store.state.game.lastOutdoorLocation;
+      if (!out?.map) {
+        console.warn('[Warp] _lastmap_ used but no lastOutdoorLocation is recorded — skipping');
+        return;
+      }
+      warpTarget             = out.map;
+      warpLocationName       = null;
+      warpVariant            = null;
+      playerLocationOverride = { x: out.x, y: out.y, charLayer: out.charLayer };
+    }
+
+    console.log('[Warp] warpPlayerToMap — from:', this.scene.config.mapName, '→', warpTarget, '| location:', warpLocationName);
+
+    // Same map — resolve the warpLocation on this scene and teleport in place
+    if (this.scene.config.mapName === warpTarget || warpTarget === '_this_') {
+      console.log('[Warp] same-map teleport');
+      const loc = this.resolveWarpLocation(warpLocationName);
+      console.log('[Warp] resolved location:', loc);
+      if (!loc) { return; }
+      char.disableMovement();
+      this.scene.cameras.main.fadeOut(500, 0, 0, 0);
+      this.scene.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, async () => {
+        await this.warpPlayerInMap(char, loc);
+        this.scene.cameras.main.fadeIn(500, 0, 0, 0);
+        char.enableMovement();
+      });
+      return;
+    }
+
+    // Cross-map — pass the warpLocation name so the destination scene can resolve it
+    const destScene = this.scene.scene.get(warpTarget);
+    console.log('[Warp] cross-map — destScene:', destScene?.constructor?.name ?? warpTarget, '| inside:', destScene?.config?.inside ?? 'unknown');
+    if (destScene?.config?.inside) {
+      this._dismountBike(char);
+    }
+
+    // Persist current facing so the destination scene can restore it
+    store.commit('game/SET_PLAYER_FACING', char.getFacingDirection());
+
     char.disableMovement();
-    this.scene.cameras.main.fadeOut(this.cameraFade, 0, 0, 0);
+
+    // Capture and freeze any active script immediately so it doesn't advance
+    // into commands that reference the destination map while we are still on
+    // the current map (the warp fires on positionChangeStarted, but the script
+    // advances on positionChangeFinished — those are two separate ticks).
+    let pendingScript;
+    const runner = this.scene._activeScriptRunner;
+    if (runner?._queue?.length) {
+      pendingScript = [...runner._queue];
+      runner._queue.length = 0;
+    }
+
+    this.scene.cameras.main.fadeOut(500, 0, 0, 0);
     this.scene.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
-      (cam, effect) => {
-        // this.scene.scene.events.emit('toast', warpLocation);
-        // same map, we dont need to move scene
-        if (this.scene.registry.get('map') === warpLocation && playerLocation) {
-          this.warpPlayerInMap(char, playerLocation);
-          this.scene.cameras.main.fadeIn(this.cameraFade, 0, 0, 0);
-          char.enableMovement();
-          return;
-        }
-
-        // new map!
-        this.scene.registry.set('map', warpLocation);
-        if (typeof playerLocation === 'undefined') {
-          this.scene.scene.start(warpLocation);
-        }else {
-          this.scene.scene.start(warpLocation, {
-            playerLocation: playerLocation
-          });
-        }
-        char.enableMovement();
+      () => {
+        this.scene.registry.set('map', warpTarget);
+        const startParams = playerLocationOverride
+          ? { playerLocation: playerLocationOverride }
+          : { warpLocationName };
+        if (warpVariant) startParams.variant = warpVariant;
+        // expectedMap guards against replaying this queue on an unrelated
+        // destination (see GameMap.initGEEvents). For a tile warp that's
+        // always the tile's own target.
+        if (pendingScript) startParams._pendingScript = { queue: pendingScript, expectedMap: warpTarget };
+        this.scene.scene.start(warpTarget, startParams);
       }
     );
   }
 
-  warpPlayerToMapWithoutFade(char, warpLocation, playerLocation) {
-    this.scene.registry.set('map', warpLocation);
-    if (typeof playerLocation === 'undefined') {
-      this.scene.scene.start(warpLocation);
-    }else {
-      this.scene.scene.start(warpLocation, {
-        playerLocation: playerLocation
-      });
+  /**
+   * Shuffle warp destinations using a seeded RNG so the mapping is
+   * deterministic per save. Multi-tile warps (same Tiled object expanded
+   * into several registry entries) are grouped and shuffled together so
+   * every tile of a doorway leads to the same new destination.
+   */
+  _shuffleDestinations() {
+    const DEST_KEYS = ['warp', 'warp-location', 'warp-variant', 'warp-x', 'warp-y'];
+
+    // Group warps by their source Tiled object name so multi-tile warps
+    // stay together. Warps without a destination are excluded.
+    const groups = new Map();
+    for (const w of this.warps) {
+      const target = getPropertyValue(w.obj.properties, 'warp', null);
+      if (!target) continue;
+      const key = w.obj.name || w.obj.id;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(w);
     }
+
+    const groupKeys = [...groups.keys()];
+    if (groupKeys.length < 2) return;
+
+    // Snapshot each group's destination properties.
+    const dests = groupKeys.map(k => {
+      const rep = groups.get(k)[0];
+      const snap = {};
+      for (const dk of DEST_KEYS) {
+        snap[dk] = getPropertyValue(rep.obj.properties, dk, undefined);
+      }
+      return snap;
+    });
+
+    // Fisher-Yates shuffle with seeded RNG.
+    const mapName = this.scene.config?.mapName ?? '';
+    const baseSeed = store.state.game.seed ?? 0;
+    const seed = (baseSeed + hashStr(mapName)) >>> 0;
+    const rng = seededRng(seed);
+    for (let i = dests.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [dests[i], dests[j]] = [dests[j], dests[i]];
+    }
+
+    // Write the shuffled destinations back onto the warp objects.
+    groupKeys.forEach((k, idx) => {
+      const snap = dests[idx];
+      for (const w of groups.get(k)) {
+        for (const dk of DEST_KEYS) {
+          if (snap[dk] === undefined) continue;
+          const prop = w.obj.properties?.find(p => p.name === dk);
+          if (prop) {
+            prop.value = snap[dk];
+          } else {
+            (w.obj.properties ??= []).push({ name: dk, type: typeof snap[dk] === 'number' ? 'int' : 'string', value: snap[dk] });
+          }
+        }
+      }
+    });
+
+    console.log(`[Warp] Entrance randomizer: shuffled ${groupKeys.length} warp groups on ${mapName}`);
+  }
+
+  /**
+   * If the character is on the bike, transition them back to IDLE and update the store.
+   * @param {Character} char
+   */
+  _dismountBike(char) {
+    if (char.stateMachine.currentState?.name !== char.stateDef.BIKE) return;
+    char.stateMachine.setState(char.stateDef.IDLE);
+    store.commit('game/SET_ON_BIKE', false);
+  }
+
+  warpPlayerToMapWithoutFade(char, warpTarget, locationData) {
+    this.scene.registry.set('map', warpTarget);
+    let startData;
+    if (typeof locationData === 'string') {
+      startData = { warpLocationName: locationData };
+    } else if (locationData) {
+      startData = { playerLocation: locationData };
+    } else {
+      startData = {};
+    }
+    const warpRunner = this.scene._activeScriptRunner;
+    if (warpRunner?._queue?.length) {
+      startData._pendingScript = [...warpRunner._queue];
+      warpRunner._queue.length = 0;
+    }
+    this.scene.scene.start(warpTarget, startData);
   }
 }

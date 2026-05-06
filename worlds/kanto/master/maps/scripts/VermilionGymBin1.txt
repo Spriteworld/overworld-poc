@@ -1,0 +1,23 @@
+[
+  {
+    "propertytype": "cmd-call",
+    "type": "class",
+    "value": {
+      "args": {
+        "bin_id": "1",
+        "neighbors": [
+          {
+            "type": "",
+            "value": null
+          },
+          {
+            "type": "",
+            "value": null
+          }
+        ]
+      },
+      "cmd": "call_script",
+      "script": "VermilionGymBinCheck"
+    }
+  }
+]

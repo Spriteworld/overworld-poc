@@ -5,7 +5,6 @@ import GameMap from './GameMap.js';
 import Interactables from './interactables/index.js';
 import Items from './items/index.js';
 
-import MovableSprite from './characters/MovableSprite.js';
 import Character from './characters/Character.js';
 import Player from './characters/Player.js';
 import NPC from './characters/NPC.js';
@@ -15,6 +14,9 @@ import * as ObjectTypesImport from '../tileset/objecttypes.json';
 let ObjectTypes = ObjectTypesImport.default;
 
 import Flock from './misc/Flock.js';
+import PauseMenu from './PauseMenu.js';
+import PokemonSprite from './PokemonSprite.js';
+import { TypeBadge, TYPE_COLORS } from './common';
 
 export {
   Tile, Direction,
@@ -22,7 +24,6 @@ export {
   Interactables,
   Items,
 
-  MovableSprite,
   Character,
   Player,
   NPC,
@@ -31,4 +32,8 @@ export {
   ObjectTypes,
 
   Flock,
+  PauseMenu,
+  TypeBadge,
+  TYPE_COLORS,
+  PokemonSprite,
 };

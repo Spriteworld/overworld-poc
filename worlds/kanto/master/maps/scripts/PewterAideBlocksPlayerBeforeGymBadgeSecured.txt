@@ -1,0 +1,42 @@
+[
+  {
+    "type": "class",
+    "value": {
+      "comparison": "eq",
+      "else": [
+        {
+          "type": "",
+          "value": null
+        }
+      ],
+      "key": "has_boulderbadge",
+      "then": [
+        {
+          "type": "",
+          "value": null
+        },
+        {
+          "type": "",
+          "value": null
+        },
+        {
+          "type": "",
+          "value": null
+        },
+        {
+          "type": "",
+          "value": null
+        },
+        {
+          "type": "",
+          "value": null
+        },
+        {
+          "type": "",
+          "value": null
+        }
+      ],
+      "value": "true"
+    }
+  }
+]

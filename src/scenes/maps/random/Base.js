@@ -1,5 +1,5 @@
-import {GameMap, Flock, Direction, Tile} from '@Objects';
-import {BaseMap} from '@Maps';
+import { GameMap } from '@Objects';
+import { BaseMap } from '@Maps';
 
 export default class extends GameMap {
   constructor() {
@@ -22,9 +22,5 @@ export default class extends GameMap {
 
   update(time, delta) {
     this.updateCharacters(time, delta);
-    // this.flock.update(time, delta);
-    // this.npc1.update(time);
-
   }
-
 }

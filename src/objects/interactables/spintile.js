@@ -19,30 +19,36 @@ export default class {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log(['Interactables::spinTile::event', this.scene]);
     }
+    if (this.spinTiles.length === 0 && this.stopTiles.length === 0) return;
 
-    // handle ice & spin tiles
-    this.scene.gridEngine
-      .positionChangeStarted()
-      .subscribe(({ charId, exitTile, enterTile }) => {
-        let char = this.scene.characters.get(charId);
-        if (typeof char === 'undefined') { return; }
-        if (char.isDumbCharacter()) { return; }
+    this._subs = [
+      // handle spin tiles
+      this.scene.gridEngine
+        .positionChangeStarted()
+        .subscribe(({ charId, exitTile, enterTile }) => {
+          let char = this.scene.characters.get(charId);
+          if (typeof char === 'undefined') { return; }
+          if (char.isDumbCharacter()) { return; }
 
-        // check for spin tiles
-        this.handleSpinTiles(char, exitTile, enterTile);
-      });
+          this.handleSpinTiles(char, exitTile, enterTile);
+        }),
 
-    this.scene.gridEngine
-      .movementStopped()
-      .subscribe(({ charId, direction }) => {
-        let char = this.scene.characters.get(charId);
-        if (typeof char === 'undefined') { return; }
-        if (char.isDumbCharacter()) { return; }
+      this.scene.gridEngine
+        .movementStopped()
+        .subscribe(({ charId, direction }) => {
+          let char = this.scene.characters.get(charId);
+          if (typeof char === 'undefined') { return; }
+          if (char.isDumbCharacter()) { return; }
 
-        if (char.slidingDir !== null) {
-          char?.stateMachine.setState(char.stateDef.IDLE);
-        }
-      });
+          if (char.slidingDir !== null) {
+            char?.stateMachine.setState(char.stateDef.IDLE);
+          }
+        }),
+    ];
+  }
+
+  destroy() {
+    this._subs?.forEach(s => s.unsubscribe());
   }
 
   handleSpinTiles(char, exitTile, enterTile) {
@@ -59,13 +65,13 @@ export default class {
       let props = this.scene.getTileProperties(enterTile.x, enterTile.y);
       let dir = props.get('sw_spin') || false;
       if (dir === false) {
-        dir = char.getSlidingDirection();
+        dir = char.getSpinningDirection();
       }
 
       if (!char.isSpinning() && dir !== false) {
         char.stateMachine.setState(char.stateDef.SPIN);
       }
-      if (dir !== char.getSlidingDirection()) {
+      if (dir !== char.getSpinningDirection()) {
         char.setSpinDirection(dir);
       }
     }

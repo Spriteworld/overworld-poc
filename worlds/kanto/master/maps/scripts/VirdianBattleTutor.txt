@@ -1,0 +1,8 @@
+[
+  {
+    "type": "class",
+    "value": {
+      "text": "...Zzz..."
+    }
+  }
+]

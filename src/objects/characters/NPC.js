@@ -1,6 +1,11 @@
-import { Character } from '@Objects';
+import Character from '@Objects/characters/Character.js';
 
 export default class extends Character {
+  /**
+   * An overworld NPC character. Automatically registers IDLE, MOVE, BIKE, SPIN,
+   * and SLIDE states, and starts in the IDLE state.
+   * @param {object} config - Character configuration (see Character constructor).
+   */
   constructor(config) {
     config.type = 'npc';
     super(config);
@@ -8,7 +13,7 @@ export default class extends Character {
     this.stateMachine
       .addState(this.stateDef.IDLE, {
         onEnter: this.idleOnEnter,
-        onUpdate: this.idleOnUpdate,
+        onUpdate: this.npcIdleOnUpdate,
         onExit: this.idleOnExit,
       })
       .addState(this.stateDef.MOVE, {
@@ -45,18 +50,28 @@ export default class extends Character {
     this.setOrigin(0.5, 0.5);
   }
 
+  /**
+   * Per-frame update. Runs the state machine, line-of-sight checks, player
+   * tracking, and auto-behaviours once GridEngine is ready.
+   * @param {number} time - Current game time in ms.
+   * @param {number} delta - Time since last frame in ms.
+   */
   update(time, delta) {
     if (!this.config.scene.ge_init) { return; }
     this.stateMachine.update(time);
+    if (this.initalCreation) {
+      this.applyInitialFacing();
+    }
+    // Static NPCs (no spin / move / follow / sight / tracking) skip the
+    // entire auto-behavior pipeline. _hasUpdateWork is refreshed in the
+    // Character constructor and in setMovementBehavior.
+    if (!this._hasUpdateWork) return;
     this.canSeeCharacter();
     this.canTrackPlayer();
     this.addAutoSpin(delta);
     this.addAutoMove();
-
-    if (this.trackingCoords && this.trackingCoords.length){
-      if (this.isMoving()) {
-        this.generateTrackingCoords();
-      }
-    }
+    this.addAutoFollow();
+    // Pyramid regenerates lazily in canTrackPlayer when _trackingCoordsStale
+    // is flipped by a positionChangeStarted subscription on this NPC.
   }
 }

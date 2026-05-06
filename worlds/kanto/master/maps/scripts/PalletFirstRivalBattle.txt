@@ -1,0 +1,144 @@
+[
+  {
+    "propertytype": "cmd-show_exclamation",
+    "type": "class",
+    "value": {
+      "target": "Gary"
+    }
+  },
+  {
+    "propertytype": "cmd-text",
+    "type": "class",
+    "value": {
+      "text": "{rival}: Wait, {player}!\nLet's check out our POK{e}MON!\nCome on, I'll take you on!"
+    }
+  },
+  {
+    "propertytype": "cmd-walk_to_char",
+    "type": "class",
+    "value": {
+      "character1": "Gary",
+      "character2": "player",
+      "side": "up"
+    }
+  },
+  {
+    "propertytype": "cmd-if_flag",
+    "type": "class",
+    "value": {
+      "key": "rival_has_charmander",
+      "then": [
+        {
+          "propertytype": "cmd-start_battle",
+          "type": "class",
+          "value": {
+            "battle_texture": "gary",
+            "name": "Gary",
+            "team": [
+              {
+                "propertytype": "trainer-pokemon",
+                "type": "class",
+                "value": {
+                  "level": 5,
+                  "species": "charmander"
+                }
+              }
+            ],
+            "type": "trainer",
+            "use-ai": "trainer"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "propertytype": "cmd-if_flag",
+    "type": "class",
+    "value": {
+      "key": "rival_has_bulbasaur",
+      "then": [
+        {
+          "propertytype": "cmd-start_battle",
+          "type": "class",
+          "value": {
+            "battle_texture": "gary",
+            "name": "Gary",
+            "team": [
+              {
+                "propertytype": "trainer-pokemon",
+                "type": "class",
+                "value": {
+                  "level": 5,
+                  "species": "bulbasaur"
+                }
+              }
+            ],
+            "type": "trainer",
+            "use-ai": "trainer"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "propertytype": "cmd-if_flag",
+    "type": "class",
+    "value": {
+      "key": "rival_has_squirtle",
+      "then": [
+        {
+          "propertytype": "cmd-start_battle",
+          "type": "class",
+          "value": {
+            "battle_texture": "gary",
+            "name": "Gary",
+            "team": [
+              {
+                "propertytype": "trainer-pokemon",
+                "type": "class",
+                "value": {
+                  "level": 5,
+                  "species": "squirtle"
+                }
+              }
+            ],
+            "type": "trainer",
+            "use-ai": "trainer"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "propertytype": "cmd-set_var",
+    "type": "class",
+    "value": {
+      "key": "first_battle",
+      "value": "false"
+    }
+  },
+  {
+    "propertytype": "cmd-text",
+    "type": "class",
+    "value": {
+      "text": "{rival}: Okay! I'll make my\nPOK{e}MON battle to toughen it up!\n{player}! Gramps!\nSmell you later!"
+    }
+  },
+  {
+    "propertytype": "cmd-move_npc",
+    "type": "class",
+    "value": {
+      "character": "Gary",
+      "speed": 6,
+      "x": 8,
+      "y": 13
+    }
+  },
+  {
+    "propertytype": "cmd-remove_npc",
+    "type": "class",
+    "value": {
+      "name": "Gary"
+    }
+  }
+]

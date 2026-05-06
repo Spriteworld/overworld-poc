@@ -1,11 +1,5 @@
-import ace_trainer from '@Tileset/characters/ace_trainer.png';
-import poke_kid from '@Tileset/characters/poke_kid.png';
-import police_man from '@Tileset/characters/police_man.png';
-import red from '@Tileset/characters/red.png';
+import sprites from './sprites/index.js';
+import trainer from './trainer/index.js';
 
-export default {
-  ace_trainer,
-  poke_kid,
-  police_man,
-  red
-};
+export { sprites, trainer };
+export default sprites;

@@ -1,5 +1,5 @@
 <template>
-  <div id="game-container" class="flex flex-grow h-full w-full object-contain"></div>
+  <div id="game-container" class="flex flex-grow h-full w-full object-contain overflow-hidden relative"></div>
 </template>
 
 <script>
@@ -26,10 +26,11 @@ export default {
     'debug'
   ],
 
-  mounted() {
+  async mounted() {
+    await document.fonts.ready;
     this.game = new Game(config);
-    this.game.config.debug = Debug;
-    this.game.config.gameFlags = GameFlags;
+    this.game.config.debug     = this._loadStored('spriteworld_debug',     Debug);
+    this.game.config.gameFlags = this._loadStored('spriteworld_gameflags', GameFlags);
 
     EventBus.on('current-scene-ready', (currentScene) => {
       this.$emit('current-active-scene', currentScene);
@@ -51,6 +52,28 @@ export default {
     EventBus.on('debug', (payload) => {
       this.$emit('debug', payload);
     });
+  },
+
+  methods: {
+    /** Load a stored object from localStorage, merged over defaults so new keys always appear. */
+    _loadStored(key, defaults) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return { ...defaults };
+        const saved = JSON.parse(raw);
+        const result = {};
+        for (const [k, v] of Object.entries(defaults)) {
+          if (v !== null && typeof v === 'object') {
+            result[k] = { ...v, ...(saved[k] ?? {}) };
+          } else {
+            result[k] = k in saved ? saved[k] : v;
+          }
+        }
+        return result;
+      } catch {
+        return { ...defaults };
+      }
+    },
   },
 
   unmounted() {

@@ -1,0 +1,121 @@
+[
+  {
+    "type": "class",
+    "value": {}
+  },
+  {
+    "type": "class",
+    "value": {
+      "key": "prof_oak_theme",
+      "loop": false
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "target": "player"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "anchor": "OakRunningAfterPlayer",
+      "facing": "up",
+      "name": "Oak",
+      "texture": "professor_oak"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "character1": "player",
+      "character2": "Oak"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "text": "OAK: Hey Wait! Dont go out!"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "character1": "Oak",
+      "character2": "player"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "text": "OAK: It's unsafe! Wild POK{e}MON live in tall grass!\nYou need your own POK{e}MON for your protection. I know!\nWhy dont you come with me? I have an extra POK{e}MON at my lab!"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "character1": "player",
+      "character2": "Oak",
+      "value": "follow"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "anchor": "ProfessorLabWarp",
+      "character": "Oak"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "character1": "player",
+      "value": "none"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "anchor": "OakAway",
+      "character": "Oak"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "key": "lab_variant",
+      "value": "oak_gives_mon"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "anchor": "PalletTownEntry",
+      "map": "KantoProfessorLab",
+      "variant": "oak_gives_mon"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "anchor": "playerAnchor"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "text": "{rival}: Gramps!\nI'm fed up with waiting!\nOak: {rival}?\nLet me think...\nOh, that's right, I told you to come! Just wait!\nHere, {player}.\nThere are three POK{e}MON here.\nHAHA!\nThe POK{e}MON are held inside these POK{e} BALLS.\nWhen I was young, I was a serious POK{e}MON TRAINER.\nBut now, in my old age, I have only these three left.\nYou can have one.\nGo on, choose!"
+    }
+  },
+  {
+    "type": "class",
+    "value": {
+      "key": "lock_lab",
+      "value": "true"
+    }
+  },
+  {
+    "type": "class",
+    "value": {}
+  }
+]

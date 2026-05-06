@@ -1,0 +1,45 @@
+[
+  {
+    "propertytype": "cmd-set_var",
+    "type": "class",
+    "value": {
+      "key": "puzzle_state",
+      "value": "searching"
+    }
+  },
+  {
+    "propertytype": "cmd-random_var",
+    "type": "class",
+    "value": {
+      "key": "switch1",
+      "values": {
+        "1": "1",
+        "10": "10",
+        "11": "11",
+        "12": "12",
+        "13": "13",
+        "14": "14",
+        "15": "15",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "5": "5",
+        "6": "6",
+        "7": "7",
+        "8": "8",
+        "9": "9"
+      }
+    }
+  },
+  {
+    "propertytype": "cmd-show_placeable",
+    "type": "class",
+    "value": {
+      "anchor": "VermilionGymLaserDoor",
+      "cmd": "show_placeable",
+      "name": "VermillionLazerOn",
+      "x": -1,
+      "y": -1
+    }
+  }
+]

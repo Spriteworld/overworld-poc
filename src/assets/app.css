@@ -1,8 +1,23 @@
-* {
-  margin: 0;
-  padding: 0;
-}
+@import "tailwindcss";
 
-body {
-  background-color: rgba(0, 0, 0, 0.8);
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body, #app {
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  @font-face {
+    font-family: 'Gen3';
+    src: url('./font/gen3.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+
 }

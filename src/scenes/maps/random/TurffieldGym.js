@@ -36,7 +36,8 @@ export default class extends GameMap {
     };
   }
 
-  init() {
+  init(data) {
+    super.init(data);
     this.pokemon = [];
     this.barrier.area1.flag = true;
     this.barrier.area2.flag = true;

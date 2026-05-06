@@ -1,4 +1,5 @@
 import { Direction } from '@Objects';
+import store from '../../store/index.js';
 
 export default class {
   constructor(scene) {
@@ -9,8 +10,7 @@ export default class {
     if (this.scene.game.config.debug.console.interactableShout) {
       console.log('Interactables::strengthBoulder');
     }
-
-    this.activeBoulder = null;
+    this._subs = [];
   }
 
   event() {
@@ -18,83 +18,54 @@ export default class {
       console.log(['Interactables::strengthBoulder::event', this.scene]);
     }
 
-    this.scene.game.events.on('interact-with-obj', (tile) => {
+    // Z on a boulder: only show text when player lacks strength.
+    // When they have strength, suppress the interact text — push by walking.
+    this._onInteract = (tile) => {
       if (tile.obj.type !== 'strength-boulder') { return; }
+      if (store.state.game.gameFlags.has_strength) { return; }
 
-      let text = this.scene.getPropertyFromTile(tile.obj, 'text');
+      const text = this.scene.getPropertyFromTile(tile.obj, 'text');
       if (!text) { return; }
 
-      this.activeBoulder = tile.obj.id;
-      this.scene.removeInteraction(tile.obj.id);
-      this.scene.game.events.emit(
-        'textbox-changedata', 
-        text, 
-        tile.obj
-      );
-    });
+      this.scene.game.events.emit('textbox-changedata', text, tile.obj);
+    };
+    this.scene.game.events.on('interact-with-obj', this._onInteract);
 
-    if (this.scene.game.config.gameFlags.has_strength === false) {
-      return;
-    }
+    // Push whenever the player finishes moving — check what's directly ahead.
+    this._subs.push(
+      this.scene.gridEngine
+        .positionChangeFinished()
+        .subscribe(({ charId }) => {
+          if (charId !== 'player') { return; }
+          const boulder = this.#getBoulderInfrontOfPlayer();
+          if (!boulder) { return; }
+          const dir = this.scene.characters.get('player')?.getFacingDirection().toUpperCase();
+          this.#moveBoulder(boulder, dir);
+        })
+    );
+  }
 
-    this.scene.gridEngine
-      .positionChangeFinished()
-      .subscribe(({charId}) => {
-        if (charId !== 'player') { return; }
-
-        let player = this.scene.characters.get('player');
-        if (typeof player === 'undefined') { return; }
-        
-        let playerFacing = player.getFacingDirection().toUpperCase();
-        
-        let boulder = this.#getBoulderInfrontOfPlayer();
-        if (!boulder) { return; }
-        this.#moveBoulder(boulder, playerFacing);
-      });
-
-    this.scene.gridEngine
-      .directionChanged()
-      .subscribe(({charId, direction}) => {
-        if (charId !== 'player') { return; }
-
-        let boulder = this.#getBoulderInfrontOfPlayer();
-        if (!boulder) { return; }
-        this.#moveBoulder(boulder, direction);
-      });
-
-    this.scene.game.events.once('textbox-disable', () => {
-      if (this.activeBoulder === null) { return; }
-      let player = this.scene.characters.get('player');
-      if (typeof player === 'undefined') { return false; }
-      let playerFacing = player.getFacingDirection().toUpperCase();
-
-      let boulder = this.#getBoulderInfrontOfPlayer();
-
-      this.#moveBoulder(boulder, playerFacing);
-    });
+  destroy() {
+    this.scene.game.events.off('interact-with-obj', this._onInteract);
+    this._subs.forEach(s => s.unsubscribe());
+    this._subs = [];
   }
 
   #getBoulderInfrontOfPlayer() {
-    let player = this.scene.characters.get('player');
-    if (typeof player === 'undefined') { return false; }
-    let playerLayer = this.scene.gridEngine.getCharLayer('player');
-
-    let boulderPosition = player.getFacingPosition();        
-    let characters = this.scene.gridEngine.getCharactersAt(boulderPosition, playerLayer)[0];
-    let boulder = this.scene.characters.get(characters);
-    if (!boulder || boulder.config.type !== 'strength-boulder') { 
-      return; 
-    }
-    
+    const player = this.scene.characters.get('player');
+    if (!player) { return null; }
+    const layer    = this.scene.gridEngine.getCharLayer('player');
+    const pos      = player.getFacingPosition();
+    const charId   = this.scene.gridEngine.getCharactersAt(pos, layer)[0];
+    const boulder  = this.scene.characters.get(charId);
+    if (!boulder || boulder.config.type !== 'strength-boulder') { return null; }
     return boulder;
   }
 
   #moveBoulder(boulder, dir) {
-    if (boulder.config.type !== 'strength-boulder') { return; }
-    if (boulder.config.id !== this.activeBoulder) { return; }
-    if (typeof dir === 'undefined') { return; }
-    console.log('Moving boulder:', boulder.config.id, 'in direction:', dir);
+    if (!store.state.game.gameFlags.has_strength) { return; }
+    if (!dir) { return; }
     if (!boulder.canMove(dir)) { return; }
     boulder.move(dir);
   }
-};
+}

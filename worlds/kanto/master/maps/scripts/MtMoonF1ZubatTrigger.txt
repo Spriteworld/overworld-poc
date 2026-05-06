@@ -1,0 +1,55 @@
+[
+  {
+    "propertytype": "cmd-parallel",
+    "type": "class",
+    "value": {
+      "branches": [
+        {
+          "propertytype": "cmd-show_exclamation",
+          "type": "class",
+          "value": {
+            "target": "MtMoonF1Zubat1"
+          }
+        },
+        {
+          "propertytype": "cmd-show_exclamation",
+          "type": "class",
+          "value": {
+            "target": "MtMoonF1Zubat2"
+          }
+        },
+        {
+          "propertytype": "cmd-show_exclamation",
+          "type": "class",
+          "value": {
+            "target": "MtMoonF1Zubat3"
+          }
+        },
+        {
+          "propertytype": "cmd-look-npc",
+          "type": "class",
+          "value": {
+            "direction": "left",
+            "target": "playerMtMoonF1Zubat1"
+          }
+        },
+        {
+          "propertytype": "cmd-look-npc",
+          "type": "class",
+          "value": {
+            "direction": "left",
+            "target": "playerMtMoonF1Zubat2"
+          }
+        },
+        {
+          "propertytype": "cmd-look-npc",
+          "type": "class",
+          "value": {
+            "direction": "left",
+            "target": "playerMtMoonF1Zubat3"
+          }
+        }
+      ]
+    }
+  }
+]

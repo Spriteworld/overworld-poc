@@ -1,0 +1,117 @@
+import { Pokedex, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
+import { gameState } from '@Data/gameState.js';
+import { drawMiniBall } from '@Objects/menus/helpers.js';
+import { DEX_LIST_W, DEX_ITEM_H, DEX_VISIBLE, TEXT_STYLE_HINT } from '@Objects/common/constants.js';
+import PokemonSprite from '@Objects/PokemonSprite.js';
+
+export default class PokedexList {
+  constructor({ width = DEX_LIST_W, itemH = DEX_ITEM_H, visible = DEX_VISIBLE } = {}) {
+    this.width   = width;
+    this.itemH   = itemH;
+    this.visible = visible;
+    this.entries = null;   // built lazily
+    this.cursor  = 1;      // nat_dex_id (1-based)
+    this.scroll  = 0;      // index of first visible row
+  }
+
+  get selected() {
+    return this.entries?.[this.cursor - 1] ?? null;
+  }
+
+  reset() {
+    this.cursor = 1;
+    this.scroll = 0;
+  }
+
+  nav(dir) {
+    if (!this.entries) return;
+    this.cursor = Math.max(1, Math.min(this.entries.length, this.cursor + dir));
+    const idx   = this.cursor - 1;
+    if (idx < this.scroll) this.scroll = idx;
+    if (idx >= this.scroll + this.visible) this.scroll = idx - this.visible + 1;
+  }
+
+  /**
+   * Build or rebuild the entry list based on the current national_dex flag.
+   * Returns true if the list was (re)built.
+   */
+  _buildEntries() {
+    const hasNational = !!gameState.gameFlags?.national_dex;
+    if (this.entries && this._wasNational === hasNational) return false;
+    const all = new Pokedex(null).getNationalDex(3);
+    this.entries      = hasNational ? all : all.filter(e => e.nat_dex_id <= 151);
+    this._wasNational = hasNational;
+    return true;
+  }
+
+  /** Draw the list at (x, y) into the given scene, registering objects via reg(). */
+  draw(scene, reg, x, y) {
+    const rebuilt = this._buildEntries();
+    if (rebuilt) {
+      // Clamp cursor to new list length
+      this.cursor = Math.max(1, Math.min(this.entries.length, this.cursor));
+    }
+
+    const { width, itemH, visible, cursor, scroll } = this;
+
+    const rows = this.entries.slice(scroll, scroll + visible);
+    rows.forEach((entry, i) => {
+      const rowY       = y + i * itemH;
+      const dexId      = entry.nat_dex_id;
+      const isSelected = dexId === cursor;
+      const record     = gameState.pokedex[dexId];
+      const caught     = record?.caught;
+
+      if (isSelected) {
+        const sel = scene.add.graphics();
+        sel.fillStyle(0x3399ff, 1);
+        sel.fillRect(x - 4, rowY - 1, width - 4, itemH);
+        reg(sel);
+      }
+
+      const color  = isSelected ? '#ffffff' : record ? '#181818' : '#888888';
+      const style  = { fontFamily: 'Gen3', fontSize: '12px', color };
+      const numStr = `#${String(dexId).padStart(3, '0')}`;
+      const nameStr = record ? getSpeciesDisplayName(entry).toUpperCase() : '???';
+
+      const ICON_SZ = 30;
+      const NUM_X   = x;
+      const ICON_X  = x + 34;
+      const NAME_X  = ICON_X + ICON_SZ + 4;
+
+      // Vertically centre text against the row (and the icon, which sits at
+      // rowY + itemH/2 via its own centred image).
+      const textCy = rowY + itemH / 2;
+      const numT  = scene.add.text(NUM_X,  textCy, numStr,  style);
+      const nameT = scene.add.text(NAME_X, textCy, nameStr, style);
+      numT.setOrigin(0, 0.5);
+      nameT.setOrigin(0, 0.5);
+      reg(numT);
+      reg(nameT);
+
+      // Per-row icon: show the menu icon for seen species, silhouette for unseen.
+      const iconSpecies = record ? dexId : 0;
+      reg(new PokemonSprite(scene, ICON_X, rowY + (itemH - ICON_SZ) / 2, {
+        species: iconSpecies,
+        size:    ICON_SZ,
+        variant: 'icon',
+      }));
+
+      if (caught) {
+        reg(drawMiniBall(scene, NAME_X + nameT.width + 8, rowY + itemH / 2, 5));
+      }
+    });
+
+    // Scroll indicators
+    if (scroll > 0) {
+      const up = scene.add.text(x + width / 2, y - 14, '▲', TEXT_STYLE_HINT);
+      up.setOrigin(0.5, 0);
+      reg(up);
+    }
+    if (scroll + visible < this.entries.length) {
+      const dn = scene.add.text(x + width / 2, y + visible * itemH + 2, '▼', TEXT_STYLE_HINT);
+      dn.setOrigin(0.5, 0);
+      reg(dn);
+    }
+  }
+}

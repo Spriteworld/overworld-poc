@@ -1,0 +1,200 @@
+[
+  {
+    "propertytype": "cmd-if_var",
+    "type": "class",
+    "value": {
+      "else": [
+        {
+          "propertytype": "cmd-if_var",
+          "type": "class",
+          "value": {
+            "else": [
+              {
+                "propertytype": "cmd-if_var",
+                "type": "class",
+                "value": {
+                  "comparison": "var",
+                  "else": [
+                    {
+                      "propertytype": "cmd-text",
+                      "type": "class",
+                      "value": {
+                        "text": "Nothing here! Try another bin."
+                      }
+                    }
+                  ],
+                  "key": "switch1",
+                  "then": [
+                    {
+                      "propertytype": "cmd-random_var",
+                      "type": "class",
+                      "value": {
+                        "key": "switch2",
+                        "values_var": "neighbors"
+                      }
+                    },
+                    {
+                      "propertytype": "cmd-set_var",
+                      "type": "class",
+                      "value": {
+                        "key": "puzzle_state",
+                        "value": "found_one"
+                      }
+                    },
+                    {
+                      "propertytype": "cmd-hide_placeable",
+                      "type": "class",
+                      "value": {
+                        "cmd": "hide_placeable",
+                        "name": "VermillionLazerOn"
+                      }
+                    },
+                    {
+                      "propertytype": "cmd-show_placeable",
+                      "type": "class",
+                      "value": {
+                        "anchor": "VermilionGymLaserDoor",
+                        "cmd": "show_placeable",
+                        "name": "VermillionLazerStage1",
+                        "x": -1,
+                        "y": -1
+                      }
+                    },
+                    {
+                      "propertytype": "cmd-text",
+                      "type": "class",
+                      "value": {
+                        "text": "You found the first switch! There's a second switch somewhere..."
+                      }
+                    }
+                  ],
+                  "value": "bin_id"
+                }
+              }
+            ],
+            "key": "puzzle_state",
+            "then": [
+              {
+                "propertytype": "cmd-if_var",
+                "type": "class",
+                "value": {
+                  "comparison": "var",
+                  "else": [
+                    {
+                      "propertytype": "cmd-random_var",
+                      "type": "class",
+                      "value": {
+                        "key": "switch1",
+                        "values": {
+                          "1": "1",
+                          "10": "10",
+                          "11": "11",
+                          "12": "12",
+                          "13": "13",
+                          "14": "14",
+                          "15": "15",
+                          "2": "2",
+                          "3": "3",
+                          "4": "4",
+                          "5": "5",
+                          "6": "6",
+                          "7": "7",
+                          "8": "8",
+                          "9": "9"
+                        }
+                      }
+                    },
+                    {
+                      "propertytype": "cmd-set_var",
+                      "type": "class",
+                      "value": {
+                        "key": "puzzle_state",
+                        "value": "searching"
+                      }
+                    },
+                    {
+                      "propertytype": "cmd-hide_placeable",
+                      "type": "class",
+                      "value": {
+                        "cmd": "hide_placeable",
+                        "name": "VermillionLazerStage1"
+                      }
+                    },
+                    {
+                      "propertytype": "cmd-show_placeable",
+                      "type": "class",
+                      "value": {
+                        "anchor": "VermilionGymLaserDoor",
+                        "cmd": "show_placeable",
+                        "name": "VermillionLazerOn",
+                        "x": -1,
+                        "y": -1
+                      }
+                    },
+                    {
+                      "propertytype": "cmd-text",
+                      "type": "class",
+                      "value": {
+                        "text": "Nothing here! Oh no, the switches reset."
+                      }
+                    }
+                  ],
+                  "key": "switch2",
+                  "then": [
+                    {
+                      "propertytype": "cmd-set_var",
+                      "type": "class",
+                      "value": {
+                        "key": "puzzle_state",
+                        "value": "solved"
+                      }
+                    },
+                    {
+                      "propertytype": "cmd-hide_placeable",
+                      "type": "class",
+                      "value": {
+                        "cmd": "hide_placeable",
+                        "name": "VermillionLazerStage1"
+                      }
+                    },
+                    {
+                      "propertytype": "cmd-show_placeable",
+                      "type": "class",
+                      "value": {
+                        "anchor": "VermilionGymLaserDoor",
+                        "cmd": "show_placeable",
+                        "name": "VermillionLazerOff",
+                        "x": -1,
+                        "y": -1
+                      }
+                    },
+                    {
+                      "propertytype": "cmd-text",
+                      "type": "class",
+                      "value": {
+                        "text": "You found the second switch! The door is now unlocked!"
+                      }
+                    }
+                  ],
+                  "value": "bin_id"
+                }
+              }
+            ],
+            "value": "found_one"
+          }
+        }
+      ],
+      "key": "puzzle_state",
+      "then": [
+        {
+          "propertytype": "cmd-text",
+          "type": "class",
+          "value": {
+            "text": "The door is already unlocked."
+          }
+        }
+      ],
+      "value": "solved"
+    }
+  }
+]

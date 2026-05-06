@@ -1,16 +1,34 @@
 import Phaser from 'phaser';
-import { textBox, toast, EventBus } from '@Utilities';
-// import {PauseMenu} from '@Objects';
+import { textBox, toast, EventBus, createInputManager, getInputManager, Action } from '@Utilities';
+import { playBattleStartTransition } from '@Utilities/battleTransition.js';
+import ChoicePrompt from '@Utilities/ChoicePrompt.js';
+import ShopMenu from '@Utilities/ShopMenu.js';
+import { PauseMenu } from '@Objects';
+import { gameState, saveGame } from '@Data/gameState.js';
+import store from '../../store/index.js';
+import { KEY_ITEMS } from '../../store/modules/bag.js';
+import { Pokedex, GENDERS, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
+import { getGameDef } from '@Data/gameDef.js';
+import { getStartPauseScreen, clearStartPauseScreen } from '@Data/startPauseScreen.js';
+import { multiplayerClient } from '@/multiplayer/Client.js';
 
 export default class extends Phaser.Scene {
   constructor() {
     super({ key: 'OverworldUI' });
 
     this.textbox = null;
+    this.toast   = null;
+    this.pauseMenu = null;
   }
 
+  /** Phaser preload lifecycle hook — no assets to load for this scene. */
   preload () { }
 
+  /**
+   * Phaser create lifecycle hook.
+   * Initialises the toast, textbox, transition overlay, and pause menu,
+   * then registers all game-event listeners.
+   */
   create () {
 
     // init some events
@@ -23,50 +41,684 @@ export default class extends Phaser.Scene {
       if (this.registry.has(eventKey) === false) {
         this.registry.set(eventKey, events[eventKey]);
       }
-    })
-
-    // toast
-    // this.toast = toast(this, 10, 10, {});
-
-    // textbox
-    if (this.textbox === null) {
-      this.textbox = textBox(this, 100, 400, {
-        wrapWidth: 500,
-        fixedWidth: 500,
-        fixedHeight: 65
-      });
-    }
-    this.textbox.setVisible(false);
-
-    // set pause menu
-    // this.pauseMenu = new PauseMenu(this, 0, 0);
-    // this.pauseMenu.setVisible(false);
-
-    this.handleEvents();
-  }
-
-  destroy() {
-    // this.toast.destroy();
-    this.textbox.destroy();
-    // this.pauseMenu.destroy();
-  }
-
-  handleEvents() {
-    // this should trigger on map change
-    // this.game.events.on('toast', (value) => {
-    //   console.log('toast', value);
-    //   this.toast.showMessage(value);
-    // });
-
-    this.game.events.on('textbox-disable', () => {
-      this.textbox.setVisible(false);
-      EventBus.emit('player-move-enable');
     });
 
-    this.game.events.on('textbox-changedata', (value) => {
+    // toast notification
+    this.toast = toast(this, 10, 10, {});
+
+    // Input manager — created before textbox so textbox can register with it
+    createInputManager(this);
+
+    // textbox — always create fresh. Phaser reuses the same scene instance
+    // across start/stop cycles, so a previous textbox's display objects were
+    // destroyed on the prior shutdown but the reference would still be set.
+    this.textbox = textBox(this, 100, 400, {
+      wrapWidth: 500,
+      fixedWidth: 500,
+      fixedHeight: 65
+    });
+    this.textbox.setVisible(false);
+
+    // full-screen overlay used for encounter transitions
+    this.transitionRect = this.add
+      .rectangle(400, 300, 800, 600, 0xffffff)
+      .setAlpha(0)
+      .setDepth(Number.MAX_SAFE_INTEGER);
+
+    // pause menu
+    this.pauseMenu = new PauseMenu(this);
+
+    this._scriptDepth = 0;
+    this._gameEventListeners = [];
+
+    this._updateUILayout();
+    this.scale.on('resize', () => this._updateUILayout());
+    // Live-apply user UI-scale changes from Options without needing a reload.
+    this.game.events.on('ui-scale-change', this._onUiScaleChange, this);
+    this.game.events.on('window-style-change', this._onWindowStyleChange, this);
+    this.events.once('shutdown', () => {
+      this.game.events.off('ui-scale-change', this._onUiScaleChange, this);
+      this.game.events.off('window-style-change', this._onWindowStyleChange, this);
+      // Remove every listener registered via _onGameEvent so a re-created
+      // OverworldUI (e.g. F1 → title → New Game) doesn't have stale closures
+      // calling setText on a destroyed Toast/Text.
+      for (const [name, fn] of this._gameEventListeners) {
+        this.game.events.off(name, fn, this);
+      }
+      this._gameEventListeners = [];
+    });
+
+    this.handleEvents();
+
+    // Kick off the multiplayer relay connection on gameplay entry so peers
+    // see us as soon as we load into the world — no need to open the Online
+    // menu first. Fire-and-forget; reconnect logic inside the client
+    // handles intermittent failures. Opting out requires an env flag.
+    if (import.meta.env.VITE_MULTIPLAYER_AUTOCONNECT !== 'false') {
+      const lead = gameState.party[0];
+      multiplayerClient.autoJoin({
+        name:     store.state.game.playerName,
+        sprite:   store.state.game.playerSprite,
+        tid:      store.state.game.trainerId,
+        follower: (store.state.game.gameFlags.follower_pokemon && lead)
+          ? { species: String(lead.species).padStart(3, '0') }
+          : null,
+      }).catch(() => {
+        // Server unreachable → stay in single-player mode silently.
+      });
+    }
+
+    // Test-harness hook: if a scenario requested a specific pause-menu screen,
+    // open the menu and jump straight to that sub-screen once everything is up.
+    const startScreen = getStartPauseScreen();
+    if (startScreen) {
+      clearStartPauseScreen();
+      this.time.delayedCall(0, () => this._openPauseMenuAt(startScreen));
+    }
+  }
+
+  _updateUILayout() {
+    const { width, height } = this.scale;
+    if (this.transitionRect) {
+      this.transitionRect.setPosition(width / 2, height / 2);
+      this.transitionRect.setSize(width, height);
+    }
+    if (this.pauseMenu) {
+      // The menu was authored at 800×600. Auto-fit it into the current
+      // canvas (with a small/medium step so it stays usable on narrow
+      // screens), then multiply by the user's UI-scale preference.
+      const uiScale  = store.state.game.uiScale ?? 1;
+      const maxScale = Math.min(width / 800, height / 600);
+      const fitScale = width >= 1024 ? maxScale
+        : width < 768 ? 0.5
+        : 1;
+      const menuScale = Math.min(fitScale * uiScale, maxScale);
+      this.pauseMenu.setScale(menuScale);
+      this.pauseMenu.setPosition(
+        Math.max(0, (width - 800 * menuScale) / 2),
+        Math.max(0, (height - 600 * menuScale) / 2),
+      );
+    }
+    if (this.textbox) {
+      this.textbox.reposition();
+    }
+  }
+
+  _onUiScaleChange() {
+    this._updateUILayout();
+  }
+
+  _onWindowStyleChange() {
+    this.pauseMenu.refreshWindowStyle();
+    this.textbox.setWindowStyle(store.state.game.windowStyle);
+  }
+
+  /** Open the pause menu and transition directly to a named sub-screen. */
+  _openPauseMenuAt(name) {
+    this.pauseMenu.open();
+    // team-detail needs a preselected slot; default to the first party member.
+    if (name === 'team-detail') {
+      this.pauseMenu.teamScreen.subMenuSlot = 0;
+    }
+    this.pauseMenu.showSubScreen(name);
+  }
+
+  /** Clean up the textbox and pause menu when the scene is destroyed. */
+  destroy() {
+    this.textbox.destroy();
+    this.pauseMenu.destroy();
+  }
+
+  /**
+   * Register a listener on the global game event bus and track it so the
+   * scene's shutdown handler can remove it. Required because game.events
+   * outlives this scene; without removal, restarted scenes leak handlers
+   * that close over destroyed display-list objects.
+   */
+  _onGameEvent(name, fn) {
+    this.game.events.on(name, fn, this);
+    this._gameEventListeners.push([name, fn]);
+  }
+
+  /**
+   * Register all game-level event listeners (item pickup, toast, map enter,
+   * textbox control, battle transitions, overworld evolution, and keyboard input).
+   */
+  handleEvents() {
+    this._onGameEvent('item-pickup', (payload) => {
+      const name = typeof payload === 'string' ? payload : payload.name;
+      const qty  = typeof payload === 'object'  ? payload.qty : null;
+      const isKey = KEY_ITEMS.has(name);
+      store.commit('bag/PICKUP', { name, qty: isKey ? null : (qty ?? 1) });
+    });
+
+    this._onGameEvent('toast', (value) => {
+      if (!this.game.config.debug.toasts) return;
+      this.toast.showMessage(value);
+    });
+
+    this._onGameEvent('map-enter', (mapName) => {
+      // Auto-dismount the bike when entering a map that disallows it
+      // (map-settings.can_bike = false, or `inside: true` scenes). Without
+      // this, a player who hopped on the bike outdoors and then warped
+      // would still be in the BIKE state on a no-bike map.
+      const mapScene = mapName ? this.scene.get(mapName) : null;
+      const player   = mapScene?.mapPlugins?.player?.player;
+      if (player && player.stateMachine.currentState?.name === player.stateDef.BIKE) {
+        const allowsBike = !mapScene.config?.inside && (mapScene.getMapFlag?.('can_bike') ?? true);
+        if (!allowsBike) {
+          player.stateMachine.setState(player.stateDef.IDLE);
+          store.commit('game/SET_ON_BIKE', false);
+          this.game.events.emit('player-bike-change', false);
+        }
+      }
+
+      // KantoWorld uses location-zone detection instead of scene-name toasts.
+      if (mapName === 'KantoWorld') return;
+      if (!this.game.config.debug.toasts) return;
+      const display = mapName
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/([A-Za-z])(\d)/g, '$1 $2');
+      this.toast.showMessage(display);
+    });
+
+    this._onGameEvent('script-runner-start', () => {
+      this._scriptDepth++;
+      this.registry.set('player_input', false);
+    });
+    this._onGameEvent('script-runner-end',   () => {
+      this._scriptDepth = Math.max(0, this._scriptDepth - 1);
+      // If the script ended without closing via a textbox (e.g. heal_party as
+      // the last command), player-move-enable was never re-emitted from the
+      // textbox-disable handler — do it here.
+      if (this._scriptDepth === 0 && !this.textbox.visible) {
+        EventBus.emit('player-move-enable');
+        this.registry.set('player_input', true);
+      }
+    });
+
+    this._onGameEvent('textbox-disable', () => {
+      this.textbox.setVisible(false);
+      // Don't auto-re-enable input mid-script. Closing a textbox during a
+      // running script (e.g. between a `text` and the next `move_npc` /
+      // `walk_to_char`) would otherwise free the player to walk around
+      // while the cutscene is still playing out. The `script-runner-end`
+      // handler above restores input when the script is fully done.
+      if (this._scriptDepth === 0) {
+        EventBus.emit('player-move-enable');
+      }
+    });
+
+    this._onGameEvent('textbox-changedata', (value) => {
       this.textbox.start(value);
       this.textbox.setVisible(true);
       EventBus.emit('player-move-disable');
     });
+
+    this._onGameEvent('shop-open', ({ items }) => {
+      this._shopMenu = new ShopMenu(this, {
+        items,
+        onClose: () => {
+          this._shopMenu = null;
+          this.textbox.setVisible(false);
+          this.game.events.emit('shop-close');
+        },
+      });
+    });
+
+    this._onGameEvent('computer-open', ({ type }) => {
+      EventBus.emit('player-move-disable');
+      this.game.events.emit('computer-ui-open', { type });
+    });
+
+    this._onGameEvent('battle-start', (data) => {
+      console.log('[OverworldUI] battle-start received, launching BattleScene2 with data=', data);
+      const mapName = this.registry.get('map');
+      // Close menu if somehow open when battle fires
+      if (this.pauseMenu.visible) {
+        this.pauseMenu.close();
+      }
+      this.registry.set('player_input', false);
+
+      const mapScene  = this.scene.get(mapName);
+      const isTrainer = data?.enemy?.isTrainer === true;
+      console.log('[OverworldUI] battle-start: isTrainer=', isTrainer, 'enemy=', data?.enemy);
+
+      // Drive a shader-based transition on the map's camera. Wild battles get
+      // a fade-to-black; trainer battles get the Gen 3 closing-bars wipe.
+      // The post pipeline is detached before onMidpoint fires so the map can
+      // sleep cleanly without leaving FX on the camera for the next wake.
+      playBattleStartTransition(mapScene, {
+        isTrainer,
+        onMidpoint: () => {
+          // Hold a black overlay over the hand-off so the BattleScene2 init
+          // frame doesn't flash through. Switched from white (the old
+          // 3-flash effect) to black to match the shader fade endpoint.
+          this.transitionRect.setFillStyle(0x000000);
+          this.transitionRect.setAlpha(1);
+          this.scene.sleep(mapName);
+          this.scene.launch('BattleScene2', data);
+
+          // The black overlay (alpha 1) hides everything while BattleScene2
+          // initialises on the next frame. Bring OverworldUI back on top now
+          // so the overlay stays visible, then fade it out. The 100ms delay
+          // gives BattleScene2 enough time to start before it becomes visible.
+          this.scene.bringToTop('OverworldUI');
+          this.tweens.add({
+            targets: this.transitionRect,
+            alpha: 0,
+            duration: 300,
+            delay: 100,
+          });
+
+          this.game.events.once('battle-complete', ({ result, prizeMoney, tutorial } = {}) => {
+            const battleScene = this.scene.get('BattleScene2');
+            // Tutorial battles run on a stand-in trainer + synthetic inventory.
+            // Skip every mutation that would touch the real save — party sync,
+            // bag sync, prize money, and any future caught-flow side-effects.
+            // NOTE: when the caught-flow is wired up, commit party/ADD_POKEMON
+            // with `tid: store.state.game.trainerId` so the mon is stamped
+            // with the player as its original trainer.
+            const isTutorial = tutorial === true || battleScene?.tutorial === true;
+
+            if (!isTutorial && prizeMoney > 0) { store.commit('game/ADD_MONEY', prizeMoney); }
+            const pokemon = battleScene?.config?.player?.team?.pokemon;
+            if (!isTutorial && pokemon) {
+              const team = pokemon.map(p => ({
+                pid:                 p.pid,
+                species:             p.pokemon?.nat_dex_id ?? null,
+                currentHp:           p.currentHp,
+                exp:                 p.exp ?? null,
+                level:               p.level,
+                readyToEvolve:       p.readyToEvolve       ?? null,
+                pendingMovesToLearn: p.pendingMovesToLearn  ?? [],
+                moves:               p.moves.map(m => ({ name: m.name, pp: { max: m.pp.max, current: m.pp.current } })),
+              }));
+              store.commit('party/SYNC_AFTER_BATTLE', team);
+            }
+            const battleItems = battleScene?.config?.player?.inventory?.items;
+            if (!isTutorial && battleItems?.length) {
+              store.commit('bag/SYNC_AFTER_BATTLE', battleItems);
+            }
+
+            // Check for any pending overworld evolutions (stone use out of battle,
+            // or any that the battle Evolution state didn't process).
+            // Tutorial battles never evolve their stand-in team.
+            const evolvingPokemon = isTutorial ? [] : (pokemon ?? []).filter(p => p.readyToEvolve != null);
+            const tilesetBaseUrl  = battleScene?.data?.tilesetBaseUrl ?? '';
+
+            const runEvolutionQueue = (queue, onDone) => {
+              if (queue.length === 0) { onDone(); return; }
+              const p = queue[0];
+              const remaining = queue.slice(1);
+              const fromName  = p.getName?.() ?? String(p.species);
+              const targetId  = p.readyToEvolve;
+              let toName;
+              try {
+                const entry = new Pokedex(p.game ?? getGameDef().game).getPokemonById(targetId);
+                toName = getSpeciesDisplayName(entry) || `#${targetId}`;
+              } catch {
+                toName = `#${targetId}`;
+              }
+              this.scene.launch('EvolutionScene', {
+                fromSpecies:    p.species,
+                toSpecies:      targetId,
+                fromName,
+                toName,
+                shiny:          p.isShiny  ?? false,
+                gender:         p.gender   ?? null,
+                tilesetBaseUrl,
+                canCancel:      false,
+                onComplete: (didEvolve) => {
+                  if (didEvolve) {
+                    p.evolve(targetId);
+                    store.commit('party/EVOLVE', { pid: p.pid, targetSpecies: targetId });
+                  }
+                  p.readyToEvolve = null;
+                  // Re-sync the party after each evolution
+                  const updatedTeam = (pokemon ?? []).map(mon => ({
+                    pid:                 mon.pid,
+                    species:             mon.pokemon?.nat_dex_id ?? null,
+                    currentHp:           mon.currentHp,
+                    exp:                 mon.exp ?? null,
+                    level:               mon.level,
+                    readyToEvolve:       mon.readyToEvolve       ?? null,
+                    pendingMovesToLearn: mon.pendingMovesToLearn  ?? [],
+                    moves:               mon.moves.map(m => ({ name: m.name, pp: { max: m.pp.max, current: m.pp.current } })),
+                  }));
+                  store.commit('party/SYNC_AFTER_BATTLE', updatedTeam);
+                  runEvolutionQueue(remaining, onDone);
+                },
+              });
+            };
+
+            const returnToMap = () => {
+              const runWarp = () => this.tweens.add({
+                targets: this.transitionRect,
+                alpha: 1,
+                duration: 250,
+                onComplete: () => {
+                  this.scene.stop('BattleScene2');
+                  if (!isTutorial && result === 'lost') {
+                    // White-out: restore party and warp to last heal location.
+                    store.commit('party/RESTORE_ALL');
+                    const healLoc = store.state.game.healLocation ?? { map: 'KantoWorld', x: 74, y: 287, charLayer: 'ground' };
+                    // Drive the scene swap from the outgoing map's own
+                    // ScenePlugin (mirrors warp.js's pattern). Using
+                    // `this.scene.start(...)` here would stop OverworldUI as
+                    // a side effect — tearing down the toast / textbox / the
+                    // transitionRect itself — while our `this.game.events`
+                    // listeners stay attached and fire on a dead scene. The
+                    // map's own ScenePlugin.start auto-stops the map and
+                    // starts the heal destination without touching us.
+                    const outgoing = this.scene.get(mapName);
+                    outgoing.scene.start(healLoc.map, { playerLocation: { x: healLoc.x, y: healLoc.y, charLayer: healLoc.charLayer } });
+                    // Keep OverworldUI on top of the freshly-started heal
+                    // map so the fade-out tween below actually draws over it.
+                    this.scene.bringToTop('OverworldUI');
+                  } else {
+                    this.scene.wake(mapName);
+                  }
+                  this.tweens.add({
+                    targets: this.transitionRect,
+                    alpha: 0,
+                    duration: 300,
+                    onComplete: () => {
+                      this.registry.set('player_input', true);
+                    },
+                  });
+                },
+              });
+
+              this.time.delayedCall(2000, runWarp);
+            };
+
+            runEvolutionQueue(evolvingPokemon, returnToMap);
+          });
+        },
+      });
+    });
+
+    // ─── Key item self-use (e.g. Bicycle, Surf) ──────────────────────────
+    this._onGameEvent('use-key-item', (itemName) => {
+      const mapName  = this.registry.get('map');
+      const mapScene = mapName ? this.scene.get(mapName) : null;
+      const player   = mapScene?.mapPlugins?.player?.player;
+      if (!player) return;
+
+      if (itemName === 'Bicycle') {
+        if (mapScene?.config?.inside) return;
+        // Per-map / gameDef opt-out — set map-settings.can_bike = false to
+        // disable bike toggling on maps where it doesn't fit. Always allow
+        // dismounting even on a no-bike map in case the player got there
+        // mid-ride.
+        const inBike        = player.stateMachine.currentState?.name === player.stateDef.BIKE;
+        const mapAllowsBike = mapScene?.getMapFlag?.('can_bike') ?? true;
+        if (!inBike && !mapAllowsBike) return;
+        const nextState = inBike ? player.stateDef.IDLE : player.stateDef.BIKE;
+        player.stateMachine.setState(nextState);
+        store.commit('game/SET_ON_BIKE', !inBike);
+        this.game.events.emit('player-bike-change', !inBike);
+        return;
+      }
+
+      if (itemName === 'Surf (HM03)') {
+        if (!store.state.game.gameFlags.has_surf) return;
+        const inSurf = player.stateMachine.currentState?.name === player.stateDef.SURF;
+        if (inSurf) {
+          // Dismount if currently surfing.
+          player.stateMachine.setState(player.stateDef.IDLE);
+          store.commit('game/SET_ON_SURF', false);
+          return;
+        }
+        const facing = player.getPosInFacingDirection();
+        if (!mapScene.isWaterTile?.(facing.x, facing.y)) return;
+        player.stateMachine.setState(player.stateDef.SURF);
+        store.commit('game/SET_ON_SURF', true);
+        return;
+      }
+    });
+
+    // ─── Player sprite change (Options screen) ────────────────────────────
+    this._onGameEvent('player-sprite-change', (sprite) => {
+      const mapName  = this.registry.get('map');
+      const mapScene = mapName ? this.scene.get(mapName) : null;
+      const player   = mapScene?.mapPlugins?.player?.player;
+      if (!player) return;
+
+      const inBike = player.stateMachine.currentState?.name === player.stateDef.BIKE;
+      player.config.texture = sprite;
+      if (inBike) {
+        const bikeTexture = sprite + '_bike';
+        if (mapScene.textures.exists(bikeTexture)) player.setTexture(bikeTexture);
+      } else {
+        player.setTexture(sprite);
+        player.gridengine.setWalkingAnimationMapping(player.config.id, player.characterFramesDef());
+      }
+    });
+
+    // ─── Overworld item use (e.g. Rare Candy) → evolution ────────────────
+    this._onGameEvent('overworld-item-result', ({ pid, readyToEvolve }) => {
+      if (!readyToEvolve) return;
+
+      const p = gameState.party.find(mon => mon.pid === pid);
+      if (!p) return;
+
+      if (this.pauseMenu.visible) this.pauseMenu.close();
+      this.registry.set('player_input', false);
+
+      const dex      = new Pokedex(getGameDef().game);
+      const targetId = readyToEvolve;
+
+      let fromName, toName;
+      try {
+        const fromEntry = dex.getPokemonById(p.species);
+        fromName = (fromEntry.species ?? `#${p.species}`).replace(/\b\w/g, c => c.toUpperCase());
+      } catch { fromName = `#${p.species}`; }
+      try {
+        const toEntry = dex.getPokemonById(targetId);
+        toName = (toEntry.species ?? `#${targetId}`).replace(/\b\w/g, c => c.toUpperCase());
+      } catch { toName = `#${targetId}`; }
+
+      this.scene.launch('EvolutionScene', {
+        fromSpecies:    p.species,
+        toSpecies:      targetId,
+        fromName,
+        toName,
+        shiny:          p.isShiny  ?? false,
+        gender:         p.gender   ?? null,
+        tilesetBaseUrl: '',
+        canCancel:      true,
+        onComplete: (didEvolve) => {
+          if (didEvolve) {
+            store.commit('party/EVOLVE', { pid, targetSpecies: targetId });
+          } else {
+            store.commit('party/CLEAR_READY_TO_EVOLVE', pid);
+          }
+          this.registry.set('player_input', true);
+        },
+      });
+    });
+
+    // ─── Script teach-move interactive flow ───────────────────────────────
+    this._onGameEvent('overworld-teach-move', ({ pid, move, pp }) => {
+      const mon = store.state.party.list.find(m => m.pid === pid);
+      if (!mon) { this.game.events.emit('overworld-teach-move-complete'); return; }
+
+      let monName = 'Pokémon';
+      try {
+        const entry = new Pokedex(getGameDef().game).getPokemonById(mon.species);
+        monName = getSpeciesDisplayName(entry) || monName;
+      } catch { /* keep default */ }
+
+      if (this.pauseMenu.visible) this.pauseMenu.close();
+      this.registry.set('player_input', false);
+
+      const finish = () => {
+        this.registry.set('player_input', true);
+        this.game.events.emit('overworld-teach-move-complete');
+      };
+
+      this.game.events.emit('textbox-changedata', `${monName} wants to learn ${move}!`);
+      this.game.events.once('textbox-disable', () => {
+
+        if (mon.moves.length < 4) {
+          store.commit('party/REPLACE_MOVE', { pid, move, pp, replaceIdx: -1 });
+          this.game.events.emit('textbox-changedata', `${monName} learned ${move}!`);
+          this.game.events.once('textbox-disable', finish);
+          return;
+        }
+
+        this.game.events.emit('textbox-changedata',
+          `But ${monName} already knows four moves!\nShould a move be forgotten and replaced with ${move}?`);
+        this.game.events.once('textbox-disable', () => {
+          new ChoicePrompt(this, ['YES', 'NO'], (yn) => {
+            if (yn !== 0) {
+              this.game.events.emit('textbox-changedata', `${move} was not learned.`);
+              this.game.events.once('textbox-disable', finish);
+              return;
+            }
+            const moveNames = mon.moves.map(m => m.name).concat(['CANCEL']);
+            new ChoicePrompt(this, moveNames, (choice) => {
+              if (choice === moveNames.length - 1) {
+                this.game.events.emit('textbox-changedata', `${move} was not learned.`);
+                this.game.events.once('textbox-disable', finish);
+                return;
+              }
+              const forgotten = mon.moves[choice].name;
+              store.commit('party/REPLACE_MOVE', { pid, move, pp, replaceIdx: choice });
+              this.game.events.emit('textbox-changedata',
+                `1, 2, and... Poof!\n${monName} forgot ${forgotten}.\n\nAnd...\n${monName} learned ${move}!`);
+              this.game.events.once('textbox-disable', finish);
+            });
+          });
+        });
+      });
+    });
+
+    // ─── Input manager ────────────────────────────────────────────────────
+    const im = getInputManager();
+
+    im.on(Action.UP,    () => { if (this.pauseMenu.visible) this.pauseMenu.moveUp(); });
+    im.on(Action.DOWN,  () => { if (this.pauseMenu.visible) this.pauseMenu.moveDown(); });
+    im.on(Action.LEFT,  () => { if (this.pauseMenu.visible) this.pauseMenu.moveLeft(); });
+    im.on(Action.RIGHT, () => { if (this.pauseMenu.visible) this.pauseMenu.moveRight(); });
+
+    // Hold-to-scroll: after a 400ms initial delay, re-fire UP/DOWN every 80ms
+    // while either key is held and the pause menu is open (Pokédex list etc.).
+    this._menuHeld       = null;
+    this._menuRepeatAt   = 0;
+    this.events.on('update', () => {
+      if (!this.pauseMenu.visible) { this._menuHeld = null; return; }
+      const held = im.isDown(Action.UP) ? Action.UP
+                 : im.isDown(Action.DOWN) ? Action.DOWN
+                 : null;
+      if (held !== this._menuHeld) {
+        this._menuHeld     = held;
+        this._menuRepeatAt = held ? Date.now() + 400 : 0;
+        return;
+      }
+      if (!held) return;
+      const now = Date.now();
+      if (now >= this._menuRepeatAt) {
+        if (held === Action.UP)   this.pauseMenu.moveUp();
+        if (held === Action.DOWN) this.pauseMenu.moveDown();
+        this._menuRepeatAt = now + 80;
+      }
+    });
+    im.on(Action.CONFIRM, () => {
+      if (this.pauseMenu.visible) {
+        // Suppress MENU action that may fire in the same keydown event (Enter = CONFIRM + MENU)
+        this._suppressMenuOpen = true;
+        this._handleMenuConfirm();
+      }
+    });
+    im.on(Action.CANCEL, () => {
+      if (this.pauseMenu.visible) {
+        this._suppressMenuOpen = true;
+        const closed = this.pauseMenu.back();
+        if (closed) this.registry.set('player_input', true);
+      }
+    });
+    im.on(Action.MENU, () => {
+      if (this._suppressMenuOpen) {
+        this._suppressMenuOpen = false;
+        return;
+      }
+      if (this.pauseMenu.visible) {
+        this.pauseMenu.close();
+        this.registry.set('player_input', true);
+      } else if (this.registry.get('player_input') !== false) {
+        this.registry.set('player_input', false);
+        this.pauseMenu.open();
+      }
+    });
+    im.on(Action.USE_ITEM, () => {
+      const registered = store.state.bag.registeredItem;
+      if (registered && this.registry.get('player_input') !== false) {
+        this.game.events.emit('use-key-item', registered);
+      }
+    });
+
+    // ─── Temp: Space = 10× speed toggle ──────────────────────────────────────
+    this.input.keyboard.on('keydown-SPACE', () => {
+      const speed = (this.game.registry.get('gameSpeed') ?? 1) === 1 ? 10 : 1;
+      this.game.registry.set('gameSpeed', speed);
+      this.game.scene.getScenes(true).forEach(s => {
+        if (s !== this) s.anims.globalTimeScale = speed;
+      });
+    });
+
+    // F1: hard return to the title screen. Stops every other active scene
+    // (map scene, TimeOverlay, parallel battle/evolution scenes, etc.) so we
+    // don't leak running scenes behind the title.
+    this.input.keyboard.on('keydown-F1', () => {
+      this.game.scene.getScenes(true).forEach(s => {
+        if (s !== this) this.scene.stop(s.scene.key);
+      });
+      this.scene.start('TitleScreen');
+    });
+  }
+
+  /**
+   * Called when the player presses confirm while the pause menu is open.
+   * Delegates to the active sub-screen or routes the selected main-menu key.
+   */
+  _handleMenuConfirm() {
+    const option = this.pauseMenu.confirm();
+    if (!option) {
+      return; // handled internally (e.g. team screen)
+    }
+    switch (option) {
+      case 'pokedex':
+      case 'option':
+      case 'online':
+      case 'debug':
+        this.pauseMenu.showSubScreen(option);
+        break;
+      case 'team':
+      case 'bag':
+      case 'user':
+        this.pauseMenu.showSubScreen(option);
+        break;
+      case 'save': {
+        gameState.currentMap = this.registry.get('map') ?? gameState.currentMap;
+        const _mapName  = this.registry.get('map');
+        const _mapScene = _mapName ? this.scene.get(_mapName) : null;
+        const _player   = _mapScene?.mapPlugins?.player?.player;
+        if (_player) {
+          store.commit('game/SET_PLAYER_FACING', _player.getFacingDirection());
+        }
+        saveGame();
+        if (this.game.config.debug.toasts) this.toast.showMessage('Progress saved!');
+        this.pauseMenu.close();
+        this.registry.set('player_input', true);
+        break;
+      }
+      case 'close':
+        this.pauseMenu.close();
+        this.registry.set('player_input', true);
+        break;
+    }
   }
 }

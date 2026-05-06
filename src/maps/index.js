@@ -1,36 +1,17 @@
 import TestMap from './random/test.json';
 import SkylandMap from './random/skyland.json';
 import BaseMap from './random/base.json';
+import SpriteViewerMap from './random/sprite_viewer.json';
+
+import SpriteworldMap from './spriteworld/spriteworld.json';
 import ForestMap from './random/forest.json';
 import VermillionGymMap from './random/vermillion_gym.json';
 import TurffieldGymMap from './random/turffield_gym.json';
-
-import KantoMap from './kanto/kanto.json';
-// import PalletTownMap from './kanto/pallet.json';
-import HeroHouseF1Map from './kanto/hero_house_floor1.json';
-import HeroHouseF2Map from './kanto/hero_house_floor2.json';
-import ProfessorLabMap from './kanto/prof_lab.json';
-// import Route1Map from './kanto/route1.json';
-// import Route21Map from './kanto/route21.json';
-// import ViridianCityMap from './kanto/viridian_city.json';
-// import Route22Map from './kanto/route22.json';
-
-// import StarterTownMap from './region/StarterTown.json';
+import DarknessTestMap from './random/darkness_test.json';
+import WeatherMapMap from './random/weather_map.json';
 
 export {
-    TestMap,SkylandMap,BaseMap,ForestMap,
+    TestMap, SkylandMap, BaseMap, SpriteViewerMap, ForestMap, DarknessTestMap, WeatherMapMap,
+    SpriteworldMap,
     VermillionGymMap, TurffieldGymMap,
-
-    // kanto
-    KantoMap,
-    // PalletTownMap,
-    HeroHouseF1Map, HeroHouseF2Map,
-    ProfessorLabMap,
-    // Route1Map,
-    // Route21Map,
-    // ViridianCityMap,
-    // Route22Map,
-
-    // region
-    // StarterTownMap
 };

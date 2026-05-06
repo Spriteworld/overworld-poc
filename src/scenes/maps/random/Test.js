@@ -65,17 +65,17 @@ export default class extends GameMap {
     this.gridEngine
       .positionChangeFinished()
       .subscribe(({ charId, exitTile, enterTile }) => {
-        if ([this.npc1.config.id].includes(charId)) {
-          let npc1Pos = this.npc1.getPosition();
+        if ([this.npc1?.config.id].includes(charId)) {
+          let npc1Pos = this.npc1?.getPosition();
           if (npc1Pos.x == 10 && npc1Pos.y == 21) {
-            this.npc1.moveTo(Vector2(4, 20), {
+            this.npc1?.moveTo(Vector2(4, 20), {
               noPathFoundStrategy: 'RETRY'
             });
           }
         }
 
-        if ([this.npc2.config.id].includes(charId)) {
-          let npc2Pos = this.npc2.getPosition();
+        if ([this.npc2?.config.id].includes(charId)) {
+          let npc2Pos = this.npc2?.getPosition();
           if (npc2Pos.x == 41 && npc2Pos.y == 22) {
             this.npc2.moveTo(Vector2(41, 20), {
               noPathFoundStrategy: 'RETRY'
@@ -98,18 +98,19 @@ export default class extends GameMap {
   update(time, delta) {
     this.updateCharacters(time, delta);
     if (this.hasFlock) this.flock.update(time, delta);
-    this.npc1.update(time);
-    this.npc2.update(time);
+    this.npc1?.update(time);
+    this.npc2?.update(time);
 
-    let npcPos = this.npc1.getPosition();
-    if (npcPos.x == 7 && npcPos.y == 21) {
-      this.npc1.moveTo(Vector2(4, 20));
+    let npcPos = this.npc1?.getPosition();
+    if (npcPos?.x == 7 && npcPos?.y == 21) {
+      this.npc1?.moveTo(Vector2(4, 20));
     }
 
-    npcPos = this.npc2.getPosition();
-    if (npcPos.x == 31 && npcPos.y == 20) {
-      this.npc2.moveTo(Vector2(32, 22));
+    npcPos = this.npc2?.getPosition();
+    if (npcPos?.x == 31 && npcPos?.y == 20) {
+      this.npc2?.moveTo(Vector2(32, 22));
     }
   }
+
 
 }

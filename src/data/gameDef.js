@@ -1,0 +1,129 @@
+import { WORLD_GAME_DEFS } from '@/worlds/registry.js';
+import { GAMES } from '@spriteworld/pokemon-data';
+
+/**
+ * @typedef {object} GameDef
+ * @property {string}                id               - Unique identifier for this preset.
+ * @property {string}                name             - Human-readable display name.
+ * @property {string}                overworldScene   - Phaser scene key launched when no save is present.
+ * @property {string}                game             - Pokémon-data game id (one of the `GAMES` constants). Drives movedex, pokedex, and move pool lookups.
+ * @property {'gen_1'|'gen_2'|'gen_3'|[number,number]|number[]} availablePokemon
+ *   Species pool used for wild encounters and random learnset fallbacks.
+ *   String shorthands map to nat_dex_id ranges; a two-element array is an
+ *   inclusive [min, max] range; an arbitrary number array is an explicit id list.
+ * @property {number}                expRateMultiplier - Experience multiplier applied to all gains (1.0 = normal).
+ * @property {boolean}               deferEvolution
+ *   When true, level-up evolutions are held until the battle ends.
+ *   When false, the evolution sequence interrupts combat immediately.
+ *   Item-triggered evolutions (Rare Candy, Evolution Stones) are always deferred
+ *   regardless of this setting.
+ * @property {'vanilla'|'nuzlocke'} gameMode
+ *   Controls ruleset enforcement.
+ *   'vanilla'        — standard rules, no restrictions.
+ *   'nuzlocke'       — only the first Pokémon caught per zone may be kept;
+ *                      subsequent Pokéball throws in that zone are blocked.
+ * @property {'vanilla'|'random'|'4random'} learnsets
+ *   Move source for wild and trainer Pokémon with no explicit moveset.
+ *   'vanilla' — most recently learnable moves from the FRLG level-up learnset.
+ *   'random'  — random moves from the full FRLG move pool (same count as
+ *               the vanilla learnset at that level, min 1); at least 1
+ *               damaging move guaranteed.
+ *   '4random' — always 4 random moves from the full FRLG move pool; at least
+ *               1 damaging move guaranteed.
+ * @property {'vanilla'|'random'}    encounterTables
+ *   'vanilla' — use the encounter table embedded in the Tiled map properties.
+ *   'random'  — seeded-random table generated from the availablePokemon pool.
+ * @property {number[]}               [starterMon]
+ *   Ordered list of nat_dex_ids offered as starter Pokémon (e.g. in Oak's lab).
+ *   Index 0/1/2 maps to pokeball1/2/3. Referenced via the `give_starter` script command.
+ * @property {'vanilla'|'random'}    entranceRandomizer
+ *   'vanilla' — warps go to their authored destinations.
+ *   'random'  — warp destinations are shuffled using a seeded RNG so the
+ *               mapping is deterministic per save. Multi-tile warps (e.g.
+ *               doorways) are shuffled as a group.
+ * @property {boolean}               owEncounters
+ *   When true, visible overworld Pokémon are spawned on encounter-zone tiles.
+ *   Individual maps can still opt out via map-settings['ow-encounters'] = false.
+ * @property {boolean}               infiniteTMs
+ *   When true, teaching a TM does not consume it from the bag (Gen 5+ behavior).
+ *   When false, TMs are single-use (Gen 1–4 behavior).
+ * @property {boolean}               catchingGivesExp
+ *   When true, successfully catching a wild Pokémon awards the active battler
+ *   experience as if it had been defeated (Gen 6+ behavior).
+ *   When false, no exp is awarded for a capture (Gen 1–5 behavior).
+ * @property {boolean}               maxIvs
+ *   When true, every newly generated Pokémon (wild, trainer, starter, gift)
+ *   is rolled with 31s across all IV slots. Does not retroactively update
+ *   mons already in the save — only affects freshly built ones.
+ * @property {boolean}               impassibleSpinners
+ *   When true, spinner trainers cast line-of-sight in all four directions at
+ *   once, so the player can never sneak past while they're turned away.
+ *   When false (default), spinners only see in their current facing
+ *   direction. Static (non-spinning) trainers are unaffected.
+ * @property {number}                maxMoney
+ *   Hard ceiling for the player's money. ADD_MONEY clamps to this value.
+ *   Default: 999_999 (Gen 3 cap).
+ * @property {number}                maxLevel
+ *   Maximum Pokémon level. Rare Candy use, EXP gains, and level-up checks
+ *   all stop at this cap. Default: 100.
+ */
+
+let _active = null;
+
+function getDefaultDef() {
+  return WORLD_GAME_DEFS.kanto ?? Object.values(WORLD_GAME_DEFS)[0] ?? { game: GAMES.POKEMON_FIRE_RED };
+}
+
+/** Generation nat_dex_id ranges (inclusive). */
+export const GEN_RANGES = {
+  gen_1: [1,   151],
+  gen_2: [152, 251],
+  gen_3: [252, 386],
+};
+
+/** Returns the currently active game definition. */
+export function getGameDef() { return _active ?? getDefaultDef(); }
+
+/**
+ * Replaces the active game definition.  Merges over the default kanto preset
+ * so partial overrides are safe.
+ * @param {object} def
+ */
+export function setGameDef(def) { _active = { ...getDefaultDef(), ...def }; }
+
+/**
+ * Filters a full species array to only those allowed by the definition's
+ * availablePokemon spec.
+ *
+ * @param {object[]} allSpecies - Full Pokédex entry array (objects with nat_dex_id).
+ * @param {string|number[]} [spec]  - Defaults to _active.availablePokemon.
+ * @returns {object[]}
+ */
+export function filterByAvailablePokemon(allSpecies, spec = getGameDef().availablePokemon) {
+  if (typeof spec === 'string' && GEN_RANGES[spec]) {
+    const [min, max] = GEN_RANGES[spec];
+    return allSpecies.filter(p => p.nat_dex_id >= min && p.nat_dex_id <= max);
+  }
+  if (Array.isArray(spec) && spec.length === 2 && typeof spec[0] === 'number' && typeof spec[1] === 'number') {
+    const [min, max] = spec;
+    return allSpecies.filter(p => p.nat_dex_id >= min && p.nat_dex_id <= max);
+  }
+  if (Array.isArray(spec)) {
+    const ids = new Set(spec);
+    return allSpecies.filter(p => ids.has(p.nat_dex_id));
+  }
+  return allSpecies;
+}
+
+/**
+ * Lightweight seeded LCG PRNG.  The same seed always produces the same sequence.
+ * @param {number} seed
+ * @returns {() => number}  Values in [0, 1).
+ */
+export function seededRng(seed) {
+  let s = seed >>> 0;
+  return () => {
+    s = (Math.imul(1664525, s) + 1013904223) >>> 0;
+    return s / 0x100000000;
+  };
+}

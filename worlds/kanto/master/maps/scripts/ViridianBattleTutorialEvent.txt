@@ -1,0 +1,14 @@
+[
+  {
+    "type": "class",
+    "value": {
+      "else": [
+        {
+          "type": "",
+          "value": null
+        }
+      ],
+      "key": "done_battle_tutorial"
+    }
+  }
+]

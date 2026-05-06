@@ -134,7 +134,7 @@ export default class extends GameMap {
         this.rect.setAlpha(0);
         this.rect.setPosition(
           0 * Tile.WIDTH, 
-          5 * Tile.HEIGHTz
+          5 * Tile.HEIGHT
         );
         this.game.events.emit(
           'textbox-changedata', 

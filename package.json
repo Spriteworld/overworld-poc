@@ -1,25 +1,42 @@
 {
-  "name": "overworld-poc",
+  "name": "@spriteworld/character",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "build:live": "vite build --mode live",
+    "preview": "vite preview",
+    "test": "jest",
+    "maps:kanto": "python3 worlds/regen_world.py kanto --export-scripts",
+    "maps:gavworld": "python3 worlds/regen_world.py gavworld",
+    "maps:sw": "python3 src/maps/spriteworld/update_spriteworld.py && python3 src/maps/spriteworld/update_spriteworld_insides.py && python3 src/maps/spriteworld/update_spriteworld_dungeons.py",
+    "server": "node --env-file-if-exists=.env.local server/index.js",
+    "server:dev": "node --env-file-if-exists=.env.local --watch server/index.js"
   },
   "dependencies": {
+    "@spriteworld/battle": "../battle",
     "@spriteworld/pokemon-data": "../data",
-    "grid-engine": "^2.48.0",
+    "@tailwindcss/vite": "^4.2.2",
+    "baseline-browser-mapping": "^2.10.25",
+    "caniuse-lite": "^1.0.30001791",
+    "grid-engine": "^2.48.2",
+    "phaser": "^3.90.0",
     "phaser-animated-tiles-phaser3.5": "^2.0.5",
     "phaser-tiled-json-external-loader": "^0.1.1",
-    "phaser3-rex-plugins": "^1.80.15",
-    "vue": "3.5.13"
+    "phaser3-rex-plugins": "^1.80.20",
+    "tailwindcss": "^4.2.2",
+    "vue": "3.5.13",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.3",
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
     "jest-canvas-mock": "^2.5.2",
-    "vite": "^6.2.5"
+    "vite": "^6.4.1"
   }
 }

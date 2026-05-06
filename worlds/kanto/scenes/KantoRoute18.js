@@ -1,0 +1,26 @@
+import { GameMap } from '@Objects';
+import KantoRoute18Map from '../maps/route18.json';
+
+export default class extends GameMap {
+  constructor() {
+    super({
+      mapName: 'KantoRoute18',
+      map: KantoRoute18Map,
+      active: false,
+      visible: false,
+    });
+  }
+
+  preload() {
+    this.preloadMap();
+  }
+
+  create() {
+    this.loadMap();
+    this.createCharacters();
+  }
+
+  update(time, delta) {
+    this.updateCharacters(time, delta);
+  }
+}

@@ -1,10 +1,22 @@
 export default {
   objects: false,
   grid: false,
+  clickToMove: false,
   time: true,
   nighttimeLightsOnly: true,
   inspector: false,
+  playerCoords: false,
+  playerVariant: false,
+  fps: false,
   stateMachine: false,
+  noEncounters: false,
+  noTrainerSight: false,
+  smoothCam: false,
+  toasts: true,
+  waterFx: false,
+  waterFxMask: false,  // overlay water mask in red; bright = inside the 5px erosion border, dim = deep water
+  rain: false,
+  puddleFxMask: false,
   tests: {
     timeOverlay: false,
     outlineColliders: false,
@@ -12,9 +24,11 @@ export default {
     rectOutlines: false,
   },
   console: {
-    preload: false,
+    preload: !false,
     gameMap: false,
     character: false,
     interactableShout: false,
+    scriptRunner: false,
+    mapDebug: false,
   },
 };
