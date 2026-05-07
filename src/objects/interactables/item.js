@@ -31,10 +31,8 @@ export default class {
         y: Math.floor((obj.gid ? obj.y - obj.height : obj.y) / Tile.HEIGHT),
         item: itemName,
         overworldKey: obj.name,
+        properties: obj.properties,
       });
-      if (getPropertyValue(obj.properties, 'hidden')) {
-        item.setVisible(false);
-      }
     });
   }
 

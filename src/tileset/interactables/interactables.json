@@ -9,7 +9,6 @@
  "tilecount": 16,
  "tiledversion": "1.12.1",
  "tileheight": 32,
- "tilewidth": 32,
  "tiles": [
   {
    "id": 0,
@@ -50,8 +49,19 @@
      "value": true
     }
    ]
+  },
+  {
+   "id": 4,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": true
+    }
+   ]
   }
  ],
+ "tilewidth": 32,
  "type": "tileset",
- "version": "1.11"
+ "version": "1.10"
 }

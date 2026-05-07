@@ -55,6 +55,7 @@ import KantoFushsiaGymMap from './maps/fushsia_gym.json';
 import KantoSaffronGymMap from './maps/saffron_gym.json';
 import KantoCinnabarGymMap from './maps/cinnabar_gym.json';
 import KantoViridianGymMap from './maps/viridian_gym.json';
+import KantoRoute10Map from './maps/route10.json';
 import kantoWorldRaw from './maps/kanto.world?raw';
 
 // Tilesets
@@ -120,6 +121,7 @@ import KantoViridianCity from './scenes/KantoViridianCity.js';
 import KantoViridianCityHouse from './scenes/KantoViridianCityHouse.js';
 import KantoViridianForest from './scenes/KantoViridianForest.js';
 import KantoViridianGym from './scenes/KantoViridianGym.js';
+import KantoRoute10 from './scenes/KantoRoute10.js';
 import KantoWorld from './scenes/KantoWorld.js';
 
 // GameDef
@@ -181,6 +183,7 @@ registerWorld({
     'KantoSaffronGym': KantoSaffronGymMap,
     'KantoCinnabarGym': KantoCinnabarGymMap,
     'KantoViridianGym': KantoViridianGymMap,
+    'KantoRoute10': KantoRoute10Map,
   },
   tilesets: {
     'kanto_outside': { url: kanto_outside, json: kanto_outside_json },
@@ -222,6 +225,7 @@ registerWorld({
     'route23.json': 'KantoRoute23',
     'route24.json': 'KantoRoute24',
     'route25.json': 'KantoRoute25',
+    'route10.json':        'KantoRoute10',
   },
   worldFile: JSON.parse(kantoWorldRaw),
   insideMapSceneKeys: [
@@ -285,6 +289,7 @@ registerWorld({
     KantoRoute7,
     KantoRoute8,
     KantoRoute9,
+    KantoRoute10,
     KantoSaffronCity,
     KantoSaffronGym,
     KantoVermilionGym,

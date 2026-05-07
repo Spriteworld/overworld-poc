@@ -546,7 +546,7 @@ def ensure_scene_file(scene_key, fname, *, inside=False, world_prefix=None):
 def ensure_maps_index(scene_key, fname, inside=False, *, world_prefix=None):
     """Register a map in `src/maps/index.js`.
 
-    Migration: any existing `import OLDMap from './kanto/{fname}'` whose var
+    Migration: any existing `import OLDMap from './maps/{fname}'` whose var
     differs from the new `{scene_key}Map` is renamed (import + named export +
     MAP_REGISTRY value). MAP_REGISTRY keys and WORLD_MAP_KEYS values that
     pointed at the legacy scene_key are rewritten to the new scene_key.
@@ -563,14 +563,14 @@ def ensure_maps_index(scene_key, fname, inside=False, *, world_prefix=None):
 
     # ── Migration: rename legacy import + downstream references ────────────
     m = re.search(
-        r"import (\w+) from " + re.escape(f"'./kanto/{fname}'"), content,
+        r"import (\w+) from " + re.escape(f"'./maps/{fname}'"), content,
     )
     if m and m.group(1) != map_var:
         legacy_var = m.group(1)
         # Rename the import line
         content = content.replace(
-            f"import {legacy_var} from './kanto/{fname}'",
-            f"import {map_var} from './kanto/{fname}'",
+            f"import {legacy_var} from './maps/{fname}'",
+            f"import {map_var} from './maps/{fname}'",
         )
         # Rename standalone occurrences of legacy_var (named export entry,
         # any MAP_REGISTRY value reference). Word-boundary regex avoids
@@ -608,13 +608,13 @@ def ensure_maps_index(scene_key, fname, inside=False, *, world_prefix=None):
             print(f"  maps/index.js: renamed WORLD_MAP_KEYS '{fname}' value '{old_value}' -> '{scene_key}'")
 
     # ── Add-if-missing ────────────────────────────────────────────────────
-    file_already_imported = f"'./kanto/{fname}'" in content
+    file_already_imported = f"'./maps/{fname}'" in content
 
     if not file_already_imported and f"import {map_var} from" not in content:
         content, ok = js_insert_after_last(
             content,
-            r"import \w+Map from '\./kanto/[^']+\.json';",
-            f"import {map_var} from './kanto/{fname}';"
+            r"import \w+Map from '\./maps/[^']+\.json';",
+            f"import {map_var} from './maps/{fname}';"
         )
         if ok:
             changed = True
@@ -630,8 +630,8 @@ def ensure_maps_index(scene_key, fname, inside=False, *, world_prefix=None):
         pad = ' ' * max(1, 20 - len(fname))
         content, ok = js_insert_after_last(
             content,
-            r"  '[^']+\.json'\s*:\s*'[^']+',?",
-            f"  '{fname}':{pad}'{scene_key}',"
+            r"    '[^']+\.json'\s*:\s*'[^']+',?",
+            f"    '{fname}':{pad}'{scene_key}',"
         )
         if ok:
             changed = True
@@ -655,8 +655,8 @@ def ensure_maps_index(scene_key, fname, inside=False, *, world_prefix=None):
         pad = ' ' * max(1, 12 - len(scene_key))
         content, ok = js_insert_after_last(
             content,
-            r"  '[^']+':\s+\w+Map,",
-            f"  '{scene_key}':{pad}{map_var},"
+            r"    '[^']+':\s+\w+Map,",
+            f"    '{scene_key}':{pad}{map_var},"
         )
         if ok:
             changed = True
@@ -687,12 +687,12 @@ def ensure_scenes_index(scene_key, *, world_prefix=None):
         legacy_scene_key = scene_key[len(world_prefix):]
         legacy_import    = (
             f"import {legacy_scene_key} from "
-            f"'@Scenes/maps/kanto/{legacy_scene_key}.js';"
+            f"'./scenes/{legacy_scene_key}.js';"
         )
         if legacy_import in content:
             new_import = (
                 f"import {scene_key} from "
-                f"'@Scenes/maps/kanto/{scene_key}.js';"
+                f"'./scenes/{scene_key}.js';"
             )
             content = content.replace(legacy_import, new_import)
             content = re.sub(
@@ -706,8 +706,8 @@ def ensure_scenes_index(scene_key, *, world_prefix=None):
     if f"import {scene_key} from" not in content:
         content, ok = js_insert_after_last(
             content,
-            r"import \w+ from '@Scenes/maps/kanto/[^']+\.js';",
-            f"import {scene_key} from '@Scenes/maps/kanto/{scene_key}.js';"
+            r"import \w+ from '\./scenes/[^']+\.js';",
+            f"import {scene_key} from './scenes/{scene_key}.js';"
         )
         if ok:
             changed = True

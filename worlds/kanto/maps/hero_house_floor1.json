@@ -869,7 +869,7 @@
       "source": "../../../src/tileset/interactables/interactables.json"
     },
     {
-      "firstgid": 5,
+      "firstgid": 6,
       "source": "../tilesets/kanto_inside.json"
     }
   ],

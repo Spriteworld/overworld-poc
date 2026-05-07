@@ -342,6 +342,9 @@ def sync_spriteworld_animations(catalogue, src_to_spriteworld, common_count,
     outside_by_id = {t['id']: t for t in outside_tiles}
     modified = False
 
+    animated_common_tids  = set()
+    animated_outside_tids = set()
+
     for fg, name, count, ts_json in catalogue:
         for src_tile in ts_json.get('tiles', []):
             if 'animation' not in src_tile:
@@ -373,6 +376,11 @@ def sync_spriteworld_animations(catalogue, src_to_spriteworld, common_count,
             if not any(f['tileid'] == spriteworld_tid for f in new_anim):
                 continue
 
+            if is_common:
+                animated_common_tids.add(spriteworld_tid)
+            else:
+                animated_outside_tids.add(spriteworld_tid)
+
             tile_by_id = common_by_id if is_common else outside_by_id
             tiles_list = common_tiles  if is_common else outside_tiles
             entry = tile_by_id.get(spriteworld_tid)
@@ -387,6 +395,17 @@ def sync_spriteworld_animations(catalogue, src_to_spriteworld, common_count,
                 ts_name = 'spriteworld_common' if is_common else 'spriteworld_outside'
                 print(f'  synced animation for {ts_name} tile {spriteworld_tid} '
                       f'({len(new_anim)} frames, source={name})')
+
+    for entry in common_tiles:
+        if 'animation' in entry and entry['id'] not in animated_common_tids:
+            del entry['animation']
+            modified = True
+            print(f'  removed stale animation from spriteworld_common tile {entry["id"]}')
+    for entry in outside_tiles:
+        if 'animation' in entry and entry['id'] not in animated_outside_tids:
+            del entry['animation']
+            modified = True
+            print(f'  removed stale animation from spriteworld_outside tile {entry["id"]}')
 
     return modified
 

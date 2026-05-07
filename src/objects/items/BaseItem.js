@@ -23,7 +23,7 @@ export default class BaseItem extends MovableSprite {
     config.scene.interactTile(undefined, config, 0xff0000);
 
     if (config.scene.game.config.debug.objects === true) {
-      config.scene.mapPlugins?.debug.debugObject(this, this.constructor.name.toLowerCase());
+      // config.scene.mapPlugins?.debug.debugObject(this, this.constructor.name.toLowerCase());
     }
   }
 

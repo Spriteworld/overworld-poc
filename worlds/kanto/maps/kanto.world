@@ -98,14 +98,35 @@
             "x": 6144,
             "y": -4512,
             "width": 1536,
-            "height": 1440
+            "height": 1280
         },
         {
             "fileName": "saffron_city.json",
             "x": 6144,
-            "y": -3072,
+            "y": -3232,
             "width": 1536,
             "height": 1280
+        },
+        {
+            "fileName": "route8.json",
+            "x": 7680,
+            "y": -3232,
+            "width": 2304,
+            "height": 1312
+        },
+        {
+            "fileName": "lavender_town.json",
+            "x": 9984,
+            "y": -2912,
+            "width": 1056,
+            "height": 640
+        },
+        {
+            "fileName": "route10.json",
+            "x": 9664,
+            "y": -5792,
+            "width": 1376,
+            "height": 2880
         }
     ]
 }

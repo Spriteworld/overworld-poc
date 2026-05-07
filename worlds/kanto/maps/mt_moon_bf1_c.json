@@ -14,11 +14,11 @@
       "source": "../../../src/tileset/interactables/interactables.json"
     },
     {
-      "firstgid": 5,
+      "firstgid": 6,
       "source": "../tilesets/kanto_outside.json"
     },
     {
-      "firstgid": 691,
+      "firstgid": 888,
       "source": "../tilesets/kanto_dungeons.json"
     }
   ],
@@ -1344,8 +1344,8 @@
         0,
         706,
         706,
-        232,
-        232,
+        245,
+        245,
         0,
         0,
         0,
@@ -1354,7 +1354,7 @@
         0,
         0,
         0,
-        232,
+        245,
         704,
         704,
         0,
@@ -1369,7 +1369,7 @@
         0,
         706,
         706,
-        231,
+        244,
         0,
         0,
         0,
@@ -1378,8 +1378,8 @@
         0,
         0,
         0,
-        231,
-        232,
+        244,
+        245,
         704,
         704,
         0,
