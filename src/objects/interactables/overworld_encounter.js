@@ -973,10 +973,10 @@ export default class OverworldEncounter {
   }
 
   /**
-   * Scan every tilemap cell for `sw_water`, group contiguous water into
-   * regions, trace a boundary polygon around each region, and push tiles
-   * with `section: 'surf'` into the provided array. Tiles already present
-   * as surf in `tiles` are skipped to avoid duplicates.
+   * Scan every tilemap cell on the water layer, group contiguous water
+   * into regions, and push tiles with `section: 'surf'` into the provided
+   * array. Tiles already present as surf in `tiles` are skipped to avoid
+   * duplicates.
    */
   _autoCollectWaterTiles(tiles, encounterTable) {
     if (!encounterTable) return;

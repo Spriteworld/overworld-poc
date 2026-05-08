@@ -271,10 +271,9 @@ export default class extends Character {
     const isWater = !!scene.isWaterTile?.(target.x, target.y);
 
     if (isWater) {
-      // Rocks/cliffs sitting on water share the water tile's sw_water flag
-      // but add a second ge_collide source on another layer. hasNonWaterCollision
-      // catches those so we don't surf through them while tile collision is
-      // momentarily off.
+      // Rocks/cliffs on other layers above the water layer still have
+      // ge_collide. hasNonWaterCollision catches those so we don't surf
+      // through them while tile collision is momentarily off.
       if (scene.hasNonWaterCollision?.(target.x, target.y)) {
         this.look(dir);
         return;

@@ -1722,7 +1722,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -1769,7 +1768,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -1820,7 +1818,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -1871,7 +1868,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -1922,7 +1918,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -1969,7 +1964,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -2020,7 +2014,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -2075,7 +2068,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -2130,7 +2122,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -2185,7 +2176,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -2236,7 +2226,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -2283,7 +2272,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -2334,7 +2322,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -2385,7 +2372,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {
@@ -2436,7 +2422,6 @@
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-call",
                   "type": "class",
                   "value": {
                     "args": {

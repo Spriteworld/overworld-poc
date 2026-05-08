@@ -1,17 +1,15 @@
 import * as Tile from '../Tile.js';
 
-const ALPHA          = 0.5;
-const TINT           = 0x6688cc;
-const WATER_PROP_KEY = 'sw_water';
-const DEPTH_OFFSET   = 0.5; // sits between floor (water) and ground char-layer
+const ALPHA        = 0.5;
+const TINT         = 0x6688cc;
+const DEPTH_OFFSET = 0.5; // sits between water layer and ground char-layer
 
 export default class Reflection {
   /**
    * A mirrored sprite that tracks a parent Character and renders as its
-   * water reflection. Clipped via a GeometryMask built from every
-   * `sw_water`-tagged tile on the `floor` layer — so the reflection
-   * tracks the parent smoothly and the shore naturally hides whatever
-   * portion isn't over water (no tile-boundary flicker).
+   * water reflection. Clipped via a GeometryMask built from every tile
+   * on the "water" layer — so the reflection tracks the parent smoothly
+   * and the shore naturally hides whatever portion isn't over water.
    *
    * @param {object} config
    * @param {Phaser.GameObjects.Sprite} config.parent - Character sprite to mirror.
@@ -36,18 +34,17 @@ export default class Reflection {
     this._destroyed = false;
   }
 
-  /**
-   * Resolve depth, apply the shared water mask. Runs once, lazily — both
-   * depend on the `floor` tilemap layer being populated (grid-engine
-   * reassigns layer depths during scene init, which happens after the
-   * parent Character is constructed).
-   */
   _initRendering() {
     if (this._ready) return;
-    const floor = this.scene.tilemaps?.floor;
-    if (!floor) return;
+    const waterLayer = this.scene.tilemaps?.water;
+    if (!waterLayer) {
+      this.sprite.setVisible(false);
+      this._noWater = true;
+      this._ready = true;
+      return;
+    }
 
-    this.sprite.setDepth(floor.depth + DEPTH_OFFSET);
+    this.sprite.setDepth(waterLayer.depth + DEPTH_OFFSET);
 
     // Pick up the water shader if it's active on this scene, so reflections
     // ripple in lockstep with the water tiles beneath them.
@@ -68,21 +65,16 @@ export default class Reflection {
     this._ready = true;
   }
 
-  /**
-   * Build (once per scene) a GeometryMask covering every water tile on
-   * the floor layer. Cached on the scene so all Reflections share a
-   * single mask.
-   */
   static _getOrCreateWaterMask(scene) {
     if (scene._waterReflectionMask) return scene._waterReflectionMask;
-    const floor = scene.tilemaps?.floor;
-    if (!floor) return null;
+    const waterLayer = scene.tilemaps?.water;
+    if (!waterLayer) return null;
 
     const graphics = scene.make.graphics({ add: false });
     graphics.fillStyle(0xffffff, 1);
     let waterTileCount = 0;
-    floor.forEachTile((tile) => {
-      if (tile?.properties?.[WATER_PROP_KEY]) {
+    waterLayer.forEachTile((tile) => {
+      if (tile?.index >= 0) {
         graphics.fillRect(tile.pixelX, tile.pixelY, tile.width, tile.height);
         waterTileCount++;
       }

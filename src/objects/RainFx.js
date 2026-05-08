@@ -64,17 +64,21 @@ export default class RainFx {
   }
 
   _buildPuddleMask(scene, opts) {
-    // Puddles render on the subground layer (the visible walkable surface).
-    // Fall back to floor if no subground exists.
     const surface = scene.tilemaps?.subground ?? scene.tilemaps?.floor;
     if (!surface) return;
 
     const tilemap = scene.config.tilemap;
     const mapW = tilemap.widthInPixels;
     const mapH = tilemap.heightInPixels;
-    const waterProp = 'sw_water';
 
-    // Block tiles covered by layers above the surface
+    const waterTiles = new Set();
+    const waterLayer = scene.tilemaps?.water;
+    if (waterLayer) {
+      waterLayer.forEachTile(t => {
+        if (t?.index >= 0) waterTiles.add(`${t.x},${t.y}`);
+      });
+    }
+
     const blocked = new Set();
     ['ground', 'middle', 'top'].forEach(name => {
       const layer = scene.tilemaps?.[name];
@@ -89,7 +93,8 @@ export default class RainFx {
     let count = 0;
 
     surface.forEachTile(t => {
-      if (t?.index >= 0 && !t?.properties?.[waterProp] && !blocked.has(`${t.x},${t.y}`)) {
+      const key = `${t.x},${t.y}`;
+      if (t?.index >= 0 && !waterTiles.has(key) && !blocked.has(key)) {
         gfx.fillRect(t.pixelX, t.pixelY, t.width, t.height);
         count++;
       }

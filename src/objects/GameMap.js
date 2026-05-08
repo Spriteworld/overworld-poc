@@ -232,8 +232,8 @@ export default class extends Phaser.Scene {
       this.darkness = new Darkness(this);
     }
 
-    // Optional water-surface shader. Self-disables on maps with no `sw_water`
-    // tiles. Gated by debug flag so we can A/B against the unshaded look.
+    // Optional water-surface shader. Self-disables on maps with no water layer.
+    // Gated by debug flag so we can A/B against the unshaded look.
     if (this.game.config.debug.waterFx) {
       this.waterFx = new WaterFx(this);
     }
@@ -577,19 +577,16 @@ export default class extends Phaser.Scene {
   }
 
   /**
-   * Returns true if any tile layer at (x, y) has the `water: true` custom property.
+   * Returns true if the water tile layer has a non-empty tile at (x, y).
    * @param {number} x - Tile x coordinate.
    * @param {number} y - Tile y coordinate.
    * @returns {boolean}
    */
   isWaterTile(x, y) {
-    const map = this.config.tilemap;
-    if (!map) return false;
-    for (const layer of map.layers) {
-      const t = map.getTileAt(x, y, true, layer.name);
-      if (t?.properties?.sw_water) return true;
-    }
-    return false;
+    const water = this.tilemaps?.water;
+    if (!water) return false;
+    const t = water.getTileAt(x, y);
+    return t !== null && t.index >= 0;
   }
 
   /**
@@ -605,9 +602,9 @@ export default class extends Phaser.Scene {
     const map = this.config.tilemap;
     if (!map) return false;
     for (const layer of map.layers) {
+      if (layer.name === 'water') continue;
       const t = map.getTileAt(x, y, true, layer.name);
-      const p = t?.properties;
-      if (p?.ge_collide && !p?.sw_water) return true;
+      if (t?.properties?.ge_collide) return true;
     }
     return false;
   }

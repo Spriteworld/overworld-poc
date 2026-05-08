@@ -128,7 +128,7 @@ def build_compact_gid_map(master_tilelayers, catalogue,
                       f'not in gid_map.json — skipping. Re-run the outdoor update first.')
                 continue
             src_to_map_gid[src_gid] = kgid
-        elif src_gid in prev_src_to_map:
+        elif src_gid in prev_src_to_map and prev_src_to_map[src_gid] >= DUNGEONS_FIRSTGID:
             src_to_map_gid[src_gid] = prev_src_to_map[src_gid]
         else:
             needs_assignment.append(src_gid)

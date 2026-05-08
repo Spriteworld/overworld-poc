@@ -49,7 +49,7 @@
             "x": -928,
             "y": 1952,
             "width": 1664,
-            "height": 2720
+            "height": 3200
         },
         {
             "fileName": "route3.json",
@@ -127,6 +127,62 @@
             "y": -5792,
             "width": 1376,
             "height": 2880
+        },
+        {
+            "fileName": "route12.json",
+            "x": 9984,
+            "y": -2272,
+            "width": 1056,
+            "height": 3840
+        },
+        {
+            "fileName": "cinnabar_island.json",
+            "x": -928,
+            "y": 5152,
+            "width": 1504,
+            "height": 928
+        },
+        {
+            "fileName": "route20.json",
+            "x": 576,
+            "y": 4864,
+            "width": 3616,
+            "height": 1216
+        },
+        {
+            "fileName": "route19.json",
+            "x": 3808,
+            "y": 3872,
+            "width": 1344,
+            "height": 2208
+        },
+        {
+            "fileName": "fuchsia_city.json",
+            "x": 3840,
+            "y": 2528,
+            "width": 1536,
+            "height": 1344
+        },
+        {
+            "fileName": "route15.json",
+            "x": 5312,
+            "y": 2720,
+            "width": 2304,
+            "height": 928
+        },
+        {
+            "fileName": "route13.json",
+            "x": 8640,
+            "y": 1216,
+            "width": 2400,
+            "height": 1024
+        },
+        {
+            "fileName": "route14.json",
+            "x": 7488,
+            "y": 1216,
+            "width": 1152,
+            "height": 2432
         }
     ]
 }

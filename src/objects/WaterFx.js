@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { SHADER_KEYS } from '@/shaders/keys.js';
 
-const WATER_PROP_KEY = 'sw_water';
+const WATER_LAYER = 'water';
 
 // Trail tuning ─────────────────────────────────────────────────────────────
 // Each stamp is a thin ring outline that grows from R0 → R1 over its life
@@ -28,12 +28,12 @@ const BEHIND_OFFSETS = {
 export default class WaterFx {
   /**
    * Animated water surface + surf wake. Built once per scene; bails out and
-   * does nothing if the floor layer has no `sw_water` tiles.
+   * does nothing if no "water" tile layer exists or it has no tiles.
    *
    *   - Builds a map-sized mask RT (red = water) once at construction.
    *   - Owns a map-sized trail RT that's redrawn each frame from a small
    *     ring buffer of fading "stamp" points.
-   *   - Applies the water post-FX pipeline to the scene camera and pushes
+   *   - Applies the water post-FX pipeline to the water layer and pushes
    *     scroll / resolution / time uniforms each tick.
    *
    * Gated by `debug.waterFx`. Reflections continue to use the sprite-based
@@ -45,9 +45,9 @@ export default class WaterFx {
     this.camera = scene.cameras.main;
     this._destroyed = false;
 
-    const floor = scene.tilemaps?.floor;
+    const waterLayer = scene.tilemaps?.[WATER_LAYER];
     const map   = scene.config?.tilemap;
-    if (!floor || !map) { this._noWater = true; return; }
+    if (!waterLayer || !map) { this._noWater = true; return; }
 
     this._mapW = map.widthInPixels;
     this._mapH = map.heightInPixels;
@@ -55,13 +55,12 @@ export default class WaterFx {
     this._maskKey  = `_water_mask_${this._sceneKey}`;
     this._trailKey = `_water_trail_${this._sceneKey}`;
 
-    if (!this._buildMask(floor)) { this._noWater = true; return; }
+    if (!this._buildMask(waterLayer)) { this._noWater = true; return; }
     this._buildTrail();
 
-    // Apply the post-FX to the floor layer rather than the camera so the
-    // displacement / caustic / trail tint only touch water tile pixels,
-    // not anything rendered above (player, mount, NPCs, reflections).
-    this._target = floor;
+    // Apply the post-FX to the water layer so the displacement / caustic /
+    // trail tint only touch water tile pixels, not anything rendered above.
+    this._target = waterLayer;
     this._target.setPostPipeline(SHADER_KEYS.WATER);
     this.pipeline = this._target.getPostPipeline(SHADER_KEYS.WATER);
     if (!this.pipeline) { this._noWater = true; return; }
@@ -80,17 +79,12 @@ export default class WaterFx {
     this._timeSec = 0;
   }
 
-  /**
-   * One-time draw: every `sw_water` tile on the floor layer painted white
-   * onto a map-sized RT, then registered under `_maskKey` so the pipeline
-   * can bind it as a sampler. Returns false if no water exists.
-   */
-  _buildMask(floor) {
+  _buildMask(waterLayer) {
     const gfx = this.scene.make.graphics({ add: false });
     gfx.fillStyle(0xffffff, 1);
     let count = 0;
-    floor.forEachTile(t => {
-      if (t?.properties?.[WATER_PROP_KEY]) {
+    waterLayer.forEachTile(t => {
+      if (t?.index >= 0) {
         gfx.fillRect(t.pixelX, t.pixelY, t.width, t.height);
         count++;
       }

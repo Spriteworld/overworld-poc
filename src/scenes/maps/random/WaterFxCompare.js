@@ -52,12 +52,12 @@ export default class extends GameMap {
     this.cameras.main.setZoom(zoom);
     this._camRight.setZoom(zoom);
 
-    // Move the WaterFx pipeline from the floor layer onto the left camera.
+    // Move the WaterFx pipeline from the water layer onto the left camera.
     // The water mask texture still limits the effect to water pixels, so the
     // visual result is the same — but now the right camera is pipeline-free.
-    const floor = this.tilemaps?.floor;
-    if (floor && this.waterFx?.pipeline) {
-      floor.removePostPipeline(SHADER_KEYS.WATER);
+    const waterLayer = this.tilemaps?.water;
+    if (waterLayer && this.waterFx?.pipeline) {
+      waterLayer.removePostPipeline(SHADER_KEYS.WATER);
 
       const cam = this.cameras.main;
       cam.setPostPipeline(SHADER_KEYS.WATER);

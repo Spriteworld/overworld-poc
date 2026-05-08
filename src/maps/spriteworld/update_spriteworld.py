@@ -58,6 +58,7 @@ WORLD_PREFIX = 'Spriteworld'
 # (layer_name, ge_charLayer_value, is_objectgroup) — render-stack order.
 LAYER_TEMPLATE = [
     ('floor',        None,     False),
+    ('water',        None,     False),
     ('subground',    None,     False),
     ('ground',       'ground', False),
     ('middle',       None,     False),

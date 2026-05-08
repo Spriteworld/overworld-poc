@@ -1,6 +1,5 @@
 [
   {
-    "propertytype": "cmd-call",
     "type": "class",
     "value": {
       "args": {
