@@ -341,7 +341,7 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 206, 207, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 314, 89, 90, 0, 0, 0, 0, 0, 0, 0, 96, 43, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 534, 535, 536, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 214, 215, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 322, 97, 98, 0, 0, 0, 0, 0, 0, 0, 104, 0, 0, 0, 0, 0, 56, 0, 501, 0, 0, 0, 542, 543, 544, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 0, 509, 0, 0, 0, 550, 551, 552, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 262, 70, 71, 263, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 262, 70, 71, 263, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 262, 70, 71, 263, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 518, 519, 520, 517, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 262, 70, 71, 263, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 262, 70, 71, 263, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 262, 70, 71, 263, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 517, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 262, 78, 79, 263, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 262, 78, 79, 263, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 262, 78, 79, 263, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 526, 527, 528, 525, 0, 0, 0, 495, 496, 0, 495, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 503, 504, 0, 503, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 526, 528, 0, 0, 0, 0, 511, 512, 0, 511, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -563,7 +563,7 @@
             0, 0, 0, 0, 0, 0, 0, 62, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 0, 62, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 487, 488, 0, 487, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 518, 519, 520, 0, 0, 0, 0, 487, 488, 0, 487, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 518, 520, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -2390,9 +2390,15 @@
                  "opacity":1,
                  "properties":[
                         {
+                         "name":"facing-direction",
+                         "propertytype":"facing-direction",
+                         "type":"string",
+                         "value":"right"
+                        }, 
+                        {
                          "name":"overworld-texture",
                          "type":"string",
-                         "value":"nurse_joy"
+                         "value":"scientist"
                         }],
                  "rotation":0,
                  "type":"npc",
@@ -2424,6 +2430,294 @@
                  "width":32,
                  "x":1984,
                  "y":160
+                },
+                {
+                 "height":32,
+                 "id":70,
+                 "name":"PewterCityEntry",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp-dir",
+                         "type":"string",
+                         "value":"down"
+                        }],
+                 "rotation":0,
+                 "type":"warpLocation",
+                 "visible":true,
+                 "width":32,
+                 "x":1312,
+                 "y":1600
+                },
+                {
+                 "height":32,
+                 "id":71,
+                 "name":"PewterGymLastMapWarp",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp",
+                         "type":"string",
+                         "value":"_lastmap_"
+                        }],
+                 "rotation":0,
+                 "type":"warp",
+                 "visible":true,
+                 "width":32,
+                 "x":1312,
+                 "y":1632
+                },
+                {
+                 "height":32,
+                 "id":72,
+                 "name":"CeruleanCityEntry",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp-dir",
+                         "type":"string",
+                         "value":"down"
+                        }],
+                 "rotation":0,
+                 "type":"warpLocation",
+                 "visible":true,
+                 "width":32,
+                 "x":1792,
+                 "y":1728
+                },
+                {
+                 "height":32,
+                 "id":73,
+                 "name":"CeruleanGymLastMapWarp",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp",
+                         "type":"string",
+                         "value":"_lastmap_"
+                        }],
+                 "rotation":0,
+                 "type":"warp",
+                 "visible":true,
+                 "width":32,
+                 "x":1792,
+                 "y":1760
+                },
+                {
+                 "height":32,
+                 "id":74,
+                 "name":"VermilionCityEntry",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp-dir",
+                         "type":"string",
+                         "value":"down"
+                        }],
+                 "rotation":0,
+                 "type":"warpLocation",
+                 "visible":true,
+                 "width":32,
+                 "x":2240,
+                 "y":1728
+                },
+                {
+                 "height":32,
+                 "id":75,
+                 "name":"VermilionGymLastMapWarp",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp",
+                         "type":"string",
+                         "value":"_lastmap_"
+                        }],
+                 "rotation":0,
+                 "type":"warp",
+                 "visible":true,
+                 "width":32,
+                 "x":2240,
+                 "y":1760
+                },
+                {
+                 "height":32,
+                 "id":76,
+                 "name":"CeladonCityEntry",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp-dir",
+                         "type":"string",
+                         "value":"down"
+                        }],
+                 "rotation":0,
+                 "type":"warpLocation",
+                 "visible":true,
+                 "width":32,
+                 "x":2624,
+                 "y":1728
+                },
+                {
+                 "height":32,
+                 "id":77,
+                 "name":"CeladonGymLastMapWarp",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp",
+                         "type":"string",
+                         "value":"_lastmap_"
+                        }],
+                 "rotation":0,
+                 "type":"warp",
+                 "visible":true,
+                 "width":32,
+                 "x":2624,
+                 "y":1760
+                },
+                {
+                 "height":32,
+                 "id":78,
+                 "name":"FuchsiaCityEntry",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp-dir",
+                         "type":"string",
+                         "value":"down"
+                        }],
+                 "rotation":0,
+                 "type":"warpLocation",
+                 "visible":true,
+                 "width":32,
+                 "x":704,
+                 "y":1056
+                },
+                {
+                 "height":32,
+                 "id":79,
+                 "name":"FushsiaGymLastMapWarp",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp",
+                         "type":"string",
+                         "value":"_lastmap_"
+                        }],
+                 "rotation":0,
+                 "type":"warp",
+                 "visible":true,
+                 "width":32,
+                 "x":704,
+                 "y":1088
+                },
+                {
+                 "height":32,
+                 "id":80,
+                 "name":"SaffronCityEntry",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp-dir",
+                         "type":"string",
+                         "value":"down"
+                        }],
+                 "rotation":0,
+                 "type":"warpLocation",
+                 "visible":true,
+                 "width":32,
+                 "x":1408,
+                 "y":1088
+                },
+                {
+                 "height":32,
+                 "id":81,
+                 "name":"SaffronGymLastMapWarp",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp",
+                         "type":"string",
+                         "value":"_lastmap_"
+                        }],
+                 "rotation":0,
+                 "type":"warp",
+                 "visible":true,
+                 "width":32,
+                 "x":1408,
+                 "y":1120
+                },
+                {
+                 "height":32,
+                 "id":82,
+                 "name":"CinnabarIslandEntry",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp-dir",
+                         "type":"string",
+                         "value":"down"
+                        }],
+                 "rotation":0,
+                 "type":"warpLocation",
+                 "visible":true,
+                 "width":32,
+                 "x":2688,
+                 "y":1088
+                },
+                {
+                 "height":32,
+                 "id":83,
+                 "name":"CinnabarGymLastMapWarp",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp",
+                         "type":"string",
+                         "value":"_lastmap_"
+                        }],
+                 "rotation":0,
+                 "type":"warp",
+                 "visible":true,
+                 "width":32,
+                 "x":2688,
+                 "y":1120
+                },
+                {
+                 "height":32,
+                 "id":84,
+                 "name":"ViridianCityEntry",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp-dir",
+                         "type":"string",
+                         "value":"down"
+                        }],
+                 "rotation":0,
+                 "type":"warpLocation",
+                 "visible":true,
+                 "width":32,
+                 "x":1024,
+                 "y":1856
+                },
+                {
+                 "height":32,
+                 "id":85,
+                 "name":"ViridianGymLastMapWarp",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"warp",
+                         "type":"string",
+                         "value":"_lastmap_"
+                        }],
+                 "rotation":0,
+                 "type":"warp",
+                 "visible":true,
+                 "width":32,
+                 "x":1024,
+                 "y":1888
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -2991,6 +3285,292 @@
                                                     }],
                                              "value":"oak_gives_mon"
                                             }
+                                        },
+                                        {
+                                         "propertytype":"cmd-if_variant",
+                                         "type":"class",
+                                         "value":
+                                            {
+                                             "value":"oak_gives_dex",
+                                             "then":[
+                                                    {
+                                                     "propertytype":"cmd-spawn_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"oakAnchor",
+                                                         "facing":"down",
+                                                         "name":"Oak",
+                                                         "texture":"professor_oak"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-disable_input",
+                                                     "type":"class",
+                                                     "value":{}
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-walk_to_char",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "character1":"player",
+                                                         "character2":"Oak",
+                                                         "side":"down"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-face_char",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "character1":"Oak",
+                                                         "character2":"player"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"OAK: Oh, {player}!\nHow is my old POK{e}MON?\nWell, it seems to like you a lot.\nYou must be talented as a POK{e}MON trainer!"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"What? You have something for me?\n...OAK received the parcel!"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-remove_item",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "item":"Oaks Parcel"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"OAK: Ah! This is the custom\nPOK{e} BALL I ordered!\nThank you!"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-spawn_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"PalletTownEntry",
+                                                         "facing":"up",
+                                                         "name":"Gary",
+                                                         "texture":"gary"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-move_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"garyAnchor",
+                                                         "character":"Gary"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"{rival}: Gramps!"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-face_char",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "character1":"Oak",
+                                                         "character2":"Gary"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"OAK: Oh right! I have a request\nfor you two."
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"On the desk there is my invention,\nPOK{e}DEX!\nIt automatically records data on\nPOK{e}MON you've seen or caught!\nIt's a hi-tech encyclopedia!"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"OAK: {player} and {rival}! Take\nthese with you!"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"{player} received a POK{e}DEX\nfrom PROF. OAK!"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-set_flag",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "key":"has_pokedex",
+                                                         "value":true
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-set_flag",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "key":"got_oaks_parcel",
+                                                         "value":false
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"OAK: To make a complete guide on\nall the POK{e}MON in the world...\nThat was my dream!\nBut, I'm too old!\nI can't do it!\nSo, I want you two to fulfill my\ndream for me!"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"OAK: Here, take these, too!"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-give_item",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "item":"pokeball",
+                                                         "qty":5
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"{player} received 5 POK{e} BALLS\nfrom PROF. OAK!"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"{rival}: Alright, Gramps!\nLeave it all to me!\n{player}, I hate to say it, but I\ndon't need you to get a complete\nPOK{e}DEX! I'll get it on my own!\nSmell ya later!"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-move_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "character":"Gary",
+                                                         "speed":6,
+                                                         "x":8,
+                                                         "y":13
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-remove_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "name":"Gary"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-face_char",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "character1":"Oak",
+                                                         "character2":"player"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-text",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "text":"OAK: Good luck to you, {player}!"
+                                                        }
+                                                    },
+                                                    {
+                                                     "propertytype":"cmd-enable_input",
+                                                     "type":"class",
+                                                     "value":{}
+                                                    }]
+                                            }
+                                        },
+                                        {
+                                         "propertytype":"cmd-if_variant",
+                                         "type":"class",
+                                         "value":
+                                            {
+                                             "value":"oak_checks_dex",
+                                             "then":[
+                                                    {
+                                                     "propertytype":"cmd-spawn_npc",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "anchor":"oakAnchor",
+                                                         "facing":"down",
+                                                         "name":"Oak",
+                                                         "texture":"professor_oak",
+                                                         "trigger":
+                                                            {
+                                                             "script":[
+                                                                    {
+                                                                     "propertytype":"cmd-text",
+                                                                     "type":"class",
+                                                                     "value":
+                                                                        {
+                                                                         "text":"OAK: How is your POK{e}DEX\ncoming along?\nHere, let me see.\n..."
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                     "propertytype":"cmd-text",
+                                                                     "type":"class",
+                                                                     "value":
+                                                                        {
+                                                                         "text":"OAK: Good, good! Keep it up\nand try to catch them all!"
+                                                                        }
+                                                                    }],
+                                                             "trigger":"interact"
+                                                            }
+                                                        }
+                                                    }]
+                                            }
                                         }],
                                  "trigger":"map_enter"
                                 }
@@ -3299,6 +3879,111 @@
                                             {
                                              "value":"indigo"
                                             }
+                                        }, 
+                                        {
+                                         "propertytype":"cmd-if_variant",
+                                         "type":"class",
+                                         "value":
+                                            {
+                                             "then":[
+                                                    {
+                                                     "propertytype":"cmd-if_flag",
+                                                     "type":"class",
+                                                     "value":
+                                                        {
+                                                         "else":[
+                                                                {
+                                                                 "propertytype":"cmd-disable_input",
+                                                                 "type":"class",
+                                                                 "value":
+                                                                    {
+
+                                                                    }
+                                                                }, 
+                                                                {
+                                                                 "propertytype":"cmd-text",
+                                                                 "type":"class",
+                                                                 "value":
+                                                                    {
+                                                                     "text":"Hey!\nYou came from PALLET TOWN?"
+                                                                    }
+                                                                }, 
+                                                                {
+                                                                 "propertytype":"cmd-walk_to_char",
+                                                                 "type":"class",
+                                                                 "value":
+                                                                    {
+                                                                     "character1":"player",
+                                                                     "character2":"MartClerk",
+                                                                     "side":"down"
+                                                                    }
+                                                                },
+                                                                {
+                                                                 "propertytype":"cmd-face_char",
+                                                                 "type":"class",
+                                                                 "value":
+                                                                    {
+                                                                     "character1":"MartClerk",
+                                                                     "character2":"player"
+                                                                    }
+                                                                },
+                                                                {
+                                                                 "propertytype":"cmd-text",
+                                                                 "type":"class",
+                                                                 "value":
+                                                                    {
+                                                                     "text":"You know PROF. OAK right?\nHis order came in.\nCan I get you to take it to him?"
+                                                                    }
+                                                                }, 
+                                                                {
+                                                                 "propertytype":"cmd-give_item",
+                                                                 "type":"class",
+                                                                 "value":
+                                                                    {
+                                                                     "item":
+                                                                        {
+
+                                                                        }
+                                                                    }
+                                                                }, 
+                                                                {
+                                                                 "propertytype":"cmd-text",
+                                                                 "type":"class",
+                                                                 "value":
+                                                                    {
+                                                                     "text":"{player} received OAK's Parcel\nfrom the POK\u00e9MON MART clerk."
+                                                                    }
+                                                                }, 
+                                                                {
+                                                                 "propertytype":"cmd-text",
+                                                                 "type":"class",
+                                                                 "value":
+                                                                    {
+                                                                     "text":"Okay, thanks! Please say hi to\nPROF. OAK for me, too."
+                                                                    }
+                                                                }, 
+                                                                {
+                                                                 "propertytype":"cmd-set_flag",
+                                                                 "type":"class",
+                                                                 "value":
+                                                                    {
+                                                                     "key":"got_oaks_parcel",
+                                                                     "value":true
+                                                                    }
+                                                                }, 
+                                                                {
+                                                                 "propertytype":"cmd-enable_input",
+                                                                 "type":"class",
+                                                                 "value":
+                                                                    {
+
+                                                                    }
+                                                                }],
+                                                         "key":"got_oaks_parcel"
+                                                        }
+                                                    }],
+                                             "value":"viridian_oaks_parcel"
+                                            }
                                         }],
                                  "trigger":"map_enter"
                                 }
@@ -3307,7 +3992,7 @@
                  "rotation":0,
                  "type":"location",
                  "visible":true,
-                 "width":416,
+                 "width":384,
                  "x":1888,
                  "y":32
                 }, 

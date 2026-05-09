@@ -2468,6 +2468,44 @@
           "width": 160,
           "x": 96,
           "y": 192
+        },
+        {
+          "height": 32,
+          "id": 19,
+          "name": "VermilionCityEntry",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp-dir",
+              "type": "string",
+              "value": "down"
+            }
+          ],
+          "rotation": 0,
+          "type": "warpLocation",
+          "visible": true,
+          "width": 32,
+          "x": 160,
+          "y": 576
+        },
+        {
+          "height": 32,
+          "id": 20,
+          "name": "VermilionGymLastMapWarp",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "_lastmap_"
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 160,
+          "y": 608
         }
       ],
       "opacity": 1,
@@ -2488,7 +2526,7 @@
       "objects": [
         {
           "height": 64,
-          "id": 19,
+          "id": 21,
           "name": "VermillionLazerOff",
           "opacity": 1,
           "rotation": 0,
@@ -2500,7 +2538,7 @@
         },
         {
           "height": 64,
-          "id": 20,
+          "id": 22,
           "name": "VermillionLazerOn",
           "opacity": 1,
           "rotation": 0,
@@ -2512,7 +2550,7 @@
         },
         {
           "height": 64,
-          "id": 21,
+          "id": 23,
           "name": "VermillionLazerStage1",
           "opacity": 1,
           "rotation": 0,
@@ -2536,7 +2574,7 @@
       "objects": [
         {
           "height": 0,
-          "id": 22,
+          "id": 24,
           "name": "VermilionGymBinCheck",
           "opacity": 1,
           "point": true,
@@ -2757,7 +2795,7 @@
     }
   ],
   "nextlayerid": 7,
-  "nextobjectid": 23,
+  "nextobjectid": 25,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.12.1",

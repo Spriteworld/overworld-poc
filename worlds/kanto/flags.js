@@ -11,6 +11,7 @@ export default {
   
   // veridian
   got_oaks_parcel: false,
+  seen_battle_tutorial: false,
   
   // route 22
   // defeated_rival_2: false,
@@ -38,15 +39,15 @@ export default {
   national_dex: false,
   follower_pokemon: false,
 
-  // misc
-  // obtained_badge_1: false,
-  // obtained_badge_2: false,
-  // obtained_badge_3: false,
-  // obtained_badge_4: false,
-  // obtained_badge_5: false,
-  // obtained_badge_6: false,
-  // obtained_badge_7: false,
-  // obtained_badge_8: false,
+  // badges
+  has_boulderbadge: false,
+  // has_cascadebadge: false,
+  // has_thunderbadge: false,
+  // has_rainbowbadge: false,
+  // has_soulbadge: false,
+  // has_marshbadge: false,
+  // has_volcanobadge: false,
+  // has_earthbadge: false,
 
   // map
   visited_pallet: true,

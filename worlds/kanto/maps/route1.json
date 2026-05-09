@@ -4391,9 +4391,9 @@
         0,
         0,
         0,
-        936,
+        977,
         0,
-        936,
+        977,
         24,
         25,
         24,
@@ -4583,11 +4583,11 @@
         24,
         25,
         0,
-        936,
+        977,
         0,
         0,
         0,
-        936,
+        977,
         26,
         27,
         22,
@@ -4634,11 +4634,11 @@
         19,
         18,
         19,
-        936,
+        977,
         0,
         0,
         0,
-        936,
+        977,
         0,
         18,
         19,
@@ -4687,11 +4687,11 @@
         24,
         25,
         0,
-        936,
+        977,
         0,
         0,
         0,
-        936,
+        977,
         26,
         27,
         22,
@@ -4738,11 +4738,11 @@
         19,
         18,
         19,
-        936,
+        977,
         0,
         0,
         0,
-        936,
+        977,
         0,
         18,
         19,
@@ -4843,7 +4843,7 @@
         18,
         19,
         0,
-        936,
+        977,
         0,
         0,
         0,
@@ -4894,7 +4894,7 @@
         25,
         24,
         25,
-        936,
+        977,
         0,
         0,
         0,
@@ -4947,7 +4947,7 @@
         18,
         19,
         0,
-        936,
+        977,
         0,
         0,
         0,
@@ -5223,9 +5223,9 @@
         0,
         0,
         0,
-        936,
+        977,
         0,
-        936,
+        977,
         24,
         25,
         24,
@@ -5274,9 +5274,9 @@
         0,
         0,
         0,
-        936,
+        977,
         0,
-        936,
+        977,
         0,
         18,
         19,
@@ -5675,9 +5675,9 @@
         18,
         19,
         0,
-        936,
+        977,
         0,
-        936,
+        977,
         0,
         0,
         0,
@@ -5726,9 +5726,9 @@
         25,
         24,
         25,
-        936,
+        977,
         0,
-        936,
+        977,
         0,
         0,
         0,
@@ -5889,7 +5889,7 @@
         0,
         0,
         0,
-        996,
+        1037,
         165,
         178,
         178,
@@ -6046,7 +6046,7 @@
         22,
         22,
         0,
-        936,
+        977,
         0,
         0,
         0,
@@ -6056,7 +6056,7 @@
         22,
         22,
         22,
-        936,
+        977,
         0,
         24,
         25,
@@ -6097,7 +6097,7 @@
         22,
         22,
         22,
-        936,
+        977,
         0,
         0,
         22,
@@ -6109,7 +6109,7 @@
         22,
         22,
         0,
-        936,
+        977,
         18,
         19,
         18,
@@ -8885,14 +8885,15 @@
             },
             {
               "name": "only_if",
+              "propertytype": "only-if",
               "type": "class",
               "value": {
                 "comparison": "eq",
                 "key": "has_pokemon",
                 "value": [
                   {
-                    "type": "",
-                    "value": null
+                    "type": "string",
+                    "value": "false"
                   }
                 ]
               }
@@ -8902,10 +8903,12 @@
               "type": "list",
               "value": [
                 {
+                  "propertytype": "cmd-disable_input",
                   "type": "class",
                   "value": {}
                 },
                 {
+                  "propertytype": "cmd-bgm_start",
                   "type": "class",
                   "value": {
                     "key": "prof_oak_theme",
@@ -8913,12 +8916,14 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-show_exclamation",
                   "type": "class",
                   "value": {
                     "target": "player"
                   }
                 },
                 {
+                  "propertytype": "cmd-spawn_npc",
                   "type": "class",
                   "value": {
                     "anchor": "OakRunningAfterPlayer",
@@ -8928,6 +8933,7 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-face_char",
                   "type": "class",
                   "value": {
                     "character1": "player",
@@ -8935,12 +8941,14 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-text",
                   "type": "class",
                   "value": {
                     "text": "OAK: Hey Wait! Dont go out!"
                   }
                 },
                 {
+                  "propertytype": "cmd-face_char",
                   "type": "class",
                   "value": {
                     "character1": "Oak",
@@ -8948,12 +8956,14 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-text",
                   "type": "class",
                   "value": {
                     "text": "OAK: It's unsafe! Wild POK{e}MON live in tall grass!\nYou need your own POK{e}MON for your protection. I know!\nWhy dont you come with me? I have an extra POK{e}MON at my lab!"
                   }
                 },
                 {
+                  "propertytype": "cmd-movement_behavior",
                   "type": "class",
                   "value": {
                     "character1": "player",
@@ -8962,6 +8972,7 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-move_npc",
                   "type": "class",
                   "value": {
                     "anchor": "ProfessorLabWarp",
@@ -8969,6 +8980,7 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-movement_behavior",
                   "type": "class",
                   "value": {
                     "character1": "player",
@@ -8976,6 +8988,7 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-warp_npc",
                   "type": "class",
                   "value": {
                     "anchor": "OakAway",
@@ -8983,6 +8996,7 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-set_var",
                   "type": "class",
                   "value": {
                     "key": "lab_variant",
@@ -8990,6 +9004,7 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-warp_player",
                   "type": "class",
                   "value": {
                     "anchor": "PalletTownEntry",
@@ -8998,18 +9013,21 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-move_player",
                   "type": "class",
                   "value": {
                     "anchor": "playerAnchor"
                   }
                 },
                 {
+                  "propertytype": "cmd-text",
                   "type": "class",
                   "value": {
                     "text": "{rival}: Gramps!\nI'm fed up with waiting!\nOak: {rival}?\nLet me think...\nOh, that's right, I told you to come! Just wait!\nHere, {player}.\nThere are three POK{e}MON here.\nHAHA!\nThe POK{e}MON are held inside these POK{e} BALLS.\nWhen I was young, I was a serious POK{e}MON TRAINER.\nBut now, in my old age, I have only these three left.\nYou can have one.\nGo on, choose!"
                   }
                 },
                 {
+                  "propertytype": "cmd-set_var",
                   "type": "class",
                   "value": {
                     "key": "lock_lab",
@@ -9017,6 +9035,7 @@
                   }
                 },
                 {
+                  "propertytype": "cmd-enable_input",
                   "type": "class",
                   "value": {}
                 }

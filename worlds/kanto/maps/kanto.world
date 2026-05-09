@@ -130,10 +130,10 @@
         },
         {
             "fileName": "route12.json",
-            "x": 9984,
-            "y": -2272,
-            "width": 1056,
-            "height": 3840
+            "x": 7680,
+            "y": -672,
+            "width": 2304,
+            "height": 1280
         },
         {
             "fileName": "cinnabar_island.json",
@@ -183,6 +183,27 @@
             "y": 1216,
             "width": 1152,
             "height": 2432
+        },
+        {
+            "fileName": "route6.json",
+            "x": 6144,
+            "y": -1952,
+            "width": 1536,
+            "height": 1280
+        },
+        {
+            "fileName": "vermilion_city.json",
+            "x": 6144,
+            "y": -672,
+            "width": 1536,
+            "height": 1280
+        },
+        {
+            "fileName": "route7.json",
+            "x": 5248,
+            "y": -3232,
+            "width": 896,
+            "height": 1280
         }
     ]
 }

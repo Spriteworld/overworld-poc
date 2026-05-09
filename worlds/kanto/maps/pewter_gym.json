@@ -1150,11 +1150,50 @@
       "visible": true,
       "x": 0,
       "y": 0,
-      "objects": []
+      "objects": [
+        {
+          "height": 32,
+          "id": 1,
+          "name": "PewterCityEntry",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp-dir",
+              "type": "string",
+              "value": "down"
+            }
+          ],
+          "rotation": 0,
+          "type": "warpLocation",
+          "visible": true,
+          "width": 32,
+          "x": 192,
+          "y": 448
+        },
+        {
+          "height": 32,
+          "id": 2,
+          "name": "PewterGymLastMapWarp",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "_lastmap_"
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 192,
+          "y": 480
+        }
+      ]
     }
   ],
   "infinite": false,
   "compressionlevel": -1,
   "nextlayerid": 7,
-  "nextobjectid": 1
+  "nextobjectid": 3
 }

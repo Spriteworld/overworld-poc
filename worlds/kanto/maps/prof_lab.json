@@ -1906,6 +1906,263 @@
                 ],
                 "value": "oak_gives_mon"
               }
+            },
+            {
+              "propertytype": "cmd-if_variant",
+              "type": "class",
+              "value": {
+                "value": "oak_gives_dex",
+                "then": [
+                  {
+                    "propertytype": "cmd-spawn_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "oakAnchor",
+                      "facing": "down",
+                      "name": "Oak",
+                      "texture": "professor_oak"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-disable_input",
+                    "type": "class",
+                    "value": {}
+                  },
+                  {
+                    "propertytype": "cmd-walk_to_char",
+                    "type": "class",
+                    "value": {
+                      "character1": "player",
+                      "character2": "Oak",
+                      "side": "down"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-face_char",
+                    "type": "class",
+                    "value": {
+                      "character1": "Oak",
+                      "character2": "player"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "OAK: Oh, {player}!\nHow is my old POK{e}MON?\nWell, it seems to like you a lot.\nYou must be talented as a POK{e}MON trainer!"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "What? You have something for me?\n...OAK received the parcel!"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-remove_item",
+                    "type": "class",
+                    "value": {
+                      "item": "Oaks Parcel"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "OAK: Ah! This is the custom\nPOK{e} BALL I ordered!\nThank you!"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-spawn_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "PalletTownEntry",
+                      "facing": "up",
+                      "name": "Gary",
+                      "texture": "gary"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-move_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "garyAnchor",
+                      "character": "Gary"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "{rival}: Gramps!"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-face_char",
+                    "type": "class",
+                    "value": {
+                      "character1": "Oak",
+                      "character2": "Gary"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "OAK: Oh right! I have a request\nfor you two."
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "On the desk there is my invention,\nPOK{e}DEX!\nIt automatically records data on\nPOK{e}MON you've seen or caught!\nIt's a hi-tech encyclopedia!"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "OAK: {player} and {rival}! Take\nthese with you!"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "{player} received a POK{e}DEX\nfrom PROF. OAK!"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "has_pokedex",
+                      "value": true
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "got_oaks_parcel",
+                      "value": false
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "OAK: To make a complete guide on\nall the POK{e}MON in the world...\nThat was my dream!\nBut, I'm too old!\nI can't do it!\nSo, I want you two to fulfill my\ndream for me!"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "OAK: Here, take these, too!"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-give_item",
+                    "type": "class",
+                    "value": {
+                      "item": "pokeball",
+                      "qty": 5
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "{player} received 5 POK{e} BALLS\nfrom PROF. OAK!"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "{rival}: Alright, Gramps!\nLeave it all to me!\n{player}, I hate to say it, but I\ndon't need you to get a complete\nPOK{e}DEX! I'll get it on my own!\nSmell ya later!"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-move_npc",
+                    "type": "class",
+                    "value": {
+                      "character": "Gary",
+                      "speed": 6,
+                      "x": 8,
+                      "y": 13
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-remove_npc",
+                    "type": "class",
+                    "value": {
+                      "name": "Gary"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-face_char",
+                    "type": "class",
+                    "value": {
+                      "character1": "Oak",
+                      "character2": "player"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-text",
+                    "type": "class",
+                    "value": {
+                      "text": "OAK: Good luck to you, {player}!"
+                    }
+                  },
+                  {
+                    "propertytype": "cmd-enable_input",
+                    "type": "class",
+                    "value": {}
+                  }
+                ]
+              }
+            },
+            {
+              "propertytype": "cmd-if_variant",
+              "type": "class",
+              "value": {
+                "value": "oak_checks_dex",
+                "then": [
+                  {
+                    "propertytype": "cmd-spawn_npc",
+                    "type": "class",
+                    "value": {
+                      "anchor": "oakAnchor",
+                      "facing": "down",
+                      "name": "Oak",
+                      "texture": "professor_oak",
+                      "trigger": {
+                        "script": [
+                          {
+                            "propertytype": "cmd-text",
+                            "type": "class",
+                            "value": {
+                              "text": "OAK: How is your POK{e}DEX\ncoming along?\nHere, let me see.\n..."
+                            }
+                          },
+                          {
+                            "propertytype": "cmd-text",
+                            "type": "class",
+                            "value": {
+                              "text": "OAK: Good, good! Keep it up\nand try to catch them all!"
+                            }
+                          }
+                        ],
+                        "trigger": "interact"
+                      }
+                    }
+                  }
+                ]
+              }
             }
           ],
           "trigger": "map_enter"

@@ -1,14 +1,96 @@
 [
   {
+    "propertytype": "cmd-if_flag",
     "type": "class",
     "value": {
       "else": [
         {
-          "type": "",
-          "value": null
+          "propertytype": "cmd-text",
+          "type": "class",
+          "value": {
+            "text": "I absolutely forbid you from\ngoing through here!\nThis is private property!"
+          }
+        },
+        {
+          "propertytype": "cmd-knockback",
+          "type": "class",
+          "value": {
+            "direction": "away_from_player",
+            "target": "player",
+            "tiles": 1
+          }
         }
       ],
-      "key": "done_battle_tutorial"
+      "key": "has_pokedex",
+      "then": [
+        {
+          "propertytype": "cmd-if_flag",
+          "type": "class",
+          "value": {
+            "else": [
+              {
+                "propertytype": "cmd-text",
+                "type": "class",
+                "value": {
+                  "text": "Ah, you have a POKéDEX!\nLet me show you how to\ncatch POKéMON!"
+                }
+              },
+              {
+                "propertytype": "cmd-start_battle",
+                "type": "class",
+                "value": {
+                  "force_catch": true,
+                  "player_override": {
+                    "type": "class",
+                    "value": {
+                      "inventory": [
+                        {
+                          "type": "",
+                          "value": null
+                        }
+                      ],
+                      "name": "Old Man",
+                      "team": [
+                        {
+                          "type": "",
+                          "value": null
+                        }
+                      ]
+                    }
+                  },
+                  "team": [
+                    {
+                      "type": "class",
+                      "value": {
+                        "level": 5,
+                        "species": "Weedle"
+                      }
+                    }
+                  ],
+                  "tutorial": true,
+                  "type": "wild"
+                }
+              },
+              {
+                "propertytype": "cmd-text",
+                "type": "class",
+                "value": {
+                  "text": "And that's how you catch\na POKéMON!"
+                }
+              },
+              {
+                "propertytype": "cmd-set_flag",
+                "type": "class",
+                "value": {
+                  "key": "seen_battle_tutorial",
+                  "value": true
+                }
+              }
+            ],
+            "key": "seen_battle_tutorial"
+          }
+        }
+      ]
     }
   }
 ]

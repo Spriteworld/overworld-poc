@@ -1,6 +1,6 @@
 {
   "height": 10,
-  "width": 13,
+  "width": 12,
   "tilewidth": 32,
   "tileheight": 32,
   "orientation": "orthogonal",
@@ -26,11 +26,10 @@
       "opacity": 1,
       "type": "tilelayer",
       "visible": true,
-      "width": 13,
+      "width": 12,
       "x": 0,
       "y": 0,
       "data": [
-        5,
         5,
         5,
         5,
@@ -55,7 +54,6 @@
         207,
         209,
         5,
-        5,
         214,
         215,
         216,
@@ -67,7 +65,6 @@
         215,
         215,
         217,
-        5,
         5,
         222,
         192,
@@ -81,7 +78,6 @@
         198,
         223,
         5,
-        5,
         198,
         190,
         190,
@@ -94,7 +90,6 @@
         190,
         190,
         5,
-        5,
         198,
         190,
         190,
@@ -106,7 +101,6 @@
         190,
         200,
         190,
-        5,
         5,
         198,
         192,
@@ -120,7 +114,6 @@
         200,
         190,
         5,
-        5,
         198,
         190,
         190,
@@ -132,7 +125,6 @@
         190,
         200,
         190,
-        5,
         5,
         194,
         191,
@@ -157,8 +149,6 @@
         5,
         5,
         5,
-        5,
-        5,
         5
       ],
       "properties": []
@@ -170,14 +160,10 @@
       "opacity": 1,
       "type": "tilelayer",
       "visible": true,
-      "width": 13,
+      "width": 12,
       "x": 0,
       "y": 0,
       "data": [
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0,
@@ -277,14 +263,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
         89,
         90,
         91,
-        0,
         0,
         0,
         0,
@@ -302,7 +283,6 @@
         0,
         0,
         0,
-        0,
         0
       ],
       "properties": []
@@ -314,11 +294,10 @@
       "opacity": 1,
       "type": "tilelayer",
       "visible": true,
-      "width": 13,
+      "width": 12,
       "x": 0,
       "y": 0,
       "data": [
-        0,
         0,
         0,
         0,
@@ -344,7 +323,6 @@
         0,
         0,
         0,
-        0,
         24,
         0,
         202,
@@ -354,7 +332,6 @@
         231,
         232,
         233,
-        0,
         0,
         0,
         0,
@@ -370,11 +347,9 @@
         0,
         0,
         0,
-        219,
-        220,
-        221,
-        218,
         0,
+        0,
+        218,
         0,
         0,
         0,
@@ -402,12 +377,10 @@
         0,
         0,
         0,
-        0,
         204,
         205,
         0,
         204,
-        0,
         0,
         0,
         225,
@@ -420,9 +393,6 @@
         213,
         0,
         212,
-        0,
-        0,
-        0,
         0,
         0,
         0,
@@ -464,20 +434,10 @@
       "opacity": 1,
       "type": "tilelayer",
       "visible": true,
-      "width": 13,
+      "width": 12,
       "x": 0,
       "y": 0,
       "data": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0,
@@ -608,7 +568,7 @@
       "opacity": 1,
       "type": "tilelayer",
       "visible": true,
-      "width": 13,
+      "width": 12,
       "x": 0,
       "y": 0,
       "data": [
@@ -660,13 +620,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        219,
+        220,
+        221,
         0,
         0,
         0,
@@ -689,14 +645,8 @@
         0,
         0,
         0,
-        0,
-        0,
         219,
         221,
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0,
@@ -806,9 +756,15 @@
           "opacity": 1,
           "properties": [
             {
+              "name": "facing-direction",
+              "propertytype": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
               "name": "overworld-texture",
               "type": "string",
-              "value": "nurse_joy"
+              "value": "scientist"
             }
           ],
           "rotation": 0,
@@ -942,6 +898,94 @@
               "type": "class",
               "value": {
                 "value": "indigo"
+              }
+            },
+            {
+              "propertytype": "cmd-if_variant",
+              "type": "class",
+              "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-if_flag",
+                    "type": "class",
+                    "value": {
+                      "else": [
+                        {
+                          "propertytype": "cmd-disable_input",
+                          "type": "class",
+                          "value": {}
+                        },
+                        {
+                          "propertytype": "cmd-text",
+                          "type": "class",
+                          "value": {
+                            "text": "Hey!\nYou came from PALLET TOWN?"
+                          }
+                        },
+                        {
+                          "propertytype": "cmd-walk_to_char",
+                          "type": "class",
+                          "value": {
+                            "character1": "player",
+                            "character2": "MartClerk",
+                            "side": "down"
+                          }
+                        },
+                        {
+                          "propertytype": "cmd-face_char",
+                          "type": "class",
+                          "value": {
+                            "character1": "MartClerk",
+                            "character2": "player"
+                          }
+                        },
+                        {
+                          "propertytype": "cmd-text",
+                          "type": "class",
+                          "value": {
+                            "text": "You know PROF. OAK right?\nHis order came in.\nCan I get you to take it to him?"
+                          }
+                        },
+                        {
+                          "propertytype": "cmd-give_item",
+                          "type": "class",
+                          "value": {
+                            "item": {}
+                          }
+                        },
+                        {
+                          "propertytype": "cmd-text",
+                          "type": "class",
+                          "value": {
+                            "text": "{player} received OAK's Parcel\nfrom the POK\u00e9MON MART clerk."
+                          }
+                        },
+                        {
+                          "propertytype": "cmd-text",
+                          "type": "class",
+                          "value": {
+                            "text": "Okay, thanks! Please say hi to\nPROF. OAK for me, too."
+                          }
+                        },
+                        {
+                          "propertytype": "cmd-set_flag",
+                          "type": "class",
+                          "value": {
+                            "key": "got_oaks_parcel",
+                            "value": true
+                          }
+                        },
+                        {
+                          "propertytype": "cmd-enable_input",
+                          "type": "class",
+                          "value": {}
+                        }
+                      ],
+                      "key": "got_oaks_parcel"
+                    }
+                  }
+                ],
+                "value": "viridian_oaks_parcel"
               }
             }
           ],
