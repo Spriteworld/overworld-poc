@@ -3898,6 +3898,598 @@
           "width": 32,
           "x": 800,
           "y": 768
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "CinnabarGymBlaine",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "blaine"
+            },
+            {
+              "name": "post-defeat-script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "I have burnt out!\nYou have earned the\nVOLCANOBADGE!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-set_flag",
+                  "type": "class",
+                  "value": {
+                    "key": "has_volcanobadge",
+                    "value": true
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received the\nVOLCANOBADGE from BLAINE!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-give_item",
+                  "type": "class",
+                  "value": {
+                    "item": {}
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received TM38\nfrom BLAINE!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "TM38 contains FIRE BLAST!\nIt's powerful but inaccurate."
+                  }
+                }
+              ]
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "I have burnt out!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Hah! I am BLAINE, the\nred-hot Leader of\nCINNABAR GYM!\nMy fiery POK{e}MON are\ngoing to incinerate you!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Hah! The VOLCANOBADGE makes\nall POK{e}MON up to Lv.70\nobey you!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Blaine"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 42,
+                    "species": "growlithe"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 40,
+                    "species": "ponyta"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 42,
+                    "species": "rapidash"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 47,
+                    "species": "arcanine"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "use-ai",
+              "propertytype": "ai-list",
+              "type": "string",
+              "value": "gym_leader"
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 160,
+          "y": 128
+        },
+        {
+          "height": 32,
+          "id": 4,
+          "name": "CinnabarGymBurglar1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "gentleman"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Hrrumph! You got lucky!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I'm the fire quiz master!\nAnswer wrong and you fight!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Who knows the answers\nbetter than a BURGLAR?"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Quinn"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 36,
+                    "species": "growlithe"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 36,
+                    "species": "vulpix"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 800,
+          "y": 320
+        },
+        {
+          "height": 32,
+          "id": 5,
+          "name": "CinnabarGymNerd1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "scientist"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "My knowledge was lacking!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "My knowledge of fire-types\nis encyclopedic!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Fire-type POK{e}MON can't\nbe frozen!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Erik"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 36,
+                    "species": "vulpix"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 36,
+                    "species": "vulpix"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 36,
+                    "species": "ninetales"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 512,
+          "y": 192
+        },
+        {
+          "height": 32,
+          "id": 6,
+          "name": "CinnabarGymBurglar2",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "up"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "gentleman"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Burned again!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Answer correctly and\nyou can skip this fight!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "BLAINE's POK{e}MON are\non fire! Be careful!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Dusty"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 37,
+                    "species": "vulpix"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 37,
+                    "species": "growlithe"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 37,
+                    "species": "ninetales"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 96,
+          "y": 416
+        },
+        {
+          "height": 32,
+          "id": 7,
+          "name": "CinnabarGymNerd2",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "scientist"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "You have some skill!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I study Fire-type POK{e}MON\nexclusively!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Don't you think fire is\nbeautiful and powerful?"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Derek"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "ponyta"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "charmeleon"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 512,
+          "y": 448
+        },
+        {
+          "height": 32,
+          "id": 8,
+          "name": "CinnabarGymBurglar3",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "gentleman"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Burned out..."
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Are you smart enough\nto avoid battling me?"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "If you can beat the quiz,\nyou don't have to fight!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Arnie"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 36,
+                    "species": "charmander"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 36,
+                    "species": "charmeleon"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 36,
+                    "species": "vulpix"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 96,
+          "y": 608
+        },
+        {
+          "height": 32,
+          "id": 9,
+          "name": "CinnabarGymNerd3",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "scientist"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Doused!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "My fire POK{e}MON will\nshow you no mercy!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "BLAINE is the hottest\nLeader in all of KANTO!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Avery"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 36,
+                    "species": "ponyta"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 36,
+                    "species": "rapidash"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 800,
+          "y": 608
         }
       ]
     }
@@ -3905,5 +4497,5 @@
   "infinite": false,
   "compressionlevel": -1,
   "nextlayerid": 7,
-  "nextobjectid": 3
+  "nextobjectid": 10
 }

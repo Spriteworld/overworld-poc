@@ -17,7 +17,6 @@ import KantoCeruleanCityMap from './maps/cerulean_city.json';
 import KantoRoute5Map from './maps/route5.json';
 import KantoSaffronCityMap from './maps/saffron_city.json';
 import KantoRoute6Map from './maps/route6.json';
-import KantoVermillionCityMap from './maps/vermillion_city.json';
 import KantoRoute7Map from './maps/route7.json';
 import KantoRoute8Map from './maps/route8.json';
 import KantoRoute9Map from './maps/route9.json';
@@ -117,7 +116,6 @@ import KantoRoute9 from './scenes/KantoRoute9.js';
 import KantoSaffronCity from './scenes/KantoSaffronCity.js';
 import KantoSaffronGym from './scenes/KantoSaffronGym.js';
 import KantoVermilionGym from './scenes/KantoVermilionGym.js';
-import KantoVermillionCity from './scenes/KantoVermillionCity.js';
 import KantoViridianCity from './scenes/KantoViridianCity.js';
 import KantoViridianCityHouse from './scenes/KantoViridianCityHouse.js';
 import KantoViridianForest from './scenes/KantoViridianForest.js';
@@ -125,6 +123,10 @@ import KantoViridianGym from './scenes/KantoViridianGym.js';
 import KantoRoute10 from './scenes/KantoRoute10.js';
 import KantoWorld from './scenes/KantoWorld.js';
 import KantoVermilionCity from './scenes/KantoVermilionCity.js';
+
+// World-specific character sprites
+import kantoSprites from './characters/sprites/index.js';
+import kantoTrainerSprites from './characters/battle/index.js';
 
 // GameDef
 import gameDef from './gameDef.js';
@@ -147,7 +149,6 @@ registerWorld({
     'KantoRoute5': KantoRoute5Map,
     'KantoSaffronCity': KantoSaffronCityMap,
     'KantoRoute6': KantoRoute6Map,
-    'KantoVermillionCity': KantoVermillionCityMap,
     'KantoRoute7': KantoRoute7Map,
     'KantoRoute8': KantoRoute8Map,
     'KantoRoute9': KantoRoute9Map,
@@ -207,7 +208,6 @@ registerWorld({
     'route5.json': 'KantoRoute5',
     'saffron_city.json': 'KantoSaffronCity',
     'route6.json': 'KantoRoute6',
-    'vermillion_city.json': 'KantoVermillionCity',
     'route7.json': 'KantoRoute7',
     'route8.json': 'KantoRoute8',
     'route9.json': 'KantoRoute9',
@@ -297,12 +297,13 @@ registerWorld({
     KantoSaffronCity,
     KantoSaffronGym,
     KantoVermilionGym,
-    KantoVermillionCity,
     KantoViridianCity,
     KantoViridianCityHouse,
     KantoViridianForest,
     KantoViridianGym,
     KantoWorld,
   },
+  sprites: kantoSprites,
+  trainerSprites: kantoTrainerSprites,
   gameDef,
 });

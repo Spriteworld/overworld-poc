@@ -8855,14 +8855,31 @@
               "value": 400
             },
             {
-              "name": "text",
-              "type": "string",
-              "value": "Hi!\nI work at a POK\ufffdMON MART.\nIt's part of a convenient chain selling all sorts of items.\nPlease, visit us in VIRIDIAN CITY.\nI know, I'll give you a sample. Here you go!"
-            },
-            {
-              "name": "text-onComplete",
-              "type": "string",
-              "value": "item:potion"
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "Hi!\nI work at a POKéMON MART.\nIt's part of a convenient chain\nselling all sorts of items.\nPlease, visit us in VIRIDIAN CITY.\nI know, I'll give you a sample.\nHere you go!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-give_item",
+                  "type": "class",
+                  "value": {
+                    "item": "potion"
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received a POTION!"
+                  }
+                }
+              ]
             }
           ],
           "rotation": 0,

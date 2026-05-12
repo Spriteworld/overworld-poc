@@ -1,6 +1,5 @@
 import { GameMap, Tile } from '@Objects';
 import { MAP_REGISTRY } from '@/worlds/registry.js';
-const KantoRoute21Map = MAP_REGISTRY['KantoRoute21'];
 import { SHADER_KEYS } from '@/shaders/keys.js';
 import store from '@/store/index.js';
 
@@ -8,7 +7,7 @@ export default class extends GameMap {
   constructor() {
     super({
       mapName: 'WaterFxCompare',
-      map: KantoRoute21Map,
+      map: MAP_REGISTRY['KantoRoute21'],
       active: false,
       visible: false,
     });

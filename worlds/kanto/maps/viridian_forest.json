@@ -28444,9 +28444,17 @@
               "value": "forester"
             },
             {
-              "name": "text",
-              "type": "string",
-              "value": "For poison, use ANTIDOTE!\nGet it at POK{e}MON MARTS!"
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "For poison, use ANTIDOTE!\nGet it at POK{e}MON MARTS!"
+                  }
+                }
+              ]
             }
           ],
           "rotation": 0,
@@ -28493,9 +28501,17 @@
               "value": "forester"
             },
             {
-              "name": "text",
-              "type": "string",
-              "value": "I was throwing POK{e} BALLS to \ncatch POK{e}MON, and I ran out.\nThat's why you can never have too\nmany POK{e} BALLS."
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "I was throwing POK{e} BALLS to \ncatch POK{e}MON, and I ran out.\nThat's why you can never have too\nmany POK{e} BALLS."
+                  }
+                }
+              ]
             }
           ],
           "rotation": 0,

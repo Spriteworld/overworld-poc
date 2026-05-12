@@ -30,6 +30,9 @@ export function registerWorld(config) {
   Object.assign(WORLD_SCENES, config.scenes ?? {});
 
   if (config.gameDef) WORLD_GAME_DEFS[config.gameDef.id] = config.gameDef;
+
+  if (config.sprites) Object.assign(Tileset.sprites, config.sprites);
+  if (config.trainerSprites) Object.assign(Tileset.trainer, config.trainerSprites);
 }
 
 const SHARED = {

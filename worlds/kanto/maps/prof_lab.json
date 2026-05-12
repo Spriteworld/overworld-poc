@@ -1110,9 +1110,17 @@
               "value": "scientist"
             },
             {
-              "name": "text",
-              "type": "string",
-              "value": "I study POK{e}MON as PRO. OAK's AIDE."
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "I study POK{e}MON as PRO. OAK's AIDE."
+                  }
+                }
+              ]
             }
           ],
           "rotation": 0,
@@ -1140,9 +1148,17 @@
               "value": "scientist"
             },
             {
-              "name": "text",
-              "type": "string",
-              "value": "I study POK{e}MON as PRO. OAK's AIDE."
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "I study POK{e}MON as PRO. OAK's AIDE."
+                  }
+                }
+              ]
             }
           ],
           "rotation": 0,
@@ -1243,9 +1259,17 @@
               "value": "daisy"
             },
             {
-              "name": "text",
-              "type": "string",
-              "value": "I study POK{e}MON as PRO. OAK's AIDE."
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "I study POK{e}MON as PRO. OAK's AIDE."
+                  }
+                }
+              ]
             }
           ],
           "rotation": 0,
@@ -1911,7 +1935,6 @@
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
-                "value": "oak_gives_dex",
                 "then": [
                   {
                     "propertytype": "cmd-spawn_npc",
@@ -1963,7 +1986,7 @@
                     "propertytype": "cmd-remove_item",
                     "type": "class",
                     "value": {
-                      "item": "Oaks Parcel"
+                      "item": {}
                     }
                   },
                   {
@@ -2068,7 +2091,7 @@
                     "propertytype": "cmd-give_item",
                     "type": "class",
                     "value": {
-                      "item": "pokeball",
+                      "item": {},
                       "qty": 5
                     }
                   },
@@ -2123,14 +2146,14 @@
                     "type": "class",
                     "value": {}
                   }
-                ]
+                ],
+                "value": "oak_gives_dex"
               }
             },
             {
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
-                "value": "oak_checks_dex",
                 "then": [
                   {
                     "propertytype": "cmd-spawn_npc",
@@ -2161,7 +2184,8 @@
                       }
                     }
                   }
-                ]
+                ],
+                "value": "oak_checks_dex"
               }
             }
           ],

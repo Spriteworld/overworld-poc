@@ -1848,6 +1848,266 @@
           "width": 32,
           "x": 256,
           "y": 608
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "CeruleanGymMisty",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "misty"
+            },
+            {
+              "name": "post-defeat-script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "Wow! You're too much!\nAll right!\nYou can have the CASCADEBADGE\nto show that you beat me!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-set_flag",
+                  "type": "class",
+                  "value": {
+                    "key": "has_cascadebadge",
+                    "value": true
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received the\nCASCADEBADGE from MISTY!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-give_item",
+                  "type": "class",
+                  "value": {
+                    "item": {}
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received TM03\nfrom MISTY!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "That TM contains WATER PULSE!\nIt can also confuse the foe."
+                  }
+                }
+              ]
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "You really are something!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "My policy is an all-out\noffensive with Water-type\nPOK{e}MON!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "You can do even better.\nI know you can!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Misty"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 18,
+                    "species": "staryu"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 21,
+                    "species": "starmie"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "use-ai",
+              "propertytype": "ai-list",
+              "type": "string",
+              "value": "gym_leader"
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 256,
+          "y": 192
+        },
+        {
+          "height": 32,
+          "id": 4,
+          "name": "CeruleanGymSwimmerF",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "picnicker"
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "You overwhelmed me!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "What? you?\nI'm more than good enough for you!\nMISTY won't have to be bothered."
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "You have to face other TRAINERS\nto see how good you really are."
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Diana"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 19,
+                    "species": "goldeen"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 128,
+          "y": 224
+        },
+        {
+          "height": 32,
+          "id": 5,
+          "name": "CeruleanGymPicnicker",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "battle-texture",
+              "type": "string",
+              "value": "swimmer_m"
+            },
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "swimmer2_m"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "No way! You're too good!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Splash!\nI'm first up!\nLet's do it!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "MISTY is a TRAINER who's going to\nkeep improving.\nShe won't lose to someone like you!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Luis"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 16,
+                    "species": "horsea"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 16,
+                    "species": "shellder"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 320,
+          "y": 384
         }
       ]
     }
@@ -1855,5 +2115,5 @@
   "infinite": false,
   "compressionlevel": -1,
   "nextlayerid": 7,
-  "nextobjectid": 3
+  "nextobjectid": 6
 }

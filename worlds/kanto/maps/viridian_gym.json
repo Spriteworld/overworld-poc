@@ -446,7 +446,7 @@
         586,
         588,
         586,
-        586,
+        588,
         586,
         586,
         586,
@@ -465,11 +465,11 @@
         591,
         591,
         592,
+        590,
+        592,
         586,
         586,
-        586,
-        586,
-        586,
+        590,
         587,
         586,
         586,
@@ -2548,6 +2548,677 @@
           "width": 32,
           "x": 544,
           "y": 736
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "ViridianGymGiovanni",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "giovanni"
+            },
+            {
+              "name": "post-defeat-script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "Ha! That was a truly\nfine battle!\nYou have earned the\nEARTHBADGE!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-set_flag",
+                  "type": "class",
+                  "value": {
+                    "key": "has_earthbadge",
+                    "value": true
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received the\nEARTHBADGE from GIOVANNI!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-give_item",
+                  "type": "class",
+                  "value": {
+                    "item": {}
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received TM26\nfrom GIOVANNI!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "TM26 contains EARTHQUAKE!\nIt strikes every POK{e}MON\naround the user in battle."
+                  }
+                }
+              ]
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Ha! That was a truly\nfine battle!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Fwahahahaha! This is my GYM!\nYou dare to challenge me?\nI'll show you the true power\nof Ground-type POK{e}MON!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Having lost, I cannot face\nmy followers...\nI will go solo training\nto become stronger..."
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Giovanni"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 45,
+                    "species": "rhyhorn"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 42,
+                    "species": "dugtrio"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 44,
+                    "species": "nidoqueen"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 45,
+                    "species": "nidoking"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 50,
+                    "species": "rhydon"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "use-ai",
+              "propertytype": "ai-list",
+              "type": "string",
+              "value": "gym_leader"
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 64,
+          "y": 64
+        },
+        {
+          "height": 32,
+          "id": 4,
+          "name": "ViridianGymCooltrainerM1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "ace_trainer"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Gotta work harder!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Ha! This GYM is great!\nIt's full of strong Trainers!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "The Leader is the\nstrongest of us all!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Samuel"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 39,
+                    "species": "sandslash"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 39,
+                    "species": "sandslash"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 192,
+          "y": 256
+        },
+        {
+          "height": 32,
+          "id": 5,
+          "name": "ViridianGymBlackBelt1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "black_belt"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "What! Defeated!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "You'll feel the sting\nof my iron fist!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "The Leader is like a wall\nthat cannot be scaled!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Atsushi"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 40,
+                    "species": "machop"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 40,
+                    "species": "machoke"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 96,
+          "y": 352
+        },
+        {
+          "height": 32,
+          "id": 6,
+          "name": "ViridianGymTamer",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "up"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "black_belt"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "My Pokemon lost!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Do you want to see my\ntrained POK{e}MON?"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "The Leader's Ground-type\nPOK{e}MON are amazing!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Jason"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 39,
+                    "species": "rhyhorn"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 39,
+                    "species": "rhyhorn"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 352,
+          "y": 448
+        },
+        {
+          "height": 32,
+          "id": 7,
+          "name": "ViridianGymBlackBelt2",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "black_belt"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Incredible..."
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Our Leader is the mightiest\nTrainer of all!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Our Leader is truly\nthe strongest!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Takashi"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "machoke"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "machoke"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "machoke"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 320,
+          "y": 64
+        },
+        {
+          "height": 32,
+          "id": 8,
+          "name": "ViridianGymCooltrainerM2",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "ace_trainer"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "I was careless!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I'm going to prove\nhow strong I am!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "You're good enough to\ntake on our Leader!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Yuji"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "sandslash"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "dugtrio"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "nidoking"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 480,
+          "y": 224
+        },
+        {
+          "height": 32,
+          "id": 9,
+          "name": "ViridianGymBlackBelt3",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "up"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "black_belt"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "I need more training!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I've been studying\nFighting-type POK{e}MON!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Our Leader uses\nGround-type POK{e}MON\nwith great skill!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Hideki"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "machop"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "machop"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "machoke"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 160,
+          "y": 672
+        },
+        {
+          "height": 32,
+          "id": 10,
+          "name": "ViridianGymCooltrainerM3",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "ace_trainer"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "You pack quite a punch!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Don't take our GYM\nlightly!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "The arrows on the floor\nare our GYM's trademark!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Warren"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 39,
+                    "species": "marowak"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 39,
+                    "species": "marowak"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 416,
+          "y": 224
         }
       ]
     }
@@ -2555,5 +3226,5 @@
   "infinite": false,
   "compressionlevel": -1,
   "nextlayerid": 7,
-  "nextobjectid": 3
+  "nextobjectid": 11
 }

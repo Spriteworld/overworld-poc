@@ -1188,6 +1188,210 @@
           "width": 32,
           "x": 192,
           "y": 480
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "PewterGymBrock",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "brock"
+            },
+            {
+              "name": "post-defeat-script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "As proof of your victory,\nhere's the BOULDERBADGE!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-set_flag",
+                  "type": "class",
+                  "value": {
+                    "key": "has_boulderbadge",
+                    "value": true
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received the\nBOULDERBADGE from BROCK!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "You should take this, too!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-give_item",
+                  "type": "class",
+                  "value": {
+                    "item": {}
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received TM39\nfrom BROCK!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "That TM contains ROCK TOMB.\nA POK{e}MON hit by this move\nwill have its Speed reduced."
+                  }
+                }
+              ]
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Your POK{e}MON's power is incredible!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I'm BROCK! I'm PEWTER's GYM\nLeader!\nI believe in rock hard\ndefense and determination!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "There are all sorts of\nTrainers in this world.\nGood luck on your journey!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Brock"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 12,
+                    "species": "geodude"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 14,
+                    "species": "onix"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "use-ai",
+              "propertytype": "ai-list",
+              "type": "string",
+              "value": "gym_leader"
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 192,
+          "y": 160
+        },
+        {
+          "height": 32,
+          "id": 4,
+          "name": "PewterGymCamper",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "camper"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 4
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Dang! Light years isn't\ntime! It measures distance!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Stop right there!\nYou're still light years away\nfrom facing BROCK!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "BROCK is really something!\nI'd quit while you can!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Liam"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 10,
+                    "species": "geodude"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 11,
+                    "species": "sandshrew"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 96,
+          "y": 256
         }
       ]
     }
@@ -1195,5 +1399,5 @@
   "infinite": false,
   "compressionlevel": -1,
   "nextlayerid": 7,
-  "nextobjectid": 3
+  "nextobjectid": 5
 }

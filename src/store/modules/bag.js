@@ -1,5 +1,5 @@
 /** Item names that are treated as key items: no quantity, cannot be used up. */
-export const KEY_ITEMS = new Set(['Bicycle', 'Surf (HM03)']);
+export const KEY_ITEMS = new Set(['Bicycle', 'Surf (HM03)', 'Oaks Parcel']);
 
 export default {
   namespaced: true,

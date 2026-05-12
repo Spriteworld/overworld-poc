@@ -1448,6 +1448,608 @@
           "width": 32,
           "x": 192,
           "y": 608
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "CeladonGymErika",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "erika"
+            },
+            {
+              "name": "post-defeat-script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "Oh! I concede defeat.\nYou are remarkably strong.\nI must confer on you the\nRAINBOWBADGE."
+                  }
+                },
+                {
+                  "propertytype": "cmd-set_flag",
+                  "type": "class",
+                  "value": {
+                    "key": "has_rainbowbadge",
+                    "value": true
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received the\nRAINBOWBADGE from ERIKA!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-give_item",
+                  "type": "class",
+                  "value": {
+                    "item": {}
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received TM19\nfrom ERIKA!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "TM19 contains GIGA DRAIN.\nHalf the damage it inflicts\nis restored as HP to the user."
+                  }
+                }
+              ]
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Oh... That was wonderful."
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Hello... Lovely weather,\nisn't it? It's so pleasant.\n...Oh dear... I must have\ndozed off. Welcome.\nMy name is ERIKA."
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Oh, your POK{e}MON are\nso delightful!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Erika"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 29,
+                    "species": "victreebel"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "tangela"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 29,
+                    "species": "vileplume"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 192,
+          "y": 128
+        },
+        {
+          "height": 32,
+          "id": 4,
+          "name": "CeladonGymBeauty1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "lass"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Oh, no! My lovely Pokemon!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I love Grass-type\nPOK{e}MON! They're cute!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "ERIKA is a nature-loving\nprincess!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Bridget"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 22,
+                    "species": "oddish"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "gloom"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 22,
+                    "species": "oddish"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 96,
+          "y": 160
+        },
+        {
+          "height": 32,
+          "id": 5,
+          "name": "CeladonGymLass1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "lass"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Oh! You're too strong!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Oh? You want to challenge\nERIKA?"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "I heard ERIKA's POK{e}MON\nare really strong!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Kay"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "bellsprout"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "weepinbell"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 32,
+          "y": 320
+        },
+        {
+          "height": 32,
+          "id": 6,
+          "name": "CeladonGymBeauty2",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "lass"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "My flowers..."
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I'll show you the power\nof my Grass POK{e}MON!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "This GYM is full of women!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Tamia"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "bellsprout"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "bellsprout"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "weepinbell"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 320,
+          "y": 224
+        },
+        {
+          "height": 32,
+          "id": 7,
+          "name": "CeladonGymPicnicker1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "up"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "lass"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Oh, you're too strong!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I raise POK{e}MON here\nwith ERIKA! You can't win!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Flowers are Pokemon\nof the garden!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Tina"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "bulbasaur"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "ivysaur"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 192,
+          "y": 480
+        },
+        {
+          "height": 32,
+          "id": 8,
+          "name": "CeladonGymBeauty3",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "lass"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Unbelievable!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "My sweet scented POK{e}MON\nwill put you to sleep!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Grass-type POK{e}MON are\nso fragrant and lovely!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Lori"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "exeggcute"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "tangela"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "exeggcute"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 32,
+          "y": 512
+        },
+        {
+          "height": 32,
+          "id": 9,
+          "name": "CeladonGymCooltrainer",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "lass"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "I was careless!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "You'd better not\nunderestimate us!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "I want to smell the flowers\nwith my POK{e}MON!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Mary"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 22,
+                    "species": "bellsprout"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 22,
+                    "species": "oddish"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 22,
+                    "species": "weepinbell"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 22,
+                    "species": "gloom"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 22,
+                    "species": "ivysaur"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 352,
+          "y": 384
         }
       ]
     }
@@ -1455,5 +2057,5 @@
   "infinite": false,
   "compressionlevel": -1,
   "nextlayerid": 7,
-  "nextobjectid": 3
+  "nextobjectid": 10
 }

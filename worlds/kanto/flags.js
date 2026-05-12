@@ -41,13 +41,13 @@ export default {
 
   // badges
   has_boulderbadge: false,
-  // has_cascadebadge: false,
-  // has_thunderbadge: false,
-  // has_rainbowbadge: false,
-  // has_soulbadge: false,
-  // has_marshbadge: false,
-  // has_volcanobadge: false,
-  // has_earthbadge: false,
+  has_cascadebadge: false,
+  has_thunderbadge: false,
+  has_rainbowbadge: false,
+  has_soulbadge: false,
+  has_marshbadge: false,
+  has_volcanobadge: false,
+  has_earthbadge: false,
 
   // map
   visited_pallet: true,

@@ -2506,6 +2506,345 @@
           "width": 32,
           "x": 160,
           "y": 608
+        },
+        {
+          "height": 32,
+          "id": 21,
+          "name": "VermilionGymSurge",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "surge"
+            },
+            {
+              "name": "post-defeat-script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "Whoa! You're the real deal,\nkid!\nFine then, take the\nTHUNDERBADGE!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-set_flag",
+                  "type": "class",
+                  "value": {
+                    "key": "has_thunderbadge",
+                    "value": true
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received the\nTHUNDERBADGE from LT. SURGE!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-give_item",
+                  "type": "class",
+                  "value": {
+                    "item": {}
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received TM34\nfrom LT. SURGE!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "TM34 contains SHOCK WAVE!\nIt can't be evaded!"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Now that's a shocker!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Hey, kid! What do you think\nyou're doing here?\nYou won't live long in\ncombat! Not with your\nweak POK{e}MON!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Kid, you've got guts.\nWith your talent, you could\nbecome a Pokemon master!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Lt. Surge"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 21,
+                    "species": "voltorb"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 18,
+                    "species": "pikachu"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 24,
+                    "species": "raichu"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "use-ai",
+              "propertytype": "ai-list",
+              "type": "string",
+              "value": "gym_leader"
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 160,
+          "y": 64
+        },
+        {
+          "height": 32,
+          "id": 22,
+          "name": "VermilionGymSailor1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "sailor"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "You reeled me in!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Ahoy! I'm a rough and\ntough SAILOR man!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "LT. SURGE saved my life\nonce. I owe him everything!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Dwayne"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 21,
+                    "species": "pikachu"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 21,
+                    "species": "pikachu"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 288,
+          "y": 288
+        },
+        {
+          "height": 32,
+          "id": 23,
+          "name": "VermilionGymEngineer1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "up"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "engineer"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Unplugged..."
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I've built a POK{e}MON\nthat's bursting with power!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "LT. SURGE is a master of\nElectric POK{e}MON!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Baily"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 21,
+                    "species": "voltorb"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 21,
+                    "species": "magnemite"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 32,
+          "y": 480
+        },
+        {
+          "height": 32,
+          "id": 24,
+          "name": "VermilionGymGentleman",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "gentleman"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "What a shocking loss!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "You are a Pokemon Trainer?\nI'm impressed!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "LT. SURGE was a pilot.\nElectric POK{e}MON saved\nhim during the war!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Tucker"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 23,
+                    "species": "pikachu"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 32,
+          "y": 352
         }
       ],
       "opacity": 1,
@@ -2526,7 +2865,7 @@
       "objects": [
         {
           "height": 64,
-          "id": 21,
+          "id": 25,
           "name": "VermillionLazerOff",
           "opacity": 1,
           "rotation": 0,
@@ -2538,7 +2877,7 @@
         },
         {
           "height": 64,
-          "id": 22,
+          "id": 26,
           "name": "VermillionLazerOn",
           "opacity": 1,
           "rotation": 0,
@@ -2550,7 +2889,7 @@
         },
         {
           "height": 64,
-          "id": 23,
+          "id": 27,
           "name": "VermillionLazerStage1",
           "opacity": 1,
           "rotation": 0,
@@ -2574,7 +2913,7 @@
       "objects": [
         {
           "height": 0,
-          "id": 24,
+          "id": 28,
           "name": "VermilionGymBinCheck",
           "opacity": 1,
           "point": true,
@@ -2795,7 +3134,7 @@
     }
   ],
   "nextlayerid": 7,
-  "nextobjectid": 25,
+  "nextobjectid": 29,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.12.1",

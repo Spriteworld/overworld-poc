@@ -5659,9 +5659,17 @@
               "value": "psychic_f"
             },
             {
-              "name": "text",
-              "type": "string",
-              "value": "I'm raiding POK{e}MON, too.\nWhen they get strong, they can\nprotect me."
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "I'm raiding POK{e}MON, too.\nWhen they get strong, they can\nprotect me."
+                  }
+                }
+              ]
             }
           ],
           "rotation": 0,
@@ -5698,9 +5706,17 @@
               "value": "fat_man"
             },
             {
-              "name": "text",
-              "type": "string",
-              "value": "Technology is incredible!\nYou can now store and recall items\nand POK{e}MON as data via PC."
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "Technology is incredible!\nYou can now store and recall items\nand POK{e}MON as data via PC."
+                  }
+                }
+              ]
             }
           ],
           "rotation": 0,

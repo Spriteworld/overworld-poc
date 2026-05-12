@@ -8,6 +8,7 @@ import { resolveAiType, DEFAULT_TRAINER_AI } from '@Data/aiTypes.js';
 import { rng } from '@Utilities/rng.js';
 import Tileset from '@Tileset';
 import Trainer from '@Objects/characters/Trainer.js';
+import ScriptRunner from '../../utilities/ScriptRunner.js';
 import store from '../../store/index.js';
 
 // ── Battle helpers (mirrors encounter.js) ────────────────────────────────────
@@ -230,10 +231,21 @@ export default class {
       this._onSpotPlayer(entry.char.config.id);
     };
     this.scene.game.events.on('interact-with-obj', this._onInteract);
+
+    this._onOverworldReady = () => {
+      if (!this._pendingPostDefeatScript) return;
+      const { entry, script } = this._pendingPostDefeatScript;
+      this._pendingPostDefeatScript = null;
+      const player = this.scene.characters?.get('player');
+      if (player) entry.char.look(player.getOppositeFacingDirection());
+      new ScriptRunner(this.scene, [...script]).run();
+    };
+    this.scene.game.events.on('post-battle-overworld-ready', this._onOverworldReady);
   }
 
   destroy() {
     this.scene.game.events.off('interact-with-obj', this._onInteract);
+    this.scene.game.events.off('post-battle-overworld-ready', this._onOverworldReady);
     this.trainers.forEach(t => t.moveSub?.unsubscribe());
   }
 
@@ -450,5 +462,10 @@ export default class {
 
     store.commit('game/PATCH_FLAGS', { [entry.defeatedFlag]: true });
     entry.char.setDefeated();
+
+    const postScript = this.scene.getPropertyFromTile(entry.obj, 'post-defeat-script');
+    if (postScript && Array.isArray(postScript) && postScript.length > 0) {
+      this._pendingPostDefeatScript = { entry, script: postScript };
+    }
   }
 }

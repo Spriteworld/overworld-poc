@@ -287,7 +287,7 @@ export default class ScriptRunner {
     if (direction === 'left')  return { dx: -1, dy:  0 };
     if (direction === 'right') return { dx:  1, dy:  0 };
 
-    const srcId  = direction === 'away_from_npc' ? (sourceId ?? 'player') : 'player';
+    const srcId  = direction === 'away_from_player' ? 'player' : (sourceId ?? 'player');
     const srcPos = this._scene.gridEngine?.getPosition(srcId);
     const tgtPos = this._scene.gridEngine?.getPosition(targetId);
     if (!srcPos || !tgtPos) return { dx: 0, dy: 0 };

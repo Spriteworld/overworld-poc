@@ -8171,7 +8171,7 @@
                               "propertytype": "cmd-text",
                               "type": "class",
                               "value": {
-                                "text": "Ah, you have a POK\u00e9DEX!\nLet me show you how to\ncatch POK\u00e9MON!"
+                                "text": "Ah, you have a POKéDEX!\nLet me show you how to\ncatch POKéMON!"
                               }
                             },
                             {
@@ -8214,7 +8214,7 @@
                               "propertytype": "cmd-text",
                               "type": "class",
                               "value": {
-                                "text": "And that's how you catch\na POK\u00e9MON!"
+                                "text": "And that's how you catch\na POKéMON!"
                               }
                             },
                             {
@@ -8395,9 +8395,17 @@
               "value": "old_man"
             },
             {
-              "name": "text",
-              "type": "string",
-              "value": "At first, focus on weakening the\nPOK{e}MON before trying to catch it."
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "At first, focus on weakening the\nPOK{e}MON before trying to catch it."
+                  }
+                }
+              ]
             }
           ],
           "rotation": 0,

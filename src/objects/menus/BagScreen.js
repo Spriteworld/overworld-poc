@@ -96,7 +96,7 @@ export default class BagScreen {
           const style    = { ...TEXT_STYLE_BODY, color };
           const hideQty  = key === 'tms' && getGameDef().infiniteTMs;
           const qtySuffix = hideQty ? '' : `  x${entry.quantity ?? 1}`;
-          line = `${prefix}${(entry.name ?? 'Item').padEnd(16)}${qtySuffix}`;
+          line = `${prefix}${String(entry.name ?? 'Item').padEnd(16)}${qtySuffix}`;
           reg(scene.add.text(SX + 16, LIST_Y + i * ROW_H, line, style));
           return;
         }

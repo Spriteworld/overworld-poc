@@ -693,6 +693,21 @@
         0,
         0,
         0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         260,
         0,
         0,
@@ -700,21 +715,6 @@
         0,
         0,
         260,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0,
@@ -1806,6 +1806,21 @@
         0,
         0,
         0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         256,
         0,
         0,
@@ -1813,21 +1828,6 @@
         0,
         0,
         256,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0,
@@ -1948,6 +1948,519 @@
           "width": 32,
           "x": 224,
           "y": 736
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "FushsiaGymKoga",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "koga"
+            },
+            {
+              "name": "post-defeat-script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "Humph! You have proven\nyour worth!\nHere! Take the SOULBADGE!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-set_flag",
+                  "type": "class",
+                  "value": {
+                    "key": "has_soulbadge",
+                    "value": true
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received the\nSOULBADGE from KOGA!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-give_item",
+                  "type": "class",
+                  "value": {
+                    "item": {}
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received TM06\nfrom KOGA!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "TM06 contains TOXIC!\nIt inflicts a progressively\nworsening poison on the foe."
+                  }
+                }
+              ]
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Hm! You have proven\nyour worth!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Fwahahaha!\nA mere child like you dares\nto challenge me?\nVery well, I shall show you\ntrue terror as a ninja master!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "POK{e}MON is not merely\nabout brute force. You can\ntame even the most powerful\nwith superior technique!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Koga"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 37,
+                    "species": "koffing"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 39,
+                    "species": "muk"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 37,
+                    "species": "koffing"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 43,
+                    "species": "weezing"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "use-ai",
+              "propertytype": "ai-list",
+              "type": "string",
+              "value": "gym_leader"
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 224,
+          "y": 416
+        },
+        {
+          "height": 32,
+          "id": 4,
+          "name": "FushsiaGymJuggler1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "psychic_m"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "You got me!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "You must have a death wish\nto challenge us ninjas!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Our ninja master is quite\naccomplished!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Nate"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "drowzee"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "kadabra"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 128,
+          "y": 224
+        },
+        {
+          "height": 32,
+          "id": 5,
+          "name": "FushsiaGymJuggler2",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "psychic_m"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "I'm the one confused!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I will demonstrate the\nninja art of confusion!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Beware of KOGA's toxic\nassault!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Kayden"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "hypno"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 416,
+          "y": 128
+        },
+        {
+          "height": 32,
+          "id": 6,
+          "name": "FushsiaGymJuggler3",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "psychic_m"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "I dropped the ball!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Watch my dazzling\njuggling moves!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "KOGA uses clever traps!\nDon't be fooled!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Kirk"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 31,
+                    "species": "drowzee"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 31,
+                    "species": "drowzee"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 31,
+                    "species": "kadabra"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 31,
+                    "species": "drowzee"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 64,
+          "y": 320
+        },
+        {
+          "height": 32,
+          "id": 7,
+          "name": "FushsiaGymTamer",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "up"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "black_belt"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "My trained POK{e}MON lost!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Do you want to see my\nfearsome trained POK{e}MON?"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "Poison-type POK{e}MON are\ntricky to deal with!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Edgar"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 33,
+                    "species": "arbok"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 33,
+                    "species": "sandslash"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 33,
+                    "species": "arbok"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 352,
+          "y": 416
+        },
+        {
+          "height": 32,
+          "id": 8,
+          "name": "FushsiaGymJuggler4",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "psychic_m"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Wha? But I'm KOGA's\nbest student!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I'm KOGA's best student!\nPrepare yourself!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "KOGA has trained us\nwell in the way of the\nninja!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Shawn"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "drowzee"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "hypno"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 384,
+          "y": 576
         }
       ]
     }
@@ -1955,5 +2468,5 @@
   "infinite": false,
   "compressionlevel": -1,
   "nextlayerid": 7,
-  "nextobjectid": 3
+  "nextobjectid": 9
 }

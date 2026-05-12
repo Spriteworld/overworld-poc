@@ -3773,6 +3773,606 @@
           "width": 32,
           "x": 448,
           "y": 768
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "SaffronGymSabrina",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "sabrina"
+            },
+            {
+              "name": "post-defeat-script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "Your power... It far exceeds\nwhat I foresaw...\nHere. Take the MARSHBADGE."
+                  }
+                },
+                {
+                  "propertytype": "cmd-set_flag",
+                  "type": "class",
+                  "value": {
+                    "key": "has_marshbadge",
+                    "value": true
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received the\nMARSHBADGE from SABRINA!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-give_item",
+                  "type": "class",
+                  "value": {
+                    "item": {}
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "{player} received TM04\nfrom SABRINA!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "TM04 contains CALM MIND.\nIt raises Sp.Atk and Sp.Def."
+                  }
+                }
+              ]
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Your power... It far\nexceeds what I foresaw..."
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I had a vision of your\narrival!\nI have had psychic powers\nsince I was a child.\nI foresaw that you would come."
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "I had psychic powers\nsince I was a little girl...\nI always knew what other\npeople were thinking..."
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Sabrina"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "kadabra"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 37,
+                    "species": "mr. mime"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 38,
+                    "species": "venomoth"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 43,
+                    "species": "alakazam"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "use-ai",
+              "propertytype": "ai-list",
+              "type": "string",
+              "value": "gym_leader"
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 448,
+          "y": 352
+        },
+        {
+          "height": 32,
+          "id": 4,
+          "name": "SaffronGymPsychic1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "psychic_m"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "I didn't foresee this!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Heheh! I can see your\nfuture in my crystal ball!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "SABRINA's power is\namazing!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Preston"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 33,
+                    "species": "slowpoke"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 33,
+                    "species": "slowpoke"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 36,
+                    "species": "slowbro"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 96,
+          "y": 96
+        },
+        {
+          "height": 32,
+          "id": 5,
+          "name": "SaffronGymMedium1",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "down"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "psychic_f"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "The spirits were wrong!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "The spirits tell me you\nwill lose!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "SABRINA sees into the\nfuture. You have no hope."
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Rebecca"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "gastly"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "gastly"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "haunter"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 800,
+          "y": 96
+        },
+        {
+          "height": 32,
+          "id": 6,
+          "name": "SaffronGymPsychic2",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "up"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "psychic_m"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "I didn't see that one\ncoming..."
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I can predict your every\nmove!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "SABRINA's psychic power\nlets her communicate\nwith POK{e}MON!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Johan"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 37,
+                    "species": "kadabra"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 37,
+                    "species": "slowpoke"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 96,
+          "y": 416
+        },
+        {
+          "height": 32,
+          "id": 7,
+          "name": "SaffronGymMedium2",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "left"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "psychic_f"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "My crystal ball... lied?"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I see your doom in\nmy crystal ball!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "You have potential.\nI can sense it."
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Doris"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "slowpoke"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "slowpoke"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "slowbro"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 800,
+          "y": 352
+        },
+        {
+          "height": 32,
+          "id": 8,
+          "name": "SaffronGymPsychic3",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "right"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "psychic_m"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "Impossible! I read the\nwrong thoughts!"
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "I knew you were coming!\nI can read your thoughts!"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "SABRINA is the most\npowerful psychic I know!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Tyron"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "mr. mime"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "kadabra"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 96,
+          "y": 672
+        },
+        {
+          "height": 32,
+          "id": 9,
+          "name": "SaffronGymChanneler",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "facing-direction",
+              "type": "string",
+              "value": "up"
+            },
+            {
+              "name": "overworld-texture",
+              "type": "string",
+              "value": "psychic_f"
+            },
+            {
+              "name": "seen-radius",
+              "type": "int",
+              "value": 3
+            },
+            {
+              "name": "text-defeated",
+              "type": "string",
+              "value": "The spirits have\nabandoned me..."
+            },
+            {
+              "name": "text-intro",
+              "type": "string",
+              "value": "Ke...ke...ke...ke...\nDo you believe in ghosts?"
+            },
+            {
+              "name": "text-post-defeat",
+              "type": "string",
+              "value": "You'll never find your way\nthrough this GYM!"
+            },
+            {
+              "name": "trainer-name",
+              "type": "string",
+              "value": "Stacy"
+            },
+            {
+              "name": "trainer-pokemon",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "haunter"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "haunter"
+                  }
+                },
+                {
+                  "propertytype": "trainer-pokemon",
+                  "type": "class",
+                  "value": {
+                    "level": 34,
+                    "species": "haunter"
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 0,
+          "type": "trainer",
+          "visible": true,
+          "width": 32,
+          "x": 800,
+          "y": 672
         }
       ]
     }
@@ -3780,5 +4380,5 @@
   "infinite": false,
   "compressionlevel": -1,
   "nextlayerid": 7,
-  "nextobjectid": 3
+  "nextobjectid": 10
 }

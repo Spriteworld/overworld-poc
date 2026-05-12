@@ -4009,9 +4009,24 @@
          "id":421,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }, 
                 {
                  "name":"sw_smooth_water",
@@ -4028,9 +4043,24 @@
          "id":422,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }, 
                 {
                  "name":"sw_smooth_water",
@@ -4047,9 +4077,24 @@
          "id":423,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }, 
                 {
                  "name":"sw_smooth_water",
@@ -4095,7 +4140,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -4104,7 +4149,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -4113,7 +4158,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -4183,9 +4228,24 @@
          "id":437,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }, 
                 {
                  "name":"sw_smooth_water",
@@ -4204,7 +4264,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }, 
                 {
                  "name":"sw_smooth_water",
@@ -4221,9 +4281,24 @@
          "id":439,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
+                 "type":"bool",
+                 "value":false
                 }, 
                 {
                  "name":"sw_smooth_water",
@@ -4293,7 +4368,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -4372,7 +4447,22 @@
          "id":453,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_up",
                  "type":"bool",
                  "value":true
                 }, 
@@ -4391,7 +4481,22 @@
          "id":454,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
                  "type":"bool",
                  "value":true
                 }, 
@@ -4410,7 +4515,22 @@
          "id":455,
          "properties":[
                 {
-                 "name":"ge_collide",
+                 "name":"ge_collide_down",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_left",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ge_collide_right",
+                 "type":"bool",
+                 "value":false
+                }, 
+                {
+                 "name":"ge_collide_up",
                  "type":"bool",
                  "value":true
                 }, 
@@ -4482,7 +4602,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -5827,7 +5947,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -5950,7 +6070,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -5986,7 +6106,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -6094,7 +6214,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -6274,7 +6394,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -6382,7 +6502,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -8215,7 +8335,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -8224,7 +8344,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -8233,7 +8353,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -17719,7 +17839,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -17728,7 +17848,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -17737,7 +17857,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -17746,7 +17866,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {
@@ -17755,7 +17875,7 @@
                 {
                  "name":"ge_collide",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }]
         }, 
         {

@@ -419,12 +419,15 @@ export default class extends Phaser.Scene {
                   } else {
                     this.scene.wake(mapName);
                   }
+                  this.game.events.emit('post-battle-overworld-ready');
                   this.tweens.add({
                     targets: this.transitionRect,
                     alpha: 0,
                     duration: 300,
                     onComplete: () => {
-                      this.registry.set('player_input', true);
+                      if (this._scriptDepth === 0) {
+                        this.registry.set('player_input', true);
+                      }
                     },
                   });
                 },
