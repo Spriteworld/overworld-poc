@@ -2158,13 +2158,6 @@
                     "name": "encounter-table",
                     "type": "list",
                     "value": [
-                        {
-                            "propertyType": "cmd-give_starter",
-                            "type": "class",
-                            "value": {
-                                "name": "grass"
-                            }
-                        }
                     ]
                 },
                 {

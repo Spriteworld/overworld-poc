@@ -22,5 +22,5 @@ module.exports = {
   },
   // Transform all files including ESM node_modules (@spriteworld/pokemon-data etc.)
   transformIgnorePatterns: [],
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/src', '<rootDir>/scripteditor'],
 };

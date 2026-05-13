@@ -12,6 +12,7 @@
     "maps:kanto": "python3 worlds/regen_world.py kanto --export-scripts",
     "maps:gavworld": "python3 worlds/regen_world.py gavworld",
     "maps:sw": "python3 src/maps/spriteworld/update_spriteworld.py && python3 src/maps/spriteworld/update_spriteworld_insides.py && python3 src/maps/spriteworld/update_spriteworld_dungeons.py",
+    "editor": "vite --config vite.editor.config.js",
     "server": "node --env-file-if-exists=.env.local server/index.js",
     "server:dev": "node --env-file-if-exists=.env.local --watch server/index.js"
   },
