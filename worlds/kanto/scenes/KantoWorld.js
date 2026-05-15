@@ -1,12 +1,10 @@
 import { GameMap, Tile } from '@Objects';
 import { lazyLoadBgm } from '@Utilities/AudioManager.js';
-import { MAP_REGISTRY, WORLD_MAP_KEYS } from '@/worlds/registry.js';
+import { MAP_REGISTRY, WORLD_MAP_KEYS, TILESET_JSON_REGISTRY } from '@/worlds/registry.js';
 import { gameState } from '@Data/gameState.js';
 import KantoMap from '../master/maps/kanto.json';
 import kantoWorldRaw from '../maps/kanto.world?raw';
-import kantoCommonJson from '@Tileset/interactables/interactables.json';
 import kantoOutsideJson from '../tilesets/kanto_outside.json';
-import gen3outsideTilesetJson from '@Tileset/gen3_outside.json';
 import Tileset from '@Tileset';
 
 const WORLD_FILE = JSON.parse(kantoWorldRaw);
@@ -24,9 +22,8 @@ const KANTO_OFFSET_X = 2592;
 const KANTO_OFFSET_Y = 7616;
 
 const TILESET_BY_NAME = {
-  'interactables': kantoCommonJson,
+  ...TILESET_JSON_REGISTRY,
   'kanto_outside': kantoOutsideJson,
-  'gen3_outside':  gen3outsideTilesetJson,
 };
 
 /** Scene keys for maps that are part of the outdoor world (movement is seamless). */

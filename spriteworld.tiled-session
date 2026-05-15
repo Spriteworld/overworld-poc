@@ -1,16 +1,16 @@
 {
-    "activeFile": "worlds/kanto/master/maps/kanto_inside.json",
+    "activeFile": "worlds/kanto/master/maps/kanto.json",
     "expandedProjectPaths": [
         "worlds",
+        "worlds/gavworld/master",
         "worlds/kanto/master/maps",
+        "worlds/gavworld/master/maps",
+        "src/maps",
+        "src/maps/kanto",
         "src",
         "worlds/kanto",
-        "src/maps/Gavworld",
-        "worlds/gavworld/master",
-        "worlds/gavworld/master/maps",
-        "src/maps/kanto",
-        "src/maps",
-        "worlds/kanto/master"
+        "worlds/kanto/master",
+        "src/maps/Gavworld"
     ],
     "fileStates": {
         "src/maps/random/skyland.json": {
@@ -62,6 +62,29 @@
         "src/tileset/rse_outside.json": {
             "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "worlds/_base/tileset/animated_grass.json": {
+            "scaleInDock": 1
+        },
+        "worlds/_base/tileset/caves.json": {
+            "scaleInDock": 1
+        },
+        "worlds/_base/tileset/gen3_gyms_inside.json": {
+            "scaleInDock": 1
+        },
+        "worlds/_base/tileset/gen3_inside.json": {
+            "scaleInDock": 1
+        },
+        "worlds/_base/tileset/gen3_outside.json": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1.5
+        },
+        "worlds/_base/tileset/interactables/interactables.json": {
+            "scaleInDock": 1
+        },
+        "worlds/_base/tileset/outside.json": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1.5
         },
         "worlds/gavworld/maps/route1.json": {
             "scale": 0.125,
@@ -191,6 +214,14 @@
                 "y": 1920.7833537331703
             }
         },
+        "worlds/kanto/maps/route18.json": {
+            "scale": 0.9942879098360654,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 810.1275214467889,
+                "y": 435.99041657005955
+            }
+        },
         "worlds/kanto/maps/route19.json": {
             "scale": 1.3677455357142856,
             "selectedLayer": 0,
@@ -241,13 +272,14 @@
         },
         "worlds/kanto/master/maps/kanto.json": {
             "expandedObjectLayers": [
+                13,
                 12
             ],
             "scale": 1.5,
-            "selectedLayer": 6,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 2895.6666666666665,
-                "y": 3074.6666666666665
+                "x": 8576.333333333332,
+                "y": 7119
             }
         },
         "worlds/kanto/master/maps/kanto_dungeons.json": {
@@ -255,10 +287,10 @@
                 2
             ],
             "scale": 0.75,
-            "selectedLayer": 1,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 4800.666666666666,
-                "y": 1600
+                "x": 4756,
+                "y": 1600.6666666666665
             }
         },
         "worlds/kanto/master/maps/kanto_inside.json": {
@@ -268,8 +300,8 @@
             "scale": 0.75,
             "selectedLayer": 6,
             "viewCenter": {
-                "x": 1791.3333333333333,
-                "y": 578
+                "x": 1428.6666666666667,
+                "y": 1600.6666666666665
             }
         },
         "worlds/kanto/master/maps/outside.json": {
@@ -326,18 +358,18 @@
     "project": "spriteworld.tiled-project",
     "property.type": "only-if",
     "recentFiles": [
-        "worlds/kanto/master/maps/kanto.json",
-        "worlds/kanto/master/maps/kanto_dungeons.json",
+        "worlds/_base/tileset/gen3_outside.json",
+        "worlds/_base/tileset/outside.json",
+        "worlds/kanto/maps/route18.json",
         "worlds/kanto/master/maps/kanto_inside.json",
+        "worlds/kanto/master/maps/kanto_dungeons.json",
+        "worlds/kanto/master/maps/kanto.json",
         "worlds/kanto/maps/route22.json",
         "worlds/kanto/maps/route21.json",
         "worlds/gavworld/maps/route1.json",
         "src/tileset/gen3_outside.json",
         "worlds/gavworld/master/maps/Gavworld.json",
-        "worlds/gavworld/maps/starter_town.json",
-        "worlds/kanto/maps/fuchsia_city.json",
-        "worlds/kanto/maps/route19.json",
-        "worlds/kanto/maps/route20.json"
+        "worlds/gavworld/maps/starter_town.json"
     ],
     "tileset.lastUsedFilter": "JSON tileset files (*.tsj *.json)",
     "tileset.lastUsedFormat": "json"

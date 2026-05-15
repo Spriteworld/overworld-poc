@@ -82,12 +82,13 @@ export default defineConfig({
       '@Data': resolve(__dirname, 'src/data/'),
       '@Maps': resolve(__dirname, 'src/maps/'),
       '@Objects': resolve(__dirname, 'src/objects/'),
-      '@Tileset': resolve(__dirname, 'src/tileset/'),
+      '@Tileset': resolve(__dirname, 'worlds/_base/tileset/'),
       '@Scenes': resolve(__dirname, 'src/scenes/'),
       '@Utilities': resolve(__dirname, 'src/utilities/'),
       '@Worlds': resolve(__dirname, 'worlds/'),
     }
   },
+  appType: 'mpa',
   server: {
     host: '0.0.0.0',
     port: 8085,

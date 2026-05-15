@@ -454,7 +454,7 @@ def build_anim_png(catalogue, src_to_kanto):
         sy = (tid // cols) * th
         out_img.paste(src_imgs[name].crop((sx, sy, sx + tw, sy + th)), (i * tw, 0))
 
-    out_path = lib.SRC_DIR / 'tileset' / 'animation.png'
+    out_path = lib.TILESET_DIR / 'animation.png'
     out_img.save(out_path)
     print(f'  rebuilt animation.png ({len(anim_tiles)} animation frame tile(s))')
     return True
@@ -850,12 +850,12 @@ def main():
     if common_png_modified:  kanto_common_ts_modified  = True
     if outside_png_modified: kanto_outside_ts_modified = True
 
-    build_anim_png(catalogue, src_to_kanto)
-
     if kanto_common_ts_modified:
         lib.write_tileset_json(kanto_common_ts_path, kanto_common_ts_json)
     if kanto_outside_ts_modified:
         lib.write_tileset_json(kanto_outside_ts_path, kanto_outside_ts_json)
+
+    build_anim_png(catalogue, src_to_kanto)
 
     # End-of-run sweep: catch any leftover un-prefixed entries (maps no longer
     # in the master, but still listed in src/maps/index.js etc).
