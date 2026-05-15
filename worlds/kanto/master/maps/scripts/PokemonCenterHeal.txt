@@ -1,0 +1,14 @@
+[
+  {
+    "propertytype": "cmd-text",
+    "type": "class",
+    "value": {
+      "text": "Healing!"
+    }
+  },
+  {
+    "propertytype": "cmd-heal_party",
+    "type": "class",
+    "value": {}
+  }
+]

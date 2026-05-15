@@ -7,6 +7,7 @@ export default {
 
   state: () => ({
     items:          [],
+    medicine:       [],
     pokeballs:      [],
     tms:            [],
     keyItems:       [],
@@ -50,7 +51,7 @@ export default {
 
     LOAD(state, saved) {
       if (!saved.bag) return;
-      for (const key of ['items', 'pokeballs', 'tms', 'keyItems']) {
+      for (const key of ['items', 'medicine', 'pokeballs', 'tms', 'keyItems']) {
         if (!Array.isArray(saved.bag[key])) continue;
         state[key] = saved.bag[key].map(e => {
           if (e.id != null) return e;
@@ -69,7 +70,7 @@ export default {
     USE_ITEM(state, idOrName) {
       const id = resolveItemId(idOrName);
       if (id == null || isKeyItem(id)) return;
-      for (const key of ['items', 'pokeballs', 'tms']) {
+      for (const key of ['items', 'medicine', 'pokeballs', 'tms']) {
         const idx = state[key].findIndex(e => e.id === id);
         if (idx === -1) continue;
         state[key][idx].quantity--;
@@ -80,6 +81,7 @@ export default {
 
     RESET(state) {
       state.items          = [];
+      state.medicine       = [];
       state.pokeballs      = [];
       state.tms            = [];
       state.keyItems       = [];
@@ -90,10 +92,11 @@ export default {
       for (const { item, quantity } of battleItems) {
         const id = resolveItemId(item.getName());
         if (id == null) continue;
-        const entry = [...state.items, ...state.pokeballs].find(e => e.id === id);
+        const entry = [...state.items, ...state.medicine, ...state.pokeballs].find(e => e.id === id);
         if (entry) entry.quantity = quantity;
       }
       state.items     = state.items.filter(e => e.quantity > 0);
+      state.medicine  = state.medicine.filter(e => e.quantity > 0);
       state.pokeballs = state.pokeballs.filter(e => e.quantity > 0);
     },
   },

@@ -6,14 +6,14 @@
             "fileName": "pallet.json",
             "x": -544,
             "y": 1312,
-            "width": 1664,
+            "width": 1856,
             "height": 640
         },
         {
             "fileName": "route1.json",
             "x": -544,
             "y": 0,
-            "width": 1664,
+            "width": 1856,
             "height": 1312
         },
         {
@@ -48,7 +48,7 @@
             "fileName": "route21.json",
             "x": -544,
             "y": 1952,
-            "width": 1664,
+            "width": 1856,
             "height": 3200
         },
         {
@@ -130,10 +130,10 @@
         },
         {
             "fileName": "route12.json",
-            "x": 8064,
-            "y": -672,
-            "width": 2304,
-            "height": 1280
+            "x": 10368,
+            "y": -2272,
+            "width": 1056,
+            "height": 3488
         },
         {
             "fileName": "cinnabar_island.json",
@@ -160,22 +160,15 @@
             "fileName": "route15.json",
             "x": 5760,
             "y": 2624,
-            "width": 2240,
-            "height": 1024
-        },
-        {
-            "fileName": "route13.json",
-            "x": 9024,
-            "y": 1216,
-            "width": 2400,
-            "height": 1024
+            "width": 2112,
+            "height": 1312
         },
         {
             "fileName": "route14.json",
             "x": 7872,
             "y": 1216,
             "width": 1152,
-            "height": 2432
+            "height": 2720
         },
         {
             "fileName": "route6.json",
@@ -189,6 +182,13 @@
             "x": 6528,
             "y": -672,
             "width": 1536,
+            "height": 1280
+        },
+        {
+            "fileName": "route11.json",
+            "x": 8064,
+            "y": -672,
+            "width": 2304,
             "height": 1280
         },
         {
@@ -207,10 +207,10 @@
         },
         {
             "fileName": "route18.json",
-            "x": 2272,
+            "x": 1856,
             "y": 2528,
-            "width": 1952,
-            "height": 1344
+            "width": 2368,
+            "height": 1408
         },
         {
             "fileName": "route17.json",
@@ -246,6 +246,13 @@
             "y": -6880,
             "width": 2048,
             "height": 576
+        },
+        {
+            "fileName": "route13.json",
+            "x": 9024,
+            "y": 1216,
+            "width": 2400,
+            "height": 1184
         }
     ]
 }

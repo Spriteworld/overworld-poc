@@ -1,6 +1,5 @@
 [
   {
-    "propertytype": "cmd-open_shop",
     "type": "class",
     "value": {}
   }

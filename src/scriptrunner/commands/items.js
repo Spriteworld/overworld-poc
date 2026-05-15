@@ -27,6 +27,7 @@ export default {
     const bag = store.state.bag;
     const found = id != null && (
       bag.items.some(e => e.id === id) ||
+      bag.medicine.some(e => e.id === id) ||
       bag.pokeballs.some(e => e.id === id) ||
       bag.tms.some(e => e.id === id) ||
       bag.keyItems.some(e => e.id === id)

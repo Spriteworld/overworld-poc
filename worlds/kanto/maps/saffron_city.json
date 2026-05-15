@@ -3,7 +3,7 @@
   "height": 40,
   "infinite": false,
   "nextlayerid": 6,
-  "nextobjectid": 1,
+  "nextobjectid": 4,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.12.1",
@@ -6116,7 +6116,7 @@
         0,
         0,
         0,
-        1251,
+        0,
         0,
         0,
         0,
@@ -6542,7 +6542,7 @@
         0,
         0,
         0,
-        1251,
+        0,
         0,
         0,
         0,
@@ -7342,7 +7342,7 @@
         0,
         0,
         0,
-        1251,
+        0,
         0,
         0,
         0,
@@ -7773,7 +7773,110 @@
       "draworder": "topdown",
       "id": 5,
       "name": "interactions",
-      "objects": [],
+      "objects": [
+        {
+          "height": 32,
+          "id": 1,
+          "name": "SaffronGymWarp",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "KantoSaffronGym"
+            },
+            {
+              "name": "warp-dir",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "warp-location",
+              "type": "string",
+              "value": "SaffronCityEntry"
+            },
+            {
+              "name": "warp-variant",
+              "type": "string",
+              "value": ""
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 1152,
+          "y": 160
+        },
+        {
+          "height": 32,
+          "id": 2,
+          "name": "SaffronPokeMart",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "KantoPokeMart"
+            },
+            {
+              "name": "warp-dir",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "warp-location",
+              "type": "string",
+              "value": "PokeMartEntry"
+            },
+            {
+              "name": "warp-variant",
+              "type": "string",
+              "value": "saffron"
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 960,
+          "y": 448
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "SaffronPokeCenter",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "KantoPokemonCenter"
+            },
+            {
+              "name": "warp-dir",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "warp-location",
+              "type": "string",
+              "value": "PokemonCenterEntry"
+            },
+            {
+              "name": "warp-variant",
+              "type": "string",
+              "value": "saffron"
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 448,
+          "y": 992
+        }
+      ],
       "opacity": 1,
       "type": "objectgroup",
       "visible": true,

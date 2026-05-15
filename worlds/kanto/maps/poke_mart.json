@@ -779,19 +779,12 @@
           "id": 4,
           "name": "MartMenu1",
           "opacity": 1,
-          "rotation": 0,
-          "type": "trigger",
-          "visible": true,
-          "width": 32,
-          "x": 64,
-          "y": 160,
           "properties": [
             {
               "name": "script",
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-open_shop",
                   "type": "class",
                   "value": {}
                 }
@@ -803,26 +796,25 @@
               "type": "string",
               "value": "interact"
             }
-          ]
+          ],
+          "rotation": 0,
+          "type": "trigger",
+          "visible": true,
+          "width": 32,
+          "x": 64,
+          "y": 160
         },
         {
           "height": 32,
           "id": 5,
           "name": "MartMenu2",
           "opacity": 1,
-          "rotation": 0,
-          "type": "trigger",
-          "visible": true,
-          "width": 32,
-          "x": 96,
-          "y": 128,
           "properties": [
             {
               "name": "script",
               "type": "list",
               "value": [
                 {
-                  "propertytype": "cmd-open_shop",
                   "type": "class",
                   "value": {}
                 }
@@ -834,7 +826,13 @@
               "type": "string",
               "value": "interact"
             }
-          ]
+          ],
+          "rotation": 0,
+          "type": "trigger",
+          "visible": true,
+          "width": 32,
+          "x": 96,
+          "y": 128
         }
       ]
     }

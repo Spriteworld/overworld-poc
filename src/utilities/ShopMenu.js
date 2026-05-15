@@ -266,6 +266,7 @@ export default class ShopMenu {
   _getOwnedQty(itemId) {
     const bag = store.state.bag;
     const entry = bag.items.find(e => e.id === itemId)
+      || bag.medicine.find(e => e.id === itemId)
       || bag.pokeballs.find(e => e.id === itemId)
       || bag.tms.find(e => e.id === itemId);
     return entry?.quantity ?? 0;

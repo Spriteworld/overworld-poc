@@ -166,7 +166,7 @@ function run(cmd, sceneOpts) {
 beforeEach(() => {
   store.commit.mockClear();
   store.state.game.gameFlags = {};
-  store.state.bag  = { items: [], pokeballs: [], tms: [], keyItems: [] };
+  store.state.bag  = { items: [], medicine: [], pokeballs: [], tms: [], keyItems: [] };
   store.state.party.list = [];
 });
 

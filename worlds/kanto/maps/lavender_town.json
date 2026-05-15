@@ -3,7 +3,7 @@
   "height": 20,
   "infinite": false,
   "nextlayerid": 6,
-  "nextobjectid": 1,
+  "nextobjectid": 3,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.12.1",
@@ -2231,7 +2231,7 @@
         0,
         0,
         0,
-        1251,
+        0,
         0,
         0,
         0,
@@ -2575,7 +2575,7 @@
         0,
         0,
         0,
-        1251,
+        0,
         0,
         0,
         0,
@@ -2733,7 +2733,76 @@
       "draworder": "topdown",
       "id": 5,
       "name": "interactions",
-      "objects": [],
+      "objects": [
+        {
+          "height": 32,
+          "id": 1,
+          "name": "LavenderPokeCenter",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "KantoPokemonCenter"
+            },
+            {
+              "name": "warp-dir",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "warp-location",
+              "type": "string",
+              "value": "PokemonCenterEntry"
+            },
+            {
+              "name": "warp-variant",
+              "type": "string",
+              "value": "lavender"
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 192,
+          "y": 160
+        },
+        {
+          "height": 32,
+          "id": 2,
+          "name": "LavenderPokeMart",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "KantoPokeMart"
+            },
+            {
+              "name": "warp-dir",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "warp-location",
+              "type": "string",
+              "value": "PokeMartEntry"
+            },
+            {
+              "name": "warp-variant",
+              "type": "string",
+              "value": "lavender"
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 640,
+          "y": 480
+        }
+      ],
       "opacity": 1,
       "type": "objectgroup",
       "visible": true,

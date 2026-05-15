@@ -50,7 +50,7 @@ export default {
 
   // map
   visited_pallet: true,
-  visited_veridian: false,
+  visited_viridian: false,
   visited_pewter: false,
   visited_mtmoon: false,
   visited_cerulean: false,

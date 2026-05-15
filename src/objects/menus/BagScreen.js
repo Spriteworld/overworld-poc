@@ -8,10 +8,11 @@ import {
 } from './layout.js';
 
 const TABS = [
-  { label: 'Items',  key: 'items'     },
-  { label: 'Balls',  key: 'pokeballs' },
-  { label: 'TMs',    key: 'tms'       },
-  { label: 'Key',    key: 'keyItems'  },
+  { label: 'Items',     key: 'items'     },
+  { label: 'Medicine',  key: 'medicine'  },
+  { label: 'Poké Balls', key: 'pokeballs' },
+  { label: 'TMs & HMs', key: 'tms'       },
+  { label: 'Key Items', key: 'keyItems'  },
 ];
 
 let _overworldUsable;
@@ -119,7 +120,7 @@ export default class BagScreen {
     // Hint bar
     const hint = isKeyTab
       ? '◀▶ switch tab   ▲▼ select   Z  options   X  back'
-      : (key === 'items' && entries.some(e => isOverworldUsable(e.id)))
+      : ((key === 'items' || key === 'medicine') && entries.some(e => isOverworldUsable(e.id)))
         ? '◀▶ switch tab   ▲▼ select   Z  use   X  back'
         : '◀▶ switch tab   ▲▼ scroll   X  back';
     reg(scene.add.text(SX + SW - 16, SY + SH - 32, hint, TEXT_STYLE_HINT)).setOrigin(1, 0);
@@ -229,8 +230,8 @@ export default class BagScreen {
       return;
     }
 
-    // ── Regular items ──
-    if (key !== 'items') return;
+    // ── Regular / medicine items ──
+    if (key !== 'items' && key !== 'medicine') return;
     const entries = gameState.bag[key] ?? [];
     const entry   = entries[this._cursor];
     if (!entry) return;

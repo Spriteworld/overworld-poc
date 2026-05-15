@@ -289,13 +289,13 @@
         0,
         0,
         0,
-        174,
-        175,
-        176,
-        177,
-        178,
-        179,
-        180,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -306,13 +306,13 @@
         0,
         0,
         0,
-        181,
-        182,
-        183,
-        184,
-        185,
-        186,
-        187,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -490,13 +490,13 @@
         128,
         54,
         55,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
         59,
         0,
         0,
@@ -507,13 +507,13 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        181,
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
         0,
         0,
         0,
@@ -697,13 +697,13 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
         0,
         0,
         0,
@@ -909,6 +909,31 @@
           "id": 4,
           "name": "PokemonCenterHeal",
           "opacity": 1,
+          "properties": [
+            {
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-text",
+                  "type": "class",
+                  "value": {
+                    "text": "Healing!"
+                  }
+                },
+                {
+                  "propertytype": "cmd-heal_party",
+                  "type": "class",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "script-repeatable",
+              "type": "bool",
+              "value": true
+            }
+          ],
           "rotation": 0,
           "type": "trigger",
           "visible": true,
@@ -936,35 +961,19 @@
         "script": {
           "script": [
             {
-              "propertytype": "cmd-spawn_npc",
-              "type": "class",
-              "value": {
-                "anchor": "nurseJoySpawn",
-                "name": "NurseJoy",
-                "texture": "nurse_joy",
-                "trigger": {
-                  "script": [
-                    {
-                      "propertytype": "cmd-text",
-                      "type": "class",
-                      "value": {
-                        "text": "Healing!"
-                      }
-                    },
-                    {
-                      "propertytype": "cmd-heal_party",
-                      "type": "class",
-                      "value": {}
-                    }
-                  ],
-                  "trigger": "interact"
-                }
-              }
-            },
-            {
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "visited_viridian",
+                      "value": true
+                    }
+                  }
+                ],
                 "value": "viridian"
               }
             },
@@ -972,6 +981,16 @@
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "visited_pewter",
+                      "value": true
+                    }
+                  }
+                ],
                 "value": "pewter"
               }
             },
@@ -979,6 +998,16 @@
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "visited_cerulean",
+                      "value": true
+                    }
+                  }
+                ],
                 "value": "cerulean"
               }
             },
@@ -986,6 +1015,16 @@
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "visited_mtmoon",
+                      "value": true
+                    }
+                  }
+                ],
                 "value": "route4"
               }
             },
@@ -993,6 +1032,16 @@
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "visited_vermilion",
+                      "value": true
+                    }
+                  }
+                ],
                 "value": "vermillion"
               }
             },
@@ -1000,6 +1049,16 @@
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "visited_lavender",
+                      "value": true
+                    }
+                  }
+                ],
                 "value": "lavender"
               }
             },
@@ -1007,6 +1066,16 @@
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "visited_celadon",
+                      "value": true
+                    }
+                  }
+                ],
                 "value": "celadon"
               }
             },
@@ -1014,6 +1083,16 @@
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "visited_saffron",
+                      "value": true
+                    }
+                  }
+                ],
                 "value": "saffron"
               }
             },
@@ -1021,6 +1100,16 @@
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "visited_fuchsia",
+                      "value": true
+                    }
+                  }
+                ],
                 "value": "fuchsia"
               }
             },
@@ -1028,6 +1117,16 @@
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "visited_rock_tunnel",
+                      "value": true
+                    }
+                  }
+                ],
                 "value": "route10"
               }
             },
@@ -1035,6 +1134,16 @@
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "visited_cinnabar",
+                      "value": true
+                    }
+                  }
+                ],
                 "value": "cinnabar"
               }
             },
@@ -1042,6 +1151,16 @@
               "propertytype": "cmd-if_variant",
               "type": "class",
               "value": {
+                "then": [
+                  {
+                    "propertytype": "cmd-set_flag",
+                    "type": "class",
+                    "value": {
+                      "key": "visited_indigo",
+                      "value": true
+                    }
+                  }
+                ],
                 "value": "indigo"
               }
             }

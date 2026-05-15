@@ -63,11 +63,12 @@ export function isKeyItem(id) {
 }
 
 const CATEGORY_TO_BAG_LIST = {
-  balls: 'pokeballs',
-  ball:  'pokeballs',
-  tm:    'tms',
-  hm:    'tms',
-  key:   'keyItems',
+  medicine: 'medicine',
+  balls:    'pokeballs',
+  ball:     'pokeballs',
+  tm:       'tms',
+  hm:       'tms',
+  key:      'keyItems',
 };
 
 export function getBagListKey(id) {
@@ -88,9 +89,9 @@ export function getBattleItemClass(id) {
 }
 
 export function buildBattleInventory(bagState) {
-  const { items, pokeballs } = bagState ?? {};
+  const { items, medicine, pokeballs } = bagState ?? {};
   const battleItems = [];
-  for (const entry of [...(items ?? []), ...(pokeballs ?? [])]) {
+  for (const entry of [...(items ?? []), ...(medicine ?? []), ...(pokeballs ?? [])]) {
     if (entry.quantity <= 0) continue;
     const BattleCls = getBattleItemClass(entry.id);
     if (!BattleCls) continue;

@@ -10005,7 +10005,7 @@
         0,
         0,
         0,
-        1251,
+        0,
         0,
         0,
         0,
@@ -10547,7 +10547,7 @@
         0,
         0,
         0,
-        1251,
+        0,
         0,
         0,
         0,
@@ -10916,7 +10916,7 @@
         0,
         0,
         0,
-        1251,
+        0,
         0,
         0,
         0,
@@ -11652,9 +11652,111 @@
           "width": 32,
           "x": 608,
           "y": 768
+        },
+        {
+          "height": 32,
+          "id": 2,
+          "name": "VermilionPokeCenter",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "KantoPokemonCenter"
+            },
+            {
+              "name": "warp-dir",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "warp-location",
+              "type": "string",
+              "value": "PokemonCenterEntry"
+            },
+            {
+              "name": "warp-variant",
+              "type": "string",
+              "value": "vermilion"
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 480,
+          "y": 192
+        },
+        {
+          "height": 32,
+          "id": 3,
+          "name": "VermilionPokeMart",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "KantoPokeMart"
+            },
+            {
+              "name": "warp-dir",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "warp-location",
+              "type": "string",
+              "value": "PokeMartEntry"
+            },
+            {
+              "name": "warp-variant",
+              "type": "string",
+              "value": "vermilion"
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 928,
+          "y": 544
+        },
+        {
+          "height": 32,
+          "id": 4,
+          "name": "VermilionGymWarp",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "KantoVermilionGym"
+            },
+            {
+              "name": "warp-dir",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "warp-location",
+              "type": "string",
+              "value": "VermilionCityEntry"
+            },
+            {
+              "name": "warp-variant",
+              "type": "string",
+              "value": ""
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 448,
+          "y": 800
         }
       ]
     }
   ],
-  "nextobjectid": 2
+  "nextobjectid": 5
 }

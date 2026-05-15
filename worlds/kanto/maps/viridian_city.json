@@ -5942,8 +5942,8 @@
         25,
         24,
         25,
-        24,
-        25
+        26,
+        27
       ],
       "properties": [
         {
@@ -8454,6 +8454,40 @@
           "width": 32,
           "x": 960,
           "y": 608
+        },
+        {
+          "height": 32,
+          "id": 15,
+          "name": "ViridianGymWarp",
+          "opacity": 1,
+          "properties": [
+            {
+              "name": "warp",
+              "type": "string",
+              "value": "KantoViridianGym"
+            },
+            {
+              "name": "warp-dir",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "name": "warp-location",
+              "type": "string",
+              "value": "ViridianCityEntry"
+            },
+            {
+              "name": "warp-variant",
+              "type": "string",
+              "value": ""
+            }
+          ],
+          "rotation": 0,
+          "type": "warp",
+          "visible": true,
+          "width": 32,
+          "x": 960,
+          "y": 320
         }
       ],
       "opacity": 1,
@@ -8464,7 +8498,7 @@
     }
   ],
   "nextlayerid": 8,
-  "nextobjectid": 15,
+  "nextobjectid": 16,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.12.1",

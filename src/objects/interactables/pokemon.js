@@ -152,6 +152,7 @@ export default class {
               n.setTexture(texture);
               if (this.scene.gridEngine?.hasCharacter(n.config.id)) {
                 this.scene.gridEngine.setWalkingAnimationMapping(n.config.id, n.characterFramesDef());
+                n.applyInitialFacing();
               }
             });
         });
