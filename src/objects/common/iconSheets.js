@@ -1,11 +1,11 @@
 /**
  * UI icon helpers.
  *
- *   Types      — individual PNGs at public/tileset/ui/types/<name>.png, 128×128.
+ *   Types      — individual PNGs at public/ui/types/<name>.png, 128×128.
  *                Loaded in Preload as `type-<lowercase name>` (18 types, no NONE).
- *   Categories — individual PNGs at public/tileset/ui/categories/<name>.png, 256×256.
+ *   Categories — individual PNGs at public/ui/categories/<name>.png, 256×256.
  *                Loaded as `category-<lowercase name>` (physical / special / status).
- *   Statuses   — spritesheet at src/tileset/statuses.png, 44×16 per frame, 7 frames.
+ *   Statuses   — spritesheet at worlds/_base/tileset/statuses.png, 44×16 per frame, 7 frames.
  *                Loaded in Preload as `statuses`. Layout (top→bottom):
  *                SLP · PSN · BRN · PAR · FRZ · FNT · PKRS.
  */

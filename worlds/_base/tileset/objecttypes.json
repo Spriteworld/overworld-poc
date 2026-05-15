@@ -385,9 +385,8 @@
       },
       {
         "name": "item",
-        "propertyType": "item",
-        "type": "class",
-        "value": {}
+        "type": "string",
+        "value": ""
       },
       {
         "name": "qty",
@@ -993,9 +992,8 @@
       },
       {
         "name": "item",
-        "propertyType": "item",
-        "type": "class",
-        "value": {}
+        "type": "string",
+        "value": ""
       },
       {
         "name": "qty",

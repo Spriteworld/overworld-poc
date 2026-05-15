@@ -2744,39 +2744,6 @@
                  "width":32,
                  "x":4640,
                  "y":480
-                }, 
-                {
-                 "height":32,
-                 "id":367,
-                 "name":"MtMoonLight1",
-                 "opacity":1,
-                 "properties":[
-                        {
-                         "name":"attenuation",
-                         "type":"float",
-                         "value":0.04
-                        }, 
-                        {
-                         "name":"color",
-                         "type":"string",
-                         "value":"#FFFFFF"
-                        }, 
-                        {
-                         "name":"intensity",
-                         "type":"float",
-                         "value":0.15
-                        }, 
-                        {
-                         "name":"radius",
-                         "type":"int",
-                         "value":100
-                        }],
-                 "rotation":0,
-                 "type":"light",
-                 "visible":true,
-                 "width":32,
-                 "x":4512,
-                 "y":542.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -2940,7 +2907,7 @@
                              "can_bike":true,
                              "can_escape":true,
                              "can_run":true,
-                             "can_see":false,
+                             "can_see":true,
                              "encounter-table":[
                                     {
                                      "propertytype":"encounterTable",
@@ -3043,11 +3010,11 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/..\/..\/..\/src\/tileset\/gen3_outside.json"
+         "source":"..\/..\/..\/_base\/tileset\/gen3_outside.json"
         }, 
         {
          "firstgid":7985,
-         "source":"..\/..\/..\/..\/src\/tileset\/caves.json"
+         "source":"..\/..\/..\/_base\/tileset\/caves.json"
         }],
  "tilewidth":32,
  "type":"map",

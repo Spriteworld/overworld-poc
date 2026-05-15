@@ -11,7 +11,7 @@
  "tilesets": [
   {
    "firstgid": 1,
-   "source": "../../../src/tileset/interactables/interactables.json"
+   "source": "../../_base/tileset/interactables/interactables.json"
   },
   {
    "firstgid": 5,

@@ -12,7 +12,7 @@
  *     the shader samples in normalised UV (0–1) so the image is stretched
  *     to fill, not tiled.
  *
- * To add a new transition: drop a PNG into `src/assets/shader/`, add a key
+ * To add a new transition: drop a PNG into `worlds/_base/shader/`, add a key
  * here, load it in `src/scenes/misc/Preload.js`, and call
  * `pipeline.setTexture(SHADER_ASSET_KEYS.NEW_KEY)` from
  * `src/utilities/battleTransition.js` (or anywhere else).

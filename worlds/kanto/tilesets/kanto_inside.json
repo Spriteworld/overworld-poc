@@ -1,12 +1,12 @@
 {
  "columns": 8,
  "image": "kanto_inside.png",
- "imageheight": 2400,
+ "imageheight": 2432,
  "imagewidth": 256,
  "margin": 0,
  "name": "kanto_inside",
  "spacing": 0,
- "tilecount": 600,
+ "tilecount": 608,
  "tiledversion": "1.12.1",
  "tileheight": 32,
  "tilewidth": 32,
@@ -6123,6 +6123,66 @@
      "name": "ge_collide",
      "type": "bool",
      "value": true
+    }
+   ]
+  },
+  {
+   "id": 599,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 600,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 601,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 602,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 603,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": 604,
+   "properties": [
+    {
+     "name": "ge_collide",
+     "type": "bool",
+     "value": false
     }
    ]
   }

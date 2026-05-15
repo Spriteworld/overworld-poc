@@ -1110,17 +1110,9 @@
               "value": "scientist"
             },
             {
-              "name": "script",
-              "type": "list",
-              "value": [
-                {
-                  "propertytype": "cmd-text",
-                  "type": "class",
-                  "value": {
-                    "text": "I study POK{e}MON as PRO. OAK's AIDE."
-                  }
-                }
-              ]
+              "name": "text",
+              "type": "string",
+              "value": "I study POK{e}MON as PRO. OAK's AIDE."
             }
           ],
           "rotation": 0,
@@ -1148,17 +1140,9 @@
               "value": "scientist"
             },
             {
-              "name": "script",
-              "type": "list",
-              "value": [
-                {
-                  "propertytype": "cmd-text",
-                  "type": "class",
-                  "value": {
-                    "text": "I study POK{e}MON as PRO. OAK's AIDE."
-                  }
-                }
-              ]
+              "name": "text",
+              "type": "string",
+              "value": "I study POK{e}MON as PRO. OAK's AIDE."
             }
           ],
           "rotation": 0,
@@ -1259,17 +1243,9 @@
               "value": "daisy"
             },
             {
-              "name": "script",
-              "type": "list",
-              "value": [
-                {
-                  "propertytype": "cmd-text",
-                  "type": "class",
-                  "value": {
-                    "text": "I study POK{e}MON as PRO. OAK's AIDE."
-                  }
-                }
-              ]
+              "name": "text",
+              "type": "string",
+              "value": "I study POK{e}MON as PRO. OAK's AIDE."
             }
           ],
           "rotation": 0,
@@ -1484,7 +1460,7 @@
   "tilesets": [
     {
       "firstgid": 1,
-      "source": "../../../src/tileset/interactables/interactables.json"
+      "source": "../../_base/tileset/interactables/interactables.json"
     },
     {
       "firstgid": 6,

@@ -1,6 +1,8 @@
 import * as Tile from '@Objects/Tile.js';
 import Tileset from '@Tileset';
 import { SpriteworldMap } from '@Maps';
+import baseSounds from '@Worlds/_base/sounds.json';
+import { registerItemDefs } from '@Data/itemDefs.js';
 
 export const MAP_REGISTRY = {
   'Spriteworld': SpriteworldMap,
@@ -12,6 +14,10 @@ export const WORLD_FILES = [];
 export const INSIDE_MAP_SCENE_KEYS = [];
 export const WORLD_SCENES = {};
 export const WORLD_GAME_DEFS = {};
+export const SOUND_REGISTRY = {
+  bgm: { ...baseSounds.bgm },
+  se:  { ...baseSounds.se  },
+};
 
 export function registerWorld(config) {
   Object.assign(MAP_REGISTRY, config.maps);
@@ -33,6 +39,11 @@ export function registerWorld(config) {
 
   if (config.sprites) Object.assign(Tileset.sprites, config.sprites);
   if (config.trainerSprites) Object.assign(Tileset.trainer, config.trainerSprites);
+
+  if (config.sounds?.bgm) Object.assign(SOUND_REGISTRY.bgm, config.sounds.bgm);
+  if (config.sounds?.se)  Object.assign(SOUND_REGISTRY.se,  config.sounds.se);
+
+  if (config.items) registerItemDefs(config.items);
 }
 
 const SHARED = {

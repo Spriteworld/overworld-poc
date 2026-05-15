@@ -45,7 +45,7 @@ def make_dungeons_tilesets(common_count, outside_count):
     """Three-tileset layout consumed by every dungeon map."""
     dungeons_firstgid = common_count + outside_count + 1
     return [
-        {'firstgid': 1,                'source': '../../../src/tileset/interactables/interactables.json'},
+        {'firstgid': 1,                'source': '../../_base/tileset/interactables/interactables.json'},
         {'firstgid': common_count + 1, 'source': '../tilesets/kanto_outside.json'},
         {'firstgid': dungeons_firstgid, 'source': '../tilesets/kanto_dungeons.json'},
     ]

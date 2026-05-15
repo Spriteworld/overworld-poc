@@ -3278,15 +3278,15 @@
   "tilesets": [
     {
       "firstgid": 1,
-      "source": "../../tileset/maps/kanto_common.json"
+      "source": "../../../worlds/_base/tileset/maps/kanto_common.json"
     },
     {
       "firstgid": 5,
-      "source": "../../tileset/maps/kanto_outside.json"
+      "source": "../../../worlds/_base/tileset/maps/kanto_outside.json"
     },
     {
       "firstgid": 741,
-      "source": "../../tileset/maps/kanto_dungeons.json"
+      "source": "../../../worlds/_base/tileset/maps/kanto_dungeons.json"
     }
   ],
   "tilewidth": 32,

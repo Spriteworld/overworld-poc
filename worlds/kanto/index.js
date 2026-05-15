@@ -56,6 +56,7 @@ import KantoCinnabarGymMap from './maps/cinnabar_gym.json';
 import KantoViridianGymMap from './maps/viridian_gym.json';
 import KantoRoute10Map from './maps/route10.json';
 import KantoVermilionCityMap from './maps/vermilion_city.json';
+import KantoIndigoPlateau_ExteriorMap from './maps/indigo_plateau_exterior.json';
 import kantoWorldRaw from './maps/kanto.world?raw';
 
 // Tilesets
@@ -123,10 +124,17 @@ import KantoViridianGym from './scenes/KantoViridianGym.js';
 import KantoRoute10 from './scenes/KantoRoute10.js';
 import KantoWorld from './scenes/KantoWorld.js';
 import KantoVermilionCity from './scenes/KantoVermilionCity.js';
+import KantoIndigoPlateau_Exterior from './scenes/KantoIndigoPlateau_Exterior.js';
 
 // World-specific character sprites
 import kantoSprites from './characters/sprites/index.js';
 import kantoTrainerSprites from './characters/battle/index.js';
+
+// Sounds
+import kantoSounds from './sounds.json';
+
+// Items
+import kantoItems from './items.js';
 
 // GameDef
 import gameDef from './gameDef.js';
@@ -188,6 +196,7 @@ registerWorld({
     'KantoViridianGym': KantoViridianGymMap,
     'KantoRoute10': KantoRoute10Map,
     'KantoVermilionCity': KantoVermilionCityMap,
+    'KantoIndigoPlateau_Exterior': KantoIndigoPlateau_ExteriorMap,
   },
   tilesets: {
     'kanto_outside': { url: kanto_outside, json: kanto_outside_json },
@@ -230,6 +239,7 @@ registerWorld({
     'route25.json': 'KantoRoute25',
     'route10.json':        'KantoRoute10',
     'vermilion_city.json': 'KantoVermilionCity',
+    'indigo_plateau_exterior.json': 'KantoIndigoPlateau_Exterior',
   },
   worldFile: JSON.parse(kantoWorldRaw),
   insideMapSceneKeys: [
@@ -305,5 +315,7 @@ registerWorld({
   },
   sprites: kantoSprites,
   trainerSprites: kantoTrainerSprites,
+  sounds: kantoSounds,
+  items: kantoItems,
   gameDef,
 });

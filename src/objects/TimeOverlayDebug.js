@@ -1,4 +1,4 @@
-import { SHADER_KEYS } from '@/shaders/keys.js';
+import { SHADER_KEYS } from '@Worlds/_base/shaders/keys.js';
 
 /**
  * 4-camera compare grid for the time-of-day shader. Replaces the old sprite-

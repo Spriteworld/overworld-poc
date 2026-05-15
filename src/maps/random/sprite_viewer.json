@@ -3319,7 +3319,7 @@
  "tilesets": [
   {
    "firstgid": 1,
-   "source": "../../tileset/gen3_outside.json"
+   "source": "../../../worlds/_base/tileset/gen3_outside.json"
   }
  ],
  "tilewidth": 32,

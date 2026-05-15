@@ -54,6 +54,11 @@ export default {
       ? !variantValues.includes(sceneVariant)
       : variantValues.includes(sceneVariant);
     if (runner._debug()) console.log(`[ScriptRunner] if_variant — scene variant: "${sceneVariant}", ${variantCmp} ${JSON.stringify(variantValues)} → ${variantMatch ? 'pass' : 'fail'}`);
+    if (variantMatch) {
+      while (runner._queue.length && runner._queue[0].cmd === 'if_variant') {
+        runner._queue.shift();
+      }
+    }
     runner._branch(variantMatch ? (cmd.then ?? []) : (cmd.else ?? []));
   },
 

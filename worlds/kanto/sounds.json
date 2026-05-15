@@ -1,0 +1,7 @@
+{
+  "bgm": {
+    "pallet":        "/worlds/kanto/bgm/pallet.mp3",
+    "prof_oak_lab":  "/worlds/kanto/bgm/prof-oak-lab.mp3",
+    "prof_oak_theme": "/worlds/kanto/bgm/prof-oak-theme.mp3"
+  }
+}

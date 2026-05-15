@@ -45,9 +45,9 @@ def make_dungeons_tilesets(common_count, outside_count):
     """Three-tileset layout consumed by every dungeon map."""
     dungeons_firstgid = common_count + outside_count + 1
     return [
-        {'firstgid': 1,                'source': '../../tileset/maps/spriteworld_common.json'},
-        {'firstgid': common_count + 1, 'source': '../../tileset/maps/spriteworld_outside.json'},
-        {'firstgid': dungeons_firstgid, 'source': '../../tileset/maps/spriteworld_dungeons.json'},
+        {'firstgid': 1,                'source': '../../../worlds/_base/tileset/maps/spriteworld_common.json'},
+        {'firstgid': common_count + 1, 'source': '../../../worlds/_base/tileset/maps/spriteworld_outside.json'},
+        {'firstgid': dungeons_firstgid, 'source': '../../../worlds/_base/tileset/maps/spriteworld_dungeons.json'},
     ]
 
 

@@ -76,8 +76,8 @@ ITEM_TILE_IDS = [17, 18, 35, 53]  # CutTree, Bush, StrengthBoulder, Pokeball
 
 def make_outdoor_tilesets(common_count):
     return [
-        {'firstgid': 1,                'source': '../../tileset/maps/spriteworld_common.json'},
-        {'firstgid': common_count + 1, 'source': '../../tileset/maps/spriteworld_outside.json'},
+        {'firstgid': 1,                'source': '../../../worlds/_base/tileset/maps/spriteworld_common.json'},
+        {'firstgid': common_count + 1, 'source': '../../../worlds/_base/tileset/maps/spriteworld_outside.json'},
     ]
 
 

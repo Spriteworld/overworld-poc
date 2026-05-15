@@ -129,17 +129,6 @@ jest.mock('@spriteworld/pokemon-data', () => {
       getMovesByGameId: () => MOVE_POOL,
       MOVE_CATEGORIES: { STATUS: 'STATUS' },
     },
-    // Items stubs — only need to be non-undefined so the module-level ITEM_REGISTRY
-    // objects in encounter.js and trainer.js can be evaluated without throwing.
-    Items: {
-      Potion:      class {},
-      SuperPotion: class {},
-      HyperPotion: class {},
-      MaxPotion:   class {},
-      FullRestore: class {},
-      Ether:       class {},
-      Revive:      class {},
-    },
     buildMon,
     buildMovePool,
     buildMovesFromLearnset,

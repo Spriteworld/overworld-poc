@@ -29,13 +29,14 @@ PROJECT_DIR = WORLD_DIR.parent.parent                # character/
 SRC_DIR     = PROJECT_DIR / 'src'
 OUTPUT_DIR  = WORLD_DIR / 'maps'                     # derived per-zone maps output
 TILESET_DIR = WORLD_DIR / 'tilesets'
-SHARED_TILESET_DIR = SRC_DIR / 'tileset'
+BASE_DIR    = WORLD_DIR.parent / '_base'             # worlds/_base/
+SHARED_TILESET_DIR = BASE_DIR / 'tileset'
 INTERACTABLES_DIR = SHARED_TILESET_DIR / 'interactables'
 
 
 def resolve_tileset_json(name):
     """Find a tileset JSON by stem name, checking the world tilesets dir first,
-    then the shared src/tileset dir. Returns the path or None."""
+    then the shared _base tileset dir. Returns the path or None."""
     path = TILESET_DIR / f'{name}.json'
     if path.exists():
         return path

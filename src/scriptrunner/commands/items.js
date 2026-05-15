@@ -1,24 +1,37 @@
 import store from '../../store/index.js';
+import { resolveItemId, getItemLabel } from '../../data/itemDefs.js';
+
+function resolveItemField(field) {
+  if (typeof field === 'string') return field;
+  if (field && typeof field === 'object') return field.item ?? field.name ?? '';
+  return '';
+}
 
 export default {
   give_item(runner, cmd) {
-    store.commit('bag/PICKUP', { name: cmd.item, qty: cmd.qty ?? 1 });
+    const raw = resolveItemField(cmd.item);
+    store.commit('bag/PICKUP', { name: raw, qty: cmd.qty ?? 1 });
     runner._step();
   },
 
   remove_item(runner, cmd) {
+    const raw = resolveItemField(cmd.item);
     const qty = cmd.qty ?? 1;
-    for (let i = 0; i < qty; i++) store.commit('bag/USE_ITEM', cmd.item);
+    for (let i = 0; i < qty; i++) store.commit('bag/USE_ITEM', raw);
     runner._step();
   },
 
   if_has_item(runner, cmd) {
+    const raw = resolveItemField(cmd.item);
+    const id  = resolveItemId(raw);
     const bag = store.state.bag;
-    const found = bag.items.some(e => e.name === cmd.item) ||
-                  bag.pokeballs.some(e => e.name === cmd.item) ||
-                  bag.tms.some(e => e.name === cmd.item) ||
-                  bag.keyItems.some(e => e.name === cmd.item);
-    if (runner._debug()) console.log(`[ScriptRunner] if_has_item — item: "${cmd.item}" → ${found ? 'pass' : 'fail'}`);
+    const found = id != null && (
+      bag.items.some(e => e.id === id) ||
+      bag.pokeballs.some(e => e.id === id) ||
+      bag.tms.some(e => e.id === id) ||
+      bag.keyItems.some(e => e.id === id)
+    );
+    if (runner._debug()) console.log(`[ScriptRunner] if_has_item — item: "${raw}" (id=${id}) → ${found ? 'pass' : 'fail'}`);
     runner._branch(found ? (cmd.then ?? []) : (cmd.else ?? []));
   },
 };

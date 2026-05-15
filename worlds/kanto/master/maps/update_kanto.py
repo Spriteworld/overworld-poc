@@ -76,7 +76,7 @@ ITEM_TILE_IDS = [17, 18, 35, 53, 365]  # CutTree, Bush, StrengthBoulder, Pokebal
 
 def make_outdoor_tilesets(common_count):
     return [
-        {'firstgid': 1,                'source': '../../../src/tileset/interactables/interactables.json'},
+        {'firstgid': 1,                'source': '../../_base/tileset/interactables/interactables.json'},
         {'firstgid': common_count + 1, 'source': '../tilesets/kanto_outside.json'},
     ]
 

@@ -1,36 +1,5 @@
 import store from '../store/index.js';
-
-// Keys for files in public/assets/bgm/
-const BGM_REGISTRY = {
-  'pallet':                 '/assets/bgm/pallet.mp3',
-  'bicycle':                '/assets/bgm/bicycle.ogg',
-  'evolution':              '/assets/bgm/evolution.ogg',
-  'battle_trainer':         '/assets/bgm/Battle trainer.ogg',
-  'battle_wild':            '/assets/bgm/Battle wild.ogg',
-  'battle_victory':         '/assets/bgm/Battle victory.ogg',
-  'battle_victory_leader':  '/assets/bgm/Battle victory leader.ogg',
-  'battle_victory_trainer': '/assets/bgm/Battle victory trainer.ogg',
-  'battle_victory_wild':    '/assets/bgm/Battle victory wild.ogg',
-  'prof_oak_lab':           '/assets/bgm/prof-oak-lab.mp3',
-  'prof_oak_theme':         '/assets/bgm/prof-oak-theme.mp3',
-};
-
-// Keys for files in public/assets/se/
-const SE_REGISTRY = {
-  'bicycle':    '/assets/se/bicycle.ogg',
-  'cut':        '/assets/se/cut.ogg',
-  'danger':     '/assets/se/danger.wav',
-  'faint':      '/assets/se/faint.wav',
-  'hit':        '/assets/se/hit.wav',
-  'hit_strong': '/assets/se/hit_strong.wav',
-  'hit_weak':   '/assets/se/hit_weak.wav',
-  'ledge_jump':        '/assets/se/ledge_jump.ogg',
-  'movement_blocked':  '/assets/se/movement_blocked.ogg',
-  'level_up':   '/assets/se/level_up.wav',
-  'menu_open':  '/assets/se/menu_open.wav',
-  'stat_down':  '/assets/se/stat_down.wav',
-  'stat_up':    '/assets/se/stat_up.wav',
-};
+import { SOUND_REGISTRY } from '../worlds/registry.js';
 
 let _bgm           = null; // active Phaser Sound object for the BGM channel
 let _game          = null; // Phaser.Game reference used to register the volume listener once
@@ -57,7 +26,7 @@ function _ensureListener(game) {
  * Safe to call at any time (preload phase or after); no-ops if the key is
  * unknown. If the audio is already cached it plays immediately.
  * @param {Phaser.Scene} scene
- * @param {string} key - Key from BGM_REGISTRY.
+ * @param {string} key - Key from SOUND_REGISTRY.bgm.
  * @param {boolean} [loop=true]
  */
 export function lazyLoadBgm(scene, key, loop = true) {
@@ -65,9 +34,9 @@ export function lazyLoadBgm(scene, key, loop = true) {
   _pausedBgm = null;
   _ensureListener(scene.game);
   const normKey = key?.replace(/\.[^.]+$/, ''); // accept 'pallet' or 'pallet.mp3'
-  const url = BGM_REGISTRY[normKey];
+  const url = SOUND_REGISTRY.bgm[normKey];
   if (!url) {
-    console.warn(`[AudioManager] bgm key "${key}" not found in BGM_REGISTRY. Available keys:`, Object.keys(BGM_REGISTRY));
+    console.warn(`[AudioManager] bgm key "${key}" not found in SOUND_REGISTRY.bgm. Available keys:`, Object.keys(SOUND_REGISTRY.bgm));
     return;
   }
   _intendedBgmKey = normKey;
@@ -85,7 +54,7 @@ export function lazyLoadBgm(scene, key, loop = true) {
 /** Queue all SE files for loading during a scene's preload phase. Already-cached keys are skipped. No-ops if SFX volume is 0. */
 export function preloadSe(scene) {
   if (store.state.game.sfxVolume === 0) return;
-  for (const [key, url] of Object.entries(SE_REGISTRY)) {
+  for (const [key, url] of Object.entries(SOUND_REGISTRY.se)) {
     if (!scene.cache.audio.has(key)) {
       scene.load.audio(key, url);
     }

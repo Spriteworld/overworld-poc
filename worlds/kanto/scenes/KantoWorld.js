@@ -222,19 +222,20 @@ export default class KantoWorld extends GameMap {
     // seenSources: source path → merged firstgid assigned in this world.
     // allTilesets: full inline tileset objects (no source refs) so Phaser's
     //   ParseTilesets can read tile properties without fetching external files.
-    const seenSources = new Map();
+    const seenNames = new Map();
     const allTilesets = [];
     let nextFirstgid = 1;
+
+    const tsNameFromSource = (source) => source.split('/').pop().replace('.json', '');
 
     maps.forEach(entry => {
       const mapData = MAP_REGISTRY[WORLD_MAP_KEYS[entry.fileName]];
       if (!mapData) return;
       const localTilesets = mapData.tilesets ?? [];
       localTilesets.forEach(ts => {
-        if (seenSources.has(ts.source)) return;
-        seenSources.set(ts.source, nextFirstgid);
-        // Embed full tileset data inline so Phaser can parse tile properties.
-        const tsName = ts.source.split('/').pop().replace('.json', '');
+        const tsName = tsNameFromSource(ts.source);
+        if (seenNames.has(tsName)) return;
+        seenNames.set(tsName, nextFirstgid);
         const tsData = TILESET_BY_NAME[tsName] ?? {};
         allTilesets.push({ ...tsData, firstgid: nextFirstgid });
         nextFirstgid += tsData.tilecount ?? 8192;
@@ -261,7 +262,7 @@ export default class KantoWorld extends GameMap {
           else break;
         }
         const localOffset = gid - ownerTs.firstgid;
-        const worldGid = (seenSources.get(ownerTs.source) ?? ownerTs.firstgid) + localOffset;
+        const worldGid = (seenNames.get(tsNameFromSource(ownerTs.source)) ?? ownerTs.firstgid) + localOffset;
         // Clamp GIDs that exceed the merged tileset range to 0 (empty tile).
         return worldGid <= maxMergedGid ? worldGid : 0;
       };
@@ -292,14 +293,14 @@ export default class KantoWorld extends GameMap {
     );
     const visualLayerNames = [];
     const topLayerNames = [];
-    const seenNames = new Set();
+    const seenLayerNames = new Set();
     maps.forEach(entry => {
       const mapData = MAP_REGISTRY[WORLD_MAP_KEYS[entry.fileName]];
       if (!mapData) return;
       mapData.layers.forEach(l => {
         if (l.type !== 'tilelayer') return;
-        if (seenNames.has(l.name)) return;
-        seenNames.add(l.name);
+        if (seenLayerNames.has(l.name)) return;
+        seenLayerNames.add(l.name);
         if (topCharLayerNames.has(l.name)) {
           topLayerNames.push(l.name);
         } else {

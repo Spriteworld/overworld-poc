@@ -11,7 +11,7 @@
   "tilesets": [
     {
       "firstgid": 1,
-      "source": "../../../src/tileset/interactables/interactables.json"
+      "source": "../../_base/tileset/interactables/interactables.json"
     },
     {
       "firstgid": 6,
@@ -3992,8 +3992,8 @@
           "type": "trainer",
           "visible": true,
           "width": 32,
-          "x": 96,
-          "y": 96
+          "x": 128,
+          "y": 128
         },
         {
           "height": 32,
@@ -4071,8 +4071,8 @@
           "type": "trainer",
           "visible": true,
           "width": 32,
-          "x": 800,
-          "y": 96
+          "x": 768,
+          "y": 128
         },
         {
           "height": 32,
@@ -4142,8 +4142,8 @@
           "type": "trainer",
           "visible": true,
           "width": 32,
-          "x": 96,
-          "y": 416
+          "x": 128,
+          "y": 384
         },
         {
           "height": 32,
@@ -4221,8 +4221,8 @@
           "type": "trainer",
           "visible": true,
           "width": 32,
-          "x": 800,
-          "y": 352
+          "x": 768,
+          "y": 384
         },
         {
           "height": 32,
@@ -4292,8 +4292,8 @@
           "type": "trainer",
           "visible": true,
           "width": 32,
-          "x": 96,
-          "y": 672
+          "x": 128,
+          "y": 640
         },
         {
           "height": 32,
@@ -4371,8 +4371,8 @@
           "type": "trainer",
           "visible": true,
           "width": 32,
-          "x": 800,
-          "y": 672
+          "x": 768,
+          "y": 640
         }
       ]
     }

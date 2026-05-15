@@ -5,7 +5,7 @@ import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles';
 import Scenes from '@Scenes';
 
 import { BattleScene, EvolutionScene } from '@spriteworld/battle';
-import { registerBattlePipelines } from '@/shaders';
+import { registerBattlePipelines } from '@Worlds/_base/shaders';
 
 const config = {
   parent: 'game-container',

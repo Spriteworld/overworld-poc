@@ -1,6 +1,7 @@
 import store from '../../store/index.js';
 import { gameState } from '@Data/gameState.js';
 import { getGameDef } from '@Data/gameDef.js';
+import { resolveItemId } from '@Data/itemDefs.js';
 import {
   SX, SY, SW, SH,
   TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT,
@@ -13,8 +14,11 @@ const TABS = [
   { label: 'Key',    key: 'keyItems'  },
 ];
 
-/** Item names (non-key) usable on a party member from the overworld bag. */
-const OVERWORLD_USABLE = new Set(['Rare Candy']);
+let _overworldUsable;
+function isOverworldUsable(id) {
+  if (!_overworldUsable) _overworldUsable = new Set([resolveItemId('Rare Candy')]);
+  return _overworldUsable.has(id);
+}
 
 /** Submenu options shown when selecting a key item. */
 const KEY_ITEM_OPTIONS = ['Use', 'Register', 'Cancel'];
@@ -84,19 +88,19 @@ export default class BagScreen {
         const absIdx   = this._scrollTop + i;
         const isCursor = absIdx === this._cursor;
         const prefix   = isCursor ? '▶ ' : '  ';
-        const isReg    = isKeyTab && entry.name === registered;
+        const isReg    = isKeyTab && entry.id === registered;
         const suffix   = isReg ? ' ★' : '';
 
         let line;
         if (isKeyTab) {
-          line = `${prefix}${(entry.name ?? 'Item') + suffix}`;
+          line = `${prefix}${(entry.label ?? 'Item') + suffix}`;
         } else {
-          const usable   = OVERWORLD_USABLE.has(entry.name ?? '');
+          const usable   = isOverworldUsable(entry.id);
           const color    = usable ? '#181818' : '#666666';
           const style    = { ...TEXT_STYLE_BODY, color };
           const hideQty  = key === 'tms' && getGameDef().infiniteTMs;
           const qtySuffix = hideQty ? '' : `  x${entry.quantity ?? 1}`;
-          line = `${prefix}${String(entry.name ?? 'Item').padEnd(16)}${qtySuffix}`;
+          line = `${prefix}${String(entry.label ?? 'Item').padEnd(16)}${qtySuffix}`;
           reg(scene.add.text(SX + 16, LIST_Y + i * ROW_H, line, style));
           return;
         }
@@ -115,7 +119,7 @@ export default class BagScreen {
     // Hint bar
     const hint = isKeyTab
       ? '◀▶ switch tab   ▲▼ select   Z  options   X  back'
-      : (key === 'items' && entries.some(e => OVERWORLD_USABLE.has(e.name ?? '')))
+      : (key === 'items' && entries.some(e => isOverworldUsable(e.id)))
         ? '◀▶ switch tab   ▲▼ select   Z  use   X  back'
         : '◀▶ switch tab   ▲▼ scroll   X  back';
     reg(scene.add.text(SX + SW - 16, SY + SH - 32, hint, TEXT_STYLE_HINT)).setOrigin(1, 0);
@@ -190,10 +194,10 @@ export default class BagScreen {
       const option = KEY_ITEM_OPTIONS[this._subCursor];
       if (option === 'Use') {
         this._subMenu = false;
-        this.menu.scene.game.events.emit('use-key-item', this._subItem);
+        this.menu.scene.game.events.emit('use-key-item', this._subItemId);
         this.menu.close();
       } else if (option === 'Register') {
-        store.commit('bag/REGISTER_ITEM', this._subItem);
+        store.commit('bag/REGISTER_ITEM', this._subItemId);
         const registered = gameState.bag.registeredItem;
         const msg = registered
           ? `${this._subItem} registered to Backspace!`
@@ -218,7 +222,8 @@ export default class BagScreen {
       if (!entry) return;
       this._subMenu   = true;
       this._subCursor = 0;
-      this._subItem   = entry.name;
+      this._subItem   = entry.label;
+      this._subItemId = entry.id;
       this.menu._clearSubTexts();
       this.build();
       return;
@@ -230,12 +235,12 @@ export default class BagScreen {
     const entry   = entries[this._cursor];
     if (!entry) return;
 
-    if (!OVERWORLD_USABLE.has(entry.name)) {
-      this.menu.scene.game.events.emit('toast', `Can't use ${entry.name} here.`);
+    if (!isOverworldUsable(entry.id)) {
+      this.menu.scene.game.events.emit('toast', `Can't use ${entry.label} here.`);
       return;
     }
 
-    this.menu.pendingUseItem = entry.name;
+    this.menu.pendingUseItem = { id: entry.id, label: entry.label };
     this.menu._transitionTo('bag-team-pick');
   }
 

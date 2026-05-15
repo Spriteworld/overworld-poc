@@ -6,7 +6,7 @@ import { getGameDef, filterByAvailablePokemon, seededRng } from '@Data/gameDef.j
 import Tileset from '@Tileset';
 import { rng } from '@Utilities/rng.js';
 import store from '../../store/index.js';
-import { buildBattleInventory } from './encounter.js';
+import { buildBattleInventory } from '@Data/itemDefs.js';
 import Reflection from '@Objects/characters/Reflection.js';
 
 /** Default percentage of encounter-zone tiles that spawn a visible OW Pokémon. */
@@ -660,7 +660,7 @@ export default class OverworldEncounter {
       ivs:   { ...p.ivs },
       evs:   { ...p.evs },
     }));
-    battleConfig.player.inventory = buildBattleInventory();
+    battleConfig.player.inventory = buildBattleInventory(store.state.bag);
   }
 
   /**

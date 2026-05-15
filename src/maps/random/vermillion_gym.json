@@ -195,19 +195,19 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/..\/tileset\/gen3_inside.json"
+         "source":"..\/..\/..\/worlds\/_base\/tileset\/gen3_inside.json"
         }, 
         {
          "firstgid":3681,
-         "source":"..\/..\/tileset\/gen3_outside.json"
+         "source":"..\/..\/..\/worlds\/_base\/tileset\/gen3_outside.json"
         }, 
         {
          "firstgid":11665,
-         "source":"..\/..\/tileset\/maps\/kanto_inside.json"
+         "source":"..\/..\/..\/worlds\/_base\/tileset\/maps\/kanto_inside.json"
         }, 
         {
          "firstgid":12257,
-         "source":"..\/..\/tileset\/gen3_gyms_inside.json"
+         "source":"..\/..\/..\/worlds\/_base\/tileset\/gen3_gyms_inside.json"
         }],
  "tilewidth":32,
  "type":"map",

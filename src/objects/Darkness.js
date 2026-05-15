@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { EventBus } from '@Utilities';
 import * as Tile from './Tile.js';
 import store from '../store/index.js';
-import { SHADER_KEYS } from '@/shaders/keys.js';
+import { SHADER_KEYS } from '@Worlds/_base/shaders/keys.js';
 
 const BASE_RADIUS_TILES  = 2.5;
 const FLASH_RADIUS_TILES = 7.0;

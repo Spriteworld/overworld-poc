@@ -68,8 +68,8 @@
     "propertytype": "cmd-move_npc",
     "type": "class",
     "value": {
-      "character": "PewterAide",
-      "anchor": "AideBlocker"
+      "anchor": "AideBlocker",
+      "character": "PewterAide"
     }
   }
 ]

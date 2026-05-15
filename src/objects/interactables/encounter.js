@@ -1,8 +1,9 @@
 import { Tile } from '@Objects';
-import { Pokedex, Items, buildMon } from '@spriteworld/pokemon-data';
+import { Pokedex, buildMon } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
 import { getPropertyValue, getBattleTheme } from '@Utilities';
 import { getGameDef, filterByAvailablePokemon, seededRng } from '@Data/gameDef.js';
+import { buildBattleInventory } from '@Data/itemDefs.js';
 import store from '../../store/index.js';
 import { rng } from '@Utilities/rng.js';
 
@@ -25,58 +26,6 @@ function hashStr(s) {
   let h = 5381;
   for (let i = 0; i < s.length; i++) h = (Math.imul(h, 33) ^ s.charCodeAt(i)) >>> 0;
   return h;
-}
-
-/**
- * Maps item names (as stored in the bag) to their battle item constructors.
- * Only items that have a corresponding battle class are included; unknown
- * entries are silently skipped when building the battle inventory.
- */
-const ITEM_REGISTRY = {
-  'Potion':        Items.Potion,
-  'Super Potion':  Items.SuperPotion,
-  'Hyper Potion':  Items.HyperPotion,
-  'Max Potion':    Items.MaxPotion,
-  'Full Restore':  Items.FullRestore,
-  'Ether':         Items.Ether,
-  'Revive':        Items.Revive,
-};
-
-/**
- * Maps normalised ball names to their battle item constructors.
- * Normalisation: lowercase, remove spaces/hyphens/underscores, replace accented e.
- */
-const BALL_REGISTRY = {
-  'pokeball':   Items.Pokeball,
-  'greatball':  Items.GreatBall,
-  'ultraball':  Items.UltraBall,
-  'masterball': Items.MasterBall,
-};
-
-function normalizeBallName(name) {
-  return name.toLowerCase().replace(/[-_\s]/g, '').replace(/[éèê]/g, 'e');
-}
-
-export function buildBattleInventory() {
-  const { items, pokeballs } = store.state.bag;
-
-  const battleItems = items
-    .filter(e => ITEM_REGISTRY[e.name] && e.quantity > 0)
-    .map(e => ({ item: new ITEM_REGISTRY[e.name](), quantity: e.quantity }));
-
-  const battleBalls = pokeballs
-    .filter(e => e.quantity > 0)
-    .map(e => {
-      const Cls = BALL_REGISTRY[normalizeBallName(e.name)];
-      return Cls ? { item: new Cls(), quantity: e.quantity } : null;
-    })
-    .filter(Boolean);
-
-  return {
-    items: [...battleItems, ...battleBalls],
-    pokeballs: [],
-    tms: [],
-  };
 }
 
 const ENCOUNTER_RATE = 0.1; // 10% chance per tile step
@@ -408,7 +357,7 @@ export default class {
           ivs:   { ...p.ivs },
           evs:   { ...p.evs },
         })),
-        inventory: buildBattleInventory(),
+        inventory: buildBattleInventory(store.state.bag),
       },
       enemy: {
         isTrainer: false,

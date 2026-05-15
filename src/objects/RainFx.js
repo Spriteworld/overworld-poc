@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { SHADER_KEYS } from '@/shaders/keys.js';
+import { SHADER_KEYS } from '@Worlds/_base/shaders/keys.js';
 import debug from '@Data/debug.js';
 
 /**

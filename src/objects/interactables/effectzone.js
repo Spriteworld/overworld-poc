@@ -1,6 +1,6 @@
 import * as Tile from '@Objects/Tile.js';
 import { getPropertyValue } from '@Utilities';
-import { SHADER_KEYS } from '@/shaders/keys.js';
+import { SHADER_KEYS } from '@Worlds/_base/shaders/keys.js';
 import Darkness from '@Objects/Darkness.js';
 import RainFx, { RAIN_VARIANTS } from '@Objects/RainFx.js';
 import FogFx, { FOG_VARIANTS } from '@Objects/FogFx.js';

@@ -13,19 +13,20 @@ import { getStartFlags, clearStartFlags } from '@Data/startFlags.js';
 import { getStartDebug, clearStartDebug } from '@Data/startDebug.js';
 import { getStartPlayerLocation, clearStartPlayerLocation } from '@Data/startPlayerLocation.js';
 import { isTestMode } from '@Data/testMode.js';
+import { resolveItemId } from '@Data/itemDefs.js';
 import { initRng } from '@Utilities/rng.js';
 import { createInputManager, getInputManager } from '@Utilities';
 import { SHADER_ASSET_KEYS } from '@/asset-key.js';
-import shader_wipe          from '@/assets/shader/wipe.png';
-import shader_wipe_diagonal from '@/assets/shader/wipe-diagonal.png';
-import shader_wipe_vertical from '@/assets/shader/wipe-vertical.png';
-import shader_close_bars    from '@/assets/shader/close-bars.png';
-import shader_trapped       from '@/assets/shader/trapped.png';
-import shader_fog_diagonal  from '@/assets/shader/fog_diagonal.png';
-import shader_fog_horizontal from '@/assets/shader/fog_horizontal.png';
-import shader_sandstorm     from '@/assets/shader/sandstorm.png';
-import shader_snow0         from '@/assets/shader/snow0.png';
-import shader_snow1         from '@/assets/shader/snow1.png';
+import shader_wipe          from '@Worlds/_base/shaders/wipe.png';
+import shader_wipe_diagonal from '@Worlds/_base/shaders/wipe-diagonal.png';
+import shader_wipe_vertical from '@Worlds/_base/shaders/wipe-vertical.png';
+import shader_close_bars    from '@Worlds/_base/shaders/close-bars.png';
+import shader_trapped       from '@Worlds/_base/shaders/trapped.png';
+import shader_fog_diagonal  from '@Worlds/_base/shaders/fog_diagonal.png';
+import shader_fog_horizontal from '@Worlds/_base/shaders/fog_horizontal.png';
+import shader_sandstorm     from '@Worlds/_base/shaders/sandstorm.png';
+import shader_snow0         from '@Worlds/_base/shaders/snow0.png';
+import shader_snow1         from '@Worlds/_base/shaders/snow1.png';
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -90,8 +91,6 @@ export default class extends Phaser.Scene {
     this.load.spritesheet('may_surf', Tileset.may_surf, {frameWidth: 32, frameHeight: 48});
     this.load.spritesheet('base_surf', Tileset.base_surf, {frameWidth: 64, frameHeight: 64});
 
-    // Menu UI icons — per-icon PNGs from public/tileset/ui/ (types + categories)
-    // plus the remaining status spritesheet.
     this.load.spritesheet('statuses', Tileset.statuses_sheet, { frameWidth: 44, frameHeight: 16 });
     const TYPE_NAMES = [
       'normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison',
@@ -99,13 +98,11 @@ export default class extends Phaser.Scene {
       'steel', 'fairy',
     ];
     const CATEGORY_NAMES = ['physical', 'special', 'status'];
-    // Display targets — pre-downscale onto a canvas so Phaser renders at 1:1
-    // (no WebGL bilinear smudge on high-contrast pixel art).
-    TYPE_NAMES.forEach(t     => this._loadResized(`type-${t}`,     `tileset/ui/types/${t}.png`,     24, 24));
-    CATEGORY_NAMES.forEach(c => this._loadResized(`category-${c}`, `tileset/ui/categories/${c}.png`, 24, 24));
+    TYPE_NAMES.forEach(t     => this._loadResized(`type-${t}`,     `ui/types/${t}.png`,     24, 24));
+    CATEGORY_NAMES.forEach(c => this._loadResized(`category-${c}`, `ui/categories/${c}.png`, 24, 24));
 
     for (const skin of windowSkins) {
-      this.load.image(`win_${skin.key}`, `tileset/ui/windows/${skin.file}`);
+      this.load.image(`win_${skin.key}`, `ui/windows/${skin.file}`);
     }
 
     this.load.spritesheet('animated_grass', Tileset.animated_grass, { frameWidth: Tile.WIDTH, frameHeight: Tile.HEIGHT });
@@ -259,7 +256,8 @@ export default class extends Phaser.Scene {
     }
 
     if (this.game.config.gameFlags.has_bike) {
-      const hasBicycle = store.state.bag.keyItems.some(e => e.name === 'Bicycle');
+      const bicycleId = resolveItemId('Bicycle');
+      const hasBicycle = bicycleId != null && store.state.bag.keyItems.some(e => e.id === bicycleId);
       if (!hasBicycle) {
         store.commit('bag/PICKUP', { name: 'Bicycle', qty: 1 });
       }

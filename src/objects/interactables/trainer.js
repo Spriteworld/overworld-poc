@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import * as Tile from '@Objects/Tile.js';
-import { Items, buildMon, buildMovePool, resolveSpecies } from '@spriteworld/pokemon-data';
+import { buildMon, buildMovePool, resolveSpecies } from '@spriteworld/pokemon-data';
 import { gameState } from '@Data/gameState.js';
 import { getPropertyValue, getBattleTheme, remapProps, Vector2, checkOnlyIf, assertNotReservedId, loadOverworldSpritesheet } from '@Utilities';
 import { getGameDef } from '@Data/gameDef.js';
@@ -10,51 +10,7 @@ import Tileset from '@Tileset';
 import Trainer from '@Objects/characters/Trainer.js';
 import ScriptRunner from '../../utilities/ScriptRunner.js';
 import store from '../../store/index.js';
-
-// ── Battle helpers (mirrors encounter.js) ────────────────────────────────────
-
-const ITEM_REGISTRY = {
-  'Potion':        Items.Potion,
-  'Super Potion':  Items.SuperPotion,
-  'Hyper Potion':  Items.HyperPotion,
-  'Max Potion':    Items.MaxPotion,
-  'Full Restore':  Items.FullRestore,
-  'Ether':         Items.Ether,
-  'Revive':        Items.Revive,
-};
-
-const BALL_REGISTRY = {
-  'pokeball':   Items.Pokeball,
-  'greatball':  Items.GreatBall,
-  'ultraball':  Items.UltraBall,
-  'masterball': Items.MasterBall,
-};
-
-function normalizeBallName(name) {
-  return name.toLowerCase().replace(/[-_\s]/g, '').replace(/[éèê]/g, 'e');
-}
-
-function buildBattleInventory() {
-  const { items, pokeballs } = store.state.bag;
-
-  const battleItems = items
-    .filter(e => ITEM_REGISTRY[e.name] && e.quantity > 0)
-    .map(e => ({ item: new ITEM_REGISTRY[e.name](), quantity: e.quantity }));
-
-  const battleBalls = pokeballs
-    .filter(e => e.quantity > 0)
-    .map(e => {
-      const Cls = BALL_REGISTRY[normalizeBallName(e.name)];
-      return Cls ? { item: new Cls(), quantity: e.quantity } : null;
-    })
-    .filter(Boolean);
-
-  return {
-    items: [...battleItems, ...battleBalls],
-    pokeballs: [],
-    tms:       [],
-  };
-}
+import { buildBattleInventory } from '@Data/itemDefs.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -354,7 +310,7 @@ export default class {
           ivs:   { ...p.ivs },
           evs:   { ...p.evs },
         })),
-        inventory: buildBattleInventory(),
+        inventory: buildBattleInventory(store.state.bag),
       },
       enemy: {
         isTrainer:             true,

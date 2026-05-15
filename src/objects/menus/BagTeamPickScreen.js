@@ -8,10 +8,13 @@ import {
   TEXT_STYLE, TEXT_STYLE_BOLD, TEXT_STYLE_BODY, TEXT_STYLE_HINT, TEXT_STYLE_SM,
 } from './layout.js';
 
-/** Item name → effect function.  Expand as new overworld-usable items are added. */
-const ITEM_EFFECTS = {
-  'Rare Candy': applyRareCandy,
-};
+import { resolveItemId } from '@Data/itemDefs.js';
+
+let _itemEffects;
+function getItemEffects() {
+  if (!_itemEffects) _itemEffects = { [resolveItemId('Rare Candy')]: applyRareCandy };
+  return _itemEffects;
+}
 
 const ROW_H   = 44;
 const START_Y = SY + 52;
@@ -28,14 +31,14 @@ export default class BagTeamPickScreen {
 
   build() {
     const { scene, reg } = this.menu;
-    const itemName = this.menu.pendingUseItem;
+    const useItem  = this.menu.pendingUseItem;
+    const itemLabel = useItem?.label ?? useItem;
     const party    = this._party();
 
-    // Ensure dex is available for species name lookups.
     if (!this.menu.dex) this.menu.dex = new Pokedex(getGameDef().game);
     const dex = this.menu.dex;
 
-    reg(scene.add.text(SX + PAD, SY + 4, `USE ${itemName.toUpperCase()}`, TEXT_STYLE_BOLD));
+    reg(scene.add.text(SX + PAD, SY + 4, `USE ${itemLabel.toUpperCase()}`, TEXT_STYLE_BOLD));
     reg(scene.add.text(SX + PAD, SY + 26, 'Choose a Pokémon', TEXT_STYLE_BODY));
 
     party.forEach((mon, i) => {
@@ -74,10 +77,11 @@ export default class BagTeamPickScreen {
   }
 
   confirm() {
-    const party    = this._party();
-    const mon      = party[this.cursor];
-    const itemName = this.menu.pendingUseItem;
-    const effect   = ITEM_EFFECTS[itemName];
+    const party   = this._party();
+    const mon     = party[this.cursor];
+    const useItem = this.menu.pendingUseItem;
+    const itemId  = useItem?.id ?? useItem;
+    const effect  = getItemEffects()[itemId];
 
     if (!mon || !effect) return;
 
@@ -88,7 +92,6 @@ export default class BagTeamPickScreen {
       return;
     }
 
-    // Apply changes via Vuex mutations so store stays reactive.
     store.commit('party/APPLY_RARE_CANDY', {
       pid:                 mon.pid,
       newLevel:            result.newLevel,
@@ -97,7 +100,7 @@ export default class BagTeamPickScreen {
       newMoves:            result.newMoves,
       pendingMovesToLearn: result.pendingMovesToLearn,
     });
-    store.commit('bag/USE_ITEM', itemName);
+    store.commit('bag/USE_ITEM', itemId);
 
     // Show level-up toast.
     const entry    = this.menu.dex?.getPokemonById(mon.species);

@@ -25,7 +25,8 @@ import re
 
 MAPS_DIR    = pathlib.Path(__file__).parent
 SRC_DIR     = MAPS_DIR.parent.parent           # src/
-TILESET_DIR = SRC_DIR / 'tileset'
+PROJECT_DIR = SRC_DIR.parent                   # character/
+TILESET_DIR = PROJECT_DIR / 'worlds' / '_base' / 'tileset'
 
 
 def tileset_png_path(ts_json):

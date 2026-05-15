@@ -1,4 +1,4 @@
-import { SHADER_KEYS } from '@/shaders/keys.js';
+import { SHADER_KEYS } from '@Worlds/_base/shaders/keys.js';
 import { SHADER_ASSET_KEYS } from '@/asset-key.js';
 
 /**

@@ -103,6 +103,13 @@ export default class extends Phaser.Scene {
    * @param {object} data - Data passed from the previous scene (e.g. playerLocation).
    */
   init(data) {
+    // Clear spawn-related keys from any prior run so stale values don't
+    // leak through the shallow merge (e.g. an old warpLocationName
+    // overriding a _lastmap_ playerLocation).
+    delete this.config.warpLocationName;
+    delete this.config.playerLocation;
+    delete this.config.variant;
+    delete this.config._pendingScript;
     this.config = { ...this.config, ...data };
     this.registry.set('map', this.config.mapName);
 
@@ -1017,11 +1024,23 @@ export default class extends Phaser.Scene {
 
     // Seed the store with the player's initial position on this map.
     const spawn = this.gridEngine.getPosition('player');
+    const spawnCharLayer = this.gridEngine.getCharLayer('player');
     gameState.playerTile = {
       x: spawn.x,
       y: spawn.y,
-      charLayer: this.gridEngine.getCharLayer('player'),
+      charLayer: spawnCharLayer,
     };
+
+    // Seed lastOutdoorLocation on arrival so _lastmap_ works even if the
+    // player enters a building without taking a step first.
+    if (!this.config?.inside) {
+      store.commit('game/SET_LAST_OUTDOOR_LOCATION', {
+        map:       this.config.mapName,
+        x:         spawn.x,
+        y:         spawn.y,
+        charLayer: spawnCharLayer,
+      });
+    }
 
     // Seed the tile index with every non-player character's starting tile.
     for (const [charId, character] of this.characters) {
@@ -1042,14 +1061,10 @@ export default class extends Phaser.Scene {
             charLayer: this.gridEngine.getCharLayer('player'),
           };
           if (!this.config?.inside) {
-            // Record the tile the player just LEFT (not the one they're
-            // stepping onto). If the step lands on a door/warp tile, we still
-            // need a safe "outside" spot to return them to via `_lastmap_` —
-            // the warp tile itself would re-trigger the warp immediately.
             store.commit('game/SET_LAST_OUTDOOR_LOCATION', {
               map:       this.config.mapName,
-              x:         exitTile.x,
-              y:         exitTile.y,
+              x:         enterTile.x,
+              y:         enterTile.y,
               charLayer: this.gridEngine.getCharLayer('player'),
             });
           }

@@ -4,21 +4,21 @@
     "maps": [
         {
             "fileName": "pallet.json",
-            "x": -928,
+            "x": -544,
             "y": 1312,
             "width": 1664,
             "height": 640
         },
         {
             "fileName": "route1.json",
-            "x": -928,
+            "x": -544,
             "y": 0,
             "width": 1664,
             "height": 1312
         },
         {
             "fileName": "viridian_city.json",
-            "x": -608,
+            "x": -224,
             "y": -1312,
             "width": 1536,
             "height": 1312
@@ -27,183 +27,225 @@
             "fileName": "route22.json",
             "x": -2592,
             "y": -1312,
-            "width": 1984,
+            "width": 2368,
             "height": 1312
         },
         {
             "fileName": "route2.json",
-            "x": -928,
+            "x": -544,
             "y": -4000,
             "width": 1856,
             "height": 2688
         },
         {
             "fileName": "pewter_city.json",
-            "x": -1120,
+            "x": -544,
             "y": -5472,
-            "width": 1888,
+            "width": 1696,
             "height": 1472
         },
         {
             "fileName": "route21.json",
-            "x": -928,
+            "x": -544,
             "y": 1952,
             "width": 1664,
             "height": 3200
         },
         {
             "fileName": "route3.json",
-            "x": 768,
+            "x": 1152,
             "y": -5728,
             "width": 2784,
             "height": 1728
         },
         {
             "fileName": "route4.json",
-            "x": 3552,
+            "x": 3936,
             "y": -5728,
             "width": 2592,
             "height": 1728
         },
         {
             "fileName": "cerulean_city.json",
-            "x": 6144,
+            "x": 6528,
             "y": -5792,
             "width": 1536,
             "height": 1280
         },
         {
             "fileName": "route24.json",
-            "x": 6144,
+            "x": 6528,
             "y": -7264,
             "width": 1312,
             "height": 1472
         },
         {
             "fileName": "route25.json",
-            "x": 7456,
+            "x": 7840,
             "y": -7264,
             "width": 2112,
             "height": 1472
         },
         {
             "fileName": "route9.json",
-            "x": 7680,
+            "x": 8064,
             "y": -5792,
             "width": 2304,
             "height": 1184
         },
         {
             "fileName": "route5.json",
-            "x": 6144,
+            "x": 6528,
             "y": -4512,
             "width": 1536,
             "height": 1280
         },
         {
             "fileName": "saffron_city.json",
-            "x": 6144,
+            "x": 6528,
             "y": -3232,
             "width": 1536,
             "height": 1280
         },
         {
             "fileName": "route8.json",
-            "x": 7680,
+            "x": 8064,
             "y": -3232,
             "width": 2304,
             "height": 1312
         },
         {
             "fileName": "lavender_town.json",
-            "x": 9984,
+            "x": 10368,
             "y": -2912,
             "width": 1056,
             "height": 640
         },
         {
             "fileName": "route10.json",
-            "x": 9664,
+            "x": 10048,
             "y": -5792,
             "width": 1376,
             "height": 2880
         },
         {
             "fileName": "route12.json",
-            "x": 7680,
+            "x": 8064,
             "y": -672,
             "width": 2304,
             "height": 1280
         },
         {
             "fileName": "cinnabar_island.json",
-            "x": -928,
+            "x": -544,
             "y": 5152,
             "width": 1504,
             "height": 928
         },
         {
             "fileName": "route20.json",
-            "x": 576,
+            "x": 960,
             "y": 4864,
             "width": 3616,
             "height": 1216
         },
         {
-            "fileName": "route19.json",
-            "x": 3808,
-            "y": 3872,
-            "width": 1344,
-            "height": 2208
-        },
-        {
             "fileName": "fuchsia_city.json",
-            "x": 3840,
-            "y": 2528,
+            "x": 4224,
+            "y": 2336,
             "width": 1536,
-            "height": 1344
+            "height": 1536
         },
         {
             "fileName": "route15.json",
-            "x": 5312,
-            "y": 2720,
-            "width": 2304,
-            "height": 928
+            "x": 5760,
+            "y": 2624,
+            "width": 2240,
+            "height": 1024
         },
         {
             "fileName": "route13.json",
-            "x": 8640,
+            "x": 9024,
             "y": 1216,
             "width": 2400,
             "height": 1024
         },
         {
             "fileName": "route14.json",
-            "x": 7488,
+            "x": 7872,
             "y": 1216,
             "width": 1152,
             "height": 2432
         },
         {
             "fileName": "route6.json",
-            "x": 6144,
+            "x": 6528,
             "y": -1952,
             "width": 1536,
             "height": 1280
         },
         {
             "fileName": "vermilion_city.json",
-            "x": 6144,
+            "x": 6528,
             "y": -672,
             "width": 1536,
             "height": 1280
         },
         {
             "fileName": "route7.json",
-            "x": 5248,
-            "y": -3232,
+            "x": 5632,
+            "y": -3584,
             "width": 896,
+            "height": 1952
+        },
+        {
+            "fileName": "celadon_city.json",
+            "x": 3840,
+            "y": -3584,
+            "width": 1792,
+            "height": 1952
+        },
+        {
+            "fileName": "route18.json",
+            "x": 2272,
+            "y": 2528,
+            "width": 1952,
+            "height": 1344
+        },
+        {
+            "fileName": "route17.json",
+            "x": 1856,
+            "y": -2304,
+            "width": 1984,
+            "height": 4832
+        },
+        {
+            "fileName": "route16.json",
+            "x": 1856,
+            "y": -3584,
+            "width": 1984,
             "height": 1280
+        },
+        {
+            "fileName": "route19.json",
+            "x": 4192,
+            "y": 3872,
+            "width": 1568,
+            "height": 2208
+        },
+        {
+            "fileName": "route23.json",
+            "x": -2592,
+            "y": -6304,
+            "width": 2048,
+            "height": 4992
+        },
+        {
+            "fileName": "indigo_plateau_exterior.json",
+            "x": -2592,
+            "y": -6880,
+            "width": 2048,
+            "height": 576
         }
     ]
 }

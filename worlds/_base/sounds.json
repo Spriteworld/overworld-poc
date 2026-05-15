@@ -1,0 +1,27 @@
+{
+  "bgm": {
+    "bicycle":                "/bgm/bicycle.ogg",
+    "evolution":              "/bgm/evolution.ogg",
+    "battle_trainer":         "/bgm/battle-trainer.ogg",
+    "battle_wild":            "/bgm/battle-wild.ogg",
+    "battle_victory":         "/bgm/battle-won.ogg",
+    "battle_victory_leader":  "/bgm/battle-trainer-gymleader.ogg",
+    "battle_victory_trainer": "/bgm/battle-trainer-won.ogg",
+    "battle_victory_wild":    "/bgm/battle-wild-won.ogg"
+  },
+  "se": {
+    "bicycle":           "/se/bicycle.ogg",
+    "cut":               "/se/cut.ogg",
+    "danger":            "/se/danger.wav",
+    "faint":             "/se/faint.wav",
+    "hit":               "/se/hit.wav",
+    "hit_strong":        "/se/hit_strong.wav",
+    "hit_weak":          "/se/hit_weak.wav",
+    "ledge_jump":        "/se/ledge_jump.ogg",
+    "movement_blocked":  "/se/movement_blocked.ogg",
+    "level_up":          "/se/level_up.wav",
+    "menu_open":         "/se/menu_open.wav",
+    "stat_down":         "/se/stat_down.wav",
+    "stat_up":           "/se/stat_up.wav"
+  }
+}

@@ -1,4 +1,4 @@
-import { SHADER_KEYS } from '@/shaders/keys.js';
+import { SHADER_KEYS } from '@Worlds/_base/shaders/keys.js';
 
 /**
  * Per-scene time-of-day tint. Replaces the old TimeOverlay scene's full-

@@ -9,7 +9,7 @@ const HAS_FEMALE_ICON = new Set([521, 592, 593]);
 
 /**
  * Reusable Phaser Container that displays a Pokémon icon from
- * src/tileset/pokemon/icons/ (32×32 static PNGs).
+ * worlds/_base/pokemon/icons/ (32×32 static PNGs).
  *
  * Handles lazy texture loading, shiny variants (front/shiny/),
  * female variants (-female suffix for species that ship one), and
@@ -39,33 +39,24 @@ export default class PokemonSprite extends Phaser.GameObjects.Container {
     const suffix = forme ? `-${forme}`
                  : (gender === 'female' && HAS_FEMALE_ICON.has(Number(species))) ? '-female'
                  : '';
-    // Directory picker: front sprites come from /tileset/pokemon/front/{,shiny/},
-    // menu icons come from /tileset/pokemon/icons/{,shiny/}.
     const dir = variant === 'front' ? 'front' : 'icons';
     this._key  = `pkmn-${dir}-${base}${suffix}${shiny ? '-shiny' : ''}`;
-    const tilesetBaseUrl = import.meta.env.VITE_ASSETS_URL;
+    const assetsBase = import.meta.env.VITE_ASSETS_URL ?? '/';
     this._path = shiny
-      ? new URL(tilesetBaseUrl + `/tileset/pokemon/${dir}/shiny/` + base + suffix + '.png', import.meta.url).href
-      : new URL(tilesetBaseUrl + `/tileset/pokemon/${dir}/`       + base + suffix + '.png', import.meta.url).href;
+      ? `${assetsBase}pokemon/${dir}/shiny/${base}${suffix}.png`
+      : `${assetsBase}pokemon/${dir}/${base}${suffix}.png`;
 
-    // Fallback (base, no variant) used if the specific variant file is missing.
-    // For shinies, fall back to the shiny base first, then the non-shiny base.
     this._fallbackKey  = `pkmn-${dir}-${base}${shiny ? '-shiny' : ''}`;
     this._fallbackPath = shiny
-      ? new URL(tilesetBaseUrl + `/tileset/pokemon/${dir}/shiny/` + base + '.png', import.meta.url).href
-      : new URL(tilesetBaseUrl + `/tileset/pokemon/${dir}/`       + base + '.png', import.meta.url).href;
+      ? `${assetsBase}pokemon/${dir}/shiny/${base}.png`
+      : `${assetsBase}pokemon/${dir}/${base}.png`;
 
-    // Cross-variant fallback: if the requested variant doesn't ship this
-    // species at all (e.g. icons/ is missing Mr. Mime #122 but front/ has it),
-    // fall back to the opposite variant rather than jumping to the unknown
-    // silhouette.
     const altDir = dir === 'front' ? 'icons' : 'front';
     this._altKey  = `pkmn-${altDir}-${base}`;
-    this._altPath = new URL(tilesetBaseUrl + `/tileset/pokemon/${altDir}/` + base + '.png', import.meta.url).href;
+    this._altPath = `${assetsBase}pokemon/${altDir}/${base}.png`;
 
-    // Ultimate fallback: unknown Pokémon silhouette (species 0)
     this._unknownKey  = 'pkmn-icon-unknown';
-    this._unknownPath = new URL(tilesetBaseUrl + '/tileset/pokemon/front/0.png', import.meta.url).href;
+    this._unknownPath = `${assetsBase}pokemon/front/0.png`;
 
     // Placeholder while loading
     this._placeholder = scene.add.graphics();

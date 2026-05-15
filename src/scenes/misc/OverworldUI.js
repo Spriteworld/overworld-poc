@@ -6,7 +6,7 @@ import ShopMenu from '@Utilities/ShopMenu.js';
 import { PauseMenu } from '@Objects';
 import { gameState, saveGame } from '@Data/gameState.js';
 import store from '../../store/index.js';
-import { KEY_ITEMS } from '../../store/modules/bag.js';
+import { resolveItemId, isKeyItem } from '../../data/itemDefs.js';
 import { Pokedex, GENDERS, getSpeciesDisplayName } from '@spriteworld/pokemon-data';
 import { getGameDef } from '@Data/gameDef.js';
 import { getStartPauseScreen, clearStartPauseScreen } from '@Data/startPauseScreen.js';
@@ -186,10 +186,14 @@ export default class extends Phaser.Scene {
    */
   handleEvents() {
     this._onGameEvent('item-pickup', (payload) => {
-      const name = typeof payload === 'string' ? payload : payload.name;
-      const qty  = typeof payload === 'object'  ? payload.qty : null;
-      const isKey = KEY_ITEMS.has(name);
-      store.commit('bag/PICKUP', { name, qty: isKey ? null : (qty ?? 1) });
+      const raw = typeof payload === 'string' ? payload : (payload.name ?? payload.id);
+      const qty = typeof payload === 'object' ? payload.qty : null;
+      const id  = resolveItemId(raw);
+      if (id == null) {
+        console.warn(`[OverworldUI] item-pickup: unknown item "${raw}"`);
+        return;
+      }
+      store.commit('bag/PICKUP', { id, qty: isKeyItem(id) ? null : (qty ?? 1) });
     });
 
     this._onGameEvent('toast', (value) => {
@@ -443,13 +447,14 @@ export default class extends Phaser.Scene {
     });
 
     // ─── Key item self-use (e.g. Bicycle, Surf) ──────────────────────────
-    this._onGameEvent('use-key-item', (itemName) => {
+    this._onGameEvent('use-key-item', (itemNameOrId) => {
+      const itemId   = resolveItemId(itemNameOrId);
       const mapName  = this.registry.get('map');
       const mapScene = mapName ? this.scene.get(mapName) : null;
       const player   = mapScene?.mapPlugins?.player?.player;
       if (!player) return;
 
-      if (itemName === 'Bicycle') {
+      if (itemId === resolveItemId('Bicycle')) {
         if (mapScene?.config?.inside) return;
         // Per-map / gameDef opt-out — set map-settings.can_bike = false to
         // disable bike toggling on maps where it doesn't fit. Always allow
@@ -465,7 +470,7 @@ export default class extends Phaser.Scene {
         return;
       }
 
-      if (itemName === 'Surf (HM03)') {
+      if (itemId === resolveItemId('Surf (HM03)')) {
         if (!store.state.game.gameFlags.has_surf) return;
         const inSurf = player.stateMachine.currentState?.name === player.stateDef.SURF;
         if (inSurf) {

@@ -11,7 +11,7 @@
   "tilesets": [
     {
       "firstgid": 1,
-      "source": "../../../src/tileset/interactables/interactables.json"
+      "source": "../../_base/tileset/interactables/interactables.json"
     },
     {
       "firstgid": 6,
@@ -784,7 +784,26 @@
           "visible": true,
           "width": 32,
           "x": 64,
-          "y": 160
+          "y": 160,
+          "properties": [
+            {
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-open_shop",
+                  "type": "class",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "trigger",
+              "propertytype": "trigger-list",
+              "type": "string",
+              "value": "interact"
+            }
+          ]
         },
         {
           "height": 32,
@@ -796,7 +815,26 @@
           "visible": true,
           "width": 32,
           "x": 96,
-          "y": 128
+          "y": 128,
+          "properties": [
+            {
+              "name": "script",
+              "type": "list",
+              "value": [
+                {
+                  "propertytype": "cmd-open_shop",
+                  "type": "class",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "trigger",
+              "propertytype": "trigger-list",
+              "type": "string",
+              "value": "interact"
+            }
+          ]
         }
       ]
     }

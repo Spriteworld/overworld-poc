@@ -1,5 +1,6 @@
-/** Item names that are treated as key items: no quantity, cannot be used up. */
-export const KEY_ITEMS = new Set(['Bicycle', 'Surf (HM03)', 'Oaks Parcel']);
+import {
+  resolveItemId, getItemLabel, getItemCategory, isKeyItem, getBagListKey,
+} from '../../data/itemDefs.js';
 
 export default {
   namespaced: true,
@@ -14,82 +15,69 @@ export default {
 
   mutations: {
     PICKUP(state, payload) {
-      const name = typeof payload === 'string' ? payload : payload.name;
+      const raw  = typeof payload === 'string' ? payload : (payload.name ?? payload.id);
       const qty  = typeof payload === 'string' ? 1 : (payload.qty ?? 1);
+      const id   = resolveItemId(raw);
 
-      if (KEY_ITEMS.has(name)) {
-        if (!state.keyItems.some(e => e.name === name)) {
-          state.keyItems.push({ name });
+      if (id == null) {
+        console.warn(`[bag/PICKUP] unknown item "${raw}"`);
+        return;
+      }
+
+      const label   = getItemLabel(id);
+      const listKey = getBagListKey(id);
+
+      if (listKey === 'keyItems') {
+        if (!state.keyItems.some(e => e.id === id)) {
+          state.keyItems.push({ id, label });
         }
         return;
       }
 
-      const isBall = /ball$/i.test(name);
-      const isTm   = /^(TM|HM)\d/i.test(name);
-      const list   = isBall ? state.pokeballs : isTm ? state.tms : state.items;
-      const entry  = list.find(e => e.name === name);
+      const list  = state[listKey];
+      const entry = list.find(e => e.id === id);
       if (entry) {
         entry.quantity += qty;
       } else {
-        list.push({ name, quantity: qty });
+        list.push({ id, label, quantity: qty });
       }
     },
 
-    ADD_ITEM(state, item) {
-      state.items.push(item);
-    },
-
-    ADD_POKEBALL(state, ball) {
-      state.pokeballs.push(ball);
-    },
-
-    ADD_TM(state, tm) {
-      state.tms.push(tm);
-    },
-
-    REGISTER_ITEM(state, name) {
-      state.registeredItem = (state.registeredItem === name) ? null : name;
+    REGISTER_ITEM(state, idOrName) {
+      const id = resolveItemId(idOrName);
+      state.registeredItem = (state.registeredItem === id) ? null : id;
     },
 
     LOAD(state, saved) {
-      if (saved.bag) {
-        if (Array.isArray(saved.bag.items)) {
-          state.items = saved.bag.items;
-        }
-        if (Array.isArray(saved.bag.pokeballs)) {
-          state.pokeballs = saved.bag.pokeballs;
-        }
-        if (Array.isArray(saved.bag.tms)) {
-          state.tms = saved.bag.tms;
-        }
-        if (Array.isArray(saved.bag.keyItems)) {
-          state.keyItems = saved.bag.keyItems;
-        }
-        if (saved.bag.registeredItem !== undefined) {
-          state.registeredItem = saved.bag.registeredItem;
-        }
+      if (!saved.bag) return;
+      for (const key of ['items', 'pokeballs', 'tms', 'keyItems']) {
+        if (!Array.isArray(saved.bag[key])) continue;
+        state[key] = saved.bag[key].map(e => {
+          if (e.id != null) return e;
+          const id = resolveItemId(e.name);
+          if (id == null) return null;
+          const label = getItemLabel(id);
+          return e.quantity != null ? { id, label, quantity: e.quantity } : { id, label };
+        }).filter(Boolean);
+      }
+      if (saved.bag.registeredItem !== undefined) {
+        const ri = saved.bag.registeredItem;
+        state.registeredItem = typeof ri === 'number' ? ri : resolveItemId(ri);
       }
     },
 
-    /**
-     * Decrement the quantity of a named item from the items list.
-     * Removes the entry when it reaches zero. Key items are ignored.
-     */
-    USE_ITEM(state, itemName) {
-      if (KEY_ITEMS.has(itemName)) return;
-      const idx = state.items.findIndex(e => e.name === itemName);
-      if (idx === -1) return;
-      state.items[idx].quantity--;
-      if (state.items[idx].quantity <= 0) {
-        state.items.splice(idx, 1);
+    USE_ITEM(state, idOrName) {
+      const id = resolveItemId(idOrName);
+      if (id == null || isKeyItem(id)) return;
+      for (const key of ['items', 'pokeballs', 'tms']) {
+        const idx = state[key].findIndex(e => e.id === id);
+        if (idx === -1) continue;
+        state[key][idx].quantity--;
+        if (state[key][idx].quantity <= 0) state[key].splice(idx, 1);
+        return;
       }
     },
 
-    /**
-     * Sync item quantities back from the battle engine after a fight ends.
-     * @param {Array<{ item: { getName(): string }, quantity: number }>} battleItems
-     *   The battle inventory items array — same objects mutated during the fight.
-     */
     RESET(state) {
       state.items          = [];
       state.pokeballs      = [];
@@ -99,15 +87,12 @@ export default {
     },
 
     SYNC_AFTER_BATTLE(state, battleItems) {
-      const norm = name => name.toLowerCase().replace(/[-_\s]/g, '').replace(/[éèê]/g, 'e');
       for (const { item, quantity } of battleItems) {
-        const name = item.getName();
-        const itemEntry = state.items.find(e => e.name === name);
-        if (itemEntry) { itemEntry.quantity = quantity; continue; }
-        const ballEntry = state.pokeballs.find(e => norm(e.name) === norm(name));
-        if (ballEntry) ballEntry.quantity = quantity;
+        const id = resolveItemId(item.getName());
+        if (id == null) continue;
+        const entry = [...state.items, ...state.pokeballs].find(e => e.id === id);
+        if (entry) entry.quantity = quantity;
       }
-      // Remove items/balls that were fully used up during the battle.
       state.items     = state.items.filter(e => e.quantity > 0);
       state.pokeballs = state.pokeballs.filter(e => e.quantity > 0);
     },

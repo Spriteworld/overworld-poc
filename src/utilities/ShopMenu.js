@@ -1,5 +1,5 @@
 import { getInputManager, Action } from './InputManager.js';
-import { ITEM_REGISTRY } from '../data/itemRegistry.js';
+import { getItemLabel, getItemPrice, getItemDescription, resolveItemId } from '../data/itemDefs.js';
 import QuantityPrompt from './QuantityPrompt.js';
 import ChoicePrompt from './ChoicePrompt.js';
 import store from '../store/index.js';
@@ -52,7 +52,7 @@ export default class ShopMenu {
 
   _handleUp() {
     if (this._phase !== 'browse') return;
-    const total = this._items.length + 1; // +1 for CANCEL row
+    const total = this._items.length + 1;
     this._cursor = (this._cursor - 1 + total) % total;
     this._adjustScroll();
     this._rebuild();
@@ -74,12 +74,12 @@ export default class ShopMenu {
       this._close();
       return;
     }
-    const itemName = this._items[this._cursor];
-    const info = ITEM_REGISTRY[itemName];
-    if (!info) { this._close(); return; }
+    const itemId = this._items[this._cursor];
+    const price  = getItemPrice(itemId);
+    if (!price) { this._close(); return; }
 
     const money = store.state.game.money;
-    if (money < info.price) {
+    if (money < price) {
       this._scene.game.events.emit('textbox-changedata', "You don't have enough money.");
       this._scene.game.events.once('textbox-ready', () => {
         this._scene.game.events.emit('textbox-intercept');
@@ -88,18 +88,18 @@ export default class ShopMenu {
     }
 
     this._phase = 'quantity';
-    const maxQty = Math.min(99, Math.floor(money / info.price));
+    const maxQty = Math.min(99, Math.floor(money / price));
     const qx = this._listX - 140;
     const qy = this._listY + LIST_PAD + (this._cursor - this._scroll) * ROW_H;
 
     this._quantityPrompt = new QuantityPrompt(this._scene, {
-      unitPrice: info.price,
+      unitPrice: price,
       maxQty,
       x: qx,
       y: qy,
       onConfirm: (qty) => {
         this._quantityPrompt = null;
-        this._confirmPurchase(itemName, qty, qty * info.price);
+        this._confirmPurchase(itemId, qty, qty * price);
       },
       onCancel: () => {
         this._quantityPrompt = null;
@@ -116,7 +116,7 @@ export default class ShopMenu {
 
   // ─── Purchase Flow ──────────────────────────────────────────────────────────
 
-  _confirmPurchase(itemName, qty, totalCost) {
+  _confirmPurchase(itemId, qty, totalCost) {
     this._phase = 'confirm';
     const text = `That will be ¥${totalCost.toLocaleString()}. OK?`;
     this._scene.game.events.emit('textbox-changedata', text);
@@ -125,7 +125,7 @@ export default class ShopMenu {
       this._choicePrompt = new ChoicePrompt(this._scene, ['YES', 'NO'], (idx) => {
         this._choicePrompt = null;
         if (idx === 0) {
-          this._executePurchase(itemName, qty, totalCost);
+          this._executePurchase(itemId, qty, totalCost);
         } else {
           this._phase = 'browse';
           this._showDescription();
@@ -134,9 +134,9 @@ export default class ShopMenu {
     });
   }
 
-  _executePurchase(itemName, qty, totalCost) {
+  _executePurchase(itemId, qty, totalCost) {
     store.commit('game/ADD_MONEY', -totalCost);
-    store.commit('bag/PICKUP', { name: itemName, qty });
+    store.commit('bag/PICKUP', { id: itemId, qty });
     this._phase = 'browse';
     this._rebuild();
 
@@ -201,26 +201,26 @@ export default class ShopMenu {
       const isCursor = idx === this._cursor;
 
       if (idx >= this._items.length) {
-        // CANCEL row
         const label = `${isCursor ? '▶ ' : '  '}CANCEL`;
         const t = this._scene.add.text(this._listX + LIST_PAD, rowY, label, FONT)
           .setScrollFactor(0).setDepth(DEPTH + 1);
         this._objects.push(t);
       } else {
-        const itemName = this._items[idx];
-        const info = ITEM_REGISTRY[itemName] ?? {};
-        const owned = this._getOwnedQty(itemName);
+        const itemId = this._items[idx];
+        const label  = getItemLabel(itemId);
+        const price  = getItemPrice(itemId);
+        const owned  = this._getOwnedQty(itemId);
         const prefix = isCursor ? '▶ ' : '  ';
 
         const nameText = this._scene.add.text(
           this._listX + LIST_PAD, rowY,
-          `${prefix}${itemName}`, FONT
+          `${prefix}${label}`, FONT
         ).setScrollFactor(0).setDepth(DEPTH + 1);
         this._objects.push(nameText);
 
         const priceText = this._scene.add.text(
           this._listX + LIST_W - LIST_PAD - 50, rowY,
-          `¥${(info.price ?? 0).toLocaleString()}`, FONT_PRICE
+          `¥${(price).toLocaleString()}`, FONT_PRICE
         ).setScrollFactor(0).setDepth(DEPTH + 1).setOrigin(1, 0);
         this._objects.push(priceText);
 
@@ -232,7 +232,6 @@ export default class ShopMenu {
       }
     }
 
-    // Scroll indicators
     if (this._scroll > 0) {
       const t = this._scene.add.text(this._listX + LIST_W - 20, this._listY + 2, '▲', FONT)
         .setScrollFactor(0).setDepth(DEPTH + 1);
@@ -256,20 +255,19 @@ export default class ShopMenu {
       });
       return;
     }
-    const itemName = this._items[this._cursor];
-    const info = ITEM_REGISTRY[itemName];
-    const desc = info?.description ?? '';
-    this._scene.game.events.emit('textbox-changedata', desc);
+    const itemId = this._items[this._cursor];
+    const desc   = getItemDescription(itemId);
+    this._scene.game.events.emit('textbox-changedata', desc || 'No description.');
     this._scene.game.events.once('textbox-ready', () => {
       this._scene.game.events.emit('textbox-intercept');
     });
   }
 
-  _getOwnedQty(name) {
+  _getOwnedQty(itemId) {
     const bag = store.state.bag;
-    const entry = bag.items.find(e => e.name === name)
-      || bag.pokeballs.find(e => e.name === name)
-      || bag.tms.find(e => e.name === name);
+    const entry = bag.items.find(e => e.id === itemId)
+      || bag.pokeballs.find(e => e.id === itemId)
+      || bag.tms.find(e => e.id === itemId);
     return entry?.quantity ?? 0;
   }
 

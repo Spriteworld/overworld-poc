@@ -1,6 +1,6 @@
 import { GameMap, Tile } from '@Objects';
 import { MAP_REGISTRY } from '@/worlds/registry.js';
-import { SHADER_KEYS } from '@/shaders/keys.js';
+import { SHADER_KEYS } from '@Worlds/_base/shaders/keys.js';
 import store from '@/store/index.js';
 
 export default class extends GameMap {

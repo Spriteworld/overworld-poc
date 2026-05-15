@@ -1,81 +1,32 @@
-import { Items, buildMon, buildMovePool, resolveSpecies } from '@spriteworld/pokemon-data';
+import { buildMon, buildMovePool, resolveSpecies } from '@spriteworld/pokemon-data';
 import { gameState } from '../../data/gameState.js';
 import { getGameDef } from '../../data/gameDef.js';
 import { resolveAiType, DEFAULT_WILD_AI, DEFAULT_TRAINER_AI } from '../../data/aiTypes.js';
+import { buildBattleInventory, resolveItemId, getBattleItemClass } from '../../data/itemDefs.js';
 import store from '../../store/index.js';
 import { rng } from '../../utilities/rng.js';
 import { getBattleTheme } from '../../utilities/tiles.js';
 
-const ITEM_REGISTRY = {
-  'Potion':        Items.Potion,
-  'Super Potion':  Items.SuperPotion,
-  'Hyper Potion':  Items.HyperPotion,
-  'Max Potion':    Items.MaxPotion,
-  'Full Restore':  Items.FullRestore,
-  'Ether':         Items.Ether,
-  'Revive':        Items.Revive,
-};
-
-const BALL_REGISTRY = {
-  'pokeball':   Items.Pokeball,
-  'greatball':  Items.GreatBall,
-  'ultraball':  Items.UltraBall,
-  'masterball': Items.MasterBall,
-};
-
-const normalizeBallName = name => name.toLowerCase().replace(/[-_\s]/g, '').replace(/[éèê]/g, 'e');
-
-/**
- * Unwraps a Tiled custom-class wrapper `{ propertytype, type: 'class', value }`
- * down to its inner value. Pass-through for already-flat objects.
- */
 const unwrapClass = x => (x && x.type === 'class' && 'value' in x) ? x.value : x;
-const unwrapList  = xs => Array.isArray(xs) ? xs.map(unwrapClass) : xs;
+const unwrapList  = xs => Array.isArray(xs) ? xs.map(unwrapClass).filter(v => v != null) : xs;
 
-function buildBattleInventory() {
-  const { items, pokeballs } = store.state.bag;
-  const battleItems = items
-    .filter(e => ITEM_REGISTRY[e.name] && e.quantity > 0)
-    .map(e => ({ item: new ITEM_REGISTRY[e.name](), quantity: e.quantity }));
-  const battleBalls = pokeballs
-    .filter(e => e.quantity > 0)
-    .map(e => {
-      const Cls = BALL_REGISTRY[normalizeBallName(e.name)];
-      return Cls ? { item: new Cls(), quantity: e.quantity } : null;
-    })
-    .filter(Boolean);
-  return { items: [...battleItems, ...battleBalls], pokeballs: [], tms: [] };
-}
-
-/**
- * Build a synthetic battle inventory from a list of `{ name, qty }` entries,
- * without touching `store.state.bag`. Used by tutorial battles so the tutor's
- * stand-in bag exists only for the duration of that battle.
- */
 function buildSyntheticInventory(entries) {
   const items = [];
   for (const { name, qty } of unwrapList(entries) ?? []) {
     if (!name || !(qty > 0)) continue;
-    const ItemCls = ITEM_REGISTRY[name];
-    if (ItemCls) {
-      items.push({ item: new ItemCls(), quantity: qty });
+    const id = resolveItemId(name);
+    if (id == null) {
+      console.warn(`[ScriptRunner] start_battle.player_override: unknown item "${name}"`);
       continue;
     }
-    const BallCls = BALL_REGISTRY[normalizeBallName(name)];
-    if (BallCls) {
-      items.push({ item: new BallCls(), quantity: qty });
-      continue;
+    const BattleCls = getBattleItemClass(id);
+    if (BattleCls) {
+      items.push({ item: new BattleCls(), quantity: qty });
     }
-    console.warn(`[ScriptRunner] start_battle.player_override: unknown item "${name}"`);
   }
   return { items, pokeballs: [], tms: [] };
 }
 
-/**
- * Build a `moves` array from a Tiled trainer spec. Returns null when the spec
- * provides no explicit moves — caller passes no `moves` override and `buildMon`
- * rolls from the learnset / random pool instead.
- */
 function resolveTiledMoves(spec, pool) {
   const tiledMoves = [spec.move1, spec.move2, spec.move3, spec.move4]
     .filter(m => typeof m === 'string' && m.trim() !== '');
@@ -162,26 +113,47 @@ export default {
           trainerClass: aiType,
         };
 
-    // player_override lets a tutorial / cutscene battle use a stand-in team and
-    // inventory instead of the real player party + bag. The real save is never
-    // read or written for this battle.
     const override = unwrapClass(cmd.player_override);
-    const player = override && (Array.isArray(override.team) || Array.isArray(override.inventory))
+    const overrideTeamSpecs = Array.isArray(override?.team) ? unwrapList(override.team) : [];
+    const overrideTeam = overrideTeamSpecs.length > 0 ? buildTeam(overrideTeamSpecs) : [];
+    const hasOverride = override && (overrideTeam.length > 0 || Array.isArray(override.inventory));
+
+    const realParty = gameState.party.map(p => ({
+      ...p,
+      moves: p.moves.map(m => ({ ...m, pp: { ...m.pp } })),
+      ivs:   { ...p.ivs },
+      evs:   { ...p.evs },
+    }));
+
+    const player = hasOverride
       ? {
           name:      override.name ?? 'Tutor',
-          team:      buildTeam(Array.isArray(override.team) ? override.team : []),
+          team:      overrideTeam.length > 0 ? overrideTeam : realParty,
           inventory: buildSyntheticInventory(override.inventory),
         }
       : {
           name: 'Red',
-          team: gameState.party.map(p => ({
-            ...p,
-            moves: p.moves.map(m => ({ ...m, pp: { ...m.pp } })),
-            ivs:   { ...p.ivs },
-            evs:   { ...p.evs },
-          })),
-          inventory: buildBattleInventory(),
+          team: realParty,
+          inventory: buildBattleInventory(store.state.bag),
         };
+
+    const isTutorialCatch = cmd.tutorial === true && cmd.force_catch === true;
+    let scriptedActions = Array.isArray(cmd.scripted_actions) ? unwrapList(cmd.scripted_actions) : null;
+
+    if (isTutorialCatch && hasOverride) {
+      if (player.team === realParty) {
+        player.team = buildTeam([{ species: 'Rattata', level: team[0]?.level ?? 5 }]);
+      }
+      if (!scriptedActions || scriptedActions.length === 0) {
+        scriptedActions = [{ type: 'use_item', itemName: 'Poké Ball' }];
+      }
+      if (player.inventory.items.length === 0) {
+        const PokeballCls = getBattleItemClass(resolveItemId('Pokeball'));
+        if (PokeballCls) {
+          player.inventory.items.push({ item: new PokeballCls(), quantity: 1 });
+        }
+      }
+    }
 
     const battleConfig = {
       tilesetBaseUrl:  '/',
@@ -192,7 +164,7 @@ export default {
       field:           { weather: null, terrain: 'normal', scene: getBattleTheme(runner._scene) },
       tutorial:        cmd.tutorial === true,
       forceCatch:      cmd.force_catch === true,
-      scriptedActions: Array.isArray(cmd.scripted_actions) ? unwrapList(cmd.scripted_actions) : null,
+      scriptedActions,
       player,
       enemy,
     };

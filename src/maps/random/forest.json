@@ -16460,11 +16460,11 @@
   "tilesets": [
     {
       "firstgid": 1,
-      "source": "../../tileset/gen3_outside.json"
+      "source": "../../../worlds/_base/tileset/gen3_outside.json"
     },
     {
       "firstgid": 7985,
-      "source": "../../tileset/rse_inside.json"
+      "source": "../../../worlds/_base/tileset/rse_inside.json"
     }
   ],
   "tilewidth": 32,
